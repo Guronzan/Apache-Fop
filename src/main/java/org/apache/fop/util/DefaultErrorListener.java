@@ -22,42 +22,46 @@ package org.apache.fop.util;
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.logging.Log;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Standard ErrorListener implementation for in-FOP use. Some Xalan-J versions don't properly
- * re-throw exceptions.
+ * Standard ErrorListener implementation for in-FOP use. Some Xalan-J versions
+ * don't properly re-throw exceptions.
  */
+@Slf4j
 public class DefaultErrorListener implements ErrorListener {
-
-    private Log log;
 
     /**
      * Main constructor
-     * @param log the log instance to send log events to
+     *
+     * @param log
+     *            the log instance to send log events to
      */
-    public DefaultErrorListener(Log log) {
-        this.log = log;
+    public DefaultErrorListener() {
     }
 
     /**
      * {@inheritDoc}
      */
-    public void warning(TransformerException exc) {
+    @Override
+    public void warning(final TransformerException exc) {
         log.warn(exc.toString());
     }
 
     /**
      * {@inheritDoc}
      */
-    public void error(TransformerException exc) throws TransformerException {
+    @Override
+    public void error(final TransformerException exc)
+            throws TransformerException {
         throw exc;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void fatalError(TransformerException exc)
+    @Override
+    public void fatalError(final TransformerException exc)
             throws TransformerException {
         throw exc;
     }

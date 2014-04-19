@@ -24,12 +24,12 @@ import java.io.InputStream;
 
 /**
  * A helper class to read structured fields from a MO:DCA document. Each
- * component of a mixed object document is explicitly defined and delimited
- * in the data. This is accomplished through the use of MO:DCA data structures,
+ * component of a mixed object document is explicitly defined and delimited in
+ * the data. This is accomplished through the use of MO:DCA data structures,
  * called structured fields. Structured fields are used to envelop document
- * components and to provide commands and information to applications using
- * the data. Structured fields may contain one or more parameters. Each
- * parameter provides one value from a set of values defined by the architecture.
+ * components and to provide commands and information to applications using the
+ * data. Structured fields may contain one or more parameters. Each parameter
+ * provides one value from a set of values defined by the architecture.
  * <p/>
  * MO:DCA structured fields consist of two parts: an introducer that identifies
  * the length and type of the structured field, and data that provides the
@@ -47,29 +47,34 @@ public class StructuredFieldReader {
 
     /**
      * The constructor for the StructuredFieldReader
-     * @param inputStream the input stream to process
+     * 
+     * @param inputStream
+     *            the input stream to process
      */
-    public StructuredFieldReader(InputStream inputStream) {
+    public StructuredFieldReader(final InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
     /**
-     * Get the next structured field as identified by the identifer
-     * parameter (this must be a valid MO:DCA structured field.
-     * @param identifier the three byte identifier
-     * @throws IOException if an I/O exception occurred
+     * Get the next structured field as identified by the identifer parameter
+     * (this must be a valid MO:DCA structured field.
+     * 
+     * @param identifier
+     *            the three byte identifier
+     * @throws IOException
+     *             if an I/O exception occurred
      * @return the next structured field or null when there are no more
      */
-    public byte[] getNext(byte[] identifier) throws IOException {
+    public byte[] getNext(final byte[] identifier) throws IOException {
 
         int bufferPointer = 0;
-        byte[] bufferData = new byte[identifier.length + 2];
+        final byte[] bufferData = new byte[identifier.length + 2];
         for (int x = 0; x < identifier.length; x++) {
             bufferData[x] = 0x00;
         }
 
         int c;
-        while ((c = inputStream.read()) > -1) {
+        while ((c = this.inputStream.read()) > -1) {
 
             bufferData[bufferPointer] = (byte) c;
 
@@ -95,7 +100,7 @@ public class StructuredFieldReader {
 
             if (found) {
 
-                byte[] length = new byte[2];
+                final byte[] length = new byte[2];
 
                 int a = bufferPointer - identifier.length;
                 if (a < 0) {
@@ -110,12 +115,12 @@ public class StructuredFieldReader {
                 length[0] = bufferData[b];
                 length[1] = bufferData[a];
 
-                int reclength = ((length[0] & 0xFF) << 8)
-                                + (length[1] & 0xFF) - identifier.length - 2;
+                final int reclength = ((length[0] & 0xFF) << 8)
+                        + (length[1] & 0xFF) - identifier.length - 2;
 
-                byte[] retval = new byte[reclength];
+                final byte[] retval = new byte[reclength];
 
-                inputStream.read(retval, 0, reclength);
+                this.inputStream.read(retval, 0, reclength);
 
                 return retval;
 

@@ -17,7 +17,6 @@
 
 /* $Id: RtfTemplate.java 679326 2008-07-24 09:35:34Z vhennebert $ */
 
-
 /*
  * This file is part of the RTF library of the FOP project, which was originally
  * created by Bertrand Delacretaz <bdelacretaz@codeconsult.ch> and by other
@@ -30,11 +29,11 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Singelton of the RTF style template
- * This class belongs to the <jfor:style-template> tag processing.
+ * Singelton of the RTF style template This class belongs to the
+ * <jfor:style-template> tag processing.
  */
 
-public class RtfTemplate  {
+public class RtfTemplate {
 
     /** Singelton instance */
     private static RtfTemplate instance = null;
@@ -44,17 +43,16 @@ public class RtfTemplate  {
     /**
      * Constructor.
      */
-    private RtfTemplate () {
+    private RtfTemplate() {
 
     }
-
 
     /**
      * Singelton.
      *
      * @return The instance of RtfTemplate
      */
-    public static RtfTemplate getInstance () {
+    public static RtfTemplate getInstance() {
         if (instance == null) {
             instance = new RtfTemplate();
         }
@@ -62,13 +60,16 @@ public class RtfTemplate  {
         return instance;
     }
 
-
     /**
      * Set the template file and adjust tha path separator
-     * @param templateFilePath The full path of the template
-     * @throws IOException for I/O problems
+     * 
+     * @param templateFilePath
+     *            The full path of the template
+     * @throws IOException
+     *             for I/O problems
      **/
-    public void setTemplateFilePath(String templateFilePath) throws IOException {
+    public void setTemplateFilePath(final String templateFilePath)
+            throws IOException {
         // no validity checks here - leave this to the RTF client
         if (templateFilePath == null) {
             this.templateFilePath = null;
@@ -79,23 +80,25 @@ public class RtfTemplate  {
 
     /**
      * Write the rtf template
-     * @param header Rtf header is the parent
-     * @throws IOException On write error
+     * 
+     * @param header
+     *            Rtf header is the parent
+     * @throws IOException
+     *             On write error
      */
-    public void writeTemplate (RtfHeader header) throws IOException {
-        if (templateFilePath == null || templateFilePath.length() == 0) {
+    public void writeTemplate(final RtfHeader header) throws IOException {
+        if (this.templateFilePath == null
+                || this.templateFilePath.length() == 0) {
             return;
         }
 
-        header.writeGroupMark (true);
-        header.writeControlWord ("template");
+        header.writeGroupMark(true);
+        header.writeControlWord("template");
         header.writeRtfString(this.templateFilePath);
-        header.writeGroupMark (false);
+        header.writeGroupMark(false);
 
-        header.writeGroupMark (true);
-        header.writeControlWord ("linkstyles");
-        header.writeGroupMark (false);
+        header.writeGroupMark(true);
+        header.writeControlWord("linkstyles");
+        header.writeGroupMark(false);
     }
 }
-
-

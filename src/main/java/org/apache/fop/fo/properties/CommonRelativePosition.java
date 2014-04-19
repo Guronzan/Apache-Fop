@@ -25,9 +25,8 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * Store all common relative position properties.
- * See Sec 7.12 of the XSL-FO Standard.
- * Public "structure" allows direct member access.
+ * Store all common relative position properties. See Sec 7.12 of the XSL-FO
+ * Standard. Public "structure" allows direct member access.
  */
 public class CommonRelativePosition {
     /**
@@ -57,14 +56,18 @@ public class CommonRelativePosition {
 
     /**
      * Create a CommonRelativePosition object.
-     * @param pList The PropertyList with propery values.
+     * 
+     * @param pList
+     *            The PropertyList with propery values.
      */
-    public CommonRelativePosition(PropertyList pList) throws PropertyException {
-        relativePosition = pList.get(Constants.PR_RELATIVE_POSITION).getEnum();
-        top = pList.get(Constants.PR_TOP).getLength();
-        bottom = pList.get(Constants.PR_BOTTOM).getLength();
-        left = pList.get(Constants.PR_LEFT).getLength();
-        right = pList.get(Constants.PR_RIGHT).getLength();
+    public CommonRelativePosition(final PropertyList pList)
+            throws PropertyException {
+        this.relativePosition = pList.get(Constants.PR_RELATIVE_POSITION)
+                .getEnum();
+        this.top = pList.get(Constants.PR_TOP).getLength();
+        this.bottom = pList.get(Constants.PR_BOTTOM).getLength();
+        this.left = pList.get(Constants.PR_LEFT).getLength();
+        this.right = pList.get(Constants.PR_RIGHT).getLength();
     }
 
 }

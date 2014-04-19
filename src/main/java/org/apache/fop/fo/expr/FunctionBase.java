@@ -29,6 +29,7 @@ public abstract class FunctionBase implements Function {
     /**
      * @return null (by default, functions have no percent-based arguments)
      */
+    @Override
     public PercentBase getPercentBase() {
         return null;
     }
@@ -36,6 +37,7 @@ public abstract class FunctionBase implements Function {
     /**
      * @return false (by default don't pad arglist with property-name)
      */
+    @Override
     public boolean padArgsWithPropertyName() {
         return false;
     }

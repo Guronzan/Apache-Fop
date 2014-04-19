@@ -23,11 +23,10 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.IOException;
 
-import org.apache.xmlgraphics.image.loader.Image;
-
 import org.apache.fop.pdf.PDFXObject;
 import org.apache.fop.render.ImageHandlerBase;
 import org.apache.fop.render.RendererContext;
+import org.apache.xmlgraphics.image.loader.Image;
 
 /**
  * This interface is used for handling all sorts of image type for PDF output.
@@ -35,18 +34,25 @@ import org.apache.fop.render.RendererContext;
 public interface PDFImageHandler extends ImageHandlerBase {
 
     /**
-     * Generates the PDF objects for the given {@link Image} instance. If the handler generates
-     * an XObject, it shall return it or otherwise return null. A generated XObject shall be
-     * placed in the current viewport according to the two parameters "origin" and "pos".
-     * @param context the PDF renderer context
-     * @param image the image to be handled
-     * @param origin the current position in the current viewport (in millipoints)
-     * @param pos the position and scaling of the image relative to the origin point
-     *                  (in millipoints)
+     * Generates the PDF objects for the given {@link Image} instance. If the
+     * handler generates an XObject, it shall return it or otherwise return
+     * null. A generated XObject shall be placed in the current viewport
+     * according to the two parameters "origin" and "pos".
+     * 
+     * @param context
+     *            the PDF renderer context
+     * @param image
+     *            the image to be handled
+     * @param origin
+     *            the current position in the current viewport (in millipoints)
+     * @param pos
+     *            the position and scaling of the image relative to the origin
+     *            point (in millipoints)
      * @return the generated XObject or null if no XObject was generated
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    PDFXObject generateImage(RendererContext context, Image image,
-            Point origin, Rectangle pos) throws IOException;
+    PDFXObject generateImage(final RendererContext context, final Image image,
+            final Point origin, final Rectangle pos) throws IOException;
 
 }

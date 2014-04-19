@@ -33,18 +33,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Document;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.AttributesImpl;
-import org.xml.sax.helpers.DefaultHandler;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.util.QName;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.accessibility.AccessibilityEventProducer;
 import org.apache.fop.accessibility.StructureTreeBuilder;
@@ -63,20 +52,26 @@ import org.apache.fop.util.DOMBuilderContentHandlerFactory;
 import org.apache.fop.util.DefaultErrorListener;
 import org.apache.fop.util.DelegatingContentHandler;
 import org.apache.fop.util.XMLUtil;
+import org.apache.xmlgraphics.util.QName;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
- * This is a parser for the intermediate format XML which converts the intermediate file into
- * {@link IFPainter} events.
+ * This is a parser for the intermediate format XML which converts the
+ * intermediate file into {@link IFPainter} events.
  */
+@Slf4j
 public class IFParser implements IFConstants {
 
-    /** Logger instance */
-    protected static Log log = LogFactory.getLog(IFParser.class);
+    private static SAXTransformerFactory tFactory = (SAXTransformerFactory) SAXTransformerFactory
+            .newInstance();
 
-    private static SAXTransformerFactory tFactory
-        = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
-
-    private static Set handledNamespaces = new java.util.HashSet();
+    private static Set<String> handledNamespaces = new java.util.HashSet<String>();
 
     static {
         handledNamespaces.add(XMLNS_NAMESPACE_URI);
@@ -87,64 +82,80 @@ public class IFParser implements IFConstants {
 
     /**
      * Parses an intermediate file and paints it.
-     * @param src the Source instance pointing to the intermediate file
-     * @param documentHandler the intermediate format document handler used to process the IF events
-     * @param userAgent the user agent
-     * @throws TransformerException if an error occurs while parsing the area tree XML
-     * @throws IFException if an IF-related error occurs inside the target document handler
+     *
+     * @param src
+     *            the Source instance pointing to the intermediate file
+     * @param documentHandler
+     *            the intermediate format document handler used to process the
+     *            IF events
+     * @param userAgent
+     *            the user agent
+     * @throws TransformerException
+     *             if an error occurs while parsing the area tree XML
+     * @throws IFException
+     *             if an IF-related error occurs inside the target document
+     *             handler
      */
-    public void parse(Source src, IFDocumentHandler documentHandler, FOUserAgent userAgent)
-            throws TransformerException, IFException {
+    public void parse(final Source src,
+            final IFDocumentHandler documentHandler, final FOUserAgent userAgent)
+                    throws TransformerException, IFException {
         try {
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setErrorListener(new DefaultErrorListener(log));
+            final Transformer transformer = tFactory.newTransformer();
+            transformer.setErrorListener(new DefaultErrorListener());
 
-            SAXResult res = new SAXResult(getContentHandler(documentHandler, userAgent));
+            final SAXResult res = new SAXResult(getContentHandler(
+                    documentHandler, userAgent));
 
             transformer.transform(src, res);
-        } catch (TransformerException te) {
-            //Unpack original IFException if applicable
+        } catch (final TransformerException te) {
+            // Unpack original IFException if applicable
             if (te.getCause() instanceof SAXException) {
-                SAXException se = (SAXException)te.getCause();
+                final SAXException se = (SAXException) te.getCause();
                 if (se.getCause() instanceof IFException) {
-                    throw (IFException)se.getCause();
+                    throw (IFException) se.getCause();
                 }
             } else if (te.getCause() instanceof IFException) {
-                throw (IFException)te.getCause();
+                throw (IFException) te.getCause();
             }
             throw te;
         }
     }
 
     /**
-     * Creates a new ContentHandler instance that you can send the area tree XML to. The parsed
-     * pages are added to the AreaTreeModel instance you pass in as a parameter.
-     * @param documentHandler the intermediate format document handler used to process the IF events
-     * @param userAgent the user agent
-     * @return the ContentHandler instance to receive the SAX stream from the area tree XML
+     * Creates a new ContentHandler instance that you can send the area tree XML
+     * to. The parsed pages are added to the AreaTreeModel instance you pass in
+     * as a parameter.
+     *
+     * @param documentHandler
+     *            the intermediate format document handler used to process the
+     *            IF events
+     * @param userAgent
+     *            the user agent
+     * @return the ContentHandler instance to receive the SAX stream from the
+     *         area tree XML
      */
-    public ContentHandler getContentHandler(IFDocumentHandler documentHandler,
-                    FOUserAgent userAgent) {
-        ElementMappingRegistry elementMappingRegistry
-            = userAgent.getFactory().getElementMappingRegistry();
+    public ContentHandler getContentHandler(
+            final IFDocumentHandler documentHandler, final FOUserAgent userAgent) {
+        final ElementMappingRegistry elementMappingRegistry = userAgent
+                .getFactory().getElementMappingRegistry();
         return new Handler(documentHandler, userAgent, elementMappingRegistry);
     }
 
     private static class Handler extends DefaultHandler {
 
-        private Map elementHandlers = new java.util.HashMap();
+        private final Map<String, AbstractElementHandler> elementHandlers = new java.util.HashMap<String, AbstractElementHandler>();
 
-        private IFDocumentHandler documentHandler;
+        private final IFDocumentHandler documentHandler;
         private IFPainter painter;
-        private FOUserAgent userAgent;
-        private ElementMappingRegistry elementMappingRegistry;
+        private final FOUserAgent userAgent;
+        private final ElementMappingRegistry elementMappingRegistry;
 
         private Attributes lastAttributes;
 
-        private StringBuffer content = new StringBuffer();
+        private final StringBuilder content = new StringBuilder();
         private boolean ignoreCharacters = true;
 
-        //private Stack delegateStack = new Stack();
+        // private Stack delegateStack = new Stack();
         private int delegateDepth;
         private ContentHandler delegate;
         private boolean inForeignObject;
@@ -158,90 +169,103 @@ public class IFParser implements IFConstants {
 
         private Attributes pageSequenceAttributes;
 
-        private final class StructureTreeBuilderWrapper extends DelegatingContentHandler {
+        private final class StructureTreeBuilderWrapper extends
+                DelegatingContentHandler {
 
-            private StructureTreeBuilderWrapper()
-                    throws SAXException {
-                super(structureTreeBuilder.getHandlerForNextPageSequence());
+            private StructureTreeBuilderWrapper() throws SAXException {
+                super(Handler.this.structureTreeBuilder
+                        .getHandlerForNextPageSequence());
             }
 
+            @Override
             public void endDocument() throws SAXException {
                 super.endDocument();
-                startIFElement(EL_PAGE_SEQUENCE, pageSequenceAttributes);
-                pageSequenceAttributes = null;
+                startIFElement(EL_PAGE_SEQUENCE,
+                        Handler.this.pageSequenceAttributes);
+                Handler.this.pageSequenceAttributes = null;
             }
         }
 
-        public Handler(IFDocumentHandler documentHandler, FOUserAgent userAgent,
-                ElementMappingRegistry elementMappingRegistry) {
+        public Handler(final IFDocumentHandler documentHandler,
+                final FOUserAgent userAgent,
+                final ElementMappingRegistry elementMappingRegistry) {
             this.documentHandler = documentHandler;
             this.userAgent = userAgent;
             this.elementMappingRegistry = elementMappingRegistry;
-            elementHandlers.put(EL_DOCUMENT, new DocumentHandler());
-            elementHandlers.put(EL_HEADER, new DocumentHeaderHandler());
-            elementHandlers.put(EL_TRAILER, new DocumentTrailerHandler());
-            elementHandlers.put(EL_PAGE_SEQUENCE, new PageSequenceHandler());
-            elementHandlers.put(EL_PAGE, new PageHandler());
-            elementHandlers.put(EL_PAGE_HEADER, new PageHeaderHandler());
-            elementHandlers.put(EL_PAGE_CONTENT, new PageContentHandler());
-            elementHandlers.put(EL_PAGE_TRAILER, new PageTrailerHandler());
-            //Page content
-            elementHandlers.put(EL_VIEWPORT, new ViewportHandler());
-            elementHandlers.put(EL_GROUP, new GroupHandler());
-            elementHandlers.put(EL_FONT, new FontHandler());
-            elementHandlers.put(EL_TEXT, new TextHandler());
-            elementHandlers.put(EL_CLIP_RECT, new ClipRectHandler());
-            elementHandlers.put(EL_RECT, new RectHandler());
-            elementHandlers.put(EL_LINE, new LineHandler());
-            elementHandlers.put(EL_BORDER_RECT, new BorderRectHandler());
-            elementHandlers.put(EL_IMAGE, new ImageHandler());
+            this.elementHandlers.put(EL_DOCUMENT, new DocumentHandler());
+            this.elementHandlers.put(EL_HEADER, new DocumentHeaderHandler());
+            this.elementHandlers.put(EL_TRAILER, new DocumentTrailerHandler());
+            this.elementHandlers.put(EL_PAGE_SEQUENCE,
+                    new PageSequenceHandler());
+            this.elementHandlers.put(EL_PAGE, new PageHandler());
+            this.elementHandlers.put(EL_PAGE_HEADER, new PageHeaderHandler());
+            this.elementHandlers.put(EL_PAGE_CONTENT, new PageContentHandler());
+            this.elementHandlers.put(EL_PAGE_TRAILER, new PageTrailerHandler());
+            // Page content
+            this.elementHandlers.put(EL_VIEWPORT, new ViewportHandler());
+            this.elementHandlers.put(EL_GROUP, new GroupHandler());
+            this.elementHandlers.put(EL_FONT, new FontHandler());
+            this.elementHandlers.put(EL_TEXT, new TextHandler());
+            this.elementHandlers.put(EL_CLIP_RECT, new ClipRectHandler());
+            this.elementHandlers.put(EL_RECT, new RectHandler());
+            this.elementHandlers.put(EL_LINE, new LineHandler());
+            this.elementHandlers.put(EL_BORDER_RECT, new BorderRectHandler());
+            this.elementHandlers.put(EL_IMAGE, new ImageHandler());
 
             if (userAgent.isAccessibilityEnabled()) {
-                structureTreeBuilder = new StructureTreeBuilder(tFactory);
-                userAgent.setStructureTree(structureTreeBuilder.getStructureTree());
+                this.structureTreeBuilder = new StructureTreeBuilder(tFactory);
+                userAgent.setStructureTree(this.structureTreeBuilder
+                        .getStructureTree());
             }
         }
 
-        private void establishForeignAttributes(Map foreignAttributes) {
-            documentHandler.getContext().setForeignAttributes(foreignAttributes);
+        private void establishForeignAttributes(
+                final Map<QName, String> foreignAttributes) {
+            this.documentHandler.getContext().setForeignAttributes(
+                    foreignAttributes);
         }
 
         private void resetForeignAttributes() {
-            documentHandler.getContext().resetForeignAttributes();
+            this.documentHandler.getContext().resetForeignAttributes();
         }
 
-        private void establishStructurePointer(String ptr) {
-            documentHandler.getContext().setStructurePointer(ptr);
+        private void establishStructurePointer(final String ptr) {
+            this.documentHandler.getContext().setStructurePointer(ptr);
         }
 
         private void resetStructurePointer() {
-            documentHandler.getContext().resetStructurePointer();
+            this.documentHandler.getContext().resetStructurePointer();
         }
 
         /** {@inheritDoc} */
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                    throws SAXException {
-            if (delegate != null) {
-                delegateDepth++;
-                delegate.startElement(uri, localName, qName, attributes);
+        @Override
+        public void startElement(final String uri, final String localName,
+                final String qName, final Attributes attributes)
+                throws SAXException {
+            if (this.delegate != null) {
+                this.delegateDepth++;
+                this.delegate.startElement(uri, localName, qName, attributes);
             } else {
                 boolean handled = true;
                 if (NAMESPACE.equals(uri)) {
-                    if (localName.equals(EL_PAGE_SEQUENCE) && userAgent.isAccessibilityEnabled()) {
-                        pageSequenceAttributes = new AttributesImpl(attributes);
-                        structureTreeBuilderWrapper = new StructureTreeBuilderWrapper();
+                    if (localName.equals(EL_PAGE_SEQUENCE)
+                            && this.userAgent.isAccessibilityEnabled()) {
+                        this.pageSequenceAttributes = new AttributesImpl(
+                                attributes);
+                        this.structureTreeBuilderWrapper = new StructureTreeBuilderWrapper();
                     } else if (localName.equals(EL_STRUCTURE_TREE)) {
-                        if (userAgent.isAccessibilityEnabled()) {
-                            delegate = structureTreeBuilderWrapper;
+                        if (this.userAgent.isAccessibilityEnabled()) {
+                            this.delegate = this.structureTreeBuilderWrapper;
                         } else {
                             /* Delegate to a handler that does nothing */
-                            delegate = new DefaultHandler();
+                            this.delegate = new DefaultHandler();
                         }
-                        delegateDepth++;
-                        delegate.startDocument();
-                        delegate.startElement(uri, localName, qName, attributes);
+                        this.delegateDepth++;
+                        this.delegate.startDocument();
+                        this.delegate.startElement(uri, localName, qName,
+                                attributes);
                     } else {
-                        if (pageSequenceAttributes != null) {
+                        if (this.pageSequenceAttributes != null) {
                             /*
                              * This means that no structure-element tag was
                              * found in the XML, otherwise a
@@ -249,41 +273,48 @@ public class IFParser implements IFConstants {
                              * been created, which would have reset the
                              * pageSequenceAttributes field.
                              */
-                            AccessibilityEventProducer.Provider
-                                    .get(userAgent.getEventBroadcaster())
+                            AccessibilityEventProducer.Provider.get(
+                                    this.userAgent.getEventBroadcaster())
                                     .noStructureTreeInXML(this);
                         }
                         handled = startIFElement(localName, attributes);
                     }
-                } else if (DocumentNavigationExtensionConstants.NAMESPACE.equals(uri)) {
+                } else if (DocumentNavigationExtensionConstants.NAMESPACE
+                        .equals(uri)) {
                     if (this.navParser == null) {
                         this.navParser = new DocumentNavigationHandler(
-                                this.documentHandler.getDocumentNavigationHandler());
+                                this.documentHandler
+                                        .getDocumentNavigationHandler());
                     }
-                    delegate = this.navParser;
-                    delegateDepth++;
-                    delegate.startDocument();
-                    delegate.startElement(uri, localName, qName, attributes);
+                    this.delegate = this.navParser;
+                    this.delegateDepth++;
+                    this.delegate.startDocument();
+                    this.delegate.startElement(uri, localName, qName,
+                            attributes);
                 } else {
-                    ContentHandlerFactoryRegistry registry
-                            = userAgent.getFactory().getContentHandlerFactoryRegistry();
+                    final ContentHandlerFactoryRegistry registry = this.userAgent
+                            .getFactory().getContentHandlerFactoryRegistry();
                     ContentHandlerFactory factory = registry.getFactory(uri);
                     if (factory == null) {
-                        DOMImplementation domImplementation
-                            = elementMappingRegistry.getDOMImplementationForNamespace(uri);
+                        DOMImplementation domImplementation = this.elementMappingRegistry
+                                .getDOMImplementationForNamespace(uri);
                         if (domImplementation == null) {
-                            domImplementation = ElementMapping.getDefaultDOMImplementation();
+                            domImplementation = ElementMapping
+                                    .getDefaultDOMImplementation();
                             /*
-                            throw new SAXException("No DOMImplementation could be"
-                                    + " identified to handle namespace: " + uri);
-                                    */
+                             * throw new
+                             * SAXException("No DOMImplementation could be" +
+                             * " identified to handle namespace: " + uri);
+                             */
                         }
-                        factory = new DOMBuilderContentHandlerFactory(uri, domImplementation);
+                        factory = new DOMBuilderContentHandlerFactory(uri,
+                                domImplementation);
                     }
-                    delegate = factory.createContentHandler();
-                    delegateDepth++;
-                    delegate.startDocument();
-                    delegate.startElement(uri, localName, qName, attributes);
+                    this.delegate = factory.createContentHandler();
+                    this.delegateDepth++;
+                    this.delegate.startDocument();
+                    this.delegate.startElement(uri, localName, qName,
+                            attributes);
                 }
                 if (!handled) {
                     if (uri == null || uri.length() == 0) {
@@ -297,17 +328,18 @@ public class IFParser implements IFConstants {
             }
         }
 
-        private boolean startIFElement(String localName, Attributes attributes)
-                throws SAXException {
-            lastAttributes = new AttributesImpl(attributes);
-            ElementHandler elementHandler = (ElementHandler)elementHandlers.get(localName);
-            content.setLength(0);
-            ignoreCharacters = true;
+        private boolean startIFElement(final String localName,
+                final Attributes attributes) throws SAXException {
+            this.lastAttributes = new AttributesImpl(attributes);
+            final ElementHandler elementHandler = this.elementHandlers
+                    .get(localName);
+            this.content.setLength(0);
+            this.ignoreCharacters = true;
             if (elementHandler != null) {
-                ignoreCharacters = elementHandler.ignoreCharacters();
+                this.ignoreCharacters = elementHandler.ignoreCharacters();
                 try {
                     elementHandler.startElement(attributes);
-                } catch (IFException ife) {
+                } catch (final IFException ife) {
                     handleIFException(ife);
                 }
                 return true;
@@ -316,72 +348,86 @@ public class IFParser implements IFConstants {
             }
         }
 
-        private void handleIFException(IFException ife) throws SAXException {
+        private void handleIFException(final IFException ife)
+                throws SAXException {
             if (ife.getCause() instanceof SAXException) {
-                //unwrap
-                throw (SAXException)ife.getCause();
+                // unwrap
+                throw (SAXException) ife.getCause();
             } else {
-                //wrap
+                // wrap
                 throw new SAXException(ife);
             }
         }
 
-
         /** {@inheritDoc} */
-        public void endElement(String uri, String localName, String qName) throws SAXException {
-            if (delegate != null) {
-                delegate.endElement(uri, localName, qName);
-                delegateDepth--;
-                if (delegateDepth == 0) {
-                    delegate.endDocument();
-                    if (delegate instanceof ContentHandlerFactory.ObjectSource) {
-                        Object obj = ((ContentHandlerFactory.ObjectSource)delegate).getObject();
-                        if (inForeignObject) {
-                            this.foreignObject = (Document)obj;
+        @Override
+        public void endElement(final String uri, final String localName,
+                final String qName) throws SAXException {
+            if (this.delegate != null) {
+                this.delegate.endElement(uri, localName, qName);
+                this.delegateDepth--;
+                if (this.delegateDepth == 0) {
+                    this.delegate.endDocument();
+                    if (this.delegate instanceof ContentHandlerFactory.ObjectSource) {
+                        final Object obj = ((ContentHandlerFactory.ObjectSource) this.delegate)
+                                .getObject();
+                        if (this.inForeignObject) {
+                            this.foreignObject = (Document) obj;
                         } else {
                             handleExternallyGeneratedObject(obj);
                         }
                     }
-                    delegate = null; //Sub-document is processed, return to normal processing
+                    this.delegate = null; // Sub-document is processed, return
+                    // to normal processing
                 }
             } else {
                 if (NAMESPACE.equals(uri)) {
-                    ElementHandler elementHandler = (ElementHandler)elementHandlers.get(localName);
+                    final ElementHandler elementHandler = this.elementHandlers
+                            .get(localName);
                     if (elementHandler != null) {
                         try {
                             elementHandler.endElement();
-                        } catch (IFException ife) {
+                        } catch (final IFException ife) {
                             handleIFException(ife);
                         }
-                        content.setLength(0);
+                        this.content.setLength(0);
                     }
-                    ignoreCharacters = true;
+                    this.ignoreCharacters = true;
                 } else {
                     if (log.isTraceEnabled()) {
-                        log.trace("Ignoring " + localName + " in namespace: " + uri);
+                        log.trace("Ignoring " + localName + " in namespace: "
+                                + uri);
                     }
                 }
             }
         }
 
-        // ============== Element handlers for the intermediate format =============
+        // ============== Element handlers for the intermediate format
+        // =============
 
         private static interface ElementHandler {
-            void startElement(Attributes attributes) throws IFException, SAXException;
+            void startElement(final Attributes attributes) throws IFException,
+                    SAXException;
+
             void endElement() throws IFException;
+
             boolean ignoreCharacters();
         }
 
         private abstract class AbstractElementHandler implements ElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException, SAXException {
-                //nop
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException, SAXException {
+                // nop
             }
 
+            @Override
             public void endElement() throws IFException {
-                //nop
+                // nop
             }
 
+            @Override
             public boolean ignoreCharacters() {
                 return true;
             }
@@ -389,187 +435,240 @@ public class IFParser implements IFConstants {
 
         private class DocumentHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                documentHandler.startDocument();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.documentHandler.startDocument();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endDocument();
+                Handler.this.documentHandler.endDocument();
             }
 
         }
 
         private class DocumentHeaderHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                documentHandler.startDocumentHeader();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.documentHandler.startDocumentHeader();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endDocumentHeader();
+                Handler.this.documentHandler.endDocumentHeader();
             }
 
         }
 
         private class DocumentTrailerHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                documentHandler.startDocumentTrailer();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.documentHandler.startDocumentTrailer();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endDocumentTrailer();
+                Handler.this.documentHandler.endDocumentTrailer();
             }
 
         }
 
         private class PageSequenceHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                String id = attributes.getValue("id");
-                String xmllang = attributes.getValue(XML_NAMESPACE, "lang");
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final String id = attributes.getValue("id");
+                final String xmllang = attributes.getValue(XML_NAMESPACE,
+                        "lang");
                 if (xmllang != null) {
-                    documentHandler.getContext().setLanguage(
+                    Handler.this.documentHandler.getContext().setLanguage(
                             XMLUtil.convertRFC3066ToLocale(xmllang));
                 }
-                Map foreignAttributes = getForeignAttributes(lastAttributes);
+                final Map<QName, String> foreignAttributes = getForeignAttributes(Handler.this.lastAttributes);
                 establishForeignAttributes(foreignAttributes);
-                documentHandler.startPageSequence(id);
+                Handler.this.documentHandler.startPageSequence(id);
                 resetForeignAttributes();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endPageSequence();
-                documentHandler.getContext().setLanguage(null);
+                Handler.this.documentHandler.endPageSequence();
+                Handler.this.documentHandler.getContext().setLanguage(null);
             }
 
         }
 
         private class PageHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                int index = Integer.parseInt(attributes.getValue("index"));
-                String name = attributes.getValue("name");
-                String pageMasterName = attributes.getValue("page-master-name");
-                int width = Integer.parseInt(attributes.getValue("width"));
-                int height = Integer.parseInt(attributes.getValue("height"));
-                Map foreignAttributes = getForeignAttributes(lastAttributes);
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final int index = Integer
+                        .parseInt(attributes.getValue("index"));
+                final String name = attributes.getValue("name");
+                final String pageMasterName = attributes
+                        .getValue("page-master-name");
+                final int width = Integer
+                        .parseInt(attributes.getValue("width"));
+                final int height = Integer.parseInt(attributes
+                        .getValue("height"));
+                final Map<QName, String> foreignAttributes = getForeignAttributes(Handler.this.lastAttributes);
                 establishForeignAttributes(foreignAttributes);
-                documentHandler.startPage(index, name, pageMasterName,
-                        new Dimension(width, height));
+                Handler.this.documentHandler.startPage(index, name,
+                        pageMasterName, new Dimension(width, height));
                 resetForeignAttributes();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endPage();
+                Handler.this.documentHandler.endPage();
             }
 
         }
 
         private class PageHeaderHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                documentHandler.startPageHeader();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.documentHandler.startPageHeader();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endPageHeader();
+                Handler.this.documentHandler.endPageHeader();
             }
 
         }
 
         private class PageContentHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                painter = documentHandler.startPageContent();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.painter = Handler.this.documentHandler
+                        .startPageContent();
             }
 
+            @Override
             public void endElement() throws IFException {
-                painter = null;
-                documentHandler.endPageContent();
+                Handler.this.painter = null;
+                Handler.this.documentHandler.endPageContent();
             }
 
         }
 
         private class PageTrailerHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                documentHandler.startPageTrailer();
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.documentHandler.startPageTrailer();
             }
 
+            @Override
             public void endElement() throws IFException {
-                documentHandler.endPageTrailer();
+                Handler.this.documentHandler.endPageTrailer();
             }
 
         }
 
         private class ViewportHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                String transform = attributes.getValue("transform");
-                AffineTransform[] transforms
-                    = AffineTransformArrayParser.createAffineTransform(transform);
-                int width = Integer.parseInt(attributes.getValue("width"));
-                int height = Integer.parseInt(attributes.getValue("height"));
-                Rectangle clipRect = XMLUtil.getAttributeAsRectangle(attributes, "clip-rect");
-                painter.startViewport(transforms, new Dimension(width, height), clipRect);
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final String transform = attributes.getValue("transform");
+                final AffineTransform[] transforms = AffineTransformArrayParser
+                        .createAffineTransform(transform);
+                final int width = Integer
+                        .parseInt(attributes.getValue("width"));
+                final int height = Integer.parseInt(attributes
+                        .getValue("height"));
+                final Rectangle clipRect = XMLUtil.getAttributeAsRectangle(
+                        attributes, "clip-rect");
+                Handler.this.painter.startViewport(transforms, new Dimension(
+                        width, height), clipRect);
             }
 
+            @Override
             public void endElement() throws IFException {
-                painter.endViewport();
+                Handler.this.painter.endViewport();
             }
 
         }
 
         private class GroupHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                String transform = attributes.getValue("transform");
-                AffineTransform[] transforms
-                    = AffineTransformArrayParser.createAffineTransform(transform);
-                painter.startGroup(transforms);
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final String transform = attributes.getValue("transform");
+                final AffineTransform[] transforms = AffineTransformArrayParser
+                        .createAffineTransform(transform);
+                Handler.this.painter.startGroup(transforms);
             }
 
+            @Override
             public void endElement() throws IFException {
-                painter.endGroup();
+                Handler.this.painter.endGroup();
             }
 
         }
 
         private class FontHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                String family = attributes.getValue("family");
-                String style = attributes.getValue("style");
-                Integer weight = XMLUtil.getAttributeAsInteger(attributes, "weight");
-                String variant = attributes.getValue("variant");
-                Integer size = XMLUtil.getAttributeAsInteger(attributes, "size");
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final String family = attributes.getValue("family");
+                final String style = attributes.getValue("style");
+                final Integer weight = XMLUtil.getAttributeAsInteger(
+                        attributes, "weight");
+                final String variant = attributes.getValue("variant");
+                final Integer size = XMLUtil.getAttributeAsInteger(attributes,
+                        "size");
                 Color color;
                 try {
                     color = getAttributeAsColor(attributes, "color");
-                } catch (PropertyException pe) {
-                    throw new IFException("Error parsing the color attribute", pe);
+                } catch (final PropertyException pe) {
+                    throw new IFException("Error parsing the color attribute",
+                            pe);
                 }
-                painter.setFont(family, style, weight, variant, size, color);
+                Handler.this.painter.setFont(family, style, weight, variant,
+                        size, color);
             }
 
         }
 
         private class TextHandler extends AbstractElementHandler {
 
+            @Override
             public void endElement() throws IFException {
-                int x = Integer.parseInt(lastAttributes.getValue("x"));
-                int y = Integer.parseInt(lastAttributes.getValue("y"));
-                String s = lastAttributes.getValue("letter-spacing");
-                int letterSpacing = (s != null ? Integer.parseInt(s) : 0);
-                s = lastAttributes.getValue("word-spacing");
-                int wordSpacing = (s != null ? Integer.parseInt(s) : 0);
-                int[] dx = XMLUtil.getAttributeAsIntArray(lastAttributes, "dx");
-                setStructurePointer(lastAttributes);
-                painter.drawText(x, y, letterSpacing, wordSpacing, dx, content.toString());
+                final int x = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("x"));
+                final int y = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("y"));
+                String s = Handler.this.lastAttributes
+                        .getValue("letter-spacing");
+                final int letterSpacing = s != null ? Integer.parseInt(s) : 0;
+                s = Handler.this.lastAttributes.getValue("word-spacing");
+                final int wordSpacing = s != null ? Integer.parseInt(s) : 0;
+                final int[] dx = XMLUtil.getAttributeAsIntArray(
+                        Handler.this.lastAttributes, "dx");
+                setStructurePointer(Handler.this.lastAttributes);
+                Handler.this.painter.drawText(x, y, letterSpacing, wordSpacing,
+                        dx, Handler.this.content.toString());
                 resetStructurePointer();
             }
 
+            @Override
             public boolean ignoreCharacters() {
                 return false;
             }
@@ -578,170 +677,212 @@ public class IFParser implements IFConstants {
 
         private class ClipRectHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                int x = Integer.parseInt(attributes.getValue("x"));
-                int y = Integer.parseInt(attributes.getValue("y"));
-                int width = Integer.parseInt(attributes.getValue("width"));
-                int height = Integer.parseInt(attributes.getValue("height"));
-                painter.clipRect(new Rectangle(x, y, width, height));
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final int x = Integer.parseInt(attributes.getValue("x"));
+                final int y = Integer.parseInt(attributes.getValue("y"));
+                final int width = Integer
+                        .parseInt(attributes.getValue("width"));
+                final int height = Integer.parseInt(attributes
+                        .getValue("height"));
+                Handler.this.painter
+                        .clipRect(new Rectangle(x, y, width, height));
             }
 
         }
 
         private class RectHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                int x = Integer.parseInt(attributes.getValue("x"));
-                int y = Integer.parseInt(attributes.getValue("y"));
-                int width = Integer.parseInt(attributes.getValue("width"));
-                int height = Integer.parseInt(attributes.getValue("height"));
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final int x = Integer.parseInt(attributes.getValue("x"));
+                final int y = Integer.parseInt(attributes.getValue("y"));
+                final int width = Integer
+                        .parseInt(attributes.getValue("width"));
+                final int height = Integer.parseInt(attributes
+                        .getValue("height"));
                 Color fillColor;
                 try {
                     fillColor = getAttributeAsColor(attributes, "fill");
-                } catch (PropertyException pe) {
-                    throw new IFException("Error parsing the fill attribute", pe);
+                } catch (final PropertyException pe) {
+                    throw new IFException("Error parsing the fill attribute",
+                            pe);
                 }
-                painter.fillRect(new Rectangle(x, y, width, height), fillColor);
+                Handler.this.painter.fillRect(
+                        new Rectangle(x, y, width, height), fillColor);
             }
 
         }
 
         private class LineHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                int x1 = Integer.parseInt(attributes.getValue("x1"));
-                int y1 = Integer.parseInt(attributes.getValue("y1"));
-                int x2 = Integer.parseInt(attributes.getValue("x2"));
-                int y2 = Integer.parseInt(attributes.getValue("y2"));
-                int width = Integer.parseInt(attributes.getValue("stroke-width"));
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final int x1 = Integer.parseInt(attributes.getValue("x1"));
+                final int y1 = Integer.parseInt(attributes.getValue("y1"));
+                final int x2 = Integer.parseInt(attributes.getValue("x2"));
+                final int y2 = Integer.parseInt(attributes.getValue("y2"));
+                final int width = Integer.parseInt(attributes
+                        .getValue("stroke-width"));
                 Color color;
                 try {
                     color = getAttributeAsColor(attributes, "color");
-                } catch (PropertyException pe) {
-                    throw new IFException("Error parsing the fill attribute", pe);
+                } catch (final PropertyException pe) {
+                    throw new IFException("Error parsing the fill attribute",
+                            pe);
                 }
-                RuleStyle style = RuleStyle.valueOf(attributes.getValue("style"));
-                painter.drawLine(new Point(x1, y1), new Point(x2, y2), width, color, style);
+                final RuleStyle style = RuleStyle.valueOf(attributes
+                        .getValue("style"));
+                Handler.this.painter.drawLine(new Point(x1, y1), new Point(x2,
+                        y2), width, color, style);
             }
 
         }
 
-        private static final String[] SIDES = new String[] {"before", "after", "start", "end"};
+        private static final String[] SIDES = new String[] { "before", "after",
+                "start", "end" };
 
         private class BorderRectHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                int x = Integer.parseInt(attributes.getValue("x"));
-                int y = Integer.parseInt(attributes.getValue("y"));
-                int width = Integer.parseInt(attributes.getValue("width"));
-                int height = Integer.parseInt(attributes.getValue("height"));
-                BorderProps[] borders = new BorderProps[4];
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                final int x = Integer.parseInt(attributes.getValue("x"));
+                final int y = Integer.parseInt(attributes.getValue("y"));
+                final int width = Integer
+                        .parseInt(attributes.getValue("width"));
+                final int height = Integer.parseInt(attributes
+                        .getValue("height"));
+                final BorderProps[] borders = new BorderProps[4];
                 for (int i = 0; i < 4; i++) {
-                    String b = attributes.getValue(SIDES[i]);
+                    final String b = attributes.getValue(SIDES[i]);
                     if (b != null) {
-                        borders[i] = BorderProps.valueOf(userAgent, b);
+                        borders[i] = BorderProps.valueOf(
+                                Handler.this.userAgent, b);
                     }
                 }
 
-                painter.drawBorderRect(new Rectangle(x, y, width, height),
-                        borders[0], borders[1], borders[2], borders[3]);
+                Handler.this.painter
+                        .drawBorderRect(new Rectangle(x, y, width, height),
+                                borders[0], borders[1], borders[2], borders[3]);
             }
 
         }
 
         private class ImageHandler extends AbstractElementHandler {
 
-            public void startElement(Attributes attributes) throws IFException {
-                inForeignObject = true;
+            @Override
+            public void startElement(final Attributes attributes)
+                    throws IFException {
+                Handler.this.inForeignObject = true;
             }
 
+            @Override
             public void endElement() throws IFException {
-                int x = Integer.parseInt(lastAttributes.getValue("x"));
-                int y = Integer.parseInt(lastAttributes.getValue("y"));
-                int width = Integer.parseInt(lastAttributes.getValue("width"));
-                int height = Integer.parseInt(lastAttributes.getValue("height"));
-                Map foreignAttributes = getForeignAttributes(lastAttributes);
+                final int x = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("x"));
+                final int y = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("y"));
+                final int width = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("width"));
+                final int height = Integer.parseInt(Handler.this.lastAttributes
+                        .getValue("height"));
+                final Map<QName, String> foreignAttributes = getForeignAttributes(Handler.this.lastAttributes);
                 establishForeignAttributes(foreignAttributes);
-                setStructurePointer(lastAttributes);
-                if (foreignObject != null) {
-                    painter.drawImage(foreignObject,
+                setStructurePointer(Handler.this.lastAttributes);
+                if (Handler.this.foreignObject != null) {
+                    Handler.this.painter.drawImage(Handler.this.foreignObject,
                             new Rectangle(x, y, width, height));
-                    foreignObject = null;
+                    Handler.this.foreignObject = null;
                 } else {
-                    String uri = lastAttributes.getValue(
-                            XLINK_HREF.getNamespaceURI(), XLINK_HREF.getLocalName());
+                    final String uri = Handler.this.lastAttributes.getValue(
+                            XLINK_HREF.getNamespaceURI(),
+                            XLINK_HREF.getLocalName());
                     if (uri == null) {
-                        throw new IFException("xlink:href is missing on image", null);
+                        throw new IFException("xlink:href is missing on image",
+                                null);
                     }
-                    painter.drawImage(uri, new Rectangle(x, y, width, height));
+                    Handler.this.painter.drawImage(uri, new Rectangle(x, y,
+                            width, height));
                 }
                 resetForeignAttributes();
                 resetStructurePointer();
-                inForeignObject = false;
+                Handler.this.inForeignObject = false;
             }
 
+            @Override
             public boolean ignoreCharacters() {
                 return false;
             }
         }
 
-
         // ====================================================================
 
         /**
-         * Handles objects created by "sub-parsers" that implement the ObjectSource interface.
-         * An example of object handled here are ExtensionAttachments.
-         * @param obj the Object to be handled.
-         * @throws SAXException if an error occurs while handling the extension object
+         * Handles objects created by "sub-parsers" that implement the
+         * ObjectSource interface. An example of object handled here are
+         * ExtensionAttachments.
+         *
+         * @param obj
+         *            the Object to be handled.
+         * @throws SAXException
+         *             if an error occurs while handling the extension object
          */
-        protected void handleExternallyGeneratedObject(Object obj) throws SAXException {
+        protected void handleExternallyGeneratedObject(final Object obj)
+                throws SAXException {
             try {
-                documentHandler.handleExtensionObject(obj);
-            } catch (IFException ife) {
+                this.documentHandler.handleExtensionObject(obj);
+            } catch (final IFException ife) {
                 handleIFException(ife);
             }
         }
 
-        private Color getAttributeAsColor(Attributes attributes, String name)
-                    throws PropertyException {
-            String s = attributes.getValue(name);
+        private Color getAttributeAsColor(final Attributes attributes,
+                final String name) throws PropertyException {
+            final String s = attributes.getValue(name);
             if (s == null) {
                 return null;
             } else {
-                return ColorUtil.parseColorString(userAgent, s);
+                return ColorUtil.parseColorString(this.userAgent, s);
             }
         }
 
-        private static Map getForeignAttributes(Attributes atts) {
-            Map foreignAttributes = null;
+        private static Map<QName, String> getForeignAttributes(
+                final Attributes atts) {
+            Map<QName, String> foreignAttributes = null;
             for (int i = 0, c = atts.getLength(); i < c; i++) {
-                String ns = atts.getURI(i);
+                final String ns = atts.getURI(i);
                 if (ns.length() > 0) {
                     if (handledNamespaces.contains(ns)) {
                         continue;
                     }
                     if (foreignAttributes == null) {
-                        foreignAttributes = new java.util.HashMap();
+                        foreignAttributes = new java.util.HashMap<QName, String>();
                     }
-                    QName qname = new QName(ns, atts.getQName(i));
+                    final QName qname = new QName(ns, atts.getQName(i));
                     foreignAttributes.put(qname, atts.getValue(i));
                 }
             }
             return foreignAttributes;
         }
 
-        private void setStructurePointer(Attributes attributes) {
-            String ptr = attributes.getValue("ptr");
+        private void setStructurePointer(final Attributes attributes) {
+            final String ptr = attributes.getValue("ptr");
             if (ptr != null && ptr.length() > 0) {
                 establishStructurePointer(ptr);
             }
         }
 
         /** {@inheritDoc} */
-        public void characters(char[] ch, int start, int length) throws SAXException {
-            if (delegate != null) {
-                delegate.characters(ch, start, length);
-            } else if (!ignoreCharacters) {
+        @Override
+        public void characters(final char[] ch, final int start,
+                final int length) throws SAXException {
+            if (this.delegate != null) {
+                this.delegate.characters(ch, start, length);
+            } else if (!this.ignoreCharacters) {
                 this.content.append(ch, start, length);
             }
         }

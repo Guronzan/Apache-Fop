@@ -34,26 +34,33 @@ public class IFUtil {
 
     private static String format(double value) {
         if (value == -0.0) {
-            //Don't allow negative zero because of testing
-            //See http://java.sun.com/docs/books/jls/third_edition/html/typesValues.html#4.2.3
+            // Don't allow negative zero because of testing
+            // See
+            // http://java.sun.com/docs/books/jls/third_edition/html/typesValues.html#4.2.3
             value = 0.0;
         }
         return DecimalFormatCache.getDecimalFormat(6).format(value);
     }
 
     /**
-     * Converts an {@link AffineTransform} instance to an SVG style transform method.
-     * @param transform the transformation matrix
-     * @param sb the StringBuffer to write the transform method to
-     * @return the StringBuffer passed to this method
+     * Converts an {@link AffineTransform} instance to an SVG style transform
+     * method.
+     * 
+     * @param transform
+     *            the transformation matrix
+     * @param sb
+     *            the StringBuilder to write the transform method to
+     * @return the StringBuilder passed to this method
      */
-    public static StringBuffer toString(AffineTransform transform, StringBuffer sb) {
+    public static StringBuilder toString(final AffineTransform transform,
+            final StringBuilder sb) {
         if (transform.isIdentity()) {
             return sb;
         }
-        double[] matrix = new double[6];
+        final double[] matrix = new double[6];
         transform.getMatrix(matrix);
-        if (matrix[0] == 1 && matrix[3] == 1 && matrix[1] == 0 && matrix[2] == 0) {
+        if (matrix[0] == 1 && matrix[3] == 1 && matrix[1] == 0
+                && matrix[2] == 0) {
             sb.append("translate(");
             sb.append(format(matrix[4]));
             if (matrix[5] != 0) {
@@ -73,12 +80,17 @@ public class IFUtil {
     }
 
     /**
-     * Converts an {@link AffineTransform} array to an SVG style transform method sequence.
-     * @param transforms the transformation matrix array
-     * @param sb the StringBuffer to write the transform method sequence to
-     * @return the StringBuffer passed to this method
+     * Converts an {@link AffineTransform} array to an SVG style transform
+     * method sequence.
+     * 
+     * @param transforms
+     *            the transformation matrix array
+     * @param sb
+     *            the StringBuilder to write the transform method sequence to
+     * @return the StringBuilder passed to this method
      */
-    public static StringBuffer toString(AffineTransform[] transforms, StringBuffer sb) {
+    public static StringBuilder toString(final AffineTransform[] transforms,
+            final StringBuilder sb) {
         for (int i = 0, c = transforms.length; i < c; i++) {
             if (i > 0) {
                 sb.append(' ');
@@ -89,33 +101,41 @@ public class IFUtil {
     }
 
     /**
-     * Converts an {@link AffineTransform} array to an SVG style transform method sequence.
-     * @param transforms the transformation matrix array
+     * Converts an {@link AffineTransform} array to an SVG style transform
+     * method sequence.
+     * 
+     * @param transforms
+     *            the transformation matrix array
      * @return the formatted array
      */
-    public static String toString(AffineTransform[] transforms) {
-        return toString(transforms, new StringBuffer()).toString();
+    public static String toString(final AffineTransform[] transforms) {
+        return toString(transforms, new StringBuilder()).toString();
     }
 
     /**
-     * Converts an {@link AffineTransform} instance to an SVG style transform method.
-     * @param transform the transformation matrix
+     * Converts an {@link AffineTransform} instance to an SVG style transform
+     * method.
+     * 
+     * @param transform
+     *            the transformation matrix
      * @return the formatted array
      */
-    public static String toString(AffineTransform transform) {
-        return toString(transform, new StringBuffer()).toString();
+    public static String toString(final AffineTransform transform) {
+        return toString(transform, new StringBuilder()).toString();
     }
 
     /**
      * Converts an array of integer coordinates into a space-separated string.
-     * @param coordinates the coordinates
+     * 
+     * @param coordinates
+     *            the coordinates
      * @return the space-separated array of coordinates
      */
-    public static String toString(int[] coordinates) {
+    public static String toString(final int[] coordinates) {
         if (coordinates == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0, c = coordinates.length; i < c; i++) {
             if (i > 0) {
                 sb.append(' ');
@@ -127,40 +147,48 @@ public class IFUtil {
 
     /**
      * Converts a rectangle into a space-separated string.
-     * @param rect the rectangle
+     * 
+     * @param rect
+     *            the rectangle
      * @return the space-separated array of coordinates
      */
-    public static String toString(Rectangle rect) {
+    public static String toString(final Rectangle rect) {
         if (rect == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append(rect.x).append(' ').append(rect.y).append(' ');
         sb.append(rect.width).append(' ').append(rect.height);
         return sb.toString();
     }
 
     /**
-     * Sets up the fonts on a document handler. If the document handler provides a configurator
-     * object the configuration from the {@link FopFactory} will be used. Otherwise,
-     * a default font configuration will be set up.
-     * @param documentHandler the document handler
-     * @param fontInfo the font info object (may be null)
-     * @throws FOPException if an error occurs while setting up the fonts
+     * Sets up the fonts on a document handler. If the document handler provides
+     * a configurator object the configuration from the {@link FopFactory} will
+     * be used. Otherwise, a default font configuration will be set up.
+     * 
+     * @param documentHandler
+     *            the document handler
+     * @param fontInfo
+     *            the font info object (may be null)
+     * @throws FOPException
+     *             if an error occurs while setting up the fonts
      */
-    public static void setupFonts(IFDocumentHandler documentHandler, FontInfo fontInfo)
-                throws FOPException {
+    public static void setupFonts(IFDocumentHandler documentHandler,
+            FontInfo fontInfo) throws FOPException {
         if (fontInfo == null) {
             fontInfo = new FontInfo();
         }
         if (documentHandler instanceof IFSerializer) {
-            IFSerializer serializer = (IFSerializer)documentHandler;
+            final IFSerializer serializer = (IFSerializer) documentHandler;
             if (serializer.getMimickedDocumentHandler() != null) {
-                //Use the mimicked document handler's configurator to set up fonts
+                // Use the mimicked document handler's configurator to set up
+                // fonts
                 documentHandler = serializer.getMimickedDocumentHandler();
             }
         }
-        IFDocumentHandlerConfigurator configurator = documentHandler.getConfigurator();
+        final IFDocumentHandlerConfigurator configurator = documentHandler
+                .getConfigurator();
         if (configurator != null) {
             configurator.setupFontInfo(documentHandler, fontInfo);
         } else {
@@ -169,26 +197,35 @@ public class IFUtil {
     }
 
     /**
-     * Sets up the fonts on a document handler. If the document handler provides a configurator
-     * object the configuration from the {@link FopFactory} will be used. Otherwise,
-     * a default font configuration will be set up.
-     * @param documentHandler the document handler
-     * @throws FOPException if an error occurs while setting up the fonts
+     * Sets up the fonts on a document handler. If the document handler provides
+     * a configurator object the configuration from the {@link FopFactory} will
+     * be used. Otherwise, a default font configuration will be set up.
+     * 
+     * @param documentHandler
+     *            the document handler
+     * @throws FOPException
+     *             if an error occurs while setting up the fonts
      */
-    public static void setupFonts(IFDocumentHandler documentHandler) throws FOPException {
+    public static void setupFonts(final IFDocumentHandler documentHandler)
+            throws FOPException {
         setupFonts(documentHandler, null);
     }
 
     /**
-     * Returns the MIME type of the output format that the given document handler is supposed to
-     * handle. If the document handler is an {@link IFSerializer} it returns the MIME type of the
-     * document handler it is mimicking.
-     * @param documentHandler the document handler
+     * Returns the MIME type of the output format that the given document
+     * handler is supposed to handle. If the document handler is an
+     * {@link IFSerializer} it returns the MIME type of the document handler it
+     * is mimicking.
+     * 
+     * @param documentHandler
+     *            the document handler
      * @return the effective MIME type
      */
-    public static String getEffectiveMIMEType(IFDocumentHandler documentHandler) {
+    public static String getEffectiveMIMEType(
+            final IFDocumentHandler documentHandler) {
         if (documentHandler instanceof IFSerializer) {
-            IFDocumentHandler mimic = ((IFSerializer)documentHandler).getMimickedDocumentHandler();
+            final IFDocumentHandler mimic = ((IFSerializer) documentHandler)
+                    .getMimickedDocumentHandler();
             if (mimic != null) {
                 return mimic.getMimeType();
             }

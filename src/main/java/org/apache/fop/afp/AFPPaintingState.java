@@ -21,25 +21,22 @@ package org.apache.fop.afp;
 
 import java.awt.Point;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.java2d.color.ColorConverter;
-import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.afp.fonts.AFPPageFonts;
 import org.apache.fop.util.AbstractPaintingState;
+import org.apache.xmlgraphics.java2d.color.ColorConverter;
+import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
 
 /**
  * This keeps information about the current painting state when writing to an
  * AFP datastream.
  */
-public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState implements
-        Cloneable {
+@Slf4j
+public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState
+implements Cloneable {
 
     private static final long serialVersionUID = 8206711712452344473L;
-
-    private static Log log = LogFactory.getLog("org.apache.xmlgraphics.afp");
 
     /** the portrait rotation */
     private int portraitRotation = 0;
@@ -54,7 +51,8 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     private float ditheringQuality;
 
     /** color image handler */
-    private ColorConverter colorConverter = GrayScaleColorConverter.getInstance();
+    private ColorConverter colorConverter = GrayScaleColorConverter
+            .getInstance();
 
     /**
      * true if certain image formats may be embedded unchanged in their native
@@ -80,7 +78,8 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     // private int orientation = 0;
 
     /** a unit converter */
-    private final transient AFPUnitConverter unitConv = new AFPUnitConverter(this);
+    private final transient AFPUnitConverter unitConv = new AFPUnitConverter(
+            this);
 
     /**
      * Sets the rotation to be used for portrait pages, valid values are 0
@@ -89,12 +88,14 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param rotation
      *            The rotation in degrees.
      */
-    public void setPortraitRotation(int rotation) {
-        if (rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270) {
-            portraitRotation = rotation;
+    public void setPortraitRotation(final int rotation) {
+        if (rotation == 0 || rotation == 90 || rotation == 180
+                || rotation == 270) {
+            this.portraitRotation = rotation;
         } else {
-            throw new IllegalArgumentException("The portrait rotation must be one"
-                    + " of the values 0, 90, 180, 270");
+            throw new IllegalArgumentException(
+                    "The portrait rotation must be one"
+                            + " of the values 0, 90, 180, 270");
 
         }
     }
@@ -115,12 +116,14 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param rotation
      *            The rotation in degrees.
      */
-    public void setLandscapeRotation(int rotation) {
-        if (rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270) {
-            landscapeRotation = rotation;
+    public void setLandscapeRotation(final int rotation) {
+        if (rotation == 0 || rotation == 90 || rotation == 180
+                || rotation == 270) {
+            this.landscapeRotation = rotation;
         } else {
-            throw new IllegalArgumentException("The landscape rotation must be one"
-                    + " of the values 0, 90, 180, 270");
+            throw new IllegalArgumentException(
+                    "The landscape rotation must be one"
+                            + " of the values 0, 90, 180, 270");
         }
     }
 
@@ -139,7 +142,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param bitsPerPixel
      *            number of bits per pixel
      */
-    public void setBitsPerPixel(int bitsPerPixel) {
+    public void setBitsPerPixel(final int bitsPerPixel) {
         switch (bitsPerPixel) {
         case 1:
         case 4:
@@ -168,7 +171,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param colorImages
      *            color image output
      */
-    public void setColorImages(boolean colorImages) {
+    public void setColorImages(final boolean colorImages) {
         this.colorImages = colorImages;
 
         if (colorImages) {
@@ -201,7 +204,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param nativeImagesSupported
      *            true if images are natively supported in this AFP environment
      */
-    public void setNativeImagesSupported(boolean nativeImagesSupported) {
+    public void setNativeImagesSupported(final boolean nativeImagesSupported) {
         this.nativeImagesSupported = nativeImagesSupported;
     }
 
@@ -222,7 +225,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param value
      *            true to enabled CMYK images
      */
-    public void setCMYKImagesSupported(boolean value) {
+    public void setCMYKImagesSupported(final boolean value) {
         this.cmykImagesSupported = value;
     }
 
@@ -236,7 +239,9 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     }
 
     /**
-     * Gets the dithering quality setting to use when converting images to monochrome images.
+     * Gets the dithering quality setting to use when converting images to
+     * monochrome images.
+     *
      * @return the dithering quality (a value between 0.0f and 1.0f)
      */
     public float getDitheringQuality() {
@@ -244,9 +249,12 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     }
 
     /**
-     * Sets the dithering quality setting to use when converting images to monochrome images.
-     * @param quality Defines the desired quality level for the conversion.
-     *                  Valid values: a value between 0.0f (fastest) and 1.0f (best)
+     * Sets the dithering quality setting to use when converting images to
+     * monochrome images.
+     *
+     * @param quality
+     *            Defines the desired quality level for the conversion. Valid
+     *            values: a value between 0.0f (fastest) and 1.0f (best)
      */
     public void setDitheringQuality(float quality) {
         quality = Math.max(quality, 0.0f);
@@ -260,7 +268,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param resolution
      *            the output resolution (dpi)
      */
-    public void setResolution(int resolution) {
+    public void setResolution(final int resolution) {
         if (log.isDebugEnabled()) {
             log.debug("renderer-resolution set to: " + resolution + "dpi");
         }
@@ -277,11 +285,13 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AbstractData instantiateData() {
         return new AFPData();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AbstractPaintingState instantiate() {
         return new AFPPaintingState();
     }
@@ -301,7 +311,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @return the current page fonts
      */
     public AFPPageFonts getPageFonts() {
-        return pagePaintingState.getFonts();
+        return this.pagePaintingState.getFonts();
     }
 
     /**
@@ -310,8 +320,8 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param pageWidth
      *            the page width
      */
-    public void setPageWidth(int pageWidth) {
-        pagePaintingState.setWidth(pageWidth);
+    public void setPageWidth(final int pageWidth) {
+        this.pagePaintingState.setWidth(pageWidth);
     }
 
     /**
@@ -320,7 +330,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @return the page width
      */
     public int getPageWidth() {
-        return pagePaintingState.getWidth();
+        return this.pagePaintingState.getWidth();
     }
 
     /**
@@ -329,8 +339,8 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param pageHeight
      *            the page height
      */
-    public void setPageHeight(int pageHeight) {
-        pagePaintingState.setHeight(pageHeight);
+    public void setPageHeight(final int pageHeight) {
+        this.pagePaintingState.setHeight(pageHeight);
     }
 
     /**
@@ -339,7 +349,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @return the page height
      */
     public int getPageHeight() {
-        return pagePaintingState.getHeight();
+        return this.pagePaintingState.getHeight();
     }
 
     /**
@@ -348,7 +358,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @return the page rotation
      */
     public int getPageRotation() {
-        return pagePaintingState.getOrientation();
+        return this.pagePaintingState.getOrientation();
     }
 
     /**
@@ -357,7 +367,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      * @param uri
      *            the uri of the current image
      */
-    public void setImageUri(String uri) {
+    public void setImageUri(final String uri) {
         ((AFPData) getData()).imageUri = uri;
     }
 
@@ -398,9 +408,9 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
      *            the Y-coordinate
      * @return a point on the current page
      */
-    public Point getPoint(int x, int y) {
-        Point p = new Point();
-        int rotation = getRotation();
+    public Point getPoint(final int x, final int y) {
+        final Point p = new Point();
+        final int rotation = getRotation();
         switch (rotation) {
         case 90:
             p.x = y;
@@ -423,9 +433,11 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() {
-        AFPPaintingState paintingState = (AFPPaintingState) super.clone();
-        paintingState.pagePaintingState = (AFPPagePaintingState) this.pagePaintingState.clone();
+        final AFPPaintingState paintingState = (AFPPaintingState) super.clone();
+        paintingState.pagePaintingState = (AFPPagePaintingState) this.pagePaintingState
+                .clone();
         paintingState.portraitRotation = this.portraitRotation;
         paintingState.landscapeRotation = this.landscapeRotation;
         paintingState.bitsPerPixel = this.bitsPerPixel;
@@ -436,11 +448,14 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "AFPPaintingState{" + "portraitRotation=" + portraitRotation
-                + ", landscapeRotation=" + landscapeRotation + ", colorImages=" + colorImages
-                + ", bitsPerPixel=" + bitsPerPixel + ", resolution=" + resolution + ", pageState="
-                + pagePaintingState + super.toString() + "}";
+        return "AFPPaintingState{" + "portraitRotation="
+                + this.portraitRotation + ", landscapeRotation="
+                + this.landscapeRotation + ", colorImages=" + this.colorImages
+                + ", bitsPerPixel=" + this.bitsPerPixel + ", resolution="
+                + this.resolution + ", pageState=" + this.pagePaintingState
+                + super.toString() + "}";
     }
 
     /**
@@ -468,7 +483,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @return the page width
          */
         protected int getWidth() {
-            return width;
+            return this.width;
         }
 
         /**
@@ -477,7 +492,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @param width
          *            the page width
          */
-        protected void setWidth(int width) {
+        protected void setWidth(final int width) {
             this.width = width;
         }
 
@@ -487,7 +502,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @return the page height
          */
         protected int getHeight() {
-            return height;
+            return this.height;
         }
 
         /**
@@ -496,7 +511,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @param height
          *            the page height
          */
-        protected void setHeight(int height) {
+        protected void setHeight(final int height) {
             this.height = height;
         }
 
@@ -506,7 +521,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @return the page fonts
          */
         protected AFPPageFonts getFonts() {
-            return fonts;
+            return this.fonts;
         }
 
         /**
@@ -515,7 +530,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @param fonts
          *            the current page fonts
          */
-        protected void setFonts(AFPPageFonts fonts) {
+        protected void setFonts(final AFPPageFonts fonts) {
             this.fonts = fonts;
         }
 
@@ -525,7 +540,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @return increment and return the current page font count
          */
         protected int incrementFontCount() {
-            return ++fontCount;
+            return ++this.fontCount;
         }
 
         /**
@@ -534,7 +549,7 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @return the current page orientation
          */
         protected int getOrientation() {
-            return orientation;
+            return this.orientation;
         }
 
         /**
@@ -543,13 +558,14 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
          * @param orientation
          *            the current page orientation
          */
-        protected void setOrientation(int orientation) {
+        protected void setOrientation(final int orientation) {
             this.orientation = orientation;
         }
 
         /** {@inheritDoc} */
+        @Override
         public Object clone() {
-            AFPPagePaintingState state = new AFPPagePaintingState();
+            final AFPPagePaintingState state = new AFPPagePaintingState();
             state.width = this.width;
             state.height = this.height;
             state.orientation = this.orientation;
@@ -559,16 +575,20 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            return "AFPPagePaintingState{width=" + width + ", height=" + height + ", orientation="
-                    + orientation + ", fonts=" + fonts + ", fontCount=" + fontCount + "}";
+            return "AFPPagePaintingState{width=" + this.width + ", height="
+                    + this.height + ", orientation=" + this.orientation
+                    + ", fonts=" + this.fonts + ", fontCount=" + this.fontCount
+                    + "}";
         }
     }
 
     /**
      * Block level state data
      */
-    private class AFPData extends org.apache.fop.util.AbstractPaintingState.AbstractData {
+    private class AFPData extends
+    org.apache.fop.util.AbstractPaintingState.AbstractData {
         private static final long serialVersionUID = -1789481244175275686L;
 
         /** The current fill status */
@@ -577,20 +597,23 @@ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState 
         private String imageUri = null;
 
         /** {@inheritDoc} */
+        @Override
         public Object clone() {
-            AFPData obj = (AFPData) super.clone();
+            final AFPData obj = (AFPData) super.clone();
             obj.filled = this.filled;
             obj.imageUri = this.imageUri;
             return obj;
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
-            return "AFPData{" + super.toString() + ", filled=" + filled + ", imageUri=" + imageUri
-                    + "}";
+            return "AFPData{" + super.toString() + ", filled=" + this.filled
+                    + ", imageUri=" + this.imageUri + "}";
         }
 
         /** {@inheritDoc} */
+        @Override
         protected AbstractData instantiate() {
             return new AFPData();
         }

@@ -26,58 +26,65 @@ import java.text.AttributedCharacterIterator;
 import java.util.Iterator;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.batik.bridge.SVGFontFamily;
 import org.apache.batik.gvt.font.GVTFont;
 import org.apache.batik.gvt.font.GVTFontFamily;
 import org.apache.batik.gvt.renderer.StrokingTextPainter;
 import org.apache.batik.gvt.text.GVTAttributedCharacterIterator;
 import org.apache.batik.gvt.text.TextSpanLayout;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontTriplet;
 import org.apache.fop.util.CharUtilities;
 
 /**
- * Abstract base class for text painters that use specialized text commands native to an output
- * format to render text.
+ * Abstract base class for text painters that use specialized text commands
+ * native to an output format to render text.
  */
+@Slf4j
 public abstract class NativeTextPainter extends StrokingTextPainter {
-
-    /** the logger for this class */
-    protected Log log = LogFactory.getLog(NativeTextPainter.class);
 
     /** the font collection */
     protected final FontInfo fontInfo;
 
     /**
      * Creates a new instance.
-     * @param fontInfo the font collection
+     *
+     * @param fontInfo
+     *            the font collection
      */
-    public NativeTextPainter(FontInfo fontInfo) {
+    public NativeTextPainter(final FontInfo fontInfo) {
         this.fontInfo = fontInfo;
     }
 
     /**
-     * Indicates whether the given {@link Graphics2D} instance if compatible with this text painter
-     * implementation.
-     * @param g2d the instance to check
+     * Indicates whether the given {@link Graphics2D} instance if compatible
+     * with this text painter implementation.
+     *
+     * @param g2d
+     *            the instance to check
      * @return true if the instance is compatible.
      */
-    protected abstract boolean isSupported(Graphics2D g2d);
+    protected abstract boolean isSupported(final Graphics2D g2d);
 
     /**
      * Paints a single text run.
-     * @param textRun the text run
-     * @param g2d the target Graphics2D instance
-     * @throws IOException if an I/O error occurs while rendering the text
+     *
+     * @param textRun
+     *            the text run
+     * @param g2d
+     *            the target Graphics2D instance
+     * @throws IOException
+     *             if an I/O error occurs while rendering the text
      */
-    protected abstract void paintTextRun(TextRun textRun, Graphics2D g2d) throws IOException;
+    protected abstract void paintTextRun(final TextRun textRun,
+            final Graphics2D g2d) throws IOException;
 
     /** {@inheritDoc} */
-    protected void paintTextRuns(List textRuns, Graphics2D g2d) {
+    @Override
+    protected void paintTextRuns(final List textRuns, final Graphics2D g2d) {
         if (log.isTraceEnabled()) {
             log.trace("paintTextRuns: count = " + textRuns.size());
         }
@@ -86,11 +93,11 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
             return;
         }
         for (int i = 0; i < textRuns.size(); i++) {
-            TextRun textRun = (TextRun)textRuns.get(i);
+            final TextRun textRun = (TextRun) textRuns.get(i);
             try {
                 paintTextRun(textRun, g2d);
-            } catch (IOException ioe) {
-                //No other possibility than to use a RuntimeException
+            } catch (final IOException ioe) {
+                // No other possibility than to use a RuntimeException
                 throw new RuntimeException(ioe);
             }
         }
@@ -98,65 +105,74 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
 
     /**
      * Finds an array of suitable fonts for a given AttributedCharacterIterator.
-     * @param aci the character iterator
+     *
+     * @param aci
+     *            the character iterator
      * @return the array of fonts
      */
-    protected Font[] findFonts(AttributedCharacterIterator aci) {
-        List fonts = new java.util.ArrayList();
-        List gvtFonts = (List) aci.getAttribute(
-                GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
-        Float posture = (Float) aci.getAttribute(TextAttribute.POSTURE);
-        Float taWeight = (Float) aci.getAttribute(TextAttribute.WEIGHT);
-        Float fontSize = (Float) aci.getAttribute(TextAttribute.SIZE);
+    protected Font[] findFonts(final AttributedCharacterIterator aci) {
+        final List fonts = new java.util.ArrayList();
+        final List gvtFonts = (List) aci
+                .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
+        final Float posture = (Float) aci.getAttribute(TextAttribute.POSTURE);
+        final Float taWeight = (Float) aci.getAttribute(TextAttribute.WEIGHT);
+        final Float fontSize = (Float) aci.getAttribute(TextAttribute.SIZE);
 
-        String style = ((posture != null) && (posture.floatValue() > 0.0))
-                       ? Font.STYLE_ITALIC : Font.STYLE_NORMAL;
-        int weight = ((taWeight != null)
-                       &&  (taWeight.floatValue() > 1.0)) ? Font.WEIGHT_BOLD
-                       : Font.WEIGHT_NORMAL;
+        final String style = posture != null && posture.floatValue() > 0.0 ? Font.STYLE_ITALIC
+                : Font.STYLE_NORMAL;
+        final int weight = taWeight != null && taWeight.floatValue() > 1.0 ? Font.WEIGHT_BOLD
+                : Font.WEIGHT_NORMAL;
 
         String firstFontFamily = null;
 
-        //GVT_FONT can sometimes be different from the fonts in GVT_FONT_FAMILIES
-        //or GVT_FONT_FAMILIES can even be empty and only GVT_FONT is set
-        /* The following code section is not available until Batik 1.7 is released. */
-        GVTFont gvtFont = (GVTFont)aci.getAttribute(
-                GVTAttributedCharacterIterator.TextAttribute.GVT_FONT);
+        // GVT_FONT can sometimes be different from the fonts in
+        // GVT_FONT_FAMILIES
+        // or GVT_FONT_FAMILIES can even be empty and only GVT_FONT is set
+        /*
+         * The following code section is not available until Batik 1.7 is
+         * released.
+         */
+        final GVTFont gvtFont = (GVTFont) aci
+                .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT);
         if (gvtFont != null) {
             try {
-                String gvtFontFamily = gvtFont.getFamilyName(); //Not available in Batik 1.6!
-                if (log.isDebugEnabled()) {
-                    log.debug("Matching font family: " + gvtFontFamily);
-                }
-                if (fontInfo.hasFont(gvtFontFamily, style, weight)) {
-                    FontTriplet triplet = fontInfo.fontLookup(gvtFontFamily, style,
-                                                       weight);
-                    int fsize = (int)(fontSize.floatValue() * 1000);
-                    fonts.add(fontInfo.getFontInstance(triplet, fsize));
-                }
-                firstFontFamily = gvtFontFamily;
-            } catch (Exception e) {
-                //Most likely NoSuchMethodError here when using Batik 1.6
-                //Just skip this section in this case
+                // final String gvtFontFamily = gvtFont.getFamilyName(); // Not
+                // // available
+                // // in
+                // // Batik
+                // // 1.6!
+                // if (log.isDebugEnabled()) {
+                // log.debug("Matching font family: " + gvtFontFamily);
+                // }
+                // if (this.fontInfo.hasFont(gvtFontFamily, style, weight)) {
+                // final FontTriplet triplet = this.fontInfo.fontLookup(
+                // gvtFontFamily, style, weight);
+                // final int fsize = (int) (fontSize.floatValue() * 1000);
+                // fonts.add(this.fontInfo.getFontInstance(triplet, fsize));
+                // }
+                // firstFontFamily = gvtFontFamily;
+            } catch (final Exception e) {
+                // Most likely NoSuchMethodError here when using Batik 1.6
+                // Just skip this section in this case
             }
         }
 
         if (gvtFonts != null) {
-            Iterator i = gvtFonts.iterator();
+            final Iterator i = gvtFonts.iterator();
             while (i.hasNext()) {
-                GVTFontFamily fam = (GVTFontFamily) i.next();
+                final GVTFontFamily fam = (GVTFontFamily) i.next();
                 if (fam instanceof SVGFontFamily) {
-                    return null; //Let Batik paint this text!
+                    return null; // Let Batik paint this text!
                 }
-                String fontFamily = fam.getFamilyName();
+                final String fontFamily = fam.getFamilyName();
                 if (log.isDebugEnabled()) {
                     log.debug("Matching font family: " + fontFamily);
                 }
-                if (fontInfo.hasFont(fontFamily, style, weight)) {
-                    FontTriplet triplet = fontInfo.fontLookup(fontFamily, style,
-                                                       weight);
-                    int fsize = (int)(fontSize.floatValue() * 1000);
-                    fonts.add(fontInfo.getFontInstance(triplet, fsize));
+                if (this.fontInfo.hasFont(fontFamily, style, weight)) {
+                    final FontTriplet triplet = this.fontInfo.fontLookup(
+                            fontFamily, style, weight);
+                    final int fsize = (int) (fontSize.floatValue() * 1000);
+                    fonts.add(this.fontInfo.getFontInstance(triplet, fsize));
                 }
                 if (firstFontFamily == null) {
                     firstFontFamily = fontFamily;
@@ -165,24 +181,29 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
         }
         if (fonts.size() == 0) {
             if (firstFontFamily == null) {
-                //This will probably never happen. Just to be on the safe side.
+                // This will probably never happen. Just to be on the safe side.
                 firstFontFamily = "any";
             }
-            //lookup with fallback possibility (incl. substitution notification)
-            FontTriplet triplet = fontInfo.fontLookup(firstFontFamily, style, weight);
-            int fsize = (int)(fontSize.floatValue() * 1000);
-            fonts.add(fontInfo.getFontInstance(triplet, fsize));
+            // lookup with fallback possibility (incl. substitution
+            // notification)
+            final FontTriplet triplet = this.fontInfo.fontLookup(
+                    firstFontFamily, style, weight);
+            final int fsize = (int) (fontSize.floatValue() * 1000);
+            fonts.add(this.fontInfo.getFontInstance(triplet, fsize));
         }
-        return (Font[])fonts.toArray(new Font[fonts.size()]);
+        return (Font[]) fonts.toArray(new Font[fonts.size()]);
     }
 
     /**
      * Collects all characters from an {@link AttributedCharacterIterator}.
-     * @param runaci the character iterator
+     *
+     * @param runaci
+     *            the character iterator
      * @return the characters
      */
-    protected CharSequence collectCharacters(AttributedCharacterIterator runaci) {
-        StringBuffer chars = new StringBuffer();
+    protected CharSequence collectCharacters(
+            final AttributedCharacterIterator runaci) {
+        final StringBuilder chars = new StringBuilder();
         for (runaci.first(); runaci.getIndex() < runaci.getEndIndex();) {
             chars.append(runaci.current());
             runaci.next();
@@ -190,23 +211,25 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
         return chars;
     }
 
-    protected final void logTextRun(AttributedCharacterIterator runaci, TextSpanLayout layout) {
+    protected final void logTextRun(final AttributedCharacterIterator runaci,
+            final TextSpanLayout layout) {
         if (log.isTraceEnabled()) {
-            int charCount = runaci.getEndIndex() - runaci.getBeginIndex();
+            final int charCount = runaci.getEndIndex() - runaci.getBeginIndex();
             log.trace("================================================");
             log.trace("New text run:");
             log.trace("char count: " + charCount);
-            log.trace("range: "
-                    + runaci.getBeginIndex() + " - " + runaci.getEndIndex());
-            log.trace("glyph count: " + layout.getGlyphCount()); //=getNumGlyphs()
+            log.trace("range: " + runaci.getBeginIndex() + " - "
+                    + runaci.getEndIndex());
+            log.trace("glyph count: " + layout.getGlyphCount()); // =getNumGlyphs()
         }
     }
 
-    protected final void logCharacter(char ch, TextSpanLayout layout, int index,
-            boolean visibleChar) {
+    protected final void logCharacter(final char ch,
+            final TextSpanLayout layout, final int index,
+            final boolean visibleChar) {
         if (log.isTraceEnabled()) {
-            log.trace("glyph " + index
-                    + " -> " + layout.getGlyphIndex(index) + " => " + ch);
+            log.trace("glyph " + index + " -> " + layout.getGlyphIndex(index)
+                    + " => " + ch);
             if (CharUtilities.isAnySpace(ch) && ch != 32) {
                 log.trace("Space found: " + Integer.toHexString(ch));
             } else if (ch == CharUtilities.ZERO_WIDTH_JOINER) {
@@ -219,6 +242,5 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
             }
         }
     }
-
 
 }

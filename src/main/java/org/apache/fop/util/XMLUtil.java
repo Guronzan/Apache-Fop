@@ -34,14 +34,18 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a boolean value.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
-     * @param defaultValue the default value if the attribute is not specified
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
+     * @param defaultValue
+     *            the default value if the attribute is not specified
      * @return the attribute value as a boolean
      */
-    public static boolean getAttributeAsBoolean(Attributes attributes, String name,
-            boolean defaultValue) {
-        String s = attributes.getValue(name);
+    public static boolean getAttributeAsBoolean(final Attributes attributes,
+            final String name, final boolean defaultValue) {
+        final String s = attributes.getValue(name);
         if (s == null) {
             return defaultValue;
         } else {
@@ -51,14 +55,18 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a int value.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
-     * @param defaultValue the default value if the attribute is not specified
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
+     * @param defaultValue
+     *            the default value if the attribute is not specified
      * @return the attribute value as an int
      */
-    public static int getAttributeAsInt(Attributes attributes, String name,
-            int defaultValue) {
-        String s = attributes.getValue(name);
+    public static int getAttributeAsInt(final Attributes attributes,
+            final String name, final int defaultValue) {
+        final String s = attributes.getValue(name);
         if (s == null) {
             return defaultValue;
         } else {
@@ -68,13 +76,18 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a int value.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
      * @return the attribute value as an int
-     * @throws SAXException if the attribute is missing
+     * @throws SAXException
+     *             if the attribute is missing
      */
-    public static int getAttributeAsInt(Attributes attributes, String name) throws SAXException {
-        String s = attributes.getValue(name);
+    public static int getAttributeAsInt(final Attributes attributes,
+            final String name) throws SAXException {
+        final String s = attributes.getValue(name);
         if (s == null) {
             throw new SAXException("Attribute '" + name + "' is missing");
         } else {
@@ -84,12 +97,17 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a Integer value.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
-     * @return the attribute value as an Integer or null if the attribute is missing
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
+     * @return the attribute value as an Integer or null if the attribute is
+     *         missing
      */
-    public static Integer getAttributeAsInteger(Attributes attributes, String name) {
-        String s = attributes.getValue(name);
+    public static Integer getAttributeAsInteger(final Attributes attributes,
+            final String name) {
+        final String s = attributes.getValue(name);
         if (s == null) {
             return null;
         } else {
@@ -98,49 +116,64 @@ public class XMLUtil implements XMLConstants {
     }
 
     /**
-     * Returns an attribute value as a Rectangle2D value. The string value is expected as 4
-     * double-precision numbers separated by whitespace.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
+     * Returns an attribute value as a Rectangle2D value. The string value is
+     * expected as 4 double-precision numbers separated by whitespace.
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
      * @return the attribute value as an Rectangle2D
      */
-    public static Rectangle2D getAttributeAsRectangle2D(Attributes attributes, String name) {
-        String s = attributes.getValue(name).trim();
-        double[] values = ConversionUtils.toDoubleArray(s, "\\s");
+    public static Rectangle2D getAttributeAsRectangle2D(
+            final Attributes attributes, final String name) {
+        final String s = attributes.getValue(name).trim();
+        final double[] values = ConversionUtils.toDoubleArray(s, "\\s");
         if (values.length != 4) {
-            throw new IllegalArgumentException("Rectangle must consist of 4 double values!");
+            throw new IllegalArgumentException(
+                    "Rectangle must consist of 4 double values!");
         }
-        return new Rectangle2D.Double(values[0], values[1], values[2], values[3]);
+        return new Rectangle2D.Double(values[0], values[1], values[2],
+                values[3]);
     }
 
     /**
-     * Returns an attribute value as a Rectangle value. The string value is expected as 4
-     * integer numbers separated by whitespace.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
+     * Returns an attribute value as a Rectangle value. The string value is
+     * expected as 4 integer numbers separated by whitespace.
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
      * @return the attribute value as an Rectangle
      */
-    public static Rectangle getAttributeAsRectangle(Attributes attributes, String name) {
-        String s = attributes.getValue(name);
+    public static Rectangle getAttributeAsRectangle(
+            final Attributes attributes, final String name) {
+        final String s = attributes.getValue(name);
         if (s == null) {
             return null;
         }
-        int[] values = ConversionUtils.toIntArray(s.trim(), "\\s");
+        final int[] values = ConversionUtils.toIntArray(s.trim(), "\\s");
         if (values.length != 4) {
-            throw new IllegalArgumentException("Rectangle must consist of 4 int values!");
+            throw new IllegalArgumentException(
+                    "Rectangle must consist of 4 int values!");
         }
         return new Rectangle(values[0], values[1], values[2], values[3]);
     }
 
     /**
-     * Returns an attribute value as a integer array. The string value is expected as 4
-     * integer numbers separated by whitespace.
-     * @param attributes the Attributes object
-     * @param name the name of the attribute
+     * Returns an attribute value as a integer array. The string value is
+     * expected as 4 integer numbers separated by whitespace.
+     * 
+     * @param attributes
+     *            the Attributes object
+     * @param name
+     *            the name of the attribute
      * @return the attribute value as an int array
      */
-    public static int[] getAttributeAsIntArray(Attributes attributes, String name) {
-        String s = attributes.getValue(name);
+    public static int[] getAttributeAsIntArray(final Attributes attributes,
+            final String name) {
+        final String s = attributes.getValue(name);
         if (s == null) {
             return null;
         } else {
@@ -150,37 +183,51 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Adds an attribute to a given {@link AttributesImpl} instance.
-     * @param atts the attributes collection
-     * @param attribute the attribute to add
-     * @param value the attribute's CDATA value
+     * 
+     * @param atts
+     *            the attributes collection
+     * @param attribute
+     *            the attribute to add
+     * @param value
+     *            the attribute's CDATA value
      */
-    public static void addAttribute(AttributesImpl atts,
-            org.apache.xmlgraphics.util.QName attribute, String value) {
+    public static void addAttribute(final AttributesImpl atts,
+            final org.apache.xmlgraphics.util.QName attribute,
+            final String value) {
         atts.addAttribute(attribute.getNamespaceURI(),
-                attribute.getLocalName(), attribute.getQName(), XMLUtil.CDATA, value);
+                attribute.getLocalName(), attribute.getQName(),
+                XMLConstants.CDATA, value);
     }
 
     /**
-     * Adds an attribute to a given {@link AttributesImpl} instance. The attribute will be
-     * added in the default namespace.
-     * @param atts the attributes collection
-     * @param localName the local name of the attribute
-     * @param value the attribute's CDATA value
+     * Adds an attribute to a given {@link AttributesImpl} instance. The
+     * attribute will be added in the default namespace.
+     * 
+     * @param atts
+     *            the attributes collection
+     * @param localName
+     *            the local name of the attribute
+     * @param value
+     *            the attribute's CDATA value
      */
-    public static void addAttribute(AttributesImpl atts, String localName, String value) {
-        atts.addAttribute("", localName, localName, XMLUtil.CDATA, value);
+    public static void addAttribute(final AttributesImpl atts,
+            final String localName, final String value) {
+        atts.addAttribute("", localName, localName, XMLConstants.CDATA, value);
     }
 
     /**
-     * Converts a {@link Locale} instance to an RFC 3066 compliant language identifier.
-     * @param language the language
+     * Converts a {@link Locale} instance to an RFC 3066 compliant language
+     * identifier.
+     * 
+     * @param language
+     *            the language
      * @return the formatted language identifier
      */
-    public static String toRFC3066(Locale language) {
+    public static String toRFC3066(final Locale language) {
         if (language == null || language.getLanguage().length() == 0) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append(language.getLanguage());
         if (language.getCountry().length() > 0) {
             sb.append('-');
@@ -190,15 +237,18 @@ public class XMLUtil implements XMLConstants {
     }
 
     /**
-     * Converts an RFC 3066 compliant language identifier to a {@link Locale} instance.
-     * @param lang the language string
+     * Converts an RFC 3066 compliant language identifier to a {@link Locale}
+     * instance.
+     * 
+     * @param lang
+     *            the language string
      * @return the converted locale instance
      */
-    public static Locale convertRFC3066ToLocale(String lang) {
+    public static Locale convertRFC3066ToLocale(final String lang) {
         if (lang == null || lang.length() == 0) {
             return null;
         }
-        String[] parts = lang.split("-");
+        final String[] parts = lang.split("-");
         if (parts.length == 1) {
             return new Locale(parts[0]);
         } else {

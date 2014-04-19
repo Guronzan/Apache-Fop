@@ -20,14 +20,12 @@
 package org.apache.fop.fo.flow.table;
 
 // XML
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_table-caption">
@@ -36,14 +34,14 @@ import org.apache.fop.fo.ValidationException;
 public class TableCaption extends FObj {
     // The value of properties relevant for fo:table-caption.
     // Unused but valid items, commented out for performance:
-    //     private CommonAural commonAural;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private LengthRangeProperty blockProgressionDimension;
-    //     private Length height;
-    //     private LengthRangeProperty inlineProgressionDimension;
-    //     private int intrusionDisplace;
-    //     private KeepProperty keepTogether;
-    //     private Length width;
+    // private CommonAural commonAural;
+    // private CommonRelativePosition commonRelativePosition;
+    // private LengthRangeProperty blockProgressionDimension;
+    // private Length height;
+    // private LengthRangeProperty inlineProgressionDimension;
+    // private int intrusionDisplace;
+    // private KeepProperty keepTogether;
+    // private Length width;
     // End of property values
 
     /** used for FO validation */
@@ -52,62 +50,68 @@ public class TableCaption extends FObj {
     static boolean notImplementedWarningGiven = false;
 
     /**
-     * Create a TableCaption instance with the given {@link FONode}
-     * as parent.
-     * @param parent {@link FONode} that is the parent of this object
+     * Create a TableCaption instance with the given {@link FONode} as parent.
+     *
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public TableCaption(FONode parent) {
+    public TableCaption(final FONode parent) {
         super(parent);
 
         if (!notImplementedWarningGiven) {
-            getFOValidationEventProducer().unimplementedFeature(this, getName(),
-                    "fo:table-caption", getLocator());
+            getFOValidationEventProducer().unimplementedFeature(this,
+                    getName(), "fo:table-caption", getLocator());
             notImplementedWarningGiven = true;
         }
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
-        if (firstChild == null) {
+        if (this.firstChild == null) {
             missingChildElementError("marker* (%block;)");
         }
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: marker* (%block;)
+     * {@inheritDoc} <br>
+     * XSL Content Model: marker* (%block;)
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-            throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("marker")) {
-                if (blockItemFound) {
-                   nodesOutOfOrderError(loc, "fo:marker", "(%block;)");
+                if (this.blockItemFound) {
+                    nodesOutOfOrderError(loc, "fo:marker", "(%block;)");
                 }
             } else if (!isBlockItem(nsURI, localName)) {
                 invalidChildError(loc, nsURI, localName);
             } else {
-                blockItemFound = true;
+                this.blockItemFound = true;
             }
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-caption";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_CAPTION}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_CAPTION;
     }
 }
-

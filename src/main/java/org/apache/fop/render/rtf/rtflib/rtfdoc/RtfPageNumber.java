@@ -26,18 +26,17 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
 /**
  * @author Christopher Scott, scottc@westinghouse.com
  */
 public class RtfPageNumber extends RtfContainer {
-    /* RtfText attributes: fields
-       must be carefull of group markings and star control
-       ie page field:
-           "{\field {\*\fldinst {PAGE}} {\fldrslt}}"
-    */
+    /*
+     * RtfText attributes: fields must be carefull of group markings and star
+     * control ie page field: "{\field {\*\fldinst {PAGE}} {\fldrslt}}"
+     */
 
     /** constant for field */
     public static final String RTF_FIELD = "field";
@@ -46,49 +45,57 @@ public class RtfPageNumber extends RtfContainer {
     /** constant for field result */
     public static final String RTF_FIELD_RESULT = "fldrslt";
 
-    /** Create an RTF paragraph as a child of given container with default attributes */
-    RtfPageNumber(IRtfPageNumberContainer parent, Writer w) throws IOException {
-        super((RtfContainer)parent, w);
+    /**
+     * Create an RTF paragraph as a child of given container with default
+     * attributes
+     */
+    RtfPageNumber(final IRtfPageNumberContainer parent, final Writer w)
+            throws IOException {
+        super((RtfContainer) parent, w);
     }
 
-    /** Create an RTF page number as a child of given container with given attributes */
-     RtfPageNumber(RtfContainer parent, Writer w, RtfAttributes attrs) throws IOException {
-         // Adds the attributes of the parent paragraph
-         super(parent, w, attrs);
-     }
-
-    /** Create an RTF page number as a child of given paragraph,
-     *  copying the paragraph attributes
+    /**
+     * Create an RTF page number as a child of given container with given
+     * attributes
      */
-     RtfPageNumber(RtfParagraph parent, Writer w) throws IOException {
-         // Adds the attributes of the parent paragraph
-         super((RtfContainer)parent, w, parent.attrib);
+    RtfPageNumber(final RtfContainer parent, final Writer w,
+            final RtfAttributes attrs) throws IOException {
+        // Adds the attributes of the parent paragraph
+        super(parent, w, attrs);
+    }
 
-         // copy parent's text attributes
-         if (parent.getTextAttributes() != null) {
-             attrib.set(parent.getTextAttributes());
-         }
-     }
+    /**
+     * Create an RTF page number as a child of given paragraph, copying the
+     * paragraph attributes
+     */
+    RtfPageNumber(final RtfParagraph parent, final Writer w) throws IOException {
+        // Adds the attributes of the parent paragraph
+        super(parent, w, parent.attrib);
+
+        // copy parent's text attributes
+        if (parent.getTextAttributes() != null) {
+            this.attrib.set(parent.getTextAttributes());
+        }
+    }
 
     /**
      * Write our attributes and content
-     * @throws IOException for I/O problems
+     * 
+     * @throws IOException
+     *             for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         /*
+         * writeGroupMark(true); writeControlWord(RTF_FIELD);
+         * writeGroupMark(true); writeAttributes(attrib, RtfText.ATTR_NAMES); //
+         * Added by Boris Poudérous writeStarControlWord(RTF_FIELD_PAGE);
+         * writeGroupMark(false); writeGroupMark(true);
+         * writeControlWord(RTF_FIELD_RESULT); writeGroupMark(false);
+         * writeGroupMark(false);
+         */
         writeGroupMark(true);
-        writeControlWord(RTF_FIELD);
-        writeGroupMark(true);
-        writeAttributes(attrib, RtfText.ATTR_NAMES); // Added by Boris Poudérous
-        writeStarControlWord(RTF_FIELD_PAGE);
-        writeGroupMark(false);
-        writeGroupMark(true);
-        writeControlWord(RTF_FIELD_RESULT);
-        writeGroupMark(false);
-        writeGroupMark(false);
-        */
-        writeGroupMark(true);
-        writeAttributes(attrib, RtfText.ATTR_NAMES);
+        writeAttributes(this.attrib, RtfText.ATTR_NAMES);
         writeControlWord("chpgn");
         writeGroupMark(false);
     }
@@ -96,6 +103,7 @@ public class RtfPageNumber extends RtfContainer {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

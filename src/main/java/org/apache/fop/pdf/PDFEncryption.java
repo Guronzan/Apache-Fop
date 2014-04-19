@@ -26,33 +26,42 @@ public interface PDFEncryption {
 
     /**
      * Returns the encryption parameters.
+     * 
      * @return the encryption parameters
      */
     PDFEncryptionParams getParams();
 
     /**
      * Sets the encryption parameters.
-     * @param params The parameterss to set
+     * 
+     * @param params
+     *            The parameterss to set
      */
-    void setParams(PDFEncryptionParams params);
+    void setParams(final PDFEncryptionParams params);
 
     /**
      * Adds a PDFFilter to the PDFStream object
-     * @param stream the stream to add an encryption filter to
+     * 
+     * @param stream
+     *            the stream to add an encryption filter to
      */
-    void applyFilter(AbstractPDFStream stream);
+    void applyFilter(final AbstractPDFStream stream);
 
     /**
-     * Encrypt an array of bytes using a reference PDFObject for calculating
-     * the encryption key.
-     * @param data data to encrypt
-     * @param refObj reference PDFObject
+     * Encrypt an array of bytes using a reference PDFObject for calculating the
+     * encryption key.
+     * 
+     * @param data
+     *            data to encrypt
+     * @param refObj
+     *            reference PDFObject
      * @return byte[] the encrypted data
      */
-    byte[] encrypt(byte[] data, PDFObject refObj);
+    byte[] encrypt(final byte[] data, final PDFObject refObj);
 
     /**
      * Returns the trailer entry for encryption.
+     * 
      * @return the trailer entry
      */
     String getTrailerEntry();

@@ -39,18 +39,19 @@ public class NullCharIterator extends CharIterator {
      * Constructor
      */
     public NullCharIterator() {
-        //nop
+        // nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasNext() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public char nextChar() throws NoSuchElementException {
         throw new NoSuchElementException();
     }
 
 }
-

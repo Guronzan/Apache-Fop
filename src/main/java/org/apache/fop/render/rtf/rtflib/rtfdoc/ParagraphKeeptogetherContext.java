@@ -28,8 +28,8 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 /**
  *
- *     This context is used to manage the "keepn" RTF attribute
- *  Used by ParagraphBuilder and JforCmd
+ * This context is used to manage the "keepn" RTF attribute Used by
+ * ParagraphBuilder and JforCmd
  *
  */
 
@@ -41,7 +41,6 @@ public class ParagraphKeeptogetherContext {
 
     ParagraphKeeptogetherContext() {
     }
-
 
     /**
      * Singelton.
@@ -56,7 +55,7 @@ public class ParagraphKeeptogetherContext {
     }
 
     /**
-     *  @return the level of current "keep whith next" paragraph
+     * @return the level of current "keep whith next" paragraph
      */
     public static int getKeepTogetherOpenValue() {
         return paraKeepTogetherOpen;
@@ -72,10 +71,11 @@ public class ParagraphKeeptogetherContext {
         if (paraKeepTogetherOpen > 0) {
             paraKeepTogetherOpen--;
 
-            //If the \pard control word is not present, the current paragraph
-            //inherits all paragraph properties.
-            //Also the next paragraph must reset the properties otherwise the \keepn don't stop.
-            paraResetProperties = (paraKeepTogetherOpen == 0);
+            // If the \pard control word is not present, the current paragraph
+            // inherits all paragraph properties.
+            // Also the next paragraph must reset the properties otherwise the
+            // \keepn don't stop.
+            paraResetProperties = paraKeepTogetherOpen == 0;
         }
     }
 

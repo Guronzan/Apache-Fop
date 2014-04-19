@@ -18,6 +18,7 @@
 /* $Id: CMYKcolorFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
 
 package org.apache.fop.fo.expr;
+
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.fo.properties.ColorProperty;
 import org.apache.fop.fo.properties.Property;
@@ -28,23 +29,23 @@ import org.apache.fop.fo.properties.Property;
 class CMYKcolorFunction extends FunctionBase {
 
     /**
-     * cmyk takes four arguments.
-     * {@inheritDoc}
+     * cmyk takes four arguments. {@inheritDoc}
      */
+    @Override
     public int nbArgs() {
         return 4;
     }
 
     /** {@inheritDoc} */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-        StringBuffer sb = new StringBuffer();
-        sb.append("cmyk(" + args[0] + "," + args[1] + "," + args[2] + "," + args[3] + ")");
-        FOUserAgent ua = (pInfo == null)
-                ? null
-                : (pInfo.getFO() == null ? null : pInfo.getFO().getUserAgent());
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("cmyk(" + args[0] + "," + args[1] + "," + args[2] + ","
+                + args[3] + ")");
+        final FOUserAgent ua = pInfo == null ? null
+                        : pInfo.getFO() == null ? null : pInfo.getFO().getUserAgent();
         return ColorProperty.getInstance(ua, sb.toString());
     }
-
 
 }

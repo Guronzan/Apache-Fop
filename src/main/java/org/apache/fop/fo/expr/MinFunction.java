@@ -31,26 +31,31 @@ public class MinFunction extends FunctionBase {
     /**
      * @return 2 (the number of arguments required for the min function)
      */
+    @Override
     public int nbArgs() {
         return 2;
     }
 
     /**
      * Handle "numerics" if no proportional/percent parts
-     * @param args array of arguments to be processed
-     * @param pInfo PropertyInfo to be processed
+     * 
+     * @param args
+     *            array of arguments to be processed
+     * @param pInfo
+     *            PropertyInfo to be processed
      * @return the minimum of the two args elements passed
-     * @throws PropertyException for invalid operands
+     * @throws PropertyException
+     *             for invalid operands
      */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-        Numeric n1 = args[0].getNumeric();
-        Numeric n2 = args[1].getNumeric();
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        final Numeric n1 = args[0].getNumeric();
+        final Numeric n2 = args[1].getNumeric();
         if (n1 == null || n2 == null) {
             throw new PropertyException("Non numeric operands to min function");
         }
         return (Property) NumericOp.min(n1, n2);
-       }
+    }
 
 }
-

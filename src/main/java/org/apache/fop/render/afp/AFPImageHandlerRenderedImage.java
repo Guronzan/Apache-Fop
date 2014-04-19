@@ -29,19 +29,9 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.image.loader.Image;
-import org.apache.xmlgraphics.image.loader.ImageFlavor;
-import org.apache.xmlgraphics.image.loader.ImageInfo;
-import org.apache.xmlgraphics.image.loader.ImageSize;
-import org.apache.xmlgraphics.image.loader.impl.ImageRendered;
-import org.apache.xmlgraphics.ps.ImageEncodingHelper;
-import org.apache.xmlgraphics.util.MimeConstants;
-import org.apache.xmlgraphics.util.UnitConv;
-
 import org.apache.fop.afp.AFPDataObjectInfo;
 import org.apache.fop.afp.AFPImageObjectInfo;
 import org.apache.fop.afp.AFPObjectAreaInfo;
@@ -52,109 +42,124 @@ import org.apache.fop.afp.modca.ResourceObject;
 import org.apache.fop.render.ImageHandler;
 import org.apache.fop.render.RenderingContext;
 import org.apache.fop.util.bitmap.BitmapImageUtil;
+import org.apache.xmlgraphics.image.loader.Image;
+import org.apache.xmlgraphics.image.loader.ImageFlavor;
+import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.apache.xmlgraphics.image.loader.ImageSize;
+import org.apache.xmlgraphics.image.loader.impl.ImageRendered;
+import org.apache.xmlgraphics.ps.ImageEncodingHelper;
+import org.apache.xmlgraphics.util.MimeConstants;
+import org.apache.xmlgraphics.util.UnitConv;
 
 /**
  * PDFImageHandler implementation which handles RenderedImage instances.
  */
-public class AFPImageHandlerRenderedImage extends AFPImageHandler implements ImageHandler {
-
-    /** logging instance */
-    private static Log log = LogFactory.getLog(AFPImageHandlerRenderedImage.class);
+@Slf4j
+public class AFPImageHandlerRenderedImage extends AFPImageHandler implements
+ImageHandler {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.BUFFERED_IMAGE,
-        ImageFlavor.RENDERED_IMAGE
-    };
+        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     /** {@inheritDoc} */
+    @Override
     public AFPDataObjectInfo generateDataObjectInfo(
-            AFPRendererImageInfo rendererImageInfo) throws IOException {
-        AFPImageObjectInfo imageObjectInfo
-            = (AFPImageObjectInfo)super.generateDataObjectInfo(rendererImageInfo);
+            final AFPRendererImageInfo rendererImageInfo) throws IOException {
+        final AFPImageObjectInfo imageObjectInfo = (AFPImageObjectInfo) super
+                .generateDataObjectInfo(rendererImageInfo);
 
-        AFPRendererContext rendererContext
-            = (AFPRendererContext)rendererImageInfo.getRendererContext();
-        AFPInfo afpInfo = rendererContext.getInfo();
+        final AFPRendererContext rendererContext = (AFPRendererContext) rendererImageInfo
+                .getRendererContext();
+        final AFPInfo afpInfo = rendererContext.getInfo();
 
         setDefaultResourceLevel(imageObjectInfo, afpInfo.getResourceManager());
 
-        AFPPaintingState paintingState = afpInfo.getPaintingState();
-        ImageRendered imageRendered = (ImageRendered) rendererImageInfo.img;
-        Dimension targetSize = new Dimension(afpInfo.getWidth(), afpInfo.getHeight());
+        final AFPPaintingState paintingState = afpInfo.getPaintingState();
+        final ImageRendered imageRendered = (ImageRendered) rendererImageInfo.img;
+        final Dimension targetSize = new Dimension(afpInfo.getWidth(),
+                afpInfo.getHeight());
 
-        updateDataObjectInfo(imageObjectInfo, paintingState, imageRendered, targetSize);
+        updateDataObjectInfo(imageObjectInfo, paintingState, imageRendered,
+                targetSize);
         return imageObjectInfo;
     }
 
-    private AFPDataObjectInfo updateDataObjectInfo(AFPImageObjectInfo imageObjectInfo,
-            AFPPaintingState paintingState, ImageRendered imageRendered, Dimension targetSize)
+    private AFPDataObjectInfo updateDataObjectInfo(
+            final AFPImageObjectInfo imageObjectInfo,
+            final AFPPaintingState paintingState,
+            final ImageRendered imageRendered, final Dimension targetSize)
             throws IOException {
 
-        long start = System.currentTimeMillis();
+        final long start = System.currentTimeMillis();
 
-        int resolution = paintingState.getResolution();
+        final int resolution = paintingState.getResolution();
         int maxPixelSize = paintingState.getBitsPerPixel();
         if (paintingState.isColorImages()) {
             if (paintingState.isCMYKImagesSupported()) {
-                maxPixelSize *= 4; //CMYK is maximum
+                maxPixelSize *= 4; // CMYK is maximum
             } else {
-                maxPixelSize *= 3; //RGB is maximum
+                maxPixelSize *= 3; // RGB is maximum
             }
         }
-        float ditheringQuality = paintingState.getDitheringQuality();
+        final float ditheringQuality = paintingState.getDitheringQuality();
         RenderedImage renderedImage = imageRendered.getRenderedImage();
 
-        ImageInfo imageInfo = imageRendered.getInfo();
-        ImageSize intrinsicSize = imageInfo.getSize();
+        final ImageInfo imageInfo = imageRendered.getInfo();
+        final ImageSize intrinsicSize = imageInfo.getSize();
 
-        boolean useFS10 = (maxPixelSize == 1) || BitmapImageUtil.isMonochromeImage(renderedImage);
+        final boolean useFS10 = maxPixelSize == 1
+                || BitmapImageUtil.isMonochromeImage(renderedImage);
         int functionSet = useFS10 ? 10 : 11;
-        boolean usePageSegments = useFS10
-                    && !imageObjectInfo.getResourceInfo().getLevel().isInline();
+        final boolean usePageSegments = useFS10
+                && !imageObjectInfo.getResourceInfo().getLevel().isInline();
 
         ImageSize effIntrinsicSize = intrinsicSize;
         if (usePageSegments) {
-            //Resize, optionally resample and convert image
-            Dimension resampledDim = new Dimension(
-                    (int)Math.ceil(UnitConv.mpt2px(targetSize.getWidth(), resolution)),
-                    (int)Math.ceil(UnitConv.mpt2px(targetSize.getHeight(), resolution)));
+            // Resize, optionally resample and convert image
+            final Dimension resampledDim = new Dimension(
+                    (int) Math.ceil(UnitConv.mpt2px(targetSize.getWidth(),
+                            resolution)), (int) Math.ceil(UnitConv.mpt2px(
+                                    targetSize.getHeight(), resolution)));
 
             imageObjectInfo.setCreatePageSegment(true);
             imageObjectInfo.getResourceInfo().setImageDimension(resampledDim);
 
-            //Only resample/downsample if image is smaller than its intrinsic size
-            //to make print file smaller
-            boolean resample = resampledDim.width < renderedImage.getWidth()
-                && resampledDim.height < renderedImage.getHeight();
+            // Only resample/downsample if image is smaller than its intrinsic
+            // size
+            // to make print file smaller
+            final boolean resample = resampledDim.width < renderedImage
+                    .getWidth()
+                    && resampledDim.height < renderedImage.getHeight();
             if (resample) {
                 if (log.isDebugEnabled()) {
                     log.debug("Resample from " + intrinsicSize.getDimensionPx()
                             + " to " + resampledDim);
                 }
-                renderedImage = BitmapImageUtil.convertToMonochrome(renderedImage,
-                        resampledDim, ditheringQuality);
-                effIntrinsicSize = new ImageSize(
-                        resampledDim.width, resampledDim.height, resolution);
+                renderedImage = BitmapImageUtil.convertToMonochrome(
+                        renderedImage, resampledDim, ditheringQuality);
+                effIntrinsicSize = new ImageSize(resampledDim.width,
+                        resampledDim.height, resolution);
             } else if (ditheringQuality >= 0.5f) {
-                renderedImage = BitmapImageUtil.convertToMonochrome(renderedImage,
-                        intrinsicSize.getDimensionPx(), ditheringQuality);
+                renderedImage = BitmapImageUtil.convertToMonochrome(
+                        renderedImage, intrinsicSize.getDimensionPx(),
+                        ditheringQuality);
             }
         }
 
-        imageObjectInfo.setDataHeightRes((int)Math.round(
-                effIntrinsicSize.getDpiHorizontal() * 10));
-        imageObjectInfo.setDataWidthRes((int)Math.round(
-                effIntrinsicSize.getDpiVertical() * 10));
+        imageObjectInfo.setDataHeightRes((int) Math.round(effIntrinsicSize
+                .getDpiHorizontal() * 10));
+        imageObjectInfo.setDataWidthRes((int) Math.round(effIntrinsicSize
+                .getDpiVertical() * 10));
 
-        int dataHeight = renderedImage.getHeight();
+        final int dataHeight = renderedImage.getHeight();
         imageObjectInfo.setDataHeight(dataHeight);
 
-        int dataWidth = renderedImage.getWidth();
+        final int dataWidth = renderedImage.getWidth();
         imageObjectInfo.setDataWidth(dataWidth);
 
-        //TODO To reduce AFP file size, investigate using a compression scheme.
-        //Currently, all image data is uncompressed.
-        ColorModel cm = renderedImage.getColorModel();
+        // TODO To reduce AFP file size, investigate using a compression scheme.
+        // Currently, all image data is uncompressed.
+        final ColorModel cm = renderedImage.getColorModel();
         if (log.isTraceEnabled()) {
             log.trace("ColorModel: " + cm);
         }
@@ -164,34 +169,36 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
         }
 
         byte[] imageData = null;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        boolean allowDirectEncoding = true;
-        if (allowDirectEncoding && (pixelSize <= maxPixelSize)) {
-            //Attempt to encode without resampling the image
-            ImageEncodingHelper helper = new ImageEncodingHelper(renderedImage, pixelSize == 32);
-            ColorModel encodedColorModel = helper.getEncodedColorModel();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final boolean allowDirectEncoding = true;
+        if (allowDirectEncoding && pixelSize <= maxPixelSize) {
+            // Attempt to encode without resampling the image
+            final ImageEncodingHelper helper = new ImageEncodingHelper(
+                    renderedImage, pixelSize == 32);
+            final ColorModel encodedColorModel = helper.getEncodedColorModel();
             boolean directEncode = true;
             if (helper.getEncodedColorModel().getPixelSize() > maxPixelSize) {
-                directEncode = false; //pixel size needs to be reduced
+                directEncode = false; // pixel size needs to be reduced
             }
             if (BitmapImageUtil.getColorIndexSize(renderedImage) > 2) {
-                directEncode = false; //Lookup tables are not implemented, yet
+                directEncode = false; // Lookup tables are not implemented, yet
             }
-            if (useFS10
-                    && BitmapImageUtil.isMonochromeImage(renderedImage)
+            if (useFS10 && BitmapImageUtil.isMonochromeImage(renderedImage)
                     && BitmapImageUtil.isZeroBlack(renderedImage)) {
                 directEncode = false;
-                //need a special method to invert the bit-stream since setting the subtractive mode
-                //in AFP alone doesn't seem to do the trick.
+                // need a special method to invert the bit-stream since setting
+                // the subtractive mode
+                // in AFP alone doesn't seem to do the trick.
                 if (encodeInvertedBilevel(helper, imageObjectInfo, baos)) {
                     imageData = baos.toByteArray();
                 }
             }
             if (directEncode) {
                 log.debug("Encoding image directly...");
-                imageObjectInfo.setBitsPerPixel(encodedColorModel.getPixelSize());
+                imageObjectInfo.setBitsPerPixel(encodedColorModel
+                        .getPixelSize());
                 if (pixelSize == 32) {
-                    functionSet = 45; //IOCA FS45 required for CMYK
+                    functionSet = 45; // IOCA FS45 required for CMYK
                 }
 
                 helper.encode(baos);
@@ -201,24 +208,25 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
         if (imageData == null) {
             log.debug("Encoding image via RGB...");
 
-            //Convert image to 24bit RGB
+            // Convert image to 24bit RGB
             ImageEncodingHelper.encodeRenderedImageAsRGB(renderedImage, baos);
             imageData = baos.toByteArray();
             imageObjectInfo.setBitsPerPixel(24);
 
-            boolean colorImages = paintingState.isColorImages();
+            final boolean colorImages = paintingState.isColorImages();
             imageObjectInfo.setColor(colorImages);
 
             // convert to grayscale
             if (!colorImages) {
                 log.debug("Converting RGB image to grayscale...");
                 baos.reset();
-                int bitsPerPixel = paintingState.getBitsPerPixel();
+                final int bitsPerPixel = paintingState.getBitsPerPixel();
                 imageObjectInfo.setBitsPerPixel(bitsPerPixel);
-                //TODO this should be done off the RenderedImage to avoid buffering the
-                //intermediate 24bit image
-                ImageEncodingHelper.encodeRGBAsGrayScale(
-                      imageData, dataWidth, dataHeight, bitsPerPixel, baos);
+                // TODO this should be done off the RenderedImage to avoid
+                // buffering the
+                // intermediate 24bit image
+                ImageEncodingHelper.encodeRGBAsGrayScale(imageData, dataWidth,
+                        dataHeight, bitsPerPixel, baos);
                 imageData = baos.toByteArray();
                 if (bitsPerPixel == 1) {
                     imageObjectInfo.setSubtractive(true);
@@ -237,18 +245,20 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
             imageObjectInfo.setMimeType(MimeConstants.MIME_AFP_IOCA_FS45);
             break;
         default:
-            throw new IllegalStateException("Invalid IOCA function set: " + functionSet);
+            throw new IllegalStateException("Invalid IOCA function set: "
+                    + functionSet);
         }
 
         imageObjectInfo.setData(imageData);
 
         // set object area info
-        AFPObjectAreaInfo objectAreaInfo = imageObjectInfo.getObjectAreaInfo();
+        final AFPObjectAreaInfo objectAreaInfo = imageObjectInfo
+                .getObjectAreaInfo();
         objectAreaInfo.setWidthRes(resolution);
         objectAreaInfo.setHeightRes(resolution);
 
         if (log.isDebugEnabled()) {
-            long duration = System.currentTimeMillis() - start;
+            final long duration = System.currentTimeMillis() - start;
             log.debug("Image encoding took " + duration + "ms.");
         }
 
@@ -256,39 +266,49 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
     }
 
     /**
-     * Efficiently encodes a bi-level image in inverted form as a plain bit-stream.
-     * @param helper the image encoding helper used to analyze the image
-     * @param imageObjectInfo the AFP image object
-     * @param out the output stream
-     * @return true if the image was encoded, false if there was something prohibiting that
-     * @throws IOException if an I/O error occurs
+     * Efficiently encodes a bi-level image in inverted form as a plain
+     * bit-stream.
+     *
+     * @param helper
+     *            the image encoding helper used to analyze the image
+     * @param imageObjectInfo
+     *            the AFP image object
+     * @param out
+     *            the output stream
+     * @return true if the image was encoded, false if there was something
+     *         prohibiting that
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    private boolean encodeInvertedBilevel(ImageEncodingHelper helper,
-            AFPImageObjectInfo imageObjectInfo, OutputStream out) throws IOException {
-        RenderedImage renderedImage = helper.getImage();
+    private boolean encodeInvertedBilevel(final ImageEncodingHelper helper,
+            final AFPImageObjectInfo imageObjectInfo, final OutputStream out)
+                    throws IOException {
+        final RenderedImage renderedImage = helper.getImage();
         if (!BitmapImageUtil.isMonochromeImage(renderedImage)) {
-            throw new IllegalStateException("This method only supports binary images!");
+            throw new IllegalStateException(
+                    "This method only supports binary images!");
         }
-        int tiles = renderedImage.getNumXTiles() * renderedImage.getNumYTiles();
+        final int tiles = renderedImage.getNumXTiles()
+                * renderedImage.getNumYTiles();
         if (tiles > 1) {
             return false;
         }
 
         imageObjectInfo.setBitsPerPixel(1);
 
-        Raster raster = renderedImage.getTile(0, 0);
-        DataBuffer buffer = raster.getDataBuffer();
+        final Raster raster = renderedImage.getTile(0, 0);
+        final DataBuffer buffer = raster.getDataBuffer();
         if (buffer instanceof DataBufferByte) {
-            DataBufferByte byteBuffer = (DataBufferByte)buffer;
+            final DataBufferByte byteBuffer = (DataBufferByte) buffer;
             log.debug("Encoding image as inverted bi-level...");
-            byte[] rawData = byteBuffer.getData();
+            final byte[] rawData = byteBuffer.getData();
             int remaining = rawData.length;
             int pos = 0;
-            byte[] data = new byte[4096];
+            final byte[] data = new byte[4096];
             while (remaining > 0) {
-                int size = Math.min(remaining, data.length);
+                final int size = Math.min(remaining, data.length);
                 for (int i = 0; i < size; i++) {
-                    data[i] = (byte)~rawData[pos]; //invert bits
+                    data[i] = (byte) ~rawData[pos]; // invert bits
                     pos++;
                 }
                 out.write(data, 0, size);
@@ -299,9 +319,10 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
         return false;
     }
 
-    private void setDefaultResourceLevel(AFPImageObjectInfo imageObjectInfo,
-            AFPResourceManager resourceManager) {
-        AFPResourceInfo resourceInfo = imageObjectInfo.getResourceInfo();
+    private void setDefaultResourceLevel(
+            final AFPImageObjectInfo imageObjectInfo,
+            final AFPResourceManager resourceManager) {
+        final AFPResourceInfo resourceInfo = imageObjectInfo.getResourceInfo();
         if (!resourceInfo.levelChanged()) {
             resourceInfo.setLevel(resourceManager.getResourceLevelDefaults()
                     .getDefaultResourceLevel(ResourceObject.TYPE_IMAGE));
@@ -309,54 +330,63 @@ public class AFPImageHandlerRenderedImage extends AFPImageHandler implements Ima
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AFPDataObjectInfo createDataObjectInfo() {
         return new AFPImageObjectInfo();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 300;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRendered.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
-    public void handleImage(RenderingContext context, Image image, Rectangle pos)
-            throws IOException {
-        AFPRenderingContext afpContext = (AFPRenderingContext)context;
+    @Override
+    public void handleImage(final RenderingContext context, final Image image,
+            final Rectangle pos) throws IOException {
+        final AFPRenderingContext afpContext = (AFPRenderingContext) context;
 
-        AFPImageObjectInfo imageObjectInfo = (AFPImageObjectInfo)createDataObjectInfo();
+        final AFPImageObjectInfo imageObjectInfo = (AFPImageObjectInfo) createDataObjectInfo();
 
         // set resource information
-        setResourceInformation(imageObjectInfo,
-                image.getInfo().getOriginalURI(),
-                afpContext.getForeignAttributes());
-        setDefaultResourceLevel(imageObjectInfo, afpContext.getResourceManager());
+        setResourceInformation(imageObjectInfo, image.getInfo()
+                .getOriginalURI(), afpContext.getForeignAttributes());
+        setDefaultResourceLevel(imageObjectInfo,
+                afpContext.getResourceManager());
 
         // Positioning
-        imageObjectInfo.setObjectAreaInfo(createObjectAreaInfo(afpContext.getPaintingState(), pos));
-        Dimension targetSize = pos.getSize();
+        imageObjectInfo.setObjectAreaInfo(createObjectAreaInfo(
+                afpContext.getPaintingState(), pos));
+        final Dimension targetSize = pos.getSize();
 
         // Image content
-        ImageRendered imageRend = (ImageRendered)image;
-        updateDataObjectInfo(imageObjectInfo, afpContext.getPaintingState(), imageRend, targetSize);
+        final ImageRendered imageRend = (ImageRendered) image;
+        updateDataObjectInfo(imageObjectInfo, afpContext.getPaintingState(),
+                imageRend, targetSize);
 
         // Create image
         afpContext.getResourceManager().createObject(imageObjectInfo);
     }
 
     /** {@inheritDoc} */
-    public boolean isCompatible(RenderingContext targetContext, Image image) {
+    @Override
+    public boolean isCompatible(final RenderingContext targetContext,
+            final Image image) {
         return (image == null || image instanceof ImageRendered)
-            && targetContext instanceof AFPRenderingContext;
+                && targetContext instanceof AFPRenderingContext;
     }
 
 }

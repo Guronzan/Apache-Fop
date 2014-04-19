@@ -27,20 +27,27 @@ public class KnuthPossPosIter extends PositionIterator {
 
     /**
      * Main constructor
-     * @param elementList List of Knuth elements
-     * @param startPos starting position, inclusive
-     * @param endPos ending position, exclusive
+     *
+     * @param elementList
+     *            List of Knuth elements
+     * @param startPos
+     *            starting position, inclusive
+     * @param endPos
+     *            ending position, exclusive
      */
-    public KnuthPossPosIter(List elementList, int startPos, int endPos) {
+    public KnuthPossPosIter(final List elementList, final int startPos,
+            final int endPos) {
         super(elementList.listIterator(startPos));
-        iterCount = endPos - startPos;
+        this.iterCount = endPos - startPos;
     }
 
     /**
      * Auxiliary constructor
-     * @param elementList List of Knuth elements
+     *
+     * @param elementList
+     *            List of Knuth elements
      */
-    public KnuthPossPosIter(List elementList) {
+    public KnuthPossPosIter(final List elementList) {
         this(elementList, 0, elementList.size());
     }
 
@@ -49,8 +56,9 @@ public class KnuthPossPosIter extends PositionIterator {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected boolean checkNext() {
-        if (iterCount > 0) {
+        if (this.iterCount > 0) {
             return super.checkNext();
         } else {
             endIter();
@@ -61,8 +69,9 @@ public class KnuthPossPosIter extends PositionIterator {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object next() {
-        --iterCount;
+        --this.iterCount;
         return super.next();
     }
 
@@ -70,11 +79,13 @@ public class KnuthPossPosIter extends PositionIterator {
         return (ListElement) peekNext();
     }
 
-    protected LayoutManager getLM(Object nextObj) {
+    @Override
+    protected LayoutManager getLM(final Object nextObj) {
         return ((ListElement) nextObj).getLayoutManager();
     }
 
-    protected Position getPos(Object nextObj) {
+    @Override
+    protected Position getPos(final Object nextObj) {
         return ((ListElement) nextObj).getPosition();
     }
 }

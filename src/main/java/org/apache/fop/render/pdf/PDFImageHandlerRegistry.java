@@ -22,13 +22,14 @@ package org.apache.fop.render.pdf;
 import org.apache.fop.render.AbstractImageHandlerRegistry;
 
 /**
- * This class holds references to various image handlers used by the PDF renderer. It also
- * supports automatic discovery of additional handlers available through
- * the class path.
+ * This class holds references to various image handlers used by the PDF
+ * renderer. It also supports automatic discovery of additional handlers
+ * available through the class path.
  */
 public class PDFImageHandlerRegistry extends AbstractImageHandlerRegistry {
 
     /** {@inheritDoc} */
+    @Override
     public Class getHandlerClass() {
         return PDFImageHandler.class;
     }

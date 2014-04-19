@@ -25,19 +25,20 @@ import java.util.List;
 /**
  * Native font finder base class
  */
-public abstract class NativeFontDirFinder implements FontFinder {
+public abstract class NativeFontDirFinder implements FontFinder<File> {
 
     /**
      * Generic method used by Mac and Unix font finders.
-     * @return list of natively existing font directories
-     * {@inheritDoc}
+     *
+     * @return list of natively existing font directories {@inheritDoc}
      */
-    public List find() {
-        List fontDirList = new java.util.ArrayList();
-        String[] searchableDirectories = getSearchableDirectories();
+    @Override
+    public List<File> find() {
+        final List<File> fontDirList = new java.util.ArrayList<>();
+        final String[] searchableDirectories = getSearchableDirectories();
         if (searchableDirectories != null) {
-            for (int i = 0; i < searchableDirectories.length; i++) {
-                File fontDir = new File(searchableDirectories[i]);
+            for (final String searchableDirectorie : searchableDirectories) {
+                final File fontDir = new File(searchableDirectorie);
                 if (fontDir.exists() && fontDir.canRead()) {
                     fontDirList.add(fontDir);
                 }
@@ -48,6 +49,7 @@ public abstract class NativeFontDirFinder implements FontFinder {
 
     /**
      * Returns an array of directories to search for fonts in.
+     *
      * @return an array of directories
      */
     protected abstract String[] getSearchableDirectories();

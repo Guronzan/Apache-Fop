@@ -19,8 +19,6 @@
 
 package org.apache.fop.fo.flow;
 
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.FONode;
@@ -31,6 +29,7 @@ import org.apache.fop.fo.properties.BreakPropertySet;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonMarginBlock;
 import org.apache.fop.fo.properties.KeepProperty;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href=http://www.w3.org/TR/xsl/#fo_list-block">
@@ -46,12 +45,12 @@ public class ListBlock extends FObj implements BreakPropertySet {
     private KeepProperty keepWithNext;
     private KeepProperty keepWithPrevious;
     // Unused but valid items, commented out for performance:
-    //     private CommonAccessibility commonAccessibility;
-    //     private CommonAural commonAural;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private int intrusionDisplace;
-    //     private Length provisionalDistanceBetweenStarts;
-    //     private Length provisionalLabelSeparation;
+    // private CommonAccessibility commonAccessibility;
+    // private CommonAural commonAural;
+    // private CommonRelativePosition commonRelativePosition;
+    // private int intrusionDisplace;
+    // private Length provisionalDistanceBetweenStarts;
+    // private Length provisionalLabelSeparation;
     // End of property values
 
     /** extension properties */
@@ -64,28 +63,34 @@ public class ListBlock extends FObj implements BreakPropertySet {
     /**
      * Base constructor
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public ListBlock(FONode parent) {
+    public ListBlock(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonMarginBlock = pList.getMarginBlockProps();
-        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
-        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        //Bind extension properties
-        widowContentLimit = pList.get(PR_X_WIDOW_CONTENT_LIMIT).getLength();
-        orphanContentLimit = pList.get(PR_X_ORPHAN_CONTENT_LIMIT).getLength();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonMarginBlock = pList.getMarginBlockProps();
+        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        // Bind extension properties
+        this.widowContentLimit = pList.get(PR_X_WIDOW_CONTENT_LIMIT)
+                .getLength();
+        this.orphanContentLimit = pList.get(PR_X_ORPHAN_CONTENT_LIMIT)
+                .getLength();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startList(this);
@@ -93,30 +98,31 @@ public class ListBlock extends FObj implements BreakPropertySet {
 
     /**
      * Make sure the content model is satisfied, if so then tell the
-     * {@link org.apache.fop.fo.FOEventHandler} that we are at the end
-     * of the list-block.
-     * {@inheritDoc}
+     * {@link org.apache.fop.fo.FOEventHandler} that we are at the end of the
+     * list-block. {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
-        if (!hasListItem) {
+        if (!this.hasListItem) {
             missingChildElementError("marker* (list-item)+");
         }
         getFOEventHandler().endList(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: marker* (list-item)+
+     * {@inheritDoc} <br>
+     * XSL Content Model: marker* (list-item)+
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-            throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("marker")) {
-                if (hasListItem) {
+                if (this.hasListItem) {
                     nodesOutOfOrderError(loc, "fo:marker", "fo:list-item");
                 }
             } else if (localName.equals("list-item")) {
-                hasListItem = true;
+                this.hasListItem = true;
             } else {
                 invalidChildError(loc, nsURI, localName);
             }
@@ -125,60 +131,64 @@ public class ListBlock extends FObj implements BreakPropertySet {
 
     /** @return the {@link CommonMarginBlock} */
     public CommonMarginBlock getCommonMarginBlock() {
-        return commonMarginBlock;
+        return this.commonMarginBlock;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /** @return the "break-after" property */
+    @Override
     public int getBreakAfter() {
-        return breakAfter;
+        return this.breakAfter;
     }
 
     /** @return the "break-before" property */
+    @Override
     public int getBreakBefore() {
-        return breakBefore;
+        return this.breakBefore;
     }
 
-    /** @return the "keep-with-next" property.  */
+    /** @return the "keep-with-next" property. */
     public KeepProperty getKeepWithNext() {
-        return keepWithNext;
+        return this.keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property.  */
+    /** @return the "keep-with-previous" property. */
     public KeepProperty getKeepWithPrevious() {
-        return keepWithPrevious;
+        return this.keepWithPrevious;
     }
 
-    /** @return the "keep-together" property.  */
+    /** @return the "keep-together" property. */
     public KeepProperty getKeepTogether() {
-        return keepTogether;
+        return this.keepTogether;
     }
 
     /** @return the "fox:widow-content-limit" extension property */
     public Length getWidowContentLimit() {
-        return widowContentLimit;
+        return this.widowContentLimit;
     }
 
     /** @return the "fox:orphan-content-limit" extension property */
     public Length getOrphanContentLimit() {
-        return orphanContentLimit;
+        return this.orphanContentLimit;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-block";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_BLOCK}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_BLOCK;
     }
 }
-

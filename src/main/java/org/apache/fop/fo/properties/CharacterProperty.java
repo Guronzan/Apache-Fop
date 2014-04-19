@@ -33,47 +33,53 @@ public final class CharacterProperty extends Property {
     public static class Maker extends PropertyMaker {
 
         /**
-         * @param propId the id of the property for which a Maker should be created
+         * @param propId
+         *            the id of the property for which a Maker should be created
          */
-        public Maker(int propId) {
+        public Maker(final int propId) {
             super(propId);
         }
 
-        public Property make(PropertyList propertyList, String value,
-                             FObj fo) {
-            char c = value.charAt(0);
+        @Override
+        public Property make(final PropertyList propertyList,
+                final String value, final FObj fo) {
+            final char c = value.charAt(0);
             return CharacterProperty.getInstance(c);
         }
 
     }
 
     /** cache containing all canonical CharacterProperty instances */
-    private static final PropertyCache cache = new PropertyCache(CharacterProperty.class);
+    private static final PropertyCache cache = new PropertyCache(
+            CharacterProperty.class);
 
     private final char character;
 
     /**
-     * @param character character value to be wrapped in this property
+     * @param character
+     *            character value to be wrapped in this property
      */
-    private CharacterProperty(char character) {
+    private CharacterProperty(final char character) {
         this.character = character;
     }
 
-    public static CharacterProperty getInstance(char character) {
-        return (CharacterProperty) cache.fetch(
-                        new CharacterProperty(character));
+    public static CharacterProperty getInstance(final char character) {
+        return (CharacterProperty) cache
+                .fetch(new CharacterProperty(character));
     }
 
     /**
      * @return this.character cast as an Object
      */
+    @Override
     public Object getObject() {
-        return new Character(character);
+        return new Character(this.character);
     }
 
     /**
      * @return this.character
      */
+    @Override
     public char getCharacter() {
         return this.character;
     }
@@ -81,16 +87,18 @@ public final class CharacterProperty extends Property {
     /**
      * @return this.character cast as a String
      */
+    @Override
     public String getString() {
-        return new Character(character).toString();
+        return new Character(this.character).toString();
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean equals(Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
         if (obj instanceof CharacterProperty) {
-            return (((CharacterProperty)obj).character == this.character);
+            return ((CharacterProperty) obj).character == this.character;
         } else {
             return false;
         }
@@ -99,8 +107,9 @@ public final class CharacterProperty extends Property {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode() {
-        return (int) character;
+        return this.character;
     }
 
 }

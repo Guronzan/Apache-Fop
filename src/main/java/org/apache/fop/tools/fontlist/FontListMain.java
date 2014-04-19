@@ -32,18 +32,15 @@ import java.util.SortedMap;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-
 import org.apache.fop.Version;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.Fop;
@@ -52,10 +49,12 @@ import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.fonts.FontEventListener;
 import org.apache.fop.fonts.FontTriplet;
 import org.apache.fop.util.GenerationHelperContentHandler;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
 
 /**
- * Command-line application to list available fonts and to optionally produce sample pages
- * with those fonts.
+ * Command-line application to list available fonts and to optionally produce
+ * sample pages with those fonts.
  */
 public final class FontListMain {
 
@@ -64,7 +63,7 @@ public final class FontListMain {
     private static final int GENERATE_FO = 2;
     private static final int GENERATE_RENDERED = 3;
 
-    private FopFactory fopFactory = FopFactory.newInstance();
+    private final FopFactory fopFactory = FopFactory.newInstance();
 
     private File configFile;
     private File outputFile;
@@ -78,31 +77,36 @@ public final class FontListMain {
 
     private void prepare() throws SAXException, IOException {
         if (this.configFile != null) {
-            fopFactory.setUserConfig(this.configFile);
+            this.fopFactory.setUserConfig(this.configFile);
         }
     }
 
-    private ContentHandler getFOPContentHandler(OutputStream out) throws FOPException {
-        Fop fop = fopFactory.newFop(this.outputMime, out);
+    private ContentHandler getFOPContentHandler(final OutputStream out)
+            throws FOPException {
+        final Fop fop = this.fopFactory.newFop(this.outputMime, out);
         return fop.getDefaultHandler();
     }
 
-    private void generateXML(SortedMap fontFamilies, File outFile, String singleFamily)
-                throws TransformerConfigurationException, SAXException, IOException {
-        SAXTransformerFactory tFactory = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
+    private void generateXML(final SortedMap fontFamilies, final File outFile,
+            final String singleFamily)
+            throws TransformerConfigurationException, SAXException, IOException {
+        final SAXTransformerFactory tFactory = (SAXTransformerFactory) TransformerFactory
+                .newInstance();
         TransformerHandler handler;
         if (this.mode == GENERATE_XML) {
             handler = tFactory.newTransformerHandler();
         } else {
-            URL url = getClass().getResource("fonts2fo.xsl");
+            final URL url = getClass().getResource("fonts2fo.xsl");
             if (url == null) {
-                throw new FileNotFoundException("Did not find resource: fonts2fo.xsl");
+                throw new FileNotFoundException(
+                        "Did not find resource: fonts2fo.xsl");
             }
-            handler = tFactory.newTransformerHandler(new StreamSource(url.toExternalForm()));
+            handler = tFactory.newTransformerHandler(new StreamSource(url
+                    .toExternalForm()));
         }
 
         if (singleFamily != null) {
-            Transformer transformer = handler.getTransformer();
+            final Transformer transformer = handler.getTransformer();
             transformer.setParameter("single-family", singleFamily);
         }
 
@@ -114,9 +118,9 @@ public final class FontListMain {
             handler.setResult(new StreamResult(out));
         }
         try {
-            GenerationHelperContentHandler helper = new GenerationHelperContentHandler(
+            final GenerationHelperContentHandler helper = new GenerationHelperContentHandler(
                     handler, null);
-            FontListSerializer serializer = new FontListSerializer();
+            final FontListSerializer serializer = new FontListSerializer();
             serializer.generateSAX(fontFamilies, singleFamily, helper);
         } finally {
             IOUtils.closeQuietly(out);
@@ -126,27 +130,32 @@ public final class FontListMain {
     private void generate() throws Exception {
         prepare();
 
-        FontEventListener listener = new FontEventListener() {
+        final FontEventListener listener = new FontEventListener() {
 
-            public void fontLoadingErrorAtAutoDetection(Object source,
-                    String fontURL, Exception e) {
-                System.err.println("Could not load " + fontURL
-                        + " (" + e.getLocalizedMessage() + ")");
+            @Override
+            public void fontLoadingErrorAtAutoDetection(final Object source,
+                    final String fontURL, final Exception e) {
+                System.err.println("Could not load " + fontURL + " ("
+                        + e.getLocalizedMessage() + ")");
             }
 
-            public void fontSubstituted(Object source,
-                    FontTriplet requested, FontTriplet effective) {
-                //ignore
+            @Override
+            public void fontSubstituted(final Object source,
+                    final FontTriplet requested, final FontTriplet effective) {
+                // ignore
             }
 
-            public void glyphNotAvailable(Object source, char ch, String fontName) {
-                //ignore
+            @Override
+            public void glyphNotAvailable(final Object source, final char ch,
+                    final String fontName) {
+                // ignore
             }
 
         };
 
-        FontListGenerator listGenerator = new FontListGenerator();
-        SortedMap fontFamilies = listGenerator.listFonts(fopFactory, configMime, listener);
+        final FontListGenerator listGenerator = new FontListGenerator();
+        final SortedMap fontFamilies = listGenerator.listFonts(this.fopFactory,
+                this.configMime, listener);
 
         if (this.mode == GENERATE_CONSOLE) {
             writeToConsole(fontFamilies);
@@ -155,38 +164,40 @@ public final class FontListMain {
         }
     }
 
-    private void writeToConsole(SortedMap fontFamilies)
+    private void writeToConsole(final SortedMap fontFamilies)
             throws TransformerConfigurationException, SAXException, IOException {
-        Iterator iter = fontFamilies.entrySet().iterator();
+        final Iterator iter = fontFamilies.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry)iter.next();
-            String firstFamilyName = (String)entry.getKey();
+            final Map.Entry entry = (Map.Entry) iter.next();
+            final String firstFamilyName = (String) entry.getKey();
             System.out.println(firstFamilyName + ":");
-            List list = (List)entry.getValue();
-            Iterator fonts = list.iterator();
+            final List list = (List) entry.getValue();
+            final Iterator fonts = list.iterator();
             while (fonts.hasNext()) {
-                FontSpec f = (FontSpec)fonts.next();
-                System.out.println("  " + f.getKey() + " " + f.getFamilyNames());
-                Iterator triplets = f.getTriplets().iterator();
+                final FontSpec f = (FontSpec) fonts.next();
+                System.out
+                        .println("  " + f.getKey() + " " + f.getFamilyNames());
+                final Iterator triplets = f.getTriplets().iterator();
                 while (triplets.hasNext()) {
-                    FontTriplet triplet = (FontTriplet)triplets.next();
+                    final FontTriplet triplet = (FontTriplet) triplets.next();
                     System.out.println("    " + triplet.toString());
                 }
             }
         }
     }
 
-    private void writeOutput(SortedMap fontFamilies)
+    private void writeOutput(final SortedMap fontFamilies)
             throws TransformerConfigurationException, SAXException, IOException {
         if (this.outputFile.isDirectory()) {
             System.out.println("Creating one file for each family...");
-            Iterator iter = fontFamilies.entrySet().iterator();
+            final Iterator iter = fontFamilies.entrySet().iterator();
             while (iter.hasNext()) {
-                Map.Entry entry = (Map.Entry)iter.next();
-                String familyName = (String)entry.getKey();
-                System.out.println("Creating output file for " + familyName + "...");
+                final Map.Entry entry = (Map.Entry) iter.next();
+                final String familyName = (String) entry.getKey();
+                System.out.println("Creating output file for " + familyName
+                        + "...");
                 String filename;
-                switch(this.mode) {
+                switch (this.mode) {
                 case GENERATE_RENDERED:
                     filename = familyName + ".pdf";
                     break;
@@ -199,7 +210,7 @@ public final class FontListMain {
                 default:
                     throw new IllegalStateException("Unsupported mode");
                 }
-                File outFile = new File(this.outputFile, filename);
+                final File outFile = new File(this.outputFile, filename);
                 generateXML(fontFamilies, outFile, familyName);
             }
         } else {
@@ -217,10 +228,11 @@ public final class FontListMain {
     private static void printHelp() {
         printVersion();
 
-        String className = FontListMain.class.getName();
-        PrintStream out = System.out;
+        final String className = FontListMain.class.getName();
+        final PrintStream out = System.out;
         out.println("USAGE");
-        out.println("  java [vmargs] " + className
+        out.println("  java [vmargs] "
+                + className
                 + " [-c <config-file>] [-f <mime>] [[output-dir|output-file] [font-family]]");
         out.println();
         out.println("PARAMETERS");
@@ -236,21 +248,21 @@ public final class FontListMain {
                 + " -c userconfig.xml all-fonts.pdf");
         out.println("  --> this generates a single PDF containing a sample");
         out.println("      of all configured fonts.");
-        out.println("  java [vmargs] " + className
-                + " -c userconfig.xml");
+        out.println("  java [vmargs] " + className + " -c userconfig.xml");
         out.println("  --> this prints all configured fonts to the console.");
         out.println();
     }
 
-    private void parseArguments(String[] args) {
+    private void parseArguments(final String[] args) {
         if (args.length > 0) {
             int idx = 0;
-            if ("--help".equals(args[idx]) || "-?".equals(args[idx]) || "-h".equals(args[idx])) {
+            if ("--help".equals(args[idx]) || "-?".equals(args[idx])
+                    || "-h".equals(args[idx])) {
                 printHelp();
                 System.exit(0);
             }
             if (idx < args.length - 1 && "-c".equals(args[idx])) {
-                String filename = args[idx + 1];
+                final String filename = args[idx + 1];
                 this.configFile = new File(filename);
                 idx += 2;
             }
@@ -259,22 +271,25 @@ public final class FontListMain {
                 idx += 2;
             }
             if (idx < args.length) {
-                String name = args[idx];
+                final String name = args[idx];
                 this.outputFile = new File(name);
                 if (this.outputFile.isDirectory()) {
                     this.mode = GENERATE_RENDERED;
-                    this.outputMime = MimeConstants.MIME_PDF;
-                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase("pdf")) {
+                    this.outputMime = org.apache.xmlgraphics.util.MimeConstants.MIME_PDF;
+                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase(
+                        "pdf")) {
                     this.mode = GENERATE_RENDERED;
-                    this.outputMime = MimeConstants.MIME_PDF;
-                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase("fo")) {
+                    this.outputMime = org.apache.xmlgraphics.util.MimeConstants.MIME_PDF;
+                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase(
+                        "fo")) {
                     this.mode = GENERATE_FO;
-                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase("xml")) {
+                } else if (FilenameUtils.getExtension(name).equalsIgnoreCase(
+                        "xml")) {
                     this.mode = GENERATE_XML;
                 } else {
                     throw new IllegalArgumentException(
                             "Operating mode for the output file cannot be determined"
-                            + " or is unsupported: " + name);
+                                    + " or is unsupported: " + name);
                 }
                 idx++;
             }
@@ -288,14 +303,16 @@ public final class FontListMain {
 
     /**
      * The command-line interface.
-     * @param args the command-line arguments
+     * 
+     * @param args
+     *            the command-line arguments
      */
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         try {
-            FontListMain app = new FontListMain();
+            final FontListMain app = new FontListMain();
             app.parseArguments(args);
             app.generate();
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             printHelp();
             t.printStackTrace();
             System.exit(-1);

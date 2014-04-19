@@ -19,19 +19,22 @@
 
 package org.apache.fop.area.inline;
 
-import org.apache.fop.area.Area;
-
-import java.io.IOException;
 import java.awt.geom.Rectangle2D;
+import java.io.IOException;
 import java.util.HashMap;
 
+import org.apache.fop.area.Area;
+
 /**
- * Inline viewport area.
- * This is an inline-level viewport area for inline container,
- * external graphic and instream foreign object. This viewport
- * holds the area and positions it.
+ * Inline viewport area. This is an inline-level viewport area for inline
+ * container, external graphic and instream foreign object. This viewport holds
+ * the area and positions it.
  */
 public class Viewport extends InlineArea {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 813338534627918689L;
     // contents could be container, foreign object or image
     private Area content;
     // clipping for the viewport
@@ -42,18 +45,20 @@ public class Viewport extends InlineArea {
     /**
      * Create a new viewport area with the content area.
      *
-     * @param child the child content area of this viewport
+     * @param child
+     *            the child content area of this viewport
      */
-    public Viewport(Area child) {
+    public Viewport(final Area child) {
         this.content = child;
     }
 
     /**
      * Set the clip of this viewport.
      *
-     * @param c true if this viewport should clip
+     * @param c
+     *            true if this viewport should clip
      */
-    public void setClip(boolean c) {
+    public void setClip(final boolean c) {
         this.clip = c;
     }
 
@@ -69,9 +74,10 @@ public class Viewport extends InlineArea {
     /**
      * Set the position and size of the content of this viewport.
      *
-     * @param cp the position and size to place the content
+     * @param cp
+     *            the position and size to place the content
      */
-    public void setContentPosition(Rectangle2D cp) {
+    public void setContentPosition(final Rectangle2D cp) {
         this.contentPosition = cp;
     }
 
@@ -86,9 +92,11 @@ public class Viewport extends InlineArea {
 
     /**
      * Sets the content area.
-     * @param content the content area
+     * 
+     * @param content
+     *            the content area
      */
-    public void setContent(Area content) {
+    public void setContent(final Area content) {
         this.content = content;
     }
 
@@ -101,27 +109,25 @@ public class Viewport extends InlineArea {
         return this.content;
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-    throws IOException {
-        out.writeBoolean(contentPosition != null);
-        if (contentPosition != null) {
-            out.writeFloat((float) contentPosition.getX());
-            out.writeFloat((float) contentPosition.getY());
-            out.writeFloat((float) contentPosition.getWidth());
-            out.writeFloat((float) contentPosition.getHeight());
+    private void writeObject(final java.io.ObjectOutputStream out)
+            throws IOException {
+        out.writeBoolean(this.contentPosition != null);
+        if (this.contentPosition != null) {
+            out.writeFloat((float) this.contentPosition.getX());
+            out.writeFloat((float) this.contentPosition.getY());
+            out.writeFloat((float) this.contentPosition.getWidth());
+            out.writeFloat((float) this.contentPosition.getHeight());
         }
-        out.writeBoolean(clip);
-        out.writeObject(props);
-        out.writeObject(content);
+        out.writeBoolean(this.clip);
+        out.writeObject(this.props);
+        out.writeObject(this.content);
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-    throws IOException, ClassNotFoundException {
+    private void readObject(final java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
         if (in.readBoolean()) {
-            contentPosition = new Rectangle2D.Float(in.readFloat(),
-                                                    in.readFloat(),
-                                                    in.readFloat(),
-                                                    in.readFloat());
+            this.contentPosition = new Rectangle2D.Float(in.readFloat(),
+                    in.readFloat(), in.readFloat(), in.readFloat());
         }
         this.clip = in.readBoolean();
         this.props = (HashMap) in.readObject();

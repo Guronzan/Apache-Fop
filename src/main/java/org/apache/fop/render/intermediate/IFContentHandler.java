@@ -26,61 +26,73 @@ import org.xml.sax.SAXException;
 
 public class IFContentHandler implements ContentHandler {
 
-    public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
+    @Override
+    public void characters(final char[] arg0, final int arg1, final int arg2)
+            throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
+    @Override
     public void endDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    public void endElement(String arg0, String arg1, String arg2)
+    @Override
+    public void endElement(final String arg0, final String arg1,
+            final String arg2) throws SAXException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void endPrefixMapping(final String arg0) throws SAXException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void ignorableWhitespace(final char[] arg0, final int arg1,
+            final int arg2) throws SAXException {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void processingInstruction(final String arg0, final String arg1)
             throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    public void endPrefixMapping(String arg0) throws SAXException {
+    @Override
+    public void setDocumentLocator(final Locator arg0) {
         // TODO Auto-generated method stub
 
     }
 
-    public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
-            throws SAXException {
+    @Override
+    public void skippedEntity(final String arg0) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    public void processingInstruction(String arg0, String arg1)
-            throws SAXException {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void setDocumentLocator(Locator arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    public void skippedEntity(String arg0) throws SAXException {
-        // TODO Auto-generated method stub
-
-    }
-
+    @Override
     public void startDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    public void startElement(String arg0, String arg1, String arg2,
-            Attributes arg3) throws SAXException {
+    @Override
+    public void startElement(final String arg0, final String arg1,
+            final String arg2, final Attributes arg3) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    public void startPrefixMapping(String arg0, String arg1)
+    @Override
+    public void startPrefixMapping(final String arg0, final String arg1)
             throws SAXException {
         // TODO Auto-generated method stub
 

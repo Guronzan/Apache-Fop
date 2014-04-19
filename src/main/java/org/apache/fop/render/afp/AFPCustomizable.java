@@ -32,7 +32,7 @@ public interface AFPCustomizable {
      * @param bitsPerPixel
      *            number of bits per pixel
      */
-    void setBitsPerPixel(int bitsPerPixel);
+    void setBitsPerPixel(final int bitsPerPixel);
 
     /**
      * Sets whether images are color or not
@@ -40,7 +40,7 @@ public interface AFPCustomizable {
      * @param colorImages
      *            color image output
      */
-    void setColorImages(boolean colorImages);
+    void setColorImages(final boolean colorImages);
 
     /**
      * Sets whether images are supported natively or not
@@ -48,28 +48,35 @@ public interface AFPCustomizable {
      * @param nativeImages
      *            native image support
      */
-    void setNativeImagesSupported(boolean nativeImages);
+    void setNativeImagesSupported(final boolean nativeImages);
 
     /**
-     * Controls whether CMYK images (IOCA FS45) are enabled. By default, support is disabled
-     * for wider compatibility. When disabled, any CMYK image is converted to the selected
-     * color format.
-     * @param value true to enabled CMYK images
+     * Controls whether CMYK images (IOCA FS45) are enabled. By default, support
+     * is disabled for wider compatibility. When disabled, any CMYK image is
+     * converted to the selected color format.
+     * 
+     * @param value
+     *            true to enabled CMYK images
      */
-    void setCMYKImagesSupported(boolean value);
+    void setCMYKImagesSupported(final boolean value);
 
     /**
      * Sets the shading mode for painting filled rectangles.
-     * @param shadingMode the shading mode
+     * 
+     * @param shadingMode
+     *            the shading mode
      */
-    void setShadingMode(AFPShadingMode shadingMode);
+    void setShadingMode(final AFPShadingMode shadingMode);
 
     /**
-     * Sets the dithering quality setting to use when converting images to monochrome images.
-     * @param quality Defines the desired quality level for the conversion.
-     *                  Valid values: a value between 0.0f (fastest) and 1.0f (best)
+     * Sets the dithering quality setting to use when converting images to
+     * monochrome images.
+     * 
+     * @param quality
+     *            Defines the desired quality level for the conversion. Valid
+     *            values: a value between 0.0f (fastest) and 1.0f (best)
      */
-    void setDitheringQuality(float quality);
+    void setDitheringQuality(final float quality);
 
     /**
      * Sets the output/device resolution
@@ -77,7 +84,7 @@ public interface AFPCustomizable {
      * @param resolution
      *            the output resolution (dpi)
      */
-    void setResolution(int resolution);
+    void setResolution(final int resolution);
 
     /**
      * Returns the output/device resolution.
@@ -88,15 +95,20 @@ public interface AFPCustomizable {
 
     /**
      * Sets the default resource group file path
-     * @param filePath the default resource group file path
+     * 
+     * @param filePath
+     *            the default resource group file path
      */
-    void setDefaultResourceGroupFilePath(String filePath);
+    void setDefaultResourceGroupFilePath(final String filePath);
 
     /**
-     * Sets the resource level defaults. The object passed in provides information which resource
-     * level shall be used by default for various kinds of resources.
-     * @param defaults the resource level defaults
+     * Sets the resource level defaults. The object passed in provides
+     * information which resource level shall be used by default for various
+     * kinds of resources.
+     * 
+     * @param defaults
+     *            the resource level defaults
      */
-    void setResourceLevelDefaults(AFPResourceLevelDefaults defaults);
+    void setResourceLevelDefaults(final AFPResourceLevelDefaults defaults);
 
 }

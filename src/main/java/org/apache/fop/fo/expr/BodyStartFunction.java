@@ -34,31 +34,39 @@ public class BodyStartFunction extends FunctionBase {
     /**
      * @return 0 (there are no arguments for body-start)
      */
+    @Override
     public int nbArgs() {
         return 0;
     }
 
     /**
-     * @param args array of arguments (none are used, but this is required by
-     * the Function interface)
-     * @param pInfo PropertyInfo object to be evaluated
+     * @param args
+     *            array of arguments (none are used, but this is required by the
+     *            Function interface)
+     * @param pInfo
+     *            PropertyInfo object to be evaluated
      * @return numeric object containing the calculated body-start value
-     * @throws PropertyException if called from outside of an fo:list-item
+     * @throws PropertyException
+     *             if called from outside of an fo:list-item
      */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-        Numeric distance =
-            pInfo.getPropertyList().get(Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS).getNumeric();
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        final Numeric distance = pInfo.getPropertyList()
+                .get(Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS)
+                .getNumeric();
 
         PropertyList pList = pInfo.getPropertyList();
         while (pList != null && !(pList.getFObj() instanceof ListItem)) {
             pList = pList.getParentPropertyList();
         }
         if (pList == null) {
-            throw new PropertyException("body-start() called from outside an fo:list-item");
+            throw new PropertyException(
+                    "body-start() called from outside an fo:list-item");
         }
 
-        Numeric startIndent = pList.get(Constants.PR_START_INDENT).getNumeric();
+        final Numeric startIndent = pList.get(Constants.PR_START_INDENT)
+                .getNumeric();
 
         return (Property) NumericOp.addition(distance, startIndent);
     }

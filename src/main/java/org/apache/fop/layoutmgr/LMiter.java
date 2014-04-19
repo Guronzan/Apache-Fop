@@ -25,65 +25,73 @@ import java.util.NoSuchElementException;
 
 public class LMiter implements ListIterator {
 
-
     protected List listLMs;
     protected int curPos = 0;
     /** The LayoutManager to which this LMiter is attached **/
-    private LayoutManager lp;
+    private final LayoutManager lp;
 
-    public LMiter(LayoutManager lp) {
+    public LMiter(final LayoutManager lp) {
         this.lp = lp;
-        listLMs = lp.getChildLMs();
+        this.listLMs = lp.getChildLMs();
     }
 
+    @Override
     public boolean hasNext() {
-        return (curPos < listLMs.size()) ? true : lp.createNextChildLMs(curPos);
+        return this.curPos < this.listLMs.size() ? true : this.lp
+                .createNextChildLMs(this.curPos);
     }
 
+    @Override
     public boolean hasPrevious() {
-        return (curPos > 0);
+        return this.curPos > 0;
     }
 
+    @Override
     public Object previous() throws NoSuchElementException {
-        if (curPos > 0) {
-            return listLMs.get(--curPos);
+        if (this.curPos > 0) {
+            return this.listLMs.get(--this.curPos);
         } else {
             throw new NoSuchElementException();
         }
     }
 
+    @Override
     public Object next() throws NoSuchElementException {
-        if (curPos < listLMs.size()) {
-            return listLMs.get(curPos++);
+        if (this.curPos < this.listLMs.size()) {
+            return this.listLMs.get(this.curPos++);
         } else {
             throw new NoSuchElementException();
         }
     }
 
+    @Override
     public void remove() throws NoSuchElementException {
-        if (curPos > 0) {
-            listLMs.remove(--curPos);
+        if (this.curPos > 0) {
+            this.listLMs.remove(--this.curPos);
             // Note: doesn't actually remove it from the base!
         } else {
             throw new NoSuchElementException();
         }
     }
 
-
-    public void add(Object o) throws UnsupportedOperationException {
+    @Override
+    public void add(final Object o) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support add");
     }
 
-    public void set(Object o) throws UnsupportedOperationException {
+    @Override
+    public void set(final Object o) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support set");
     }
 
+    @Override
     public int nextIndex() {
-        return curPos;
+        return this.curPos;
     }
 
+    @Override
     public int previousIndex() {
-        return curPos - 1;
+        return this.curPos - 1;
     }
 
 }

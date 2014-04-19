@@ -20,26 +20,28 @@
 package org.apache.fop.afp.goca;
 
 /**
- * A GOCA graphics curved tangential line to a specified set of
- * straight lines drawn from the given position or current position
+ * A GOCA graphics curved tangential line to a specified set of straight lines
+ * drawn from the given position or current position
  */
 public final class GraphicsFillet extends AbstractGraphicsCoord {
 
     /**
      * Constructor
      *
-     * @param coords the x/y coordinates for this object
+     * @param coords
+     *            the x/y coordinates for this object
      */
-    public GraphicsFillet(int[] coords, boolean relative) {
+    public GraphicsFillet(final int[] coords, final boolean relative) {
         super(coords, relative);
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         if (isRelative()) {
-            return (byte)0x85;
+            return (byte) 0x85;
         } else {
-            return (byte)0xC5;
+            return (byte) 0xC5;
         }
     }
 

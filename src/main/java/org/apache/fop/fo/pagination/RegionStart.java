@@ -22,11 +22,11 @@ package org.apache.fop.fo.pagination;
 // Java
 import java.awt.Rectangle;
 
-// FOP
-import org.apache.fop.fo.FONode;
 import org.apache.fop.datatypes.FODimension;
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.datatypes.PercentBaseContext;
+// FOP
+import org.apache.fop.fo.FONode;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_region-start">
@@ -35,50 +35,61 @@ import org.apache.fop.datatypes.PercentBaseContext;
 public class RegionStart extends RegionSE {
 
     /**
-     * Create a RegionStart instance that is a child of the
-     * given parent {@link FONode}.
-     * @param parent    the {@link FONode} that is to be the parent
+     * Create a RegionStart instance that is a child of the given parent
+     * {@link FONode}.
+     * 
+     * @param parent
+     *            the {@link FONode} that is to be the parent
      */
-    public RegionStart(FONode parent) {
+    public RegionStart(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public Rectangle getViewportRectangle (FODimension reldims, SimplePageMaster spm) {
-        /* Special rules apply to resolving extent as values are resolved relative
-         * to the page size and reference orientation.
+    @Override
+    public Rectangle getViewportRectangle(final FODimension reldims,
+            final SimplePageMaster spm) {
+        /*
+         * Special rules apply to resolving extent as values are resolved
+         * relative to the page size and reference orientation.
          */
-        PercentBaseContext pageWidthContext = getPageWidthContext(LengthBase.CUSTOM_BASE);
-        PercentBaseContext pageHeightContext = getPageHeightContext(LengthBase.CUSTOM_BASE);
+        final PercentBaseContext pageWidthContext = getPageWidthContext(LengthBase.CUSTOM_BASE);
+        final PercentBaseContext pageHeightContext = getPageHeightContext(LengthBase.CUSTOM_BASE);
         PercentBaseContext neighbourContext;
         Rectangle vpRect;
-        if (spm.getWritingMode() == EN_LR_TB || spm.getWritingMode() == EN_RL_TB) {
+        if (spm.getWritingMode() == EN_LR_TB
+                || spm.getWritingMode() == EN_RL_TB) {
             neighbourContext = pageHeightContext;
-            vpRect = new Rectangle(0, 0, getExtent().getValue(pageWidthContext), reldims.bpd);
+            vpRect = new Rectangle(0, 0,
+                    getExtent().getValue(pageWidthContext), reldims.bpd);
         } else {
             neighbourContext = pageWidthContext;
-            vpRect = new Rectangle(0, 0, reldims.bpd, getExtent().getValue(pageHeightContext));
+            vpRect = new Rectangle(0, 0, reldims.bpd, getExtent().getValue(
+                    pageHeightContext));
         }
         adjustIPD(vpRect, spm.getWritingMode(), neighbourContext);
         return vpRect;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-start";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-start";
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_START}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_START;
     }
 }
-

@@ -26,35 +26,37 @@ public class ToBeImplementedProperty extends Property {
 
     public static class Maker extends PropertyMaker {
 
-        public Maker(int propId) {
+        public Maker(final int propId) {
             super(propId);
         }
 
-        public Property convertProperty(Property p,
-                                        PropertyList propertyList, FObj fo) {
+        @Override
+        public Property convertProperty(final Property p,
+                final PropertyList propertyList, final FObj fo) {
             if (p instanceof ToBeImplementedProperty) {
                 return p;
             }
 
-            ToBeImplementedProperty val =
-                new ToBeImplementedProperty(getPropId());
+            final ToBeImplementedProperty val = new ToBeImplementedProperty(
+                    getPropId());
             return val;
         }
     }
 
     /**
      * Constructor
-     * @param propId id of Property
+     * 
+     * @param propId
+     *            id of Property
      */
-    public ToBeImplementedProperty(int propId) {
+    public ToBeImplementedProperty(final int propId) {
 
-        //XXX: (mjg@recalldesign.com) This is a bit of a kluge, perhaps an
-        //UnimplementedPropertyException or something similar should
-        //get thrown here instead.
+        // XXX: (mjg@recalldesign.com) This is a bit of a kluge, perhaps an
+        // UnimplementedPropertyException or something similar should
+        // get thrown here instead.
 
-//         Log log = Hierarchy.getDefaultHierarchy().getLoggerFor("fop");
-//         log.warn("property - \"" + propName
-//                                + "\" is not implemented yet.");
+        // Log log = Hierarchy.getDefaultHierarchy().getLoggerFor("fop");
+        // log.warn("property - \"" + propName
+        // + "\" is not implemented yet.");
     }
 }
-

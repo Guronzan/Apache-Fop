@@ -31,7 +31,7 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  */
 public abstract class PtocaBuilder implements PtocaConstants {
 
-    private ByteArrayOutputStream baout = new ByteArrayOutputStream(256);
+    private final ByteArrayOutputStream baout = new ByteArrayOutputStream(256);
 
     /** the current x coordinate. */
     private int currentX = -1;
@@ -54,52 +54,57 @@ public abstract class PtocaBuilder implements PtocaConstants {
     /** the current inter character adjustment */
     private int currentInterCharacterAdjustment = 0;
 
-
     /**
-     * Returns an {@link OutputStream} for the next control sequence. This gives a subclass a
-     * chance to do chunking of control sequences into multiple presentation text data objects.
-     * @param length the length of the following control sequence
+     * Returns an {@link OutputStream} for the next control sequence. This gives
+     * a subclass a chance to do chunking of control sequences into multiple
+     * presentation text data objects.
+     * 
+     * @param length
+     *            the length of the following control sequence
      * @return the output stream where the control sequence will be written to
      */
-    protected abstract OutputStream getOutputStreamForControlSequence(int length);
+    protected abstract OutputStream getOutputStreamForControlSequence(
+            final int length);
 
-    private static byte chained(byte functionType) {
-        return (byte)(functionType | CHAIN_BIT);
+    private static byte chained(final byte functionType) {
+        return (byte) (functionType | CHAIN_BIT);
     }
 
     private void newControlSequence() {
-        baout.reset();
+        this.baout.reset();
     }
 
-    private void commit(byte functionType) throws IOException {
-        int length = baout.size() + 2;
+    private void commit(final byte functionType) throws IOException {
+        final int length = this.baout.size() + 2;
         assert length < 256;
 
-        OutputStream out = getOutputStreamForControlSequence(length);
+        final OutputStream out = getOutputStreamForControlSequence(length);
         out.write(length);
         out.write(functionType);
-        baout.writeTo(out);
+        this.baout.writeTo(out);
     }
 
-    private void write(byte[] data, int offset, int length) {
-        baout.write(data, offset, length);
+    private void write(final byte[] data, final int offset, final int length) {
+        this.baout.write(data, offset, length);
     }
 
-    private void writeByte(int data) {
-        baout.write(data);
+    private void writeByte(final int data) {
+        this.baout.write(data);
     }
 
-    private void writeShort(int data) {
-        baout.write((data >>> 8) & 0xFF);
-        baout.write(data & 0xFF);
+    private void writeShort(final int data) {
+        this.baout.write(data >>> 8 & 0xFF);
+        this.baout.write(data & 0xFF);
     }
 
     /**
      * Writes the introducer for a chained control sequence.
-     * @throws IOException if an I/O error occurs
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
      */
     public void writeIntroducer() throws IOException {
-        OutputStream out = getOutputStreamForControlSequence(ESCAPE.length);
+        final OutputStream out = getOutputStreamForControlSequence(ESCAPE.length);
         out.write(ESCAPE);
     }
 
@@ -109,15 +114,17 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * <p>
      * This is a modal control sequence.
      *
-     * @param font The font local identifier.
-     * @throws IOException if an I/O error occurs
+     * @param font
+     *            The font local identifier.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void setCodedFont(byte font) throws IOException {
+    public void setCodedFont(final byte font) throws IOException {
         // Avoid unnecessary specification of the font
-        if (currentFont == font) {
+        if (this.currentFont == font) {
             return;
         } else {
-            currentFont = font;
+            this.currentFont = font;
         }
 
         newControlSequence();
@@ -130,10 +137,12 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * I-axis coordinate, which is a specified number of measurement units from
      * the B-axis. There is no change to the current B-axis coordinate.
      *
-     * @param coordinate The coordinate for the inline move.
-     * @throws IOException if an I/O error occurs
+     * @param coordinate
+     *            The coordinate for the inline move.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void absoluteMoveInline(int coordinate) throws IOException {
+    public void absoluteMoveInline(final int coordinate) throws IOException {
         if (coordinate == this.currentX) {
             return;
         }
@@ -141,16 +150,19 @@ public abstract class PtocaBuilder implements PtocaConstants {
         writeShort(coordinate);
         commit(chained(AMI));
 
-        currentX = coordinate;
+        this.currentX = coordinate;
     }
 
     /**
-     * Moves the inline coordinate of the presentation position relative to the current
-     * inline position.
-     * @param increment the increment in 1/1440 inch units
-     * @throws IOException if an I/O error occurs
+     * Moves the inline coordinate of the presentation position relative to the
+     * current inline position.
+     * 
+     * @param increment
+     *            the increment in 1/1440 inch units
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void relativeMoveInline(int increment) throws IOException {
+    public void relativeMoveInline(final int increment) throws IOException {
         newControlSequence();
         writeShort(increment);
         commit(chained(RMI));
@@ -161,10 +173,12 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * B-axis coordinate, which is a specified number of measurement units from
      * the I-axis. There is no change to the current I-axis coordinate.
      *
-     * @param coordinate The coordinate for the baseline move.
-     * @throws IOException if an I/O error occurs
+     * @param coordinate
+     *            The coordinate for the baseline move.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void absoluteMoveBaseline(int coordinate) throws IOException {
+    public void absoluteMoveBaseline(final int coordinate) throws IOException {
         if (coordinate == this.currentY) {
             return;
         }
@@ -172,45 +186,51 @@ public abstract class PtocaBuilder implements PtocaConstants {
         writeShort(coordinate);
         commit(chained(AMB));
 
-        currentY = coordinate;
-        currentX = -1;
+        this.currentY = coordinate;
+        this.currentX = -1;
     }
 
     private static final int TRANSPARENT_MAX_SIZE = 253;
 
     /**
      * The Transparent Data control sequence contains a sequence of code points
-     * that are presented without a scan for embedded control sequences. If the data is larger
-     * than fits in one chunk, additional chunks are automatically generated.
+     * that are presented without a scan for embedded control sequences. If the
+     * data is larger than fits in one chunk, additional chunks are
+     * automatically generated.
      *
-     * @param data The text data to add.
-     * @throws IOException if an I/O error occurs
+     * @param data
+     *            The text data to add.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void addTransparentData(byte[] data) throws IOException {
+    public void addTransparentData(final byte[] data) throws IOException {
         if (data.length <= TRANSPARENT_DATA_MAX_SIZE) {
             addTransparentDataChunk(data);
         } else {
             // data size greater than TRANSPARENT_MAX_SIZE, so slice
-            int numTransData = data.length / TRANSPARENT_DATA_MAX_SIZE;
+            final int numTransData = data.length / TRANSPARENT_DATA_MAX_SIZE;
             int currIndex = 0;
             for (int transDataCnt = 0; transDataCnt < numTransData; transDataCnt++) {
-                addTransparentDataChunk(data, currIndex, TRANSPARENT_DATA_MAX_SIZE);
+                addTransparentDataChunk(data, currIndex,
+                        TRANSPARENT_DATA_MAX_SIZE);
                 currIndex += TRANSPARENT_DATA_MAX_SIZE;
             }
-            int left = data.length - currIndex;
+            final int left = data.length - currIndex;
             addTransparentDataChunk(data, currIndex, left);
         }
     }
 
-    private void addTransparentDataChunk(byte[] data) throws IOException {
+    private void addTransparentDataChunk(final byte[] data) throws IOException {
         addTransparentDataChunk(data, 0, data.length);
     }
 
-    private void addTransparentDataChunk(byte[] data, int offset, int length) throws IOException {
+    private void addTransparentDataChunk(final byte[] data, final int offset,
+            final int length) throws IOException {
         if (length > TRANSPARENT_MAX_SIZE) {
             // Check that we are not exceeding the maximum length
             throw new IllegalArgumentException(
-                    "Transparent data is longer than " + TRANSPARENT_MAX_SIZE + " bytes");
+                    "Transparent data is longer than " + TRANSPARENT_MAX_SIZE
+                            + " bytes");
         }
         newControlSequence();
         write(data, offset, length);
@@ -222,11 +242,15 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * from the current presentation position. The location of the current
      * presentation position is unchanged.
      *
-     * @param length The length of the rule.
-     * @param width The width of the rule.
-     * @throws IOException if an I/O error occurs
+     * @param length
+     *            The length of the rule.
+     * @param width
+     *            The width of the rule.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void drawBaxisRule(int length, int width) throws IOException {
+    public void drawBaxisRule(final int length, final int width)
+            throws IOException {
         newControlSequence();
         writeShort(length); // Rule length
         writeShort(width); // Rule width
@@ -239,11 +263,15 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * from the current presentation position. The location of the current
      * presentation position is unchanged.
      *
-     * @param length The length of the rule.
-     * @param width The width of the rule.
-     * @throws IOException if an I/O error occurs
+     * @param length
+     *            The length of the rule.
+     * @param width
+     *            The width of the rule.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void drawIaxisRule(int length, int width) throws IOException {
+    public void drawIaxisRule(final int length, final int width)
+            throws IOException {
         newControlSequence();
         writeShort(length); // Rule length
         writeShort(width); // Rule width
@@ -260,10 +288,12 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * Text object. The orientations are rotational values expressed in degrees
      * and minutes.
      *
-     * @param orientation The text orientation (0, 90, 180, 270).
-     * @throws IOException if an I/O error occurs
+     * @param orientation
+     *            The text orientation (0, 90, 180, 270).
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void setTextOrientation(int orientation) throws IOException {
+    public void setTextOrientation(final int orientation) throws IOException {
         if (orientation == this.currentOrientation) {
             return;
         }
@@ -296,8 +326,8 @@ public abstract class PtocaBuilder implements PtocaConstants {
         }
         commit(chained(STO));
         this.currentOrientation = orientation;
-        currentX = -1;
-        currentY = -1;
+        this.currentX = -1;
+        this.currentY = -1;
     }
 
     /**
@@ -307,11 +337,13 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * <p>
      * This is a modal control sequence.
      *
-     * @param col The color to be set.
-     * @throws IOException if an I/O error occurs
+     * @param col
+     *            The color to be set.
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void setExtendedTextColor(Color col) throws IOException {
-        if (col.equals(currentColor)) {
+    public void setExtendedTextColor(final Color col) throws IOException {
+        if (col.equals(this.currentColor)) {
             return;
         }
         newControlSequence();
@@ -326,10 +358,10 @@ public abstract class PtocaBuilder implements PtocaConstants {
             writeByte(8); // Number of bits in component 2
             writeByte(8); // Number of bits in component 3
             writeByte(8); // Number of bits in component 4
-            float[] comps = col.getColorComponents(null);
+            final float[] comps = col.getColorComponents(null);
             assert comps.length == 4;
             for (int i = 0; i < 4; i++) {
-                int component = Math.round(comps[i] * 255);
+                final int component = Math.round(comps[i] * 255);
                 writeByte(component);
             }
         } else {
@@ -356,37 +388,42 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * <p>
      * This is a modal control sequence.
      *
-     * @param incr The increment to be set (positive integer, 1/1440 inch)
-     * @throws IOException if an I/O error occurs
+     * @param incr
+     *            The increment to be set (positive integer, 1/1440 inch)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void setVariableSpaceCharacterIncrement(int incr) throws IOException {
+    public void setVariableSpaceCharacterIncrement(final int incr)
+            throws IOException {
         if (incr == this.currentVariableSpaceCharacterIncrement) {
             return;
         }
-        assert incr >= 0 && incr < (1 << 16);
+        assert incr >= 0 && incr < 1 << 16;
         newControlSequence();
-        writeShort(Math.abs(incr)); //Increment
+        writeShort(Math.abs(incr)); // Increment
         commit(chained(SVI));
 
         this.currentVariableSpaceCharacterIncrement = incr;
     }
 
     /**
-     * Sets the intercharacter adjustment (additional increment or decrement between graphic
-     * characters).
+     * Sets the intercharacter adjustment (additional increment or decrement
+     * between graphic characters).
      * <p>
      * This is a modal control sequence.
      *
-     * @param incr The increment to be set (1/1440 inch)
-     * @throws IOException if an I/O error occurs
+     * @param incr
+     *            The increment to be set (1/1440 inch)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public void setInterCharacterAdjustment(int incr) throws IOException {
+    public void setInterCharacterAdjustment(final int incr) throws IOException {
         if (incr == this.currentInterCharacterAdjustment) {
             return;
         }
         assert incr >= Short.MIN_VALUE && incr <= Short.MAX_VALUE;
         newControlSequence();
-        writeShort(Math.abs(incr)); //Increment
+        writeShort(Math.abs(incr)); // Increment
         writeByte(incr >= 0 ? 0 : 1); // Direction
         commit(chained(SIA));
 
@@ -400,7 +437,8 @@ public abstract class PtocaBuilder implements PtocaConstants {
      * presentation text data objects, but must eventually be terminated. This
      * method terminates the control sequence (by using a NOP command).
      *
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
     public void endChainedControlSequence() throws IOException {
         newControlSequence();

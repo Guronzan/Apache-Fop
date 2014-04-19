@@ -29,21 +29,20 @@ import java.io.Reader;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.fop.fonts.NamedCharacter;
 
 /**
- * Parses the contents of a Type 1 AFM font metrics file into an object structure ({@link AFMFile}).
+ * Parses the contents of a Type 1 AFM font metrics file into an object
+ * structure ({@link AFMFile}).
  */
+@Slf4j
 public class AFMParser {
 
-    private static Log log = LogFactory.getLog(AFMParser.class);
-
     private static final String START_FONT_METRICS = "StartFontMetrics";
-    //private static final String END_FONT_METRICS = "EndFontMetrics";
+    // private static final String END_FONT_METRICS = "EndFontMetrics";
     private static final String FONT_NAME = "FontName";
     private static final String FULL_NAME = "FullName";
     private static final String FAMILY_NAME = "FamilyName";
@@ -82,10 +81,10 @@ public class AFMParser {
     private static final String B = "B";
     private static final String START_TRACK_KERN = "StartTrackKern";
     private static final String END_TRACK_KERN = "EndTrackKern";
-    //private static final String START_KERN_PAIRS = "StartKernPairs";
-    //private static final String START_KERN_PAIRS0 = "StartKernPairs0";
+    // private static final String START_KERN_PAIRS = "StartKernPairs";
+    // private static final String START_KERN_PAIRS0 = "StartKernPairs0";
     private static final String START_KERN_PAIRS1 = "StartKernPairs1";
-    //private static final String END_KERN_PAIRS = "EndKernPairs";
+    // private static final String END_KERN_PAIRS = "EndKernPairs";
     private static final String START_COMPOSITES = "StartComposites";
     private static final String START_COMP_FONT_METRICS = "StartCompFontMetrics";
 
@@ -120,10 +119,14 @@ public class AFMParser {
         VALUE_PARSERS.put(STDVW, new NumberSetter(STDVW));
         VALUE_PARSERS.put(START_DIRECTION, new StartDirection());
         VALUE_PARSERS.put(END_DIRECTION, new EndDirection());
-        VALUE_PARSERS.put(UNDERLINE_POSITION, new WritingDirNumberSetter(UNDERLINE_POSITION));
-        VALUE_PARSERS.put(UNDERLINE_THICKNESS, new WritingDirNumberSetter(UNDERLINE_THICKNESS));
-        VALUE_PARSERS.put(ITALIC_ANGLE, new WritingDirDoubleSetter(ITALIC_ANGLE));
-        VALUE_PARSERS.put(IS_FIXED_PITCH, new WritingDirBooleanSetter(IS_FIXED_PITCH));
+        VALUE_PARSERS.put(UNDERLINE_POSITION, new WritingDirNumberSetter(
+                UNDERLINE_POSITION));
+        VALUE_PARSERS.put(UNDERLINE_THICKNESS, new WritingDirNumberSetter(
+                UNDERLINE_THICKNESS));
+        VALUE_PARSERS.put(ITALIC_ANGLE,
+                new WritingDirDoubleSetter(ITALIC_ANGLE));
+        VALUE_PARSERS.put(IS_FIXED_PITCH, new WritingDirBooleanSetter(
+                IS_FIXED_PITCH));
         VALUE_PARSERS.put(C, new IntegerSetter("CharCode"));
         VALUE_PARSERS.put(CH, new NotImplementedYet(CH));
         VALUE_PARSERS.put(WX, new DoubleSetter("WidthX"));
@@ -137,17 +140,22 @@ public class AFMParser {
         VALUE_PARSERS.put(W1, new NotImplementedYet(W1));
         VALUE_PARSERS.put(N, new NamedCharacterSetter("Character"));
         VALUE_PARSERS.put(B, new CharBBox());
-        VALUE_PARSERS.put(START_TRACK_KERN, new NotImplementedYet(START_TRACK_KERN));
-        VALUE_PARSERS.put(START_KERN_PAIRS1, new NotImplementedYet(START_KERN_PAIRS1));
-        VALUE_PARSERS.put(START_COMPOSITES, new NotImplementedYet(START_COMPOSITES));
-        VALUE_PARSERS.put(START_COMP_FONT_METRICS, new NotImplementedYet(START_COMP_FONT_METRICS));
+        VALUE_PARSERS.put(START_TRACK_KERN, new NotImplementedYet(
+                START_TRACK_KERN));
+        VALUE_PARSERS.put(START_KERN_PAIRS1, new NotImplementedYet(
+                START_KERN_PAIRS1));
+        VALUE_PARSERS.put(START_COMPOSITES, new NotImplementedYet(
+                START_COMPOSITES));
+        VALUE_PARSERS.put(START_COMP_FONT_METRICS, new NotImplementedYet(
+                START_COMP_FONT_METRICS));
         VALUE_PARSERS.put(KP, new NotImplementedYet(KP));
         VALUE_PARSERS.put(KPH, new NotImplementedYet(KPH));
         VALUE_PARSERS.put(KPX, new KPXHandler());
         VALUE_PARSERS.put(KPY, new NotImplementedYet(KPY));
 
         PARSE_MODE_CHANGES = new java.util.HashMap();
-        PARSE_MODE_CHANGES.put(START_CHAR_METRICS, new Integer(PARSE_CHAR_METRICS));
+        PARSE_MODE_CHANGES.put(START_CHAR_METRICS, new Integer(
+                PARSE_CHAR_METRICS));
         PARSE_MODE_CHANGES.put(END_CHAR_METRICS, new Integer(PARSE_NORMAL));
     }
 
@@ -155,17 +163,20 @@ public class AFMParser {
      * Main constructor.
      */
     public AFMParser() {
-        //nop
+        // nop
     }
 
     /**
      * Parses an AFM file from a local file.
-     * @param afmFile the AFM file
+     *
+     * @param afmFile
+     *            the AFM file
      * @return the parsed AFM file
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public AFMFile parse(File afmFile) throws IOException {
-        InputStream in = new java.io.FileInputStream(afmFile);
+    public AFMFile parse(final File afmFile) throws IOException {
+        final InputStream in = new java.io.FileInputStream(afmFile);
         try {
             return parse(in);
         } finally {
@@ -175,12 +186,15 @@ public class AFMParser {
 
     /**
      * Parses an AFM file from a stream.
-     * @param in the stream to read from
+     *
+     * @param in
+     *            the stream to read from
      * @return the parsed AFM file
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public AFMFile parse(InputStream in) throws IOException {
-        Reader reader = new java.io.InputStreamReader(in, "US-ASCII");
+    public AFMFile parse(final InputStream in) throws IOException {
+        final Reader reader = new java.io.InputStreamReader(in, "US-ASCII");
         try {
             return parse(new BufferedReader(reader));
         } finally {
@@ -190,15 +204,18 @@ public class AFMParser {
 
     /**
      * Parses an AFM file from a BufferedReader.
-     * @param reader the BufferedReader instance to read from
+     *
+     * @param reader
+     *            the BufferedReader instance to read from
      * @return the parsed AFM file
-     * @throws IOException if an I/O error occurs
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public AFMFile parse(BufferedReader reader) throws IOException {
-        Stack stack = new Stack();
+    public AFMFile parse(final BufferedReader reader) throws IOException {
+        final Stack stack = new Stack();
         int parseMode = PARSE_NORMAL;
         while (true) {
-            String line = reader.readLine();
+            final String line = reader.readLine();
             if (line == null) {
                 break;
             }
@@ -213,69 +230,68 @@ public class AFMParser {
             default:
                 throw new IllegalStateException("Invalid parse mode");
             }
-            Integer newParseMode = (Integer)PARSE_MODE_CHANGES.get(key);
+            final Integer newParseMode = (Integer) PARSE_MODE_CHANGES.get(key);
             if (newParseMode != null) {
                 parseMode = newParseMode.intValue();
             }
         }
-        return (AFMFile)stack.pop();
+        return (AFMFile) stack.pop();
     }
 
-    private String parseLine(String line, Stack stack) throws IOException {
+    private String parseLine(final String line, final Stack stack)
+            throws IOException {
         int startpos = 0;
-        //Find key
+        // Find key
         startpos = skipToNonWhiteSpace(line, startpos);
-        int endpos = skipToWhiteSpace(line, startpos);
-        String key = line.substring(startpos, endpos);
+        final int endpos = skipToWhiteSpace(line, startpos);
+        final String key = line.substring(startpos, endpos);
 
-        //Parse value
+        // Parse value
         startpos = skipToNonWhiteSpace(line, endpos);
-        ValueHandler vp = (ValueHandler)VALUE_PARSERS.get(key);
+        final ValueHandler vp = (ValueHandler) VALUE_PARSERS.get(key);
         if (vp != null) {
             vp.parse(line, startpos, stack);
         }
         return key;
     }
 
-    private String parseCharMetrics(String line, Stack stack) throws IOException {
+    private String parseCharMetrics(final String line, final Stack stack)
+            throws IOException {
         int startpos = 0;
-        AFMCharMetrics chm = new AFMCharMetrics();
+        final AFMCharMetrics chm = new AFMCharMetrics();
         stack.push(chm);
         while (true) {
-            //Find key
+            // Find key
             startpos = skipToNonWhiteSpace(line, startpos);
             int endpos = skipToWhiteSpace(line, startpos);
-            String key = line.substring(startpos, endpos);
+            final String key = line.substring(startpos, endpos);
             if (END_CHAR_METRICS.equals(key)) {
-                stack.pop(); //Pop and forget unused AFMCharMetrics instance
+                stack.pop(); // Pop and forget unused AFMCharMetrics instance
                 return key;
             } else if (key.length() == 0) {
-                //EOL: No more key so break
+                // EOL: No more key so break
                 break;
             }
 
-            //Extract value
+            // Extract value
             startpos = skipToNonWhiteSpace(line, endpos);
             endpos = skipToSemicolon(line, startpos);
-            String value = line.substring(startpos, endpos).trim();
+            final String value = line.substring(startpos, endpos).trim();
             startpos = endpos + 1;
 
-            //Parse value
-            ValueHandler vp = (ValueHandler)VALUE_PARSERS.get(key);
+            // Parse value
+            final ValueHandler vp = (ValueHandler) VALUE_PARSERS.get(key);
             if (vp != null) {
                 vp.parse(value, 0, stack);
             }
-            if (false) {
-                break;
-            }
         }
         stack.pop();
-        AFMFile afm = (AFMFile)stack.peek();
+        final AFMFile afm = (AFMFile) stack.peek();
         afm.addCharMetrics(chm);
         return null;
     }
 
-    private static int skipToNonWhiteSpace(String line, int startpos) {
+    private static int skipToNonWhiteSpace(final String line, final int startpos) {
         int pos = startpos;
         while (pos < line.length() && isWhitespace(line.charAt(pos))) {
             pos++;
@@ -283,7 +299,7 @@ public class AFMParser {
         return pos;
     }
 
-    private static int skipToWhiteSpace(String line, int startpos) {
+    private static int skipToWhiteSpace(final String line, final int startpos) {
         int pos = startpos;
         while (pos < line.length() && !isWhitespace(line.charAt(pos))) {
             pos++;
@@ -291,7 +307,7 @@ public class AFMParser {
         return pos;
     }
 
-    private static int skipToSemicolon(String line, int startpos) {
+    private static int skipToSemicolon(final String line, final int startpos) {
         int pos = startpos;
         while (pos < line.length() && ';' != line.charAt(pos)) {
             pos++;
@@ -299,78 +315,83 @@ public class AFMParser {
         return pos;
     }
 
-    private static boolean isWhitespace(char ch) {
-        return ch == ' '
-            || ch == '\t';
+    private static boolean isWhitespace(final char ch) {
+        return ch == ' ' || ch == '\t';
     }
 
     // ---------------- Value Handlers ---------------------------
 
     private interface ValueHandler {
-        void parse(String line, int startpos, Stack stack) throws IOException;
+        void parse(final String line, final int startpos, final Stack stack)
+                throws IOException;
     }
 
     private abstract static class AbstractValueHandler implements ValueHandler {
 
-        protected int findValue(String line, int startpos) {
+        protected int findValue(final String line, final int startpos) {
             return skipToWhiteSpace(line, startpos);
         }
 
-        protected String getStringValue(String line, int startpos) {
+        protected String getStringValue(final String line, final int startpos) {
             return line.substring(startpos);
         }
 
-        protected Number getNumberValue(String line, int startpos) {
+        protected Number getNumberValue(final String line, final int startpos) {
             try {
                 return new Integer(getIntegerValue(line, startpos));
-            } catch (NumberFormatException nfe) {
+            } catch (final NumberFormatException nfe) {
                 return new Double(getDoubleValue(line, startpos));
             }
         }
 
-        protected int getIntegerValue(String line, int startpos) {
-            int endpos = findValue(line, startpos);
+        protected int getIntegerValue(final String line, final int startpos) {
+            final int endpos = findValue(line, startpos);
             return Integer.parseInt(line.substring(startpos, endpos));
         }
 
-        protected double getDoubleValue(String line, int startpos) {
-            int endpos = findValue(line, startpos);
+        protected double getDoubleValue(final String line, final int startpos) {
+            final int endpos = findValue(line, startpos);
             return Double.parseDouble(line.substring(startpos, endpos));
         }
 
-        protected Boolean getBooleanValue(String line, int startpos) {
+        protected Boolean getBooleanValue(final String line, final int startpos) {
             return Boolean.valueOf(getStringValue(line, startpos));
         }
 
     }
 
     private static class StartFontMetrics extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            int endpos = findValue(line, startpos);
-            double version = Double.parseDouble(line.substring(startpos, endpos));
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final int endpos = findValue(line, startpos);
+            final double version = Double.parseDouble(line.substring(startpos,
+                    endpos));
             if (version < 2) {
                 throw new IOException(
-                        "AFM version must be at least 2.0 but it is " + version + "!");
+                        "AFM version must be at least 2.0 but it is " + version
+                                + "!");
             }
-            AFMFile afm = new AFMFile();
+            final AFMFile afm = new AFMFile();
             stack.push(afm);
         }
     }
 
     private abstract static class BeanSetter extends AbstractValueHandler {
-        private String method;
+        private final String method;
 
-        public BeanSetter(String variable) {
+        public BeanSetter(final String variable) {
             this.method = "set" + variable;
         }
 
-        protected void setValue(Object target, Object value) {
-            //Uses Java Beans API
-            Statement statement = new Statement(target, method, new Object[] {value});
+        protected void setValue(final Object target, final Object value) {
+            // Uses Java Beans API
+            final Statement statement = new Statement(target, this.method,
+                    new Object[] { value });
             try {
                 statement.execute();
-            } catch (Exception e) {
-                //Should never happen
+            } catch (final Exception e) {
+                // Should never happen
                 throw new RuntimeException("Bean error: " + e.getMessage());
             }
         }
@@ -378,79 +399,92 @@ public class AFMParser {
 
     private static class StringSetter extends BeanSetter {
 
-        public StringSetter(String variable) {
+        public StringSetter(final String variable) {
             super(variable);
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            String s = getStringValue(line, startpos);
-            Object obj = stack.peek();
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final String s = getStringValue(line, startpos);
+            final Object obj = stack.peek();
             setValue(obj, s);
         }
     }
 
     private static class NamedCharacterSetter extends BeanSetter {
 
-        public NamedCharacterSetter(String variable) {
+        public NamedCharacterSetter(final String variable) {
             super(variable);
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            NamedCharacter ch = new NamedCharacter(getStringValue(line, startpos));
-            Object obj = stack.peek();
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final NamedCharacter ch = new NamedCharacter(getStringValue(line,
+                    startpos));
+            final Object obj = stack.peek();
             setValue(obj, ch);
         }
     }
 
     private static class NumberSetter extends BeanSetter {
-        public NumberSetter(String variable) {
+        public NumberSetter(final String variable) {
             super(variable);
         }
 
-        protected Object getContextObject(Stack stack) {
+        protected Object getContextObject(final Stack stack) {
             return stack.peek();
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            Number num = getNumberValue(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final Number num = getNumberValue(line, startpos);
             setValue(getContextObject(stack), num);
         }
     }
 
     private static class IntegerSetter extends NumberSetter {
-        public IntegerSetter(String variable) {
+        public IntegerSetter(final String variable) {
             super(variable);
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            int value = getIntegerValue(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final int value = getIntegerValue(line, startpos);
             setValue(getContextObject(stack), new Integer(value));
         }
     }
 
     private static class DoubleSetter extends NumberSetter {
-        public DoubleSetter(String variable) {
+        public DoubleSetter(final String variable) {
             super(variable);
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            double value = getDoubleValue(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final double value = getDoubleValue(line, startpos);
             setValue(getContextObject(stack), new Double(value));
         }
     }
 
     private static class WritingDirNumberSetter extends NumberSetter {
 
-        public WritingDirNumberSetter(String variable) {
+        public WritingDirNumberSetter(final String variable) {
             super(variable);
         }
 
-        protected Object getContextObject(Stack stack) {
+        @Override
+        protected Object getContextObject(final Stack stack) {
             if (stack.peek() instanceof AFMWritingDirectionMetrics) {
-                return (AFMWritingDirectionMetrics)stack.peek();
+                return stack.peek();
             } else {
-                AFMFile afm = (AFMFile)stack.peek();
-                AFMWritingDirectionMetrics wdm = afm.getWritingDirectionMetrics(0);
+                final AFMFile afm = (AFMFile) stack.peek();
+                AFMWritingDirectionMetrics wdm = afm
+                        .getWritingDirectionMetrics(0);
                 if (wdm == null) {
                     wdm = new AFMWritingDirectionMetrics();
                     afm.setWritingDirectionMetrics(0, wdm);
@@ -463,36 +497,40 @@ public class AFMParser {
 
     private static class WritingDirDoubleSetter extends WritingDirNumberSetter {
 
-        public WritingDirDoubleSetter(String variable) {
+        public WritingDirDoubleSetter(final String variable) {
             super(variable);
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            double value = getDoubleValue(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final double value = getDoubleValue(line, startpos);
             setValue(getContextObject(stack), new Double(value));
         }
     }
 
     private static class BooleanSetter extends AbstractValueHandler {
-        private String method;
+        private final String method;
 
-        public BooleanSetter(String variable) {
-            this.method = "set" + variable.substring(2); //Cut "Is" in front
+        public BooleanSetter(final String variable) {
+            this.method = "set" + variable.substring(2); // Cut "Is" in front
         }
 
-        protected Object getContextObject(Stack stack) {
-            return (AFMFile)stack.peek();
+        protected Object getContextObject(final Stack stack) {
+            return stack.peek();
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            Boolean b = getBooleanValue(line, startpos);
-            //Uses Java Beans API
-            Statement statement = new Statement(getContextObject(stack),
-                    method, new Object[] {b});
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final Boolean b = getBooleanValue(line, startpos);
+            // Uses Java Beans API
+            final Statement statement = new Statement(getContextObject(stack),
+                    this.method, new Object[] { b });
             try {
                 statement.execute();
-            } catch (Exception e) {
-                //Should never happen
+            } catch (final Exception e) {
+                // Should never happen
                 throw new RuntimeException("Bean error: " + e.getMessage());
             }
         }
@@ -500,16 +538,18 @@ public class AFMParser {
 
     private static class WritingDirBooleanSetter extends BooleanSetter {
 
-        public WritingDirBooleanSetter(String variable) {
+        public WritingDirBooleanSetter(final String variable) {
             super(variable);
         }
 
-        protected Object getContextObject(Stack stack) {
+        @Override
+        protected Object getContextObject(final Stack stack) {
             if (stack.peek() instanceof AFMWritingDirectionMetrics) {
-                return (AFMWritingDirectionMetrics)stack.peek();
+                return stack.peek();
             } else {
-                AFMFile afm = (AFMFile)stack.peek();
-                AFMWritingDirectionMetrics wdm = afm.getWritingDirectionMetrics(0);
+                final AFMFile afm = (AFMFile) stack.peek();
+                AFMWritingDirectionMetrics wdm = afm
+                        .getWritingDirectionMetrics(0);
                 if (wdm == null) {
                     wdm = new AFMWritingDirectionMetrics();
                     afm.setWritingDirectionMetrics(0, wdm);
@@ -521,15 +561,17 @@ public class AFMParser {
     }
 
     private static class FontBBox extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            Rectangle rect = parseBBox(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final Rectangle rect = parseBBox(line, startpos);
 
-            AFMFile afm = (AFMFile)stack.peek();
+            final AFMFile afm = (AFMFile) stack.peek();
             afm.setFontBBox(rect);
         }
 
-        protected Rectangle parseBBox(String line, int startpos) {
-            Rectangle rect = new Rectangle();
+        protected Rectangle parseBBox(final String line, int startpos) {
+            final Rectangle rect = new Rectangle();
             int endpos;
 
             endpos = findValue(line, startpos);
@@ -554,24 +596,31 @@ public class AFMParser {
     }
 
     private static class CharBBox extends FontBBox {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            Rectangle rect = parseBBox(line, startpos);
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final Rectangle rect = parseBBox(line, startpos);
 
-            AFMCharMetrics metrics = (AFMCharMetrics)stack.peek();
+            final AFMCharMetrics metrics = (AFMCharMetrics) stack.peek();
             metrics.setBBox(rect);
         }
     }
 
     private static class IsBaseFont extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
             if (getBooleanValue(line, startpos).booleanValue()) {
-                throw new IOException("Only base fonts are currently supported!");
+                throw new IOException(
+                        "Only base fonts are currently supported!");
             }
         }
     }
 
     private static class IsCIDFont extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
             if (getBooleanValue(line, startpos).booleanValue()) {
                 throw new IOException("CID fonts are currently not supported!");
             }
@@ -579,30 +628,37 @@ public class AFMParser {
     }
 
     private static class NotImplementedYet extends AbstractValueHandler {
-        private String key;
+        private final String key;
 
-        public NotImplementedYet(String key) {
+        public NotImplementedYet(final String key) {
             this.key = key;
         }
 
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            log.warn("Support for '" + key + "' has not been implemented, yet!"
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            log.warn("Support for '" + this.key
+                    + "' has not been implemented, yet!"
                     + " Some font data in the AFM file will be ignored.");
         }
     }
 
     private static class StartDirection extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            int index = getIntegerValue(line, startpos);
-            AFMWritingDirectionMetrics wdm = new AFMWritingDirectionMetrics();
-            AFMFile afm = (AFMFile)stack.peek();
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
+            final int index = getIntegerValue(line, startpos);
+            final AFMWritingDirectionMetrics wdm = new AFMWritingDirectionMetrics();
+            final AFMFile afm = (AFMFile) stack.peek();
             afm.setWritingDirectionMetrics(index, wdm);
             stack.push(wdm);
         }
     }
 
     private static class EndDirection extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
+        @Override
+        public void parse(final String line, final int startpos,
+                final Stack stack) throws IOException {
             if (!(stack.pop() instanceof AFMWritingDirectionMetrics)) {
                 throw new IOException("AFM format error: nesting incorrect");
             }
@@ -610,20 +666,23 @@ public class AFMParser {
     }
 
     private static class KPXHandler extends AbstractValueHandler {
-        public void parse(String line, int startpos, Stack stack) throws IOException {
-            AFMFile afm = (AFMFile)stack.peek();
+        @Override
+        public void parse(final String line, int startpos, final Stack stack)
+                throws IOException {
+            final AFMFile afm = (AFMFile) stack.peek();
             int endpos;
 
             endpos = findValue(line, startpos);
-            String name1 = line.substring(startpos, endpos);
+            final String name1 = line.substring(startpos, endpos);
             startpos = skipToNonWhiteSpace(line, endpos);
 
             endpos = findValue(line, startpos);
-            String name2 = line.substring(startpos, endpos);
+            final String name2 = line.substring(startpos, endpos);
             startpos = skipToNonWhiteSpace(line, endpos);
 
             endpos = findValue(line, startpos);
-            double kx = Double.parseDouble(line.substring(startpos, endpos));
+            final double kx = Double.parseDouble(line.substring(startpos,
+                    endpos));
             startpos = skipToNonWhiteSpace(line, endpos);
 
             afm.addXKerning(name1, name2, kx);

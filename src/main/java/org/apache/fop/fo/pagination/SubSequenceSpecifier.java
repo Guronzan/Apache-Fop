@@ -19,27 +19,31 @@
 
 package org.apache.fop.fo.pagination;
 
-
 /**
- * Classes that implement this interface can be added to a {@link PageSequenceMaster},
- * and are capable of looking up an appropriate {@link SimplePageMaster}.
+ * Classes that implement this interface can be added to a
+ * {@link PageSequenceMaster}, and are capable of looking up an appropriate
+ * {@link SimplePageMaster}.
  */
 public interface SubSequenceSpecifier {
 
     /**
      * Returns the name of the next page master.
-     * @param isOddPage True if the next page number is odd
-     * @param isFirstPage True if the next page is the first
-     * @param isLastPage True if the next page is the last
-     * @param isBlankPage True if the next page is blank
+     * 
+     * @param isOddPage
+     *            True if the next page number is odd
+     * @param isFirstPage
+     *            True if the next page is the first
+     * @param isLastPage
+     *            True if the next page is the last
+     * @param isBlankPage
+     *            True if the next page is blank
      * @return the page master name
-     * @throws PageProductionException if there's a problem determining the next page master
+     * @throws PageProductionException
+     *             if there's a problem determining the next page master
      */
-    String getNextPageMasterName(boolean isOddPage,
-                                 boolean isFirstPage,
-                                 boolean isLastPage,
-                                 boolean isBlankPage)
-                                    throws PageProductionException;
+    String getNextPageMasterName(final boolean isOddPage,
+            final boolean isFirstPage, final boolean isLastPage,
+            final boolean isBlankPage) throws PageProductionException;
 
     /**
      * Called before a new page sequence is rendered so subsequences can reset
@@ -49,15 +53,20 @@ public interface SubSequenceSpecifier {
 
     /**
      * Used to set the "cursor position" to the previous item.
-     * @return true if there is a previous item, false if the current one was the first one.
+     * 
+     * @return true if there is a previous item, false if the current one was
+     *         the first one.
      */
     boolean goToPrevious();
 
-    /** @return true if the subsequence has a page master for page-position "last" */
+    /**
+     * @return true if the subsequence has a page master for page-position "last"
+     */
     boolean hasPagePositionLast();
 
-    /** @return true if the subsequence has a page master for page-position "only" */
+    /**
+     * @return true if the subsequence has a page master for page-position "only"
+     */
     boolean hasPagePositionOnly();
 
 }
-

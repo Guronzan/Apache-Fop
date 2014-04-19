@@ -28,36 +28,51 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 import java.io.IOException;
 
-/**  Interface for RtfElements that can contain RtfText elements
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Interface for RtfElements that can contain RtfText elements
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public interface IRtfTextContainer {
     /**
      * Close current text element, if any, and start a new one
-     * @param str if not null, added to the RtfText created
-     * @param attr attributes for text
+     * 
+     * @param str
+     *            if not null, added to the RtfText created
+     * @param attr
+     *            attributes for text
      * @return new text object
-     * @throws IOException for I/O problems
+     * @throws IOException
+     *             for I/O problems
      */
-    RtfText newText(String str, RtfAttributes attr) throws IOException;
+    RtfText newText(final String str, final RtfAttributes attr)
+            throws IOException;
 
     /**
-     * Close current text run, if any, and start a new one with default attributes
-     * @param str if not null, added to the RtfText created
+     * Close current text run, if any, and start a new one with default
+     * attributes
+     * 
+     * @param str
+     *            if not null, added to the RtfText created
      * @return a new text object
-     * @throws IOException for I/O problems
+     * @throws IOException
+     *             for I/O problems
      */
-    RtfText newText(String str) throws IOException;
+    RtfText newText(final String str) throws IOException;
 
     /**
      * Add a line break
-     * @throws IOException for I/O problems
+     * 
+     * @throws IOException
+     *             for I/O problems
      */
     void newLineBreak() throws IOException;
 
     /**
-     * Text containers usually provide default attributes for all texts that they contain.
+     * Text containers usually provide default attributes for all texts that
+     * they contain.
+     * 
      * @return a copy of the container's attributes.
      */
     RtfAttributes getTextContainerAttributes();

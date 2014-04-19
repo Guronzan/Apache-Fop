@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.xmlgraphics.util.UnitConv;
-
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.datatypes.Numeric;
@@ -36,14 +34,14 @@ import org.apache.fop.fo.properties.NumberProperty;
 import org.apache.fop.fo.properties.PercentLength;
 import org.apache.fop.fo.properties.Property;
 import org.apache.fop.fo.properties.StringProperty;
+import org.apache.xmlgraphics.util.UnitConv;
 
 /**
- * Class to parse XSL-FO property expressions.
- * This class is heavily based on the epxression parser in James Clark's
- * XT, an XSLT processor.
+ * Class to parse XSL-FO property expressions. This class is heavily based on
+ * the epxression parser in James Clark's XT, an XSLT processor.
  */
 public final class PropertyParser extends PropertyTokenizer {
-    private PropertyInfo propInfo;    // Maker and propertyList related info
+    private final PropertyInfo propInfo; // Maker and propertyList related info
 
     private static final String RELUNIT = "em";
     private static final HashMap FUNCTION_TABLE = new HashMap();
@@ -60,72 +58,79 @@ public final class PropertyParser extends PropertyTokenizer {
         FUNCTION_TABLE.put("system-color", new SystemColorFunction());
         FUNCTION_TABLE.put("from-table-column", new FromTableColumnFunction());
         FUNCTION_TABLE.put("inherited-property-value",
-                          new InheritedPropFunction());
+                new InheritedPropFunction());
         FUNCTION_TABLE.put("from-parent", new FromParentFunction());
         FUNCTION_TABLE.put("from-nearest-specified-value",
-                          new NearestSpecPropFunction());
+                new NearestSpecPropFunction());
         FUNCTION_TABLE.put("proportional-column-width",
-                          new PPColWidthFunction());
+                new PPColWidthFunction());
         FUNCTION_TABLE.put("label-end", new LabelEndFunction());
         FUNCTION_TABLE.put("body-start", new BodyStartFunction());
         FUNCTION_TABLE.put("rgb-icc", new ICCColorFunction());
-        FUNCTION_TABLE.put("cmyk", new CMYKcolorFunction()); //non-standard!!!
+        FUNCTION_TABLE.put("cmyk", new CMYKcolorFunction()); // non-standard!!!
 
         /**
-         * * NOT YET IMPLEMENTED!!!
-         * FUNCTION_TABLE.put("system-font", new SystemFontFunction());
-         * FUNCTION_TABLE.put("merge-property-values", new MergePropsFunction());
+         * * NOT YET IMPLEMENTED!!! FUNCTION_TABLE.put("system-font", new
+         * SystemFontFunction()); FUNCTION_TABLE.put("merge-property-values",
+         * new MergePropsFunction());
          */
     }
 
-
     /**
      * Public entrypoint to the Property expression parser.
-     * @param expr The specified value (attribute on the xml element).
-     * @param propInfo A PropertyInfo object representing the context in
-     * which the property expression is to be evaluated.
+     * 
+     * @param expr
+     *            The specified value (attribute on the xml element).
+     * @param propInfo
+     *            A PropertyInfo object representing the context in which the
+     *            property expression is to be evaluated.
      * @return A Property object holding the parsed result.
-     * @throws PropertyException If the "expr" cannot be parsed as a Property.
+     * @throws PropertyException
+     *             If the "expr" cannot be parsed as a Property.
      */
-    public static Property parse(String expr, PropertyInfo propInfo)
+    public static Property parse(final String expr, final PropertyInfo propInfo)
             throws PropertyException {
         try {
             return new PropertyParser(expr, propInfo).parseProperty();
-        } catch (PropertyException exc) {
+        } catch (final PropertyException exc) {
             exc.setPropertyInfo(propInfo);
             throw exc;
         }
     }
 
-
     /**
      * Private constructor. Called by the static parse() method.
-     * @param propExpr The specified value (attribute on the xml element).
-     * @param pInfo A PropertyInfo object representing the context in
-     * which the property expression is to be evaluated.
+     * 
+     * @param propExpr
+     *            The specified value (attribute on the xml element).
+     * @param pInfo
+     *            A PropertyInfo object representing the context in which the
+     *            property expression is to be evaluated.
      */
-    private PropertyParser(String propExpr, PropertyInfo pInfo) {
+    private PropertyParser(final String propExpr, final PropertyInfo pInfo) {
         super(propExpr);
         this.propInfo = pInfo;
     }
 
     /**
-     * Parse the property expression described in the instance variables.
-     * Note: If the property expression String is empty, a StringProperty
-     * object holding an empty String is returned.
+     * Parse the property expression described in the instance variables. Note:
+     * If the property expression String is empty, a StringProperty object
+     * holding an empty String is returned.
+     * 
      * @return A Property object holding the parsed result.
-     * @throws PropertyException If the "expr" cannot be parsed as a Property.
+     * @throws PropertyException
+     *             If the "expr" cannot be parsed as a Property.
      */
     private Property parseProperty() throws PropertyException {
         next();
-        if (currentToken == TOK_EOF) {
+        if (this.currentToken == TOK_EOF) {
             // if prop value is empty string, force to StringProperty
             return StringProperty.getInstance("");
         }
         ListProperty propList = null;
         while (true) {
-            Property prop = parseAdditiveExpr();
-            if (currentToken == TOK_EOF) {
+            final Property prop = parseAdditiveExpr();
+            if (this.currentToken == TOK_EOF) {
                 if (propList != null) {
                     propList.addProperty(prop);
                     return propList;
@@ -151,96 +156,90 @@ public final class PropertyParser extends PropertyTokenizer {
     private Property parseAdditiveExpr() throws PropertyException {
         // Evaluate and put result on the operand stack
         Property prop = parseMultiplicativeExpr();
-        loop:
-        while (true) {
-            switch (currentToken) {
-            case TOK_PLUS:
-                next();
-                prop = evalAddition(prop.getNumeric(),
-                                    parseMultiplicativeExpr().getNumeric());
-                break;
-            case TOK_MINUS:
-                next();
-                prop = evalSubtraction(prop.getNumeric(),
-                                    parseMultiplicativeExpr().getNumeric());
-                break;
-            default:
-                break loop;
+        loop: while (true) {
+                switch (this.currentToken) {
+                case TOK_PLUS:
+                    next();
+                    prop = evalAddition(prop.getNumeric(),
+                        parseMultiplicativeExpr().getNumeric());
+                    break;
+                case TOK_MINUS:
+                    next();
+                    prop = evalSubtraction(prop.getNumeric(),
+                        parseMultiplicativeExpr().getNumeric());
+                    break;
+                default:
+                    break loop;
+                }
             }
-        }
         return prop;
     }
 
     /**
-     * Try to parse a multiply, divide or modulo expression and return
-     * the resulting Property.
+     * Try to parse a multiply, divide or modulo expression and return the
+     * resulting Property.
      */
     private Property parseMultiplicativeExpr() throws PropertyException {
         Property prop = parseUnaryExpr();
-        loop:
-        while (true) {
-            switch (currentToken) {
-            case TOK_DIV:
-                next();
-                prop = evalDivide(prop.getNumeric(),
-                                  parseUnaryExpr().getNumeric());
-                break;
-            case TOK_MOD:
-                next();
-                prop = evalModulo(prop.getNumber(),
-                                  parseUnaryExpr().getNumber());
-                break;
-            case TOK_MULTIPLY:
-                next();
-                prop = evalMultiply(prop.getNumeric(),
-                                    parseUnaryExpr().getNumeric());
-                break;
-            default:
-                break loop;
+        loop: while (true) {
+                switch (this.currentToken) {
+                case TOK_DIV:
+                    next();
+                    prop = evalDivide(prop.getNumeric(), parseUnaryExpr()
+                        .getNumeric());
+                    break;
+                case TOK_MOD:
+                    next();
+                    prop = evalModulo(prop.getNumber(), parseUnaryExpr()
+                        .getNumber());
+                    break;
+                case TOK_MULTIPLY:
+                    next();
+                    prop = evalMultiply(prop.getNumeric(), parseUnaryExpr()
+                        .getNumeric());
+                    break;
+                default:
+                    break loop;
+                }
             }
-        }
         return prop;
     }
 
     /**
-     * Try to parse a unary minus expression and return the
-     * resulting Property.
+     * Try to parse a unary minus expression and return the resulting Property.
      */
     private Property parseUnaryExpr() throws PropertyException {
-        if (currentToken == TOK_MINUS) {
+        if (this.currentToken == TOK_MINUS) {
             next();
             return evalNegate(parseUnaryExpr().getNumeric());
         }
         return parsePrimaryExpr();
     }
 
-
     /**
-     * Checks that the current token is a right parenthesis
-     * and throws an exception if this isn't the case.
+     * Checks that the current token is a right parenthesis and throws an
+     * exception if this isn't the case.
      */
     private void expectRpar() throws PropertyException {
-        if (currentToken != TOK_RPAR) {
+        if (this.currentToken != TOK_RPAR) {
             throw new PropertyException("expected )");
         }
         next();
     }
 
     /**
-     * Try to parse a primary expression and return the
-     * resulting Property.
-     * A primary expression is either a parenthesized expression or an
-     * expression representing a primitive Property datatype, such as a
-     * string literal, an NCname, a number or a unit expression, or a
-     * function call expression.
+     * Try to parse a primary expression and return the resulting Property. A
+     * primary expression is either a parenthesized expression or an expression
+     * representing a primitive Property datatype, such as a string literal, an
+     * NCname, a number or a unit expression, or a function call expression.
      */
     private Property parsePrimaryExpr() throws PropertyException {
         Property prop;
-        if (currentToken == TOK_COMMA) {
-            //Simply skip commas, for example for font-family
+        if (this.currentToken == TOK_COMMA) {
+            // Simply skip commas, for example for font-family
             next();
         }
-        switch (currentToken) {
+        switch (this.currentToken) {
         case TOK_LPAR:
             next();
             prop = parseAdditiveExpr();
@@ -248,20 +247,22 @@ public final class PropertyParser extends PropertyTokenizer {
             return prop;
 
         case TOK_LITERAL:
-            prop = StringProperty.getInstance(currentTokenValue);
+            prop = StringProperty.getInstance(this.currentTokenValue);
             break;
 
         case TOK_NCNAME:
             // Interpret this in context of the property or do it later?
-            prop = new NCnameProperty(currentTokenValue);
+            prop = new NCnameProperty(this.currentTokenValue);
             break;
 
         case TOK_FLOAT:
-            prop = NumberProperty.getInstance(new Double(currentTokenValue));
+            prop = NumberProperty
+                    .getInstance(new Double(this.currentTokenValue));
             break;
 
         case TOK_INTEGER:
-            prop = NumberProperty.getInstance(new Integer(currentTokenValue));
+            prop = NumberProperty.getInstance(new Integer(
+                    this.currentTokenValue));
             break;
 
         case TOK_PERCENT:
@@ -269,12 +270,13 @@ public final class PropertyParser extends PropertyTokenizer {
              * Get the length base value object from the Maker. If null, then
              * this property can't have % values. Treat it as a real number.
              */
-            double pcval = Double.parseDouble(
-                    currentTokenValue.substring(0, currentTokenValue.length() - 1)) / 100.0;
-            PercentBase pcBase = this.propInfo.getPercentBase();
+            final double pcval = Double.parseDouble(this.currentTokenValue
+                    .substring(0, this.currentTokenValue.length() - 1)) / 100.0;
+            final PercentBase pcBase = this.propInfo.getPercentBase();
             if (pcBase != null) {
                 if (pcBase.getDimension() == 0) {
-                    prop = NumberProperty.getInstance(pcval * pcBase.getBaseValue());
+                    prop = NumberProperty.getInstance(pcval
+                            * pcBase.getBaseValue());
                 } else if (pcBase.getDimension() == 1) {
                     if (pcBase instanceof LengthBase) {
                         if (pcval == 0.0) {
@@ -282,18 +284,21 @@ public final class PropertyParser extends PropertyTokenizer {
                             break;
                         }
 
-                        //If the base of the percentage is known
-                        //and absolute, it can be resolved by the
-                        //parser
-                        Length base = ((LengthBase)pcBase).getBaseLength();
+                        // If the base of the percentage is known
+                        // and absolute, it can be resolved by the
+                        // parser
+                        final Length base = ((LengthBase) pcBase)
+                                .getBaseLength();
                         if (base != null && base.isAbsolute()) {
-                            prop = FixedLength.getInstance(pcval * base.getValue());
+                            prop = FixedLength.getInstance(pcval
+                                    * base.getValue());
                             break;
                         }
                     }
                     prop = new PercentLength(pcval, pcBase);
                 } else {
-                    throw new PropertyException("Illegal percent dimension value");
+                    throw new PropertyException(
+                            "Illegal percent dimension value");
                 }
             } else {
                 // WARNING? Interpret as a decimal fraction, eg. 50% = .5
@@ -303,49 +308,53 @@ public final class PropertyParser extends PropertyTokenizer {
 
         case TOK_NUMERIC:
             // A number plus a valid unit name.
-            int numLen = currentTokenValue.length() - currentUnitLength;
-            String unitPart = currentTokenValue.substring(numLen);
-            double numPart = Double.parseDouble(currentTokenValue.substring(0, numLen));
+            final int numLen = this.currentTokenValue.length()
+                    - this.currentUnitLength;
+            final String unitPart = this.currentTokenValue.substring(numLen);
+            final double numPart = Double.parseDouble(this.currentTokenValue
+                    .substring(0, numLen));
             if (RELUNIT.equals(unitPart)) {
                 prop = (Property) NumericOp.multiply(
-                                    NumberProperty.getInstance(numPart),
-                                    propInfo.currentFontSize());
+                        NumberProperty.getInstance(numPart),
+                        this.propInfo.currentFontSize());
             } else {
                 if ("px".equals(unitPart)) {
-                    //pass the ratio between target-resolution and
-                    //the default resolution of 72dpi
-                    float resolution = propInfo.getPropertyList().getFObj()
-                            .getUserAgent().getSourceResolution();
-                    prop = FixedLength.getInstance(
-                            numPart, unitPart,
-                             UnitConv.IN2PT / resolution);
+                    // pass the ratio between target-resolution and
+                    // the default resolution of 72dpi
+                    final float resolution = this.propInfo.getPropertyList()
+                            .getFObj().getUserAgent().getSourceResolution();
+                    prop = FixedLength.getInstance(numPart, unitPart,
+                            UnitConv.IN2PT / resolution);
                 } else {
-                    //use default resolution of 72dpi
+                    // use default resolution of 72dpi
                     prop = FixedLength.getInstance(numPart, unitPart);
                 }
             }
             break;
 
         case TOK_COLORSPEC:
-            prop = ColorProperty.getInstance(propInfo.getUserAgent(), currentTokenValue);
+            prop = ColorProperty.getInstance(this.propInfo.getUserAgent(),
+                    this.currentTokenValue);
             break;
 
         case TOK_FUNCTION_LPAR:
-            Function function = (Function)FUNCTION_TABLE.get(currentTokenValue);
+            final Function function = (Function) FUNCTION_TABLE
+                    .get(this.currentTokenValue);
             if (function == null) {
                 throw new PropertyException("no such function: "
-                                            + currentTokenValue);
+                        + this.currentTokenValue);
             }
             next();
             // Push new function (for function context: getPercentBase())
-            propInfo.pushFunction(function);
+            this.propInfo.pushFunction(function);
             if (function.nbArgs() < 0) {
-                // Negative nbArgs --> function with variable number of arguments
-                prop = function.eval(parseVarArgs(function), propInfo);
+                // Negative nbArgs --> function with variable number of
+                // arguments
+                prop = function.eval(parseVarArgs(function), this.propInfo);
             } else {
-                prop = function.eval(parseArgs(function), propInfo);
+                prop = function.eval(parseArgs(function), this.propInfo);
             }
-            propInfo.popFunction();
+            this.propInfo.popFunction();
             return prop;
 
         default:
@@ -357,22 +366,23 @@ public final class PropertyParser extends PropertyTokenizer {
     }
 
     /**
-     * Parse a comma separated list of function arguments. Each argument
-     * may itself be an expression. This method consumes the closing right
+     * Parse a comma separated list of function arguments. Each argument may
+     * itself be an expression. This method consumes the closing right
      * parenthesis of the argument list.
-     * @param function The function object for which the arguments are
-     * collected.
-     * @return An array of Property objects representing the arguments
-     * found.
-     * @throws PropertyException If the number of arguments found isn't equal
-     * to the number expected.
+     * 
+     * @param function
+     *            The function object for which the arguments are collected.
+     * @return An array of Property objects representing the arguments found.
+     * @throws PropertyException
+     *             If the number of arguments found isn't equal to the number
+     *             expected.
      */
-    Property[] parseArgs(Function function) throws PropertyException {
-        int nbArgs = function.nbArgs();
-        Property[] args = new Property[nbArgs];
+    Property[] parseArgs(final Function function) throws PropertyException {
+        final int nbArgs = function.nbArgs();
+        final Property[] args = new Property[nbArgs];
         Property prop;
         int i = 0;
-        if (currentToken == TOK_RPAR) {
+        if (this.currentToken == TOK_RPAR) {
             // No args: func()
             next();
         } else {
@@ -383,7 +393,7 @@ public final class PropertyParser extends PropertyTokenizer {
                     args[i++] = prop;
                 }
                 // ignore extra args
-                if (currentToken != TOK_COMMA) {
+                if (this.currentToken != TOK_COMMA) {
                     break;
                 }
                 next();
@@ -391,41 +401,42 @@ public final class PropertyParser extends PropertyTokenizer {
             expectRpar();
         }
         if (i == nbArgs - 1 && function.padArgsWithPropertyName()) {
-            args[i++] = StringProperty.getInstance(
-                            propInfo.getPropertyMaker().getName());
+            args[i++] = StringProperty.getInstance(this.propInfo
+                    .getPropertyMaker().getName());
         }
         if (nbArgs != i) {
-            throw new PropertyException("Expected " + nbArgs
-                                        + ", but got " + i + " args for function");
+            throw new PropertyException("Expected " + nbArgs + ", but got " + i
+                    + " args for function");
         }
         return args;
     }
 
     /**
      *
-     * Parse a comma separated list of function arguments. Each argument
-     * may itself be an expression. This method consumes the closing right
+     * Parse a comma separated list of function arguments. Each argument may
+     * itself be an expression. This method consumes the closing right
      * parenthesis of the argument list.
      *
-     * The method differs from parseArgs in that it accepts a variable
-     * number of arguments.
+     * The method differs from parseArgs in that it accepts a variable number of
+     * arguments.
      *
-     * @param function The function object for which the arguments are
-     * collected.
-     * @return An array of Property objects representing the arguments
-     * found.
-     * @throws PropertyException If the number of arguments found isn't equal
-     * to the number expected.
+     * @param function
+     *            The function object for which the arguments are collected.
+     * @return An array of Property objects representing the arguments found.
+     * @throws PropertyException
+     *             If the number of arguments found isn't equal to the number
+     *             expected.
      *
-     * TODO Merge this with parseArgs?
+     *             TODO Merge this with parseArgs?
      */
-    Property[] parseVarArgs(Function function) throws PropertyException {
-        // For variable argument functions the minimum number of arguments is returned as a
+    Property[] parseVarArgs(final Function function) throws PropertyException {
+        // For variable argument functions the minimum number of arguments is
+        // returned as a
         // negative integer from the nbArgs method
-        int nbArgs = -function.nbArgs();
-        List args = new LinkedList();
+        final int nbArgs = -function.nbArgs();
+        final List args = new LinkedList();
         Property prop;
-        if (currentToken == TOK_RPAR) {
+        if (this.currentToken == TOK_RPAR) {
             // No args: func()
             next();
         } else {
@@ -433,7 +444,7 @@ public final class PropertyParser extends PropertyTokenizer {
                 prop = parseAdditiveExpr();
                 args.add(prop);
                 // ignore extra args
-                if (currentToken != TOK_COMMA) {
+                if (this.currentToken != TOK_COMMA) {
                     break;
                 }
                 next();
@@ -442,25 +453,28 @@ public final class PropertyParser extends PropertyTokenizer {
         }
         if (nbArgs > args.size()) {
             throw new PropertyException("Expected at least " + nbArgs
-                                        + ", but got " + args.size() + " args for function");
+                    + ", but got " + args.size() + " args for function");
         }
-        Property[] propArray = new Property[args.size()];
+        final Property[] propArray = new Property[args.size()];
         args.toArray(propArray);
         return propArray;
     }
 
-
     /**
-     * Evaluate an addition operation. If either of the arguments is null,
-     * this means that it wasn't convertible to a Numeric value.
-     * @param op1 A Numeric object (Number or Length-type object)
-     * @param op2 A Numeric object (Number or Length-type object)
+     * Evaluate an addition operation. If either of the arguments is null, this
+     * means that it wasn't convertible to a Numeric value.
+     * 
+     * @param op1
+     *            A Numeric object (Number or Length-type object)
+     * @param op2
+     *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
-     * the sum of the two operands.
-     * @throws PropertyException If either operand is null.
+     *         the sum of the two operands.
+     * @throws PropertyException
+     *             If either operand is null.
      */
-    private Property evalAddition(Numeric op1,
-                                  Numeric op2) throws PropertyException {
+    private Property evalAddition(final Numeric op1, final Numeric op2)
+            throws PropertyException {
         if (op1 == null || op2 == null) {
             throw new PropertyException("Non numeric operand in addition");
         }
@@ -470,14 +484,18 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a subtraction operation. If either of the arguments is null,
      * this means that it wasn't convertible to a Numeric value.
-     * @param op1 A Numeric object (Number or Length-type object)
-     * @param op2 A Numeric object (Number or Length-type object)
+     * 
+     * @param op1
+     *            A Numeric object (Number or Length-type object)
+     * @param op2
+     *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
-     * the difference of the two operands.
-     * @throws PropertyException If either operand is null.
+     *         the difference of the two operands.
+     * @throws PropertyException
+     *             If either operand is null.
      */
-    private Property evalSubtraction(Numeric op1,
-                                     Numeric op2) throws PropertyException {
+    private Property evalSubtraction(final Numeric op1, final Numeric op2)
+            throws PropertyException {
         if (op1 == null || op2 == null) {
             throw new PropertyException("Non numeric operand in subtraction");
         }
@@ -485,14 +503,17 @@ public final class PropertyParser extends PropertyTokenizer {
     }
 
     /**
-     * Evaluate a unary minus operation. If the argument is null,
-     * this means that it wasn't convertible to a Numeric value.
-     * @param op A Numeric object (Number or Length-type object)
+     * Evaluate a unary minus operation. If the argument is null, this means
+     * that it wasn't convertible to a Numeric value.
+     * 
+     * @param op
+     *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
-     * the negative of the operand (multiplication by *1).
-     * @throws PropertyException If the operand is null.
+     *         the negative of the operand (multiplication by *1).
+     * @throws PropertyException
+     *             If the operand is null.
      */
-    private Property evalNegate(Numeric op) throws PropertyException {
+    private Property evalNegate(final Numeric op) throws PropertyException {
         if (op == null) {
             throw new PropertyException("Non numeric operand to unary minus");
         }
@@ -502,32 +523,39 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a multiplication operation. If either of the arguments is null,
      * this means that it wasn't convertible to a Numeric value.
-     * @param op1 A Numeric object (Number or Length-type object)
-     * @param op2 A Numeric object (Number or Length-type object)
+     * 
+     * @param op1
+     *            A Numeric object (Number or Length-type object)
+     * @param op2
+     *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
-     * the product of the two operands.
-     * @throws PropertyException If either operand is null.
+     *         the product of the two operands.
+     * @throws PropertyException
+     *             If either operand is null.
      */
-    private Property evalMultiply(Numeric op1,
-                                  Numeric op2) throws PropertyException {
+    private Property evalMultiply(final Numeric op1, final Numeric op2)
+            throws PropertyException {
         if (op1 == null || op2 == null) {
             throw new PropertyException("Non numeric operand in multiplication");
         }
         return (Property) NumericOp.multiply(op1, op2);
     }
 
-
     /**
-     * Evaluate a division operation. If either of the arguments is null,
-     * this means that it wasn't convertible to a Numeric value.
-     * @param op1 A Numeric object (Number or Length-type object)
-     * @param op2 A Numeric object (Number or Length-type object)
+     * Evaluate a division operation. If either of the arguments is null, this
+     * means that it wasn't convertible to a Numeric value.
+     * 
+     * @param op1
+     *            A Numeric object (Number or Length-type object)
+     * @param op2
+     *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
-     * op1 divided by op2.
-     * @throws PropertyException If either operand is null.
+     *         op1 divided by op2.
+     * @throws PropertyException
+     *             If either operand is null.
      */
-    private Property evalDivide(Numeric op1,
-                                Numeric op2) throws PropertyException {
+    private Property evalDivide(final Numeric op1, final Numeric op2)
+            throws PropertyException {
         if (op1 == null || op2 == null) {
             throw new PropertyException("Non numeric operand in division");
         }
@@ -535,20 +563,25 @@ public final class PropertyParser extends PropertyTokenizer {
     }
 
     /**
-     * Evaluate a modulo operation. If either of the arguments is null,
-     * this means that it wasn't convertible to a Number value.
-     * @param op1 A Number object
-     * @param op2 A Number object
+     * Evaluate a modulo operation. If either of the arguments is null, this
+     * means that it wasn't convertible to a Number value.
+     * 
+     * @param op1
+     *            A Number object
+     * @param op2
+     *            A Number object
      * @return A new NumberProperty object holding an object which represents
-     * op1 mod op2.
-     * @throws PropertyException If either operand is null.
+     *         op1 mod op2.
+     * @throws PropertyException
+     *             If either operand is null.
      */
-    private Property evalModulo(Number op1,
-                                Number op2) throws PropertyException {
+    private Property evalModulo(final Number op1, final Number op2)
+            throws PropertyException {
         if (op1 == null || op2 == null) {
             throw new PropertyException("Non number operand to modulo");
         }
-        return NumberProperty.getInstance(op1.doubleValue() % op2.doubleValue());
+        return NumberProperty
+                .getInstance(op1.doubleValue() % op2.doubleValue());
     }
 
 }

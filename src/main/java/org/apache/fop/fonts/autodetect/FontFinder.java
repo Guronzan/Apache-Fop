@@ -23,10 +23,12 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- * Implementers provide find method for searching native operating system
- * for available fonts.
+ * Implementers provide find method for searching native operating system for
+ * available fonts.
+ * 
+ * @param <T>
  */
-public interface FontFinder {
+public interface FontFinder<T> {
 
     /**
      * Finds a list of font files.
@@ -37,6 +39,6 @@ public interface FontFinder {
      * @throws IOException
      *             In case of an I/O problem
      */
-    List/*<URL>*/ find() throws IOException;
+    List<T> find() throws IOException;
 
 }

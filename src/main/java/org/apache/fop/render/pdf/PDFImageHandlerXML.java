@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.fop.pdf.PDFXObject;
 import org.apache.fop.render.RendererContext;
+import org.apache.fop.render.RendererContextConstants;
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
@@ -36,35 +37,37 @@ import org.w3c.dom.Document;
  */
 public class PDFImageHandlerXML implements PDFImageHandler {
 
-    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.XML_DOM,
-    };
+    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.XML_DOM, };
 
     /** {@inheritDoc} */
-    public PDFXObject generateImage(RendererContext context, Image image,
-            Point origin, Rectangle pos)
-            throws IOException {
-        PDFRenderer renderer = (PDFRenderer)context.getRenderer();
-        ImageXMLDOM imgXML = (ImageXMLDOM)image;
-        Document doc = imgXML.getDocument();
-        String ns = imgXML.getRootNamespace();
-        Map foreignAttributes = (Map)context.getProperty(
-                PDFRendererContextConstants.FOREIGN_ATTRIBUTES);
+    @Override
+    public PDFXObject generateImage(final RendererContext context,
+            final Image image, final Point origin, final Rectangle pos)
+                    throws IOException {
+        final PDFRenderer renderer = (PDFRenderer) context.getRenderer();
+        final ImageXMLDOM imgXML = (ImageXMLDOM) image;
+        final Document doc = imgXML.getDocument();
+        final String ns = imgXML.getRootNamespace();
+        final Map foreignAttributes = (Map) context
+                .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         renderer.renderDocument(doc, ns, pos, foreignAttributes);
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 400;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageXMLDOM.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }

@@ -18,6 +18,7 @@
 /* $Id: LazyFont.java 746664 2009-02-22 12:40:44Z jeremias $ */
 
 package org.apache.fop.fonts;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -27,19 +28,16 @@ import java.util.Set;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import org.xml.sax.InputSource;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOPException;
+import org.xml.sax.InputSource;
 
 /**
  * This class is used to defer the loading of a font until it is really used.
  */
+@Slf4j
 public class LazyFont extends Typeface implements FontDescriptor {
-
-    private static Log log = LogFactory.getLog(LazyFont.class);
 
     private String metricsFileName = null;
     private String fontEmbedPath = null;
@@ -56,10 +54,13 @@ public class LazyFont extends Typeface implements FontDescriptor {
 
     /**
      * Main constructor
-     * @param fontInfo  the font info to embed
-     * @param resolver the font resolver to handle font URIs
+     *
+     * @param fontInfo
+     *            the font info to embed
+     * @param resolver
+     *            the font resolver to handle font URIs
      */
-    public LazyFont(EmbedFontInfo fontInfo, FontResolver resolver) {
+    public LazyFont(final EmbedFontInfo fontInfo, final FontResolver resolver) {
 
         this.metricsFileName = fontInfo.getMetricsFile();
         this.fontEmbedPath = fontInfo.getEmbedFile();
@@ -71,23 +72,24 @@ public class LazyFont extends Typeface implements FontDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return ( "metrics-url=" + metricsFileName + ", embed-url=" + fontEmbedPath
-                + ", kerning=" + useKerning );
+        return "metrics-url=" + this.metricsFileName + ", embed-url="
+                + this.fontEmbedPath + ", kerning=" + this.useKerning;
     }
 
-    private void load(boolean fail) {
-        if (!isMetricsLoaded) {
+    private void load(final boolean fail) {
+        if (!this.isMetricsLoaded) {
             try {
-                if (metricsFileName != null) {
-                    /**@todo Possible thread problem here */
+                if (this.metricsFileName != null) {
+                    /** @todo Possible thread problem here */
                     FontReader reader = null;
-                    if (resolver != null) {
-                        Source source = resolver.resolve(metricsFileName);
+                    if (this.resolver != null) {
+                        final Source source = this.resolver
+                                .resolve(this.metricsFileName);
                         if (source == null) {
-                            String err
-                                = "Cannot load font: failed to create Source from metrics file "
-                                    + metricsFileName;
+                            final String err = "Cannot load font: failed to create Source from metrics file "
+                                    + this.metricsFileName;
                             if (fail) {
                                 throw new RuntimeException(err);
                             } else {
@@ -100,13 +102,14 @@ public class LazyFont extends Typeface implements FontDescriptor {
                             in = ((StreamSource) source).getInputStream();
                         }
                         if (in == null && source.getSystemId() != null) {
-                            in = new java.net.URL(source.getSystemId()).openStream();
+                            in = new java.net.URL(source.getSystemId())
+                            .openStream();
                         }
                         if (in == null) {
-                            String err = "Cannot load font: After URI resolution, the returned"
-                                + " Source object does not contain an InputStream"
-                                + " or a valid URL (system identifier) for metrics file: "
-                                + metricsFileName;
+                            final String err = "Cannot load font: After URI resolution, the returned"
+                                    + " Source object does not contain an InputStream"
+                                    + " or a valid URL (system identifier) for metrics file: "
+                                    + this.metricsFileName;
                             if (fail) {
                                 throw new RuntimeException(err);
                             } else {
@@ -114,266 +117,298 @@ public class LazyFont extends Typeface implements FontDescriptor {
                             }
                             return;
                         }
-                        InputSource src = new InputSource(in);
+                        final InputSource src = new InputSource(in);
                         src.setSystemId(source.getSystemId());
                         reader = new FontReader(src);
                     } else {
-                        reader = new FontReader(new InputSource(
-                                    new URL(metricsFileName).openStream()));
+                        reader = new FontReader(new InputSource(new URL(
+                                this.metricsFileName).openStream()));
                     }
-                    reader.setKerningEnabled(useKerning);
+                    reader.setKerningEnabled(this.useKerning);
                     if (this.embedded) {
-                        reader.setFontEmbedPath(fontEmbedPath);
+                        reader.setFontEmbedPath(this.fontEmbedPath);
                     }
-                    reader.setResolver(resolver);
-                    realFont = reader.getFont();
+                    reader.setResolver(this.resolver);
+                    this.realFont = reader.getFont();
                 } else {
-                    if (fontEmbedPath == null) {
-                        throw new RuntimeException("Cannot load font. No font URIs available.");
+                    if (this.fontEmbedPath == null) {
+                        throw new RuntimeException(
+                                "Cannot load font. No font URIs available.");
                     }
-                    realFont = FontLoader.loadFont(fontEmbedPath, this.subFontName,
-                            this.embedded, this.encodingMode, useKerning, resolver);
+                    this.realFont = FontLoader.loadFont(this.fontEmbedPath,
+                            this.subFontName, this.embedded, this.encodingMode,
+                            this.useKerning, this.resolver);
                 }
-                if (realFont instanceof FontDescriptor) {
-                    realFontDescriptor = (FontDescriptor) realFont;
+                if (this.realFont instanceof FontDescriptor) {
+                    this.realFontDescriptor = (FontDescriptor) this.realFont;
                 }
-            } catch (FOPException fopex) {
-                log.error("Failed to read font metrics file " + metricsFileName, fopex);
+            } catch (final FOPException fopex) {
+                log.error("Failed to read font metrics file "
+                        + this.metricsFileName, fopex);
                 if (fail) {
                     throw new RuntimeException(fopex.getMessage());
                 }
-            } catch (IOException ioex) {
-                log.error("Failed to read font metrics file " + metricsFileName, ioex);
+            } catch (final IOException ioex) {
+                log.error("Failed to read font metrics file "
+                        + this.metricsFileName, ioex);
                 if (fail) {
                     throw new RuntimeException(ioex.getMessage());
                 }
             }
-            realFont.setEventListener(this.eventListener);
-            isMetricsLoaded = true;
+            this.realFont.setEventListener(this.eventListener);
+            this.isMetricsLoaded = true;
         }
     }
 
     /**
      * Gets the real font.
+     *
      * @return the real font
      */
     public Typeface getRealFont() {
         load(false);
-        return realFont;
+        return this.realFont;
     }
 
     // ---- Font ----
     /** {@inheritDoc} */
+    @Override
     public String getEncodingName() {
         load(true);
-        return realFont.getEncodingName();
+        return this.realFont.getEncodingName();
     }
 
     /**
      * {@inheritDoc}
      */
-    public char mapChar(char c) {
+    @Override
+    public char mapChar(final char c) {
         load(true);
-        return realFont.mapChar(c);
+        return this.realFont.mapChar(c);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hadMappingOperations() {
         load(true);
-        return realFont.hadMappingOperations();
+        return this.realFont.hadMappingOperations();
     }
 
     /**
      * {@inheritDoc}
      */
-    public boolean hasChar(char c) {
+    @Override
+    public boolean hasChar(final char c) {
         load(true);
-        return realFont.hasChar(c);
+        return this.realFont.hasChar(c);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isMultiByte() {
         load(true);
-        return realFont.isMultiByte();
+        return this.realFont.isMultiByte();
     }
 
     // ---- FontMetrics interface ----
     /** {@inheritDoc} */
+    @Override
     public String getFontName() {
         load(true);
-        return realFont.getFontName();
+        return this.realFont.getFontName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEmbedFontName() {
         load(true);
-        return realFont.getEmbedFontName();
+        return this.realFont.getEmbedFontName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFullName() {
         load(true);
-        return realFont.getFullName();
+        return this.realFont.getFullName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Set getFamilyNames() {
         load(true);
-        return realFont.getFamilyNames();
+        return this.realFont.getFamilyNames();
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getMaxAscent(int size) {
+    @Override
+    public int getMaxAscent(final int size) {
         load(true);
-        return realFont.getMaxAscent(size);
+        return this.realFont.getMaxAscent(size);
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getAscender(int size) {
+    @Override
+    public int getAscender(final int size) {
         load(true);
-        return realFont.getAscender(size);
+        return this.realFont.getAscender(size);
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getCapHeight(int size) {
+    @Override
+    public int getCapHeight(final int size) {
         load(true);
-        return realFont.getCapHeight(size);
+        return this.realFont.getCapHeight(size);
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getDescender(int size) {
+    @Override
+    public int getDescender(final int size) {
         load(true);
-        return realFont.getDescender(size);
+        return this.realFont.getDescender(size);
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getXHeight(int size) {
+    @Override
+    public int getXHeight(final int size) {
         load(true);
-        return realFont.getXHeight(size);
+        return this.realFont.getXHeight(size);
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getWidth(int i, int size) {
+    @Override
+    public int getWidth(final int i, final int size) {
         load(true);
-        return realFont.getWidth(i, size);
+        return this.realFont.getWidth(i, size);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int[] getWidths() {
         load(true);
-        return realFont.getWidths();
+        return this.realFont.getWidths();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean hasKerningInfo() {
         load(true);
-        return realFont.hasKerningInfo();
+        return this.realFont.hasKerningInfo();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Map getKerningInfo() {
         load(true);
-        return realFont.getKerningInfo();
+        return this.realFont.getKerningInfo();
     }
 
     // ---- FontDescriptor interface ----
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getCapHeight() {
         load(true);
-        return realFontDescriptor.getCapHeight();
+        return this.realFontDescriptor.getCapHeight();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getDescender() {
         load(true);
-        return realFontDescriptor.getDescender();
+        return this.realFontDescriptor.getDescender();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getAscender() {
         load(true);
-        return realFontDescriptor.getAscender();
+        return this.realFontDescriptor.getAscender();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getFlags() {
         load(true);
-        return realFontDescriptor.getFlags();
+        return this.realFontDescriptor.getFlags();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isSymbolicFont() {
         load(true);
-        return realFontDescriptor.isSymbolicFont();
+        return this.realFontDescriptor.isSymbolicFont();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int[] getFontBBox() {
         load(true);
-        return realFontDescriptor.getFontBBox();
+        return this.realFontDescriptor.getFontBBox();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getItalicAngle() {
         load(true);
-        return realFontDescriptor.getItalicAngle();
+        return this.realFontDescriptor.getItalicAngle();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStemV() {
         load(true);
-        return realFontDescriptor.getStemV();
+        return this.realFontDescriptor.getStemV();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public FontType getFontType() {
         load(true);
-        return realFontDescriptor.getFontType();
+        return this.realFontDescriptor.getFontType();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEmbeddable() {
         load(true);
-        return realFontDescriptor.isEmbeddable();
+        return this.realFontDescriptor.isEmbeddable();
     }
 
 }
-

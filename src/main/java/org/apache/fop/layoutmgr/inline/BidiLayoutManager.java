@@ -25,40 +25,34 @@ import java.util.List;
 import org.apache.fop.area.inline.InlineArea;
 import org.apache.fop.fo.flow.BidiOverride;
 
-
 /**
- * If this bidi has a different writing mode direction
- * ltr or rtl than its parent writing mode then this
- * reverses the inline areas (at the character level).
+ * If this bidi has a different writing mode direction ltr or rtl than its
+ * parent writing mode then this reverses the inline areas (at the character
+ * level).
  */
 public class BidiLayoutManager extends LeafNodeLayoutManager {
 
-    private List children;
+    private final List children;
 
-    public BidiLayoutManager(BidiOverride node, InlineLayoutManager cLM) {
+    public BidiLayoutManager(final BidiOverride node,
+            final InlineLayoutManager cLM) {
         super(node);
         setParent(cLM);
-        children = new ArrayList();
-/*
-        for (int count = cLM.size() - 1; count >= 0; count--) {
-            InlineArea ia = cLM.get(count);
-            if (ia instanceof Word) {
-                // reverse word
-                Word word = (Word) ia;
-                StringBuffer sb = new StringBuffer(word.getWord());
-                word.setWord(sb.reverse().toString());
-            }
-            children.add(ia);
-        }
-*/
+        this.children = new ArrayList<>();
+        /*
+         * for (int count = cLM.size() - 1; count >= 0; count--) { InlineArea ia
+         * = cLM.get(count); if (ia instanceof Word) { // reverse word Word word
+         * = (Word) ia; StringBuilder sb = new StringBuilder(word.getWord());
+         * word.setWord(sb.reverse().toString()); } children.add(ia); }
+         */
     }
 
     public int size() {
-        return children.size();
+        return this.children.size();
     }
 
-    public InlineArea get(int index) {
-        return (InlineArea) children.get(index);
+    public InlineArea get(final int index) {
+        return (InlineArea) this.children.get(index);
     }
 
 }

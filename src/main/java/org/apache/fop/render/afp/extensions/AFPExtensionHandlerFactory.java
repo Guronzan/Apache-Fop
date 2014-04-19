@@ -23,18 +23,21 @@ import org.apache.fop.util.ContentHandlerFactory;
 import org.xml.sax.ContentHandler;
 
 /**
- * Factory for the ContentHandler that handles serialized AFPPageSetup instances.
+ * Factory for the ContentHandler that handles serialized AFPPageSetup
+ * instances.
  */
 public class AFPExtensionHandlerFactory implements ContentHandlerFactory {
 
-    private static final String[] NAMESPACES = new String[] {AFPPageSetup.CATEGORY};
+    private static final String[] NAMESPACES = new String[] { AFPPageSetup.CATEGORY };
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() {
         return new AFPExtensionHandler();
     }

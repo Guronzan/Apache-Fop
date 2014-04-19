@@ -25,59 +25,63 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
- * Used by the AreaTreeHandler to keep track of ID reference usage
- * on a PageViewport level.
+ * Used by the AreaTreeHandler to keep track of ID reference usage on a
+ * PageViewport level.
  */
+@Slf4j
 public class IDTracker {
-
-    private static final Log log = LogFactory.getLog(IDTracker.class);
 
     // HashMap of ID's whose area is located on one or more consecutive
     // PageViewports. Each ID has an arraylist of PageViewports that
     // form the defined area of this ID
-    private Map idLocations = new java.util.HashMap();
+    private final Map idLocations = new java.util.HashMap();
 
     // idref's whose target PageViewports have yet to be identified
     // Each idref has a HashSet of Resolvable objects containing that idref
-    private Map unresolvedIDRefs = new java.util.HashMap();
+    private final Map unresolvedIDRefs = new java.util.HashMap();
 
-    private Set unfinishedIDs = new java.util.HashSet();
+    private final Set unfinishedIDs = new java.util.HashSet();
 
-    private Set alreadyResolvedIDs = new java.util.HashSet();
+    private final Set alreadyResolvedIDs = new java.util.HashSet();
 
     /**
      * Tie a PageViewport with an ID found on a child area of the PV. Note that
      * an area with a given ID may be on more than one PV, hence an ID may have
      * more than one PV associated with it.
      *
-     * @param id the property ID of the area
-     * @param pv a page viewport that contains the area with this ID
+     * @param id
+     *            the property ID of the area
+     * @param pv
+     *            a page viewport that contains the area with this ID
      */
-    public void associateIDWithPageViewport(String id, PageViewport pv) {
+    public void associateIDWithPageViewport(final String id,
+            final PageViewport pv) {
         if (log.isDebugEnabled()) {
             log.debug("associateIDWithPageViewport(" + id + ", " + pv + ")");
         }
-        List pvList = (List) idLocations.get(id);
+        List pvList = (List) this.idLocations.get(id);
         if (pvList == null) { // first time ID located
             pvList = new ArrayList();
-            idLocations.put(id, pvList);
+            this.idLocations.put(id, pvList);
             pvList.add(pv);
-            // signal the PageViewport that it is the first PV to contain this id:
+            // signal the PageViewport that it is the first PV to contain this
+            // id:
             pv.setFirstWithID(id);
             /*
              * See if this ID is in the unresolved idref list, if so resolve
              * Resolvable objects tied to it.
              */
-            if (!unfinishedIDs.contains(id)) {
+            if (!this.unfinishedIDs.contains(id)) {
                 tryIDResolution(id, pv, pvList);
             }
         } else {
-            /* TODO: The check is a quick-fix to avoid a waste
-             * when adding inline-ids to the page */
+            /*
+             * TODO: The check is a quick-fix to avoid a waste when adding
+             * inline-ids to the page
+             */
             if (!pvList.contains(pv)) {
                 pvList.add(pv);
             }
@@ -89,13 +93,14 @@ public class IDTracker {
      * be processed. This is used in page-number-citation-last processing so we
      * know when an id can be resolved.
      *
-     * @param id the id of the object being processed
+     * @param id
+     *            the id of the object being processed
      */
-    public void signalPendingID(String id) {
+    public void signalPendingID(final String id) {
         if (log.isDebugEnabled()) {
             log.debug("signalPendingID(" + id + ")");
         }
-        unfinishedIDs.add(id);
+        this.unfinishedIDs.add(id);
     }
 
     /**
@@ -103,75 +108,82 @@ public class IDTracker {
      * been generated. This is used to determine when page-number-citation-last
      * ref-ids can be resolved.
      *
-     * @param id the id of the formatting object which was just finished
+     * @param id
+     *            the id of the formatting object which was just finished
      */
-    public void signalIDProcessed(String id) {
+    public void signalIDProcessed(final String id) {
         if (log.isDebugEnabled()) {
             log.debug("signalIDProcessed(" + id + ")");
         }
 
-        alreadyResolvedIDs.add(id);
-        if (!unfinishedIDs.contains(id)) {
+        this.alreadyResolvedIDs.add(id);
+        if (!this.unfinishedIDs.contains(id)) {
             return;
         }
-        unfinishedIDs.remove(id);
+        this.unfinishedIDs.remove(id);
 
-        List pvList = (List) idLocations.get(id);
-        Set todo = (Set) unresolvedIDRefs.get(id);
+        final List pvList = (List) this.idLocations.get(id);
+        final Set todo = (Set) this.unresolvedIDRefs.get(id);
         if (todo != null) {
-            for (Iterator iter = todo.iterator(); iter.hasNext();) {
-                Resolvable res = (Resolvable) iter.next();
+            for (final Iterator iter = todo.iterator(); iter.hasNext();) {
+                final Resolvable res = (Resolvable) iter.next();
                 res.resolveIDRef(id, pvList);
             }
-            unresolvedIDRefs.remove(id);
+            this.unresolvedIDRefs.remove(id);
         }
     }
 
     /**
      * Check if an ID has already been resolved
      *
-     * @param id the id to check
+     * @param id
+     *            the id to check
      * @return true if the ID has been resolved
      */
-    public boolean alreadyResolvedID(String id) {
-        return (alreadyResolvedIDs.contains(id));
+    public boolean alreadyResolvedID(final String id) {
+        return this.alreadyResolvedIDs.contains(id);
     }
 
     /**
      * Tries to resolve all unresolved ID references on the given page.
      *
-     * @param id ID to resolve
-     * @param pv page viewport whose ID refs to resolve
-     * @param pvList of PageViewports
+     * @param id
+     *            ID to resolve
+     * @param pv
+     *            page viewport whose ID refs to resolve
+     * @param pvList
+     *            of PageViewports
      */
-    private void tryIDResolution(String id, PageViewport pv, List pvList) {
-        Set todo = (Set) unresolvedIDRefs.get(id);
+    private void tryIDResolution(final String id, final PageViewport pv,
+            final List pvList) {
+        final Set todo = (Set) this.unresolvedIDRefs.get(id);
         if (todo != null) {
-            for (Iterator iter = todo.iterator(); iter.hasNext();) {
-                Resolvable res = (Resolvable) iter.next();
-                if (!unfinishedIDs.contains(id)) {
+            for (final Iterator iter = todo.iterator(); iter.hasNext();) {
+                final Resolvable res = (Resolvable) iter.next();
+                if (!this.unfinishedIDs.contains(id)) {
                     res.resolveIDRef(id, pvList);
                 } else {
                     return;
                 }
             }
-            alreadyResolvedIDs.add(id);
-            unresolvedIDRefs.remove(id);
+            this.alreadyResolvedIDs.add(id);
+            this.unresolvedIDRefs.remove(id);
         }
     }
 
     /**
      * Tries to resolve all unresolved ID references on the given page.
      *
-     * @param pv page viewport whose ID refs to resolve
+     * @param pv
+     *            page viewport whose ID refs to resolve
      */
-    public void tryIDResolution(PageViewport pv) {
-        String[] ids = pv.getIDRefs();
+    public void tryIDResolution(final PageViewport pv) {
+        final String[] ids = pv.getIDRefs();
         if (ids != null) {
-            for (int i = 0; i < ids.length; i++) {
-                List pvList = (List) idLocations.get(ids[i]);
+            for (final String id : ids) {
+                final List pvList = (List) this.idLocations.get(id);
                 if (pvList != null) {
-                    tryIDResolution(ids[i], pv, pvList);
+                    tryIDResolution(id, pv, pvList);
                 }
             }
         }
@@ -180,24 +192,27 @@ public class IDTracker {
     /**
      * Get the list of page viewports that have an area with a given id.
      *
-     * @param id the id to lookup
+     * @param id
+     *            the id to lookup
      * @return the list of PageViewports
      */
-    public List getPageViewportsContainingID(String id) {
-        return (List) idLocations.get(id);
+    public List getPageViewportsContainingID(final String id) {
+        return (List) this.idLocations.get(id);
     }
 
     /**
      * Add an Resolvable object with an unresolved idref
      *
-     * @param idref the idref whose target id has not yet been located
-     * @param res the Resolvable object needing the idref to be resolved
+     * @param idref
+     *            the idref whose target id has not yet been located
+     * @param res
+     *            the Resolvable object needing the idref to be resolved
      */
-    public void addUnresolvedIDRef(String idref, Resolvable res) {
-        Set todo = (Set) unresolvedIDRefs.get(idref);
+    public void addUnresolvedIDRef(final String idref, final Resolvable res) {
+        Set todo = (Set) this.unresolvedIDRefs.get(idref);
         if (todo == null) {
             todo = new java.util.HashSet();
-            unresolvedIDRefs.put(idref, todo);
+            this.unresolvedIDRefs.put(idref, todo);
         }
         // add Resolvable object to this HashSet
         todo.add(res);

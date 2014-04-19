@@ -30,39 +30,45 @@ import org.xml.sax.SAXException;
  */
 public class XMPContentHandlerFactory implements ContentHandlerFactory {
 
-    private static final String[] NAMESPACES = new String[]
-                                         {XMPConstants.XMP_NAMESPACE, XMPConstants.RDF_NAMESPACE};
+    private static final String[] NAMESPACES = new String[] {
+            XMPConstants.XMP_NAMESPACE, XMPConstants.RDF_NAMESPACE };
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new FOPXMPHandler();
     }
 
     /**
-     * Local subclass of XMPHandler that implements ObjectSource for FOP integration.
+     * Local subclass of XMPHandler that implements ObjectSource for FOP
+     * integration.
      */
     private class FOPXMPHandler extends XMPHandler implements ObjectSource {
 
         private ObjectBuiltListener obListener;
 
+        @Override
         public Object getObject() {
             return getMetadata();
         }
 
         /** {@inheritDoc} */
-        public void setObjectBuiltListener(ObjectBuiltListener listener) {
+        @Override
+        public void setObjectBuiltListener(final ObjectBuiltListener listener) {
             this.obListener = listener;
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocument() throws SAXException {
-            if (obListener != null) {
-                obListener.notifyObjectBuilt(getObject());
+            if (this.obListener != null) {
+                this.obListener.notifyObjectBuilt(getObject());
             }
         }
 

@@ -40,83 +40,92 @@ public abstract class AFPImageHandler implements ImageHandlerBase {
     private static final int Y = 1;
 
     /** foreign attribute reader */
-    private final AFPForeignAttributeReader foreignAttributeReader
-        = new AFPForeignAttributeReader();
+    private final AFPForeignAttributeReader foreignAttributeReader = new AFPForeignAttributeReader();
 
     /**
-     * Generates an intermediate AFPDataObjectInfo that is later used to construct
-     * the appropriate data object in the AFP DataStream.
+     * Generates an intermediate AFPDataObjectInfo that is later used to
+     * construct the appropriate data object in the AFP DataStream.
      *
-     * @param rendererImageInfo the renderer image info
+     * @param rendererImageInfo
+     *            the renderer image info
      * @return a data object info object
-     * @throws IOException thrown if an I/O exception of some sort has occurred.
+     * @throws IOException
+     *             thrown if an I/O exception of some sort has occurred.
      */
     public AFPDataObjectInfo generateDataObjectInfo(
-            AFPRendererImageInfo rendererImageInfo) throws IOException {
-        AFPDataObjectInfo dataObjectInfo = createDataObjectInfo();
+            final AFPRendererImageInfo rendererImageInfo) throws IOException {
+        final AFPDataObjectInfo dataObjectInfo = createDataObjectInfo();
 
         // set resource information
-        setResourceInformation(dataObjectInfo,
-                rendererImageInfo.getURI(),
+        setResourceInformation(dataObjectInfo, rendererImageInfo.getURI(),
                 rendererImageInfo.getForeignAttributes());
 
+        final Point origin = rendererImageInfo.getOrigin();
+        final Rectangle2D position = rendererImageInfo.getPosition();
+        final int srcX = Math.round(origin.x + (float) position.getX());
+        final int srcY = Math.round(origin.y + (float) position.getY());
+        final Rectangle targetRect = new Rectangle(srcX, srcY,
+                (int) Math.round(position.getWidth()),
+                (int) Math.round(position.getHeight()));
 
-        Point origin = rendererImageInfo.getOrigin();
-        Rectangle2D position = rendererImageInfo.getPosition();
-        int srcX = Math.round(origin.x + (float)position.getX());
-        int srcY = Math.round(origin.y + (float)position.getY());
-        Rectangle targetRect = new Rectangle(
-                srcX,
-                srcY,
-                (int)Math.round(position.getWidth()),
-                (int)Math.round(position.getHeight()));
+        final AFPRendererContext rendererContext = (AFPRendererContext) rendererImageInfo
+                .getRendererContext();
+        final AFPInfo afpInfo = rendererContext.getInfo();
+        final AFPPaintingState paintingState = afpInfo.getPaintingState();
 
-        AFPRendererContext rendererContext
-            = (AFPRendererContext)rendererImageInfo.getRendererContext();
-        AFPInfo afpInfo = rendererContext.getInfo();
-        AFPPaintingState paintingState = afpInfo.getPaintingState();
-
-        dataObjectInfo.setObjectAreaInfo(createObjectAreaInfo(paintingState, targetRect));
+        dataObjectInfo.setObjectAreaInfo(createObjectAreaInfo(paintingState,
+                targetRect));
 
         return dataObjectInfo;
     }
 
     /**
      * Sets resource information on the data object info.
-     * @param dataObjectInfo the data object info instance
-     * @param uri the image's URI (or null if no URI is available)
-     * @param foreignAttributes a Map of foreign attributes (or null)
+     * 
+     * @param dataObjectInfo
+     *            the data object info instance
+     * @param uri
+     *            the image's URI (or null if no URI is available)
+     * @param foreignAttributes
+     *            a Map of foreign attributes (or null)
      */
-    protected void setResourceInformation(AFPDataObjectInfo dataObjectInfo,
-            String uri, Map foreignAttributes) {
-        AFPResourceInfo resourceInfo
-            = foreignAttributeReader.getResourceInfo(foreignAttributes);
+    protected void setResourceInformation(
+            final AFPDataObjectInfo dataObjectInfo, final String uri,
+            final Map foreignAttributes) {
+        final AFPResourceInfo resourceInfo = this.foreignAttributeReader
+                .getResourceInfo(foreignAttributes);
         resourceInfo.setUri(uri);
         dataObjectInfo.setResourceInfo(resourceInfo);
     }
 
     /**
-     * Creates and returns an {@link AFPObjectAreaInfo} instance for the placement of the image.
-     * @param paintingState the painting state
-     * @param targetRect the target rectangle in which to place the image (coordinates in mpt)
+     * Creates and returns an {@link AFPObjectAreaInfo} instance for the
+     * placement of the image.
+     * 
+     * @param paintingState
+     *            the painting state
+     * @param targetRect
+     *            the target rectangle in which to place the image (coordinates
+     *            in mpt)
      * @return the newly created object area info instance
      */
-    public static AFPObjectAreaInfo createObjectAreaInfo(AFPPaintingState paintingState,
-            Rectangle targetRect) {
-        AFPObjectAreaInfo objectAreaInfo = new AFPObjectAreaInfo();
-        AFPUnitConverter unitConv = paintingState.getUnitConverter();
+    public static AFPObjectAreaInfo createObjectAreaInfo(
+            final AFPPaintingState paintingState, final Rectangle targetRect) {
+        final AFPObjectAreaInfo objectAreaInfo = new AFPObjectAreaInfo();
+        final AFPUnitConverter unitConv = paintingState.getUnitConverter();
 
-        int[] coords = unitConv.mpts2units(new float[] {targetRect.x, targetRect.y});
+        final int[] coords = unitConv.mpts2units(new float[] { targetRect.x,
+                targetRect.y });
         objectAreaInfo.setX(coords[X]);
         objectAreaInfo.setY(coords[Y]);
 
-        int width = Math.round(unitConv.mpt2units(targetRect.width));
+        final int width = Math.round(unitConv.mpt2units(targetRect.width));
         objectAreaInfo.setWidth(width);
 
-        int height = Math.round(unitConv.mpt2units(targetRect.height));
+        final int height = Math.round(unitConv.mpt2units(targetRect.height));
         objectAreaInfo.setHeight(height);
 
-        int resolution = paintingState.getResolution();
+        final int resolution = paintingState.getResolution();
         objectAreaInfo.setHeightRes(resolution);
         objectAreaInfo.setWidthRes(resolution);
 

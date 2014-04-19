@@ -24,18 +24,17 @@ import java.awt.color.ColorSpace;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Sets the current processing color for the following GOCA structured fields
  */
+@Slf4j
 public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
 
     /*
-     * GOCA Color space support:
-     * X'01' RGB
-     * X'04' CMYK
-     * X'06' Highlight color space
-     * X'08' CIELAB
-     * X'40' Standard OCA color space
+     * GOCA Color space support: X'01' RGB X'04' CMYK X'06' Highlight color
+     * space X'08' CIELAB X'40' Standard OCA color space
      */
     private static final byte RGB = 0x01, CMYK = 0x04;
 
@@ -49,27 +48,30 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
      * @param color
      *            the color to set
      */
-    public GraphicsSetProcessColor(Color color) {
+    public GraphicsSetProcessColor(final Color color) {
         this.color = color;
         this.colorComponents = color.getColorComponents(null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
-        return 12 + colorComponents.length;
+        return 12 + this.colorComponents.length;
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return (byte) 0xB2;
     }
 
     /** {@inheritDoc} */
-    public void writeToStream(OutputStream os) throws IOException {
+    @Override
+    public void writeToStream(final OutputStream os) throws IOException {
 
         // COLSPCE
         byte colspace;
-        int colSpaceType = color.getColorSpace().getType();
+        final int colSpaceType = this.color.getColorSpace().getType();
         if (colSpaceType == ColorSpace.TYPE_CMYK) {
             colspace = CMYK;
         } else if (colSpaceType == ColorSpace.TYPE_RGB) {
@@ -80,13 +82,13 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
         }
 
         // COLSIZE(S)
-        byte[] colsizes = new byte[] {0x00, 0x00, 0x00, 0x00};
-        for (int i = 0; i < colorComponents.length; i++) {
+        final byte[] colsizes = new byte[] { 0x00, 0x00, 0x00, 0x00 };
+        for (int i = 0; i < this.colorComponents.length; i++) {
             colsizes[i] = (byte) 8;
         }
 
-        int len = getDataLength();
-        byte[] data = new byte[len];
+        final int len = getDataLength();
+        final byte[] data = new byte[len];
         data[0] = getOrderCode(); // GSPCOL order code
         data[1] = (byte) (len - 2); // LEN
         data[2] = 0x00; // reserved; must be zero
@@ -101,15 +103,16 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
         data[11] = colsizes[3];
 
         // COLVALUE(S)
-        for (int i = 0; i < colorComponents.length; i++) {
-            data[i + 12] = (byte) (colorComponents[i] * 255);
+        for (int i = 0; i < this.colorComponents.length; i++) {
+            data[i + 12] = (byte) (this.colorComponents[i] * 255);
         }
 
         os.write(data);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "GraphicsSetProcessColor(col=" + color + ")";
+        return "GraphicsSetProcessColor(col=" + this.color + ")";
     }
 }

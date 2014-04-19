@@ -19,13 +19,13 @@
 
 package org.apache.fop.layoutmgr.inline;
 
+import org.apache.fop.area.Trait;
+import org.apache.fop.area.inline.InlineArea;
+import org.apache.fop.area.inline.TextArea;
 import org.apache.fop.fo.flow.PageNumber;
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontTriplet;
-import org.apache.fop.area.inline.InlineArea;
-import org.apache.fop.area.inline.TextArea;
-import org.apache.fop.area.Trait;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.TraitSetter;
 import org.apache.fop.traits.MinOptMax;
@@ -35,101 +35,107 @@ import org.apache.fop.traits.MinOptMax;
  */
 public class PageNumberLayoutManager extends LeafNodeLayoutManager {
 
-    private PageNumber fobj;
+    private final PageNumber fobj;
     private Font font;
 
     /**
      * Constructor
      *
-     * @param node the fo:page-number formatting object that creates the area
-     * TODO better null checking of node, font
+     * @param node
+     *            the fo:page-number formatting object that creates the area
+     *            TODO better null checking of node, font
      */
-    public PageNumberLayoutManager(PageNumber node) {
+    public PageNumberLayoutManager(final PageNumber node) {
         super(node);
-        fobj = node;
+        this.fobj = node;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize() {
-        FontInfo fi = fobj.getFOEventHandler().getFontInfo();
-        FontTriplet[] fontkeys = fobj.getCommonFont().getFontState(fi);
-        font = fi.getFontInstance(fontkeys[0], fobj.getCommonFont().fontSize.getValue(this));
-        setCommonBorderPaddingBackground(fobj.getCommonBorderPaddingBackground());
+        final FontInfo fi = this.fobj.getFOEventHandler().getFontInfo();
+        final FontTriplet[] fontkeys = this.fobj.getCommonFont().getFontState(
+                fi);
+        this.font = fi.getFontInstance(fontkeys[0],
+                this.fobj.getCommonFont().fontSize.getValue(this));
+        setCommonBorderPaddingBackground(this.fobj
+                .getCommonBorderPaddingBackground());
     }
 
     /**
-     * {@inheritDoc}
-     *                                                      #makeAlignmentContext(LayoutContext)
+     * {@inheritDoc} #makeAlignmentContext(LayoutContext)
      */
-    protected AlignmentContext makeAlignmentContext(LayoutContext context) {
-        return new AlignmentContext(
-                font
-                , fobj.getLineHeight().getOptimum(this).getLength().getValue(this)
-                , fobj.getAlignmentAdjust()
-                , fobj.getAlignmentBaseline()
-                , fobj.getBaselineShift()
-                , fobj.getDominantBaseline()
-                , context.getAlignmentContext()
-            );
+    @Override
+    protected AlignmentContext makeAlignmentContext(final LayoutContext context) {
+        return new AlignmentContext(this.font, this.fobj.getLineHeight()
+                .getOptimum(this).getLength().getValue(this),
+                this.fobj.getAlignmentAdjust(),
+                this.fobj.getAlignmentBaseline(), this.fobj.getBaselineShift(),
+                this.fobj.getDominantBaseline(), context.getAlignmentContext());
     }
 
     /** {@inheritDoc} */
-    public InlineArea get(LayoutContext context) {
+    @Override
+    public InlineArea get(final LayoutContext context) {
         // get page string from parent, build area
-        TextArea text = new TextArea();
-        String str = getCurrentPV().getPageNumberString();
-        int width = getStringWidth(str);
+        final TextArea text = new TextArea();
+        final String str = getCurrentPV().getPageNumberString();
+        final int width = getStringWidth(str);
         text.addWord(str, 0);
         text.setIPD(width);
-        text.setBPD(font.getAscender() - font.getDescender());
-        text.setBaselineOffset(font.getAscender());
-        TraitSetter.addFontTraits(text, font);
-        text.addTrait(Trait.COLOR, fobj.getColor());
-        TraitSetter.addPtr(text, fobj.getPtr()); // used for accessibility
-        TraitSetter.addTextDecoration(text, fobj.getTextDecoration());
+        text.setBPD(this.font.getAscender() - this.font.getDescender());
+        text.setBaselineOffset(this.font.getAscender());
+        TraitSetter.addFontTraits(text, this.font);
+        text.addTrait(Trait.COLOR, this.fobj.getColor());
+        TraitSetter.addPtr(text, this.fobj.getPtr()); // used for accessibility
+        TraitSetter.addTextDecoration(text, this.fobj.getTextDecoration());
 
         return text;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected InlineArea getEffectiveArea() {
-        TextArea baseArea = (TextArea)curArea;
-        //TODO Maybe replace that with a clone() call or better, a copy constructor
-        //TODO or even better: delay area creation until addAreas() stage
-        //TextArea is cloned because the LM is reused in static areas and the area can't be.
-        TextArea ta = new TextArea();
-        TraitSetter.setProducerID(ta, fobj.getId());
+        final TextArea baseArea = (TextArea) this.curArea;
+        // TODO Maybe replace that with a clone() call or better, a copy
+        // constructor
+        // TODO or even better: delay area creation until addAreas() stage
+        // TextArea is cloned because the LM is reused in static areas and the
+        // area can't be.
+        final TextArea ta = new TextArea();
+        TraitSetter.setProducerID(ta, this.fobj.getId());
         ta.setIPD(baseArea.getIPD());
         ta.setBPD(baseArea.getBPD());
         ta.setOffset(baseArea.getOffset());
         ta.setBaselineOffset(baseArea.getBaselineOffset());
-        ta.addTrait(Trait.COLOR, fobj.getColor()); //only to initialize the trait map
+        ta.addTrait(Trait.COLOR, this.fobj.getColor()); // only to initialize
+                                                        // the trait map
         ta.getTraits().putAll(baseArea.getTraits());
         updateContent(ta);
         return ta;
     }
 
-    private void updateContent(TextArea area) {
+    private void updateContent(final TextArea area) {
         // get the page number of the page actually being built
         area.removeText();
         area.addWord(getCurrentPV().getPageNumberString(), 0);
         // update the ipd of the area
         area.handleIPDVariation(getStringWidth(area.getText()) - area.getIPD());
         // update the width stored in the AreaInfo object
-        areaInfo.ipdArea = MinOptMax.getInstance(area.getIPD());
+        this.areaInfo.ipdArea = MinOptMax.getInstance(area.getIPD());
     }
 
     /**
-     * @param str string to be measured
+     * @param str
+     *            string to be measured
      * @return width of the string
      */
-    private int getStringWidth(String str) {
+    private int getStringWidth(final String str) {
         int width = 0;
         for (int count = 0; count < str.length(); count++) {
-            width += font.getCharWidth(str.charAt(count));
+            width += this.font.getCharWidth(str.charAt(count));
         }
         return width;
     }
 
 }
-

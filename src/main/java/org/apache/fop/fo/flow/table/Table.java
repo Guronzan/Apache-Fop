@@ -22,8 +22,6 @@ package org.apache.fop.fo.flow.table;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.ValidationPercentBaseContext;
@@ -38,12 +36,14 @@ import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.LengthPairProperty;
 import org.apache.fop.fo.properties.LengthRangeProperty;
 import org.apache.fop.fo.properties.TableColLength;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_table">
  * <code>fo:table</code></a> object.
  */
-public class Table extends TableFObj implements ColumnNumberManagerHolder, BreakPropertySet {
+public class Table extends TableFObj implements ColumnNumberManagerHolder,
+BreakPropertySet {
 
     /** properties */
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
@@ -61,11 +61,11 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
     private int tableOmitFooterAtBreak;
     private int tableOmitHeaderAtBreak;
     // Unused but valid items, commented out for performance:
-    //     private CommonAccessibility commonAccessibility;
-    //     private CommonAural commonAural;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private int intrusionDisplace;
-    //     private int writingMode;
+    // private CommonAccessibility commonAccessibility;
+    // private CommonAural commonAural;
+    // private CommonRelativePosition commonRelativePosition;
+    // private int intrusionDisplace;
+    // private int writingMode;
 
     /** extension properties */
     private Length widowContentLimit;
@@ -91,126 +91,139 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
     private RowGroupBuilder rowGroupBuilder;
 
     /**
-     * The table's property list. Used in case the table has
-     * no explicit columns, as a parent property list to
-     * internally generated TableColumns
+     * The table's property list. Used in case the table has no explicit
+     * columns, as a parent property list to internally generated TableColumns
      */
     private PropertyList propList;
 
     /**
-     * Construct a Table instance with the given {@link FONode}
-     * as parent.
+     * Construct a Table instance with the given {@link FONode} as parent.
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public Table(FONode parent) {
+    public Table(final FONode parent) {
         super(parent);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonMarginBlock = pList.getMarginBlockProps();
-        blockProgressionDimension = pList.get(PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
-        borderCollapse = pList.get(PR_BORDER_COLLAPSE).getEnum();
-        borderSeparation = pList.get(PR_BORDER_SEPARATION).getLengthPair();
-        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
-        inlineProgressionDimension = pList.get(PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
-        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        tableLayout = pList.get(PR_TABLE_LAYOUT).getEnum();
-        tableOmitFooterAtBreak = pList.get(PR_TABLE_OMIT_FOOTER_AT_BREAK).getEnum();
-        tableOmitHeaderAtBreak = pList.get(PR_TABLE_OMIT_HEADER_AT_BREAK).getEnum();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonMarginBlock = pList.getMarginBlockProps();
+        this.blockProgressionDimension = pList.get(
+                PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
+        this.borderCollapse = pList.get(PR_BORDER_COLLAPSE).getEnum();
+        this.borderSeparation = pList.get(PR_BORDER_SEPARATION).getLengthPair();
+        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        this.inlineProgressionDimension = pList.get(
+                PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
+        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        this.tableLayout = pList.get(PR_TABLE_LAYOUT).getEnum();
+        this.tableOmitFooterAtBreak = pList.get(PR_TABLE_OMIT_FOOTER_AT_BREAK)
+                .getEnum();
+        this.tableOmitHeaderAtBreak = pList.get(PR_TABLE_OMIT_HEADER_AT_BREAK)
+                .getEnum();
 
-        //Bind extension properties
-        widowContentLimit = pList.get(PR_X_WIDOW_CONTENT_LIMIT).getLength();
-        orphanContentLimit = pList.get(PR_X_ORPHAN_CONTENT_LIMIT).getLength();
+        // Bind extension properties
+        this.widowContentLimit = pList.get(PR_X_WIDOW_CONTENT_LIMIT)
+                .getLength();
+        this.orphanContentLimit = pList.get(PR_X_ORPHAN_CONTENT_LIMIT)
+                .getLength();
 
-        if (!blockProgressionDimension.getOptimum(null).isAuto()) {
-            TableEventProducer eventProducer = TableEventProducer.Provider.get(
-                    getUserAgent().getEventBroadcaster());
+        if (!this.blockProgressionDimension.getOptimum(null).isAuto()) {
+            final TableEventProducer eventProducer = TableEventProducer.Provider
+                    .get(getUserAgent().getEventBroadcaster());
             eventProducer.nonAutoBPDOnTable(this, getLocator());
             // Anyway, the bpd of a table is not used by the layout code
         }
-        if (tableLayout == EN_AUTO) {
-            getFOValidationEventProducer().unimplementedFeature(this, getName(),
-                    "table-layout=\"auto\"", getLocator());
+        if (this.tableLayout == EN_AUTO) {
+            getFOValidationEventProducer().unimplementedFeature(this,
+                    getName(), "table-layout=\"auto\"", getLocator());
         }
         if (!isSeparateBorderModel()
                 && getCommonBorderPaddingBackground().hasPadding(
                         ValidationPercentBaseContext.getPseudoContext())) {
-            //See "17.6.2 The collapsing border model" in CSS2
-            TableEventProducer eventProducer = TableEventProducer.Provider.get(
-                    getUserAgent().getEventBroadcaster());
-            eventProducer.noTablePaddingWithCollapsingBorderModel(this, getLocator());
+            // See "17.6.2 The collapsing border model" in CSS2
+            final TableEventProducer eventProducer = TableEventProducer.Provider
+                    .get(getUserAgent().getEventBroadcaster());
+            eventProducer.noTablePaddingWithCollapsingBorderModel(this,
+                    getLocator());
         }
 
-        /* Store reference to the property list, so
-         * new lists can be created in case the table has no
-         * explicit columns
-         * (see addDefaultColumn())
+        /*
+         * Store reference to the property list, so new lists can be created in
+         * case the table has no explicit columns (see addDefaultColumn())
          */
         this.propList = pList;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startTable(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: (marker*,table-column*,table-header?,table-footer?,table-body+)
+     * {@inheritDoc} <br>
+     * XSL Content Model:
+     * (marker*,table-column*,table-header?,table-footer?,table-body+)
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-                throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if ("marker".equals(localName)) {
-                if (tableColumnFound || tableHeaderFound || tableFooterFound
-                        || tableBodyFound) {
-                   nodesOutOfOrderError(loc, "fo:marker",
-                       "(table-column*,table-header?,table-footer?,table-body+)");
+                if (this.tableColumnFound || this.tableHeaderFound
+                        || this.tableFooterFound || this.tableBodyFound) {
+                    nodesOutOfOrderError(loc, "fo:marker",
+                            "(table-column*,table-header?,table-footer?,table-body+)");
                 }
             } else if ("table-column".equals(localName)) {
-                tableColumnFound = true;
-                if (tableHeaderFound || tableFooterFound || tableBodyFound) {
+                this.tableColumnFound = true;
+                if (this.tableHeaderFound || this.tableFooterFound
+                        || this.tableBodyFound) {
                     nodesOutOfOrderError(loc, "fo:table-column",
-                        "(table-header?,table-footer?,table-body+)");
+                            "(table-header?,table-footer?,table-body+)");
                 }
             } else if ("table-header".equals(localName)) {
-                if (tableHeaderFound) {
+                if (this.tableHeaderFound) {
                     tooManyNodesError(loc, "table-header");
                 } else {
-                    tableHeaderFound = true;
-                    if (tableFooterFound || tableBodyFound) {
+                    this.tableHeaderFound = true;
+                    if (this.tableFooterFound || this.tableBodyFound) {
                         nodesOutOfOrderError(loc, "fo:table-header",
-                            "(table-footer?,table-body+)");
+                                "(table-footer?,table-body+)");
                     }
                 }
             } else if ("table-footer".equals(localName)) {
-                if (tableFooterFound) {
+                if (this.tableFooterFound) {
                     tooManyNodesError(loc, "table-footer");
                 } else {
-                    tableFooterFound = true;
-                    if (tableBodyFound) {
+                    this.tableFooterFound = true;
+                    if (this.tableBodyFound) {
                         if (getUserAgent().validateStrictly()) {
-                            nodesOutOfOrderError(loc, "fo:table-footer", "(table-body+)", true);
+                            nodesOutOfOrderError(loc, "fo:table-footer",
+                                    "(table-body+)", true);
                         }
                         if (!isSeparateBorderModel()) {
-                            TableEventProducer eventProducer = TableEventProducer.Provider.get(
-                                    getUserAgent().getEventBroadcaster());
-                            eventProducer.footerOrderCannotRecover(this, getName(), getLocator());
+                            final TableEventProducer eventProducer = TableEventProducer.Provider
+                                    .get(getUserAgent().getEventBroadcaster());
+                            eventProducer.footerOrderCannotRecover(this,
+                                    getName(), getLocator());
                         }
                     }
                 }
             } else if ("table-body".equals(localName)) {
-                tableBodyFound = true;
+                this.tableBodyFound = true;
             } else {
                 invalidChildError(loc, nsURI, localName);
             }
@@ -218,71 +231,73 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endTable(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void finalizeNode() throws FOPException {
 
-        if (!tableBodyFound) {
-           missingChildElementError(
-                   "(marker*,table-column*,table-header?,table-footer?"
-                       + ",table-body+)");
+        if (!this.tableBodyFound) {
+            missingChildElementError("(marker*,table-column*,table-header?,table-footer?"
+                    + ",table-body+)");
         }
         if (!hasChildren()) {
             getParent().removeChild(this);
             return;
         }
         if (!inMarker()) {
-            rowGroupBuilder.endTable();
+            this.rowGroupBuilder.endTable();
             /* clean up */
-            for (int i = columns.size(); --i >= 0;) {
-                TableColumn col = (TableColumn) columns.get(i);
+            for (int i = this.columns.size(); --i >= 0;) {
+                final TableColumn col = (TableColumn) this.columns.get(i);
                 if (col != null) {
                     col.releasePropertyList();
                 }
             }
             this.propList = null;
-            rowGroupBuilder = null;
+            this.rowGroupBuilder = null;
         }
 
     }
 
     /** {@inheritDoc} */
-    protected void addChildNode(FONode child) throws FOPException {
+    @Override
+    protected void addChildNode(final FONode child) throws FOPException {
 
-        int childId = child.getNameId();
+        final int childId = child.getNameId();
 
         switch (childId) {
         case FO_TABLE_COLUMN:
-            hasExplicitColumns = true;
+            this.hasExplicitColumns = true;
             if (!inMarker()) {
                 addColumnNode((TableColumn) child);
             } else {
-                columns.add(child);
+                this.columns.add(child);
             }
             break;
         case FO_TABLE_HEADER:
         case FO_TABLE_FOOTER:
         case FO_TABLE_BODY:
-            if (!inMarker() && !columnsFinalized) {
-                columnsFinalized = true;
-                if (hasExplicitColumns) {
+            if (!inMarker() && !this.columnsFinalized) {
+                this.columnsFinalized = true;
+                if (this.hasExplicitColumns) {
                     finalizeColumns();
-                    rowGroupBuilder = new FixedColRowGroupBuilder(this);
+                    this.rowGroupBuilder = new FixedColRowGroupBuilder(this);
                 } else {
-                    rowGroupBuilder = new VariableColRowGroupBuilder(this);
+                    this.rowGroupBuilder = new VariableColRowGroupBuilder(this);
                 }
 
             }
             switch (childId) {
             case FO_TABLE_FOOTER:
-                tableFooter = (TableFooter) child;
+                this.tableFooter = (TableFooter) child;
                 break;
             case FO_TABLE_HEADER:
-                tableHeader = (TableHeader) child;
+                this.tableHeader = (TableHeader) child;
                 break;
             default:
                 super.addChildNode(child);
@@ -294,65 +309,71 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
     }
 
     private void finalizeColumns() throws FOPException {
-        for (int i = 0; i < columns.size(); i++) {
-            if (columns.get(i) == null) {
-                columns.set(i, createImplicitColumn(i + 1));
+        for (int i = 0; i < this.columns.size(); i++) {
+            if (this.columns.get(i) == null) {
+                this.columns.set(i, createImplicitColumn(i + 1));
             }
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public Table getTable() {
         return this;
     }
 
     /**
-     * Creates the appropriate number of additional implicit columns to match the given
-     * column number. Used when the table has no explicit column: the number of columns is
-     * then determined by the row that has the most columns.
+     * Creates the appropriate number of additional implicit columns to match
+     * the given column number. Used when the table has no explicit column: the
+     * number of columns is then determined by the row that has the most
+     * columns.
      *
-     * @param columnNumber the table must at least have this number of column
-     * @throws FOPException if there was an error creating the property list for implicit
-     * columns
+     * @param columnNumber
+     *            the table must at least have this number of column
+     * @throws FOPException
+     *             if there was an error creating the property list for implicit
+     *             columns
      */
-    void ensureColumnNumber(int columnNumber) throws FOPException {
-        assert !hasExplicitColumns;
-        for (int i = columns.size() + 1; i <= columnNumber; i++) {
-            columns.add(createImplicitColumn(i));
+    void ensureColumnNumber(final int columnNumber) throws FOPException {
+        assert !this.hasExplicitColumns;
+        for (int i = this.columns.size() + 1; i <= columnNumber; i++) {
+            this.columns.add(createImplicitColumn(i));
         }
     }
 
-    private TableColumn createImplicitColumn(int colNumber)
-                    throws FOPException {
-        TableColumn implicitColumn = new TableColumn(this, true);
-        PropertyList pList = new StaticPropertyList(
-                                implicitColumn, this.propList);
+    private TableColumn createImplicitColumn(final int colNumber)
+            throws FOPException {
+        final TableColumn implicitColumn = new TableColumn(this, true);
+        final PropertyList pList = new StaticPropertyList(implicitColumn,
+                this.propList);
         pList.setWritingMode();
         implicitColumn.bind(pList);
         implicitColumn.setColumnWidth(new TableColLength(1.0, implicitColumn));
         implicitColumn.setColumnNumber(colNumber);
         if (!isSeparateBorderModel()) {
-            implicitColumn.setCollapsedBorders(collapsingBorderModel); // TODO
+            implicitColumn.setCollapsedBorders(this.collapsingBorderModel); // TODO
         }
         return implicitColumn;
     }
 
     /**
-     * Adds a column to the columns List, and updates the columnIndex
-     * used for determining initial values for column-number
+     * Adds a column to the columns List, and updates the columnIndex used for
+     * determining initial values for column-number
      *
-     * @param col   the column to add
+     * @param col
+     *            the column to add
      */
-    private void addColumnNode(TableColumn col) {
+    private void addColumnNode(final TableColumn col) {
 
-        int colNumber = col.getColumnNumber();
-        int colRepeat = col.getNumberColumnsRepeated();
+        final int colNumber = col.getColumnNumber();
+        final int colRepeat = col.getNumberColumnsRepeated();
 
-        /* add nulls for non-occupied indices between
-         * the last column up to and including the current one
+        /*
+         * add nulls for non-occupied indices between the last column up to and
+         * including the current one
          */
-        while (columns.size() < colNumber + colRepeat - 1) {
-            columns.add(null);
+        while (this.columns.size() < colNumber + colRepeat - 1) {
+            this.columns.add(null);
         }
 
         // in case column is repeated:
@@ -360,38 +381,40 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
         // (colRepeat - 1) times to the columns list
         // TODO: need to force the column-number (?)
         for (int i = colNumber - 1; i < colNumber + colRepeat - 1; i++) {
-            columns.set(i, col);
+            this.columns.set(i, col);
         }
 
-        columnNumberManager.signalUsedColumnNumbers(colNumber, colNumber + colRepeat - 1);
+        this.columnNumberManager.signalUsedColumnNumbers(colNumber, colNumber
+                + colRepeat - 1);
     }
 
     boolean hasExplicitColumns() {
-        return hasExplicitColumns;
+        return this.hasExplicitColumns;
     }
 
     /** @return true of table-layout="auto" */
     public boolean isAutoLayout() {
-        return (tableLayout == EN_AUTO);
+        return this.tableLayout == EN_AUTO;
     }
 
     /**
-     *  Returns the list of table-column elements.
+     * Returns the list of table-column elements.
      *
      * @return a list of {@link TableColumn} elements, may contain null elements
      */
     public List getColumns() {
-        return columns;
+        return this.columns;
     }
 
     /**
      * Returns the column at the given index.
      *
-     * @param index index of the column to be retrieved, 0-based
+     * @param index
+     *            index of the column to be retrieved, 0-based
      * @return the corresponding column (may be an implicitly created column)
      */
-    public TableColumn getColumn(int index) {
-        return (TableColumn) columns.get(index);
+    public TableColumn getColumn(final int index) {
+        return (TableColumn) this.columns.get(index);
     }
 
     /**
@@ -400,84 +423,88 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
      * @return the number of columns, implicit or explicit, in this table
      */
     public int getNumberOfColumns() {
-        return columns.size();
+        return this.columns.size();
     }
 
     /** @return the body for the table-header. */
     public TableHeader getTableHeader() {
-        return tableHeader;
+        return this.tableHeader;
     }
 
     /** @return the body for the table-footer. */
     public TableFooter getTableFooter() {
-        return tableFooter;
+        return this.tableFooter;
     }
 
     /** @return true if the table-header should be omitted at breaks */
     public boolean omitHeaderAtBreak() {
-        return (this.tableOmitHeaderAtBreak == EN_TRUE);
+        return this.tableOmitHeaderAtBreak == EN_TRUE;
     }
 
     /** @return true if the table-footer should be omitted at breaks */
     public boolean omitFooterAtBreak() {
-        return (this.tableOmitFooterAtBreak == EN_TRUE);
+        return this.tableOmitFooterAtBreak == EN_TRUE;
     }
 
     /**
      * @return the "inline-progression-dimension" property.
      */
     public LengthRangeProperty getInlineProgressionDimension() {
-        return inlineProgressionDimension;
+        return this.inlineProgressionDimension;
     }
 
     /**
      * @return the "block-progression-dimension" property.
      */
     public LengthRangeProperty getBlockProgressionDimension() {
-        return blockProgressionDimension;
+        return this.blockProgressionDimension;
     }
 
     /**
      * @return the Common Margin Properties-Block.
      */
     public CommonMarginBlock getCommonMarginBlock() {
-        return commonMarginBlock;
+        return this.commonMarginBlock;
     }
 
     /**
      * @return the Common Border, Padding, and Background Properties.
      */
+    @Override
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /** @return the "break-after" property. */
+    @Override
     public int getBreakAfter() {
-        return breakAfter;
+        return this.breakAfter;
     }
 
     /** @return the "break-before" property. */
+    @Override
     public int getBreakBefore() {
-        return breakBefore;
+        return this.breakBefore;
     }
 
-    /** @return the "keep-with-next" property.  */
+    /** @return the "keep-with-next" property. */
     public KeepProperty getKeepWithNext() {
-        return keepWithNext;
+        return this.keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property.  */
+    /** @return the "keep-with-previous" property. */
     public KeepProperty getKeepWithPrevious() {
-        return keepWithPrevious;
+        return this.keepWithPrevious;
     }
 
-    /** @return the "keep-together" property.  */
+    /** @return the "keep-together" property. */
     public KeepProperty getKeepTogether() {
-        return keepTogether;
+        return this.keepTogether;
     }
 
     /**
      * Convenience method to check if a keep-together constraint is specified.
+     *
      * @return true if keep-together is active.
      */
     public boolean mustKeepTogether() {
@@ -487,46 +514,50 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
 
     /** @return the "border-collapse" property. */
     public int getBorderCollapse() {
-        return borderCollapse;
+        return this.borderCollapse;
     }
 
     /** @return true if the separate border model is active */
     public boolean isSeparateBorderModel() {
-        return (getBorderCollapse() == EN_SEPARATE);
+        return getBorderCollapse() == EN_SEPARATE;
     }
 
     /** @return the "border-separation" property. */
     public LengthPairProperty getBorderSeparation() {
-        return borderSeparation;
+        return this.borderSeparation;
     }
 
     /** @return the "fox:widow-content-limit" extension property */
     public Length getWidowContentLimit() {
-        return widowContentLimit;
+        return this.widowContentLimit;
     }
 
     /** @return the "fox:orphan-content-limit" extension property */
     public Length getOrphanContentLimit() {
-        return orphanContentLimit;
+        return this.orphanContentLimit;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE;
     }
 
     /** {@inheritDoc} */
-    public FONode clone(FONode parent, boolean removeChildren)
-        throws FOPException {
-        Table clone = (Table) super.clone(parent, removeChildren);
+    @Override
+    public FONode clone(final FONode parent, final boolean removeChildren)
+            throws FOPException {
+        final Table clone = (Table) super.clone(parent, removeChildren);
         if (removeChildren) {
             clone.columns = new ArrayList();
             clone.columnsFinalized = false;
@@ -539,11 +570,12 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder, Break
     }
 
     /** {@inheritDoc} */
+    @Override
     public ColumnNumberManager getColumnNumberManager() {
-        return columnNumberManager;
+        return this.columnNumberManager;
     }
 
     RowGroupBuilder getRowGroupBuilder() {
-        return rowGroupBuilder;
+        return this.rowGroupBuilder;
     }
 }

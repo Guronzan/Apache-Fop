@@ -22,8 +22,6 @@ package org.apache.fop.fo.flow;
 import java.awt.Color;
 import java.util.NoSuchElementException;
 
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.CharIterator;
@@ -39,6 +37,7 @@ import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.Property;
 import org.apache.fop.fo.properties.SpaceProperty;
 import org.apache.fop.fo.properties.StructurePointerPropertySet;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_character">
@@ -63,20 +62,20 @@ public class Character extends FObj implements StructurePointerPropertySet {
     private CommonTextDecoration textDecoration;
     // private ToBeImplementedProperty textShadow;
     private Property wordSpacing;
-    private String ptr;  // used for accessibility
+    private String ptr; // used for accessibility
     // Unused but valid items, commented out for performance:
-    //     private CommonAural commonAural;
-    //     private CommonMarginInline commonMarginInline;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private ToBeImplementedProperty glyphOrientationHorizontal;
-    //     private ToBeImplementedProperty glyphOrientationVertical;
-    //     private int treatAsWordSpace;
-    //     private Length textDepth;
-    //     private Length textAltitude;
-    //     private int scoreSpaces;
-    //     private int suppressAtLineBreak;
-    //     private int textTransform;
-    //     private int visibility;
+    // private CommonAural commonAural;
+    // private CommonMarginInline commonMarginInline;
+    // private CommonRelativePosition commonRelativePosition;
+    // private ToBeImplementedProperty glyphOrientationHorizontal;
+    // private ToBeImplementedProperty glyphOrientationVertical;
+    // private int treatAsWordSpace;
+    // private Length textDepth;
+    // private Length textAltitude;
+    // private int scoreSpaces;
+    // private int suppressAtLineBreak;
+    // private int textTransform;
+    // private int visibility;
     // End of property values
 
     /** constant indicating that the character is OK */
@@ -85,145 +84,155 @@ public class Character extends FObj implements StructurePointerPropertySet {
     public static final int DOESNOT_FIT = 1;
 
     /**
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public Character(FONode parent) {
+    public Character(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonFont = pList.getFontProps();
-        commonHyphenation = pList.getHyphenationProps();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonFont = pList.getFontProps();
+        this.commonHyphenation = pList.getHyphenationProps();
 
-        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        character = pList.get(PR_CHARACTER).getCharacter();
-        color = pList.get(PR_COLOR).getColor(getUserAgent());
-        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
-        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        letterSpacing = pList.get(PR_LETTER_SPACING);
-        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        textDecoration = pList.getTextDecorationProps();
-        wordSpacing = pList.get(PR_WORD_SPACING);
-        ptr = pList.get(PR_X_PTR).getString();  // used for accessibility
+        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        this.character = pList.get(PR_CHARACTER).getCharacter();
+        this.color = pList.get(PR_COLOR).getColor(getUserAgent());
+        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        this.letterSpacing = pList.get(PR_LETTER_SPACING);
+        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        this.textDecoration = pList.getTextDecorationProps();
+        this.wordSpacing = pList.get(PR_WORD_SPACING);
+        this.ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().character(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: empty
+     * {@inheritDoc} <br>
+     * XSL Content Model: empty
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-                throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public CharIterator charIterator() {
         return new FOCharIterator(this);
     }
 
     /** @return the Common Border, Padding, and Background Properties */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /** @return the Common Font Properties */
     public CommonFont getCommonFont() {
-        return commonFont;
+        return this.commonFont;
     }
 
     /** @return the Common Hyphenation Properties */
     public CommonHyphenation getCommonHyphenation() {
-        return commonHyphenation;
+        return this.commonHyphenation;
     }
 
     /** @return the "character" property */
     public char getCharacter() {
-        return character;
+        return this.character;
     }
 
     /** @return the "color" property */
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        return alignmentAdjust;
+        return this.alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return alignmentBaseline;
+        return this.alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return baselineShift;
+        return this.baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return dominantBaseline;
+        return this.dominantBaseline;
     }
 
     /** @return the "letter-spacing" property */
     public Property getLetterSpacing() {
-        return letterSpacing;
+        return this.letterSpacing;
     }
 
     /** @return the "line-height" property */
     public SpaceProperty getLineHeight() {
-        return lineHeight;
+        return this.lineHeight;
     }
 
     /** @return the "text-decoration" property. */
     public CommonTextDecoration getTextDecoration() {
-        return textDecoration;
+        return this.textDecoration;
     }
 
     /** @return the "word-spacing" property */
     public Property getWordSpacing() {
-        return wordSpacing;
+        return this.wordSpacing;
     }
 
     /** @return the "keep-with-next" property */
     public KeepProperty getKeepWithNext() {
-        return keepWithNext;
+        return this.keepWithNext;
     }
 
     /** @return the "keep-with-previous" property */
     public KeepProperty getKeepWithPrevious() {
-        return keepWithPrevious;
+        return this.keepWithPrevious;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getPtr() {
-        return ptr;
+        return this.ptr;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "character";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_CHARACTER}
      */
+    @Override
     public int getNameId() {
         return FO_CHARACTER;
     }
@@ -231,31 +240,35 @@ public class Character extends FObj implements StructurePointerPropertySet {
     private class FOCharIterator extends CharIterator {
 
         private boolean bFirst = true;
-        private Character foChar;
+        private final Character foChar;
 
-        FOCharIterator(Character foChar) {
+        FOCharIterator(final Character foChar) {
             this.foChar = foChar;
         }
 
+        @Override
         public boolean hasNext() {
-            return bFirst;
+            return this.bFirst;
         }
 
+        @Override
         public char nextChar() {
-            if (bFirst) {
-                bFirst = false;
-                return foChar.character;
+            if (this.bFirst) {
+                this.bFirst = false;
+                return this.foChar.character;
             } else {
                 throw new NoSuchElementException();
             }
         }
 
+        @Override
         public void remove() {
-            foChar.parent.removeChild(foChar);
+            this.foChar.parent.removeChild(this.foChar);
         }
 
-        public void replaceChar(char c) {
-            foChar.character = c;
+        @Override
+        public void replaceChar(final char c) {
+            this.foChar.character = c;
         }
 
     }

@@ -24,21 +24,29 @@ import java.io.Serializable;
 /** Base class for enumeration classes representing traits. */
 public abstract class TraitEnum implements Serializable {
 
-    private String name;
-    private int enumValue;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8561756813823018763L;
+    private final String name;
+    private final int enumValue;
 
     /**
      * Constructor to add a new named item.
-     * @param name Name of the item.
-     * @param enumValue the {@link Constants}.EN_* value
+     * 
+     * @param name
+     *            Name of the item.
+     * @param enumValue
+     *            the {@link Constants}.EN_* value
      */
-    protected TraitEnum(String name, int enumValue) {
+    protected TraitEnum(final String name, final int enumValue) {
         this.name = name;
         this.enumValue = enumValue;
     }
 
     /**
      * Returns the name of the enumeration.
+     * 
      * @return the name of the enumeration
      */
     public String getName() {
@@ -47,6 +55,7 @@ public abstract class TraitEnum implements Serializable {
 
     /**
      * Returns the enumeration value (one of {@link Constants}.EN_*).
+     * 
      * @return the enumeration value
      */
     public int getEnumValue() {

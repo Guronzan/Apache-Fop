@@ -31,39 +31,47 @@ import org.apache.fop.fonts.FontTriplet;
  */
 public class FontSpec implements Comparable {
 
-    private String key;
-    private FontMetrics metrics;
-    private SortedSet familyNames = new java.util.TreeSet();
-    private Collection triplets = new java.util.TreeSet();
+    private final String key;
+    private final FontMetrics metrics;
+    private final SortedSet familyNames = new java.util.TreeSet();
+    private final Collection triplets = new java.util.TreeSet();
 
     /**
      * Creates a new font spec.
-     * @param key the internal font key
-     * @param metrics the font metrics
+     *
+     * @param key
+     *            the internal font key
+     * @param metrics
+     *            the font metrics
      */
-    public FontSpec(String key, FontMetrics metrics) {
+    public FontSpec(final String key, final FontMetrics metrics) {
         this.key = key;
         this.metrics = metrics;
     }
 
     /**
      * Adds font family names.
-     * @param names the names
+     *
+     * @param names
+     *            the names
      */
-    public void addFamilyNames(Collection names) {
+    public void addFamilyNames(final Collection names) {
         this.familyNames.addAll(names);
     }
 
     /**
      * Adds a font triplet.
-     * @param triplet the font triplet
+     *
+     * @param triplet
+     *            the font triplet
      */
-    public void addTriplet(FontTriplet triplet) {
+    public void addTriplet(final FontTriplet triplet) {
         this.triplets.add(triplet);
     }
 
     /**
      * Returns the font family names.
+     *
      * @return the font family names
      */
     public SortedSet getFamilyNames() {
@@ -72,6 +80,7 @@ public class FontSpec implements Comparable {
 
     /**
      * Returns the font triplets.
+     *
      * @return the font triplets
      */
     public Collection getTriplets() {
@@ -80,6 +89,7 @@ public class FontSpec implements Comparable {
 
     /**
      * Returns the internal font key.
+     *
      * @return the internal font key
      */
     public String getKey() {
@@ -88,6 +98,7 @@ public class FontSpec implements Comparable {
 
     /**
      * Returns the font metrics.
+     *
      * @return the font metrics
      */
     public FontMetrics getFontMetrics() {
@@ -95,9 +106,11 @@ public class FontSpec implements Comparable {
     }
 
     /** {@inheritDoc} */
-    public int compareTo(Object o) {
-        FontSpec other = (FontSpec)o;
-        return metrics.getFullName().compareTo(other.metrics.getFullName());
+    @Override
+    public int compareTo(final Object o) {
+        final FontSpec other = (FontSpec) o;
+        return this.metrics.getFullName()
+                .compareTo(other.metrics.getFullName());
     }
 
 }

@@ -21,56 +21,61 @@ package org.apache.fop.render.ps;
 
 import java.util.Map;
 
-import org.apache.xmlgraphics.ps.PSResource;
-
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.LazyFont;
 import org.apache.fop.fonts.Typeface;
+import org.apache.xmlgraphics.ps.PSResource;
 
 /**
  * A cache for font resource objects.
  */
 class FontResourceCache {
 
-    private FontInfo fontInfo;
+    private final FontInfo fontInfo;
 
-    /** This is a map of PSResource instances of all fonts defined (key: font key) */
+    /**
+     * This is a map of PSResource instances of all fonts defined (key: font
+     * key)
+     */
     private Map fontResources = new java.util.HashMap();
 
-    public FontResourceCache(FontInfo fontInfo) {
+    public FontResourceCache(final FontInfo fontInfo) {
         this.fontInfo = fontInfo;
     }
 
     /**
      * Returns the PSResource for the given font key.
-     * @param key the font key ("F*")
+     * 
+     * @param key
+     *            the font key ("F*")
      * @return the matching PSResource
      */
-    public PSResource getPSResourceForFontKey(String key) {
+    public PSResource getPSResourceForFontKey(final String key) {
         PSResource res = null;
         if (this.fontResources != null) {
-            res = (PSResource)this.fontResources.get(key);
+            res = (PSResource) this.fontResources.get(key);
         } else {
             this.fontResources = new java.util.HashMap();
         }
         if (res == null) {
-            res = new PSResource(PSResource.TYPE_FONT, getPostScriptNameForFontKey(key));
+            res = new PSResource(PSResource.TYPE_FONT,
+                    getPostScriptNameForFontKey(key));
             this.fontResources.put(key, res);
         }
         return res;
     }
 
     private String getPostScriptNameForFontKey(String key) {
-        int pos = key.indexOf('_');
+        final int pos = key.indexOf('_');
         String postFix = null;
         if (pos > 0) {
             postFix = key.substring(pos);
             key = key.substring(0, pos);
         }
-        Map fonts = fontInfo.getFonts();
-        Typeface tf = (Typeface)fonts.get(key);
+        final Map fonts = this.fontInfo.getFonts();
+        Typeface tf = (Typeface) fonts.get(key);
         if (tf instanceof LazyFont) {
-            tf = ((LazyFont)tf).getRealFont();
+            tf = ((LazyFont) tf).getRealFont();
         }
         if (tf == null) {
             throw new IllegalStateException("Font not available: " + key);
@@ -84,9 +89,11 @@ class FontResourceCache {
 
     /**
      * Adds a number of fonts to the cache.
-     * @param fontMap the font map
+     * 
+     * @param fontMap
+     *            the font map
      */
-    public void addAll(Map fontMap) {
+    public void addAll(final Map fontMap) {
         this.fontResources.putAll(fontMap);
     }
 

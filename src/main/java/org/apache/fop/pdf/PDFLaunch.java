@@ -22,28 +22,31 @@ package org.apache.fop.pdf;
  */
 public class PDFLaunch extends PDFAction {
 
-    private PDFFileSpec externalFileSpec;
+    private final PDFFileSpec externalFileSpec;
 
-    public PDFLaunch(PDFFileSpec fileSpec) {
+    public PDFLaunch(final PDFFileSpec fileSpec) {
         this.externalFileSpec = fileSpec;
     }
 
+    @Override
     public String getAction() {
-        return this.referencePDF();
+        return referencePDF();
     }
 
+    @Override
     public String toPDFString() {
-        StringBuffer sb = new StringBuffer(64);
+        final StringBuilder sb = new StringBuilder(64);
         sb.append(getObjectID());
         sb.append("<<\n/S /Launch\n/F ");
-        sb.append(externalFileSpec.referencePDF());
+        sb.append(this.externalFileSpec.referencePDF());
         sb.append(" \n>>\nendobj\n");
 
         return sb.toString();
     }
 
     /** {@inheritDoc} */
-    protected boolean contentEquals(PDFObject obj) {
+    @Override
+    protected boolean contentEquals(final PDFObject obj) {
         if (this == obj) {
             return true;
         }
@@ -52,9 +55,10 @@ public class PDFLaunch extends PDFAction {
             return false;
         }
 
-        PDFLaunch launch = (PDFLaunch) obj;
+        final PDFLaunch launch = (PDFLaunch) obj;
 
-        if (!launch.externalFileSpec.referencePDF().equals(externalFileSpec.referencePDF())) {
+        if (!launch.externalFileSpec.referencePDF().equals(
+                this.externalFileSpec.referencePDF())) {
             return false;
         }
 

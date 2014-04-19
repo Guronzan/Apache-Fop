@@ -22,8 +22,8 @@ package org.apache.fop.pdf;
 import java.awt.geom.AffineTransform;
 
 /**
- * Utility class for generating PDF text objects. It needs to be subclassed to add writing
- * functionality (see {@link #write(String)}).
+ * Utility class for generating PDF text objects. It needs to be subclassed to
+ * add writing functionality (see {@link #write(String)}).
  */
 public abstract class PDFTextUtil {
 
@@ -42,7 +42,10 @@ public abstract class PDFTextUtil {
     public static final int TR_FILL_CLIP = 4;
     /** PDF text rendering mode: Stroke text and add to path for clipping */
     public static final int TR_STROKE_CLIP = 5;
-    /** PDF text rendering mode: Fill, then stroke text and add to path for clipping */
+    /**
+     * PDF text rendering mode: Fill, then stroke text and add to path for
+     * clipping
+     */
     public static final int TR_FILL_STROKE_CLIP = 6;
     /** PDF text rendering mode: Add text to path for clipping */
     public static final int TR_CLIP = 7;
@@ -51,7 +54,7 @@ public abstract class PDFTextUtil {
     private String startText;
     private String endText;
     private boolean useMultiByte;
-    private StringBuffer bufTJ;
+    private StringBuilder bufTJ;
     private int textRenderingMode = TR_FILL;
 
     private String currentFontName;
@@ -61,17 +64,20 @@ public abstract class PDFTextUtil {
      * Main constructor.
      */
     public PDFTextUtil() {
-        //nop
+        // nop
     }
 
     /**
      * Writes PDF code.
-     * @param code the PDF code to write
+     *
+     * @param code
+     *            the PDF code to write
      */
-    protected abstract void write(String code);
+    protected abstract void write(final String code);
 
-    private void writeAffineTransform(AffineTransform at, StringBuffer sb) {
-        double[] lt = new double[6];
+    private void writeAffineTransform(final AffineTransform at,
+            final StringBuilder sb) {
+        final double[] lt = new double[6];
         at.getMatrix(lt);
         sb.append(PDFNumber.doubleOut(lt[0], DEC)).append(" ");
         sb.append(PDFNumber.doubleOut(lt[1], DEC)).append(" ");
@@ -81,10 +87,10 @@ public abstract class PDFTextUtil {
         sb.append(PDFNumber.doubleOut(lt[5], DEC));
     }
 
-    private void writeChar(char ch, StringBuffer sb) {
-        if (!useMultiByte) {
+    private void writeChar(final char ch, final StringBuilder sb) {
+        if (!this.useMultiByte) {
             if (ch < 32 || ch > 127) {
-                sb.append("\\").append(Integer.toOctalString((int)ch));
+                sb.append("\\").append(Integer.toOctalString(ch));
             } else {
                 switch (ch) {
                 case '(':
@@ -102,25 +108,26 @@ public abstract class PDFTextUtil {
     }
 
     private void checkInTextObject() {
-        if (!inTextObject) {
+        if (!this.inTextObject) {
             throw new IllegalStateException("Not in text object");
         }
     }
 
     /**
      * Indicates whether we are in a text object or not.
+     *
      * @return true if we are in a text object
      */
     public boolean isInTextObject() {
-        return inTextObject;
+        return this.inTextObject;
     }
 
     /**
-     * Called when a new text object should be started. Be sure to call setFont() before
-     * issuing any text painting commands.
+     * Called when a new text object should be started. Be sure to call
+     * setFont() before issuing any text painting commands.
      */
     public void beginTextObject() {
-        if (inTextObject) {
+        if (this.inTextObject) {
             throw new IllegalStateException("Already in text object");
         }
         write("BT\n");
@@ -147,15 +154,16 @@ public abstract class PDFTextUtil {
     }
 
     /**
-     * Creates a "q" command, pushing a copy of the entire graphics state onto the stack.
+     * Creates a "q" command, pushing a copy of the entire graphics state onto
+     * the stack.
      */
     public void saveGraphicsState() {
         write("q\n");
     }
 
     /**
-     * Creates a "Q" command, restoring the entire graphics state to its former value by popping
-     * it from the stack.
+     * Creates a "Q" command, restoring the entire graphics state to its former
+     * value by popping it from the stack.
      */
     public void restoreGraphicsState() {
         write("Q\n");
@@ -163,12 +171,14 @@ public abstract class PDFTextUtil {
 
     /**
      * Creates a "cm" command.
-     * @param at the transformation matrix
+     *
+     * @param at
+     *            the transformation matrix
      */
-    public void concatMatrix(AffineTransform at) {
+    public void concatMatrix(final AffineTransform at) {
         if (!at.isIdentity()) {
             writeTJ();
-            StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             writeAffineTransform(at, sb);
             sb.append(" cm\n");
             write(sb.toString());
@@ -177,26 +187,37 @@ public abstract class PDFTextUtil {
 
     /**
      * Writes a "Tf" command, setting a new current font.
-     * @param fontName the name of the font to select
-     * @param fontSize the font size (in points)
+     *
+     * @param fontName
+     *            the name of the font to select
+     * @param fontSize
+     *            the font size (in points)
      */
-    public void writeTf(String fontName, double fontSize) {
+    public void writeTf(final String fontName, final double fontSize) {
         checkInTextObject();
         write("/" + fontName + " " + PDFNumber.doubleOut(fontSize) + " Tf\n");
 
-        this.startText = useMultiByte ? "<" : "(";
-        this.endText = useMultiByte ? ">" : ")";
+        this.startText = this.useMultiByte ? "<" : "(";
+        this.endText = this.useMultiByte ? ">" : ")";
     }
 
     /**
-     * Updates the current font. This method only writes a "Tf" if the current font changes.
-     * @param fontName the name of the font to select
-     * @param fontSize the font size (in points)
-     * @param multiByte true indicates the font is a multi-byte font, false means single-byte
+     * Updates the current font. This method only writes a "Tf" if the current
+     * font changes.
+     *
+     * @param fontName
+     *            the name of the font to select
+     * @param fontSize
+     *            the font size (in points)
+     * @param multiByte
+     *            true indicates the font is a multi-byte font, false means
+     *            single-byte
      */
-    public void updateTf(String fontName, double fontSize, boolean multiByte) {
+    public void updateTf(final String fontName, final double fontSize,
+            final boolean multiByte) {
         checkInTextObject();
-        if (!fontName.equals(this.currentFontName) || (fontSize != this.currentFontSize)) {
+        if (!fontName.equals(this.currentFontName)
+                || fontSize != this.currentFontSize) {
             writeTJ();
             this.currentFontName = fontName;
             this.currentFontSize = fontSize;
@@ -207,9 +228,12 @@ public abstract class PDFTextUtil {
 
     /**
      * Sets the text rendering mode.
-     * @param mode the rendering mode (value 0 to 7, see PDF Spec, constants: TR_*)
+     *
+     * @param mode
+     *            the rendering mode (value 0 to 7, see PDF Spec, constants:
+     *            TR_*)
      */
-    public void setTextRenderingMode(int mode) {
+    public void setTextRenderingMode(final int mode) {
         if (mode < 0 || mode > 7) {
             throw new IllegalArgumentException(
                     "Illegal value for text rendering mode. Expected: 0-7");
@@ -223,16 +247,21 @@ public abstract class PDFTextUtil {
 
     /**
      * Sets the text rendering mode.
-     * @param fill true if the text should be filled
-     * @param stroke true if the text should be stroked
-     * @param addToClip true if the path should be added for clipping
+     *
+     * @param fill
+     *            true if the text should be filled
+     * @param stroke
+     *            true if the text should be stroked
+     * @param addToClip
+     *            true if the path should be added for clipping
      */
-    public void setTextRenderingMode(boolean fill, boolean stroke, boolean addToClip) {
+    public void setTextRenderingMode(final boolean fill, final boolean stroke,
+            final boolean addToClip) {
         int mode;
         if (fill) {
-            mode = (stroke ? 2 : 0);
+            mode = stroke ? 2 : 0;
         } else {
-            mode = (stroke ? 1 : 3);
+            mode = stroke ? 1 : 3;
         }
         if (addToClip) {
             mode += 4;
@@ -242,10 +271,12 @@ public abstract class PDFTextUtil {
 
     /**
      * Writes a "Tm" command, setting a new text transformation matrix.
-     * @param localTransform the new text transformation matrix
+     *
+     * @param localTransform
+     *            the new text transformation matrix
      */
-    public void writeTextMatrix(AffineTransform localTransform) {
-        StringBuffer sb = new StringBuffer();
+    public void writeTextMatrix(final AffineTransform localTransform) {
+        final StringBuilder sb = new StringBuilder();
         writeAffineTransform(localTransform, sb);
         sb.append(" Tm ");
         write(sb.toString());
@@ -253,51 +284,55 @@ public abstract class PDFTextUtil {
 
     /**
      * Writes a char to the "TJ-Buffer".
-     * @param codepoint the mapped character (code point/character code)
+     *
+     * @param codepoint
+     *            the mapped character (code point/character code)
      */
-    public void writeTJMappedChar(char codepoint) {
-        if (bufTJ == null) {
-            bufTJ = new StringBuffer();
+    public void writeTJMappedChar(final char codepoint) {
+        if (this.bufTJ == null) {
+            this.bufTJ = new StringBuilder();
         }
-        if (bufTJ.length() == 0) {
-            bufTJ.append("[").append(startText);
+        if (this.bufTJ.length() == 0) {
+            this.bufTJ.append("[").append(this.startText);
         }
-        writeChar(codepoint, bufTJ);
+        writeChar(codepoint, this.bufTJ);
     }
 
     /**
      * Writes a glyph adjust value to the "TJ-Buffer".
-     * @param adjust the glyph adjust value in thousands of text unit space.
+     *
+     * @param adjust
+     *            the glyph adjust value in thousands of text unit space.
      */
-    public void adjustGlyphTJ(double adjust) {
-        if (bufTJ == null) {
-            bufTJ = new StringBuffer();
+    public void adjustGlyphTJ(final double adjust) {
+        if (this.bufTJ == null) {
+            this.bufTJ = new StringBuilder();
         }
-        if (bufTJ.length() > 0) {
-            bufTJ.append(endText).append(" ");
+        if (this.bufTJ.length() > 0) {
+            this.bufTJ.append(this.endText).append(" ");
         }
-        if (bufTJ.length() == 0) {
-            bufTJ.append("[");
+        if (this.bufTJ.length() == 0) {
+            this.bufTJ.append("[");
         }
-        bufTJ.append(PDFNumber.doubleOut(adjust, DEC - 4));
-        bufTJ.append(" ");
-        bufTJ.append(startText);
+        this.bufTJ.append(PDFNumber.doubleOut(adjust, DEC - 4));
+        this.bufTJ.append(" ");
+        this.bufTJ.append(this.startText);
     }
 
     /**
-     * Writes a "TJ" command, writing out the accumulated buffer with the characters and glyph
-     * positioning values. The buffer is reset afterwards.
+     * Writes a "TJ" command, writing out the accumulated buffer with the
+     * characters and glyph positioning values. The buffer is reset afterwards.
      */
     public void writeTJ() {
         if (isInString()) {
-            bufTJ.append(endText).append("] TJ\n");
-            write(bufTJ.toString());
-            bufTJ.setLength(0);
+            this.bufTJ.append(this.endText).append("] TJ\n");
+            write(this.bufTJ.toString());
+            this.bufTJ.setLength(0);
         }
     }
 
     private boolean isInString() {
-        return bufTJ != null && bufTJ.length() > 0;
+        return this.bufTJ != null && this.bufTJ.length() > 0;
     }
 
 }

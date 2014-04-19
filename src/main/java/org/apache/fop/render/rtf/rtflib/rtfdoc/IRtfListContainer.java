@@ -28,15 +28,21 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 import java.io.IOException;
 
-/**  Interface for RtfElements that can contain RtfLists
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Interface for RtfElements that can contain RtfLists
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public interface IRtfListContainer {
-    /** Close the current list, if any, and starts a new one
-     * @param attrs attributes of new List
+    /**
+     * Close the current list, if any, and starts a new one
+     * 
+     * @param attrs
+     *            attributes of new List
      * @return new List object
-     * @throws IOException for I/O problems
+     * @throws IOException
+     *             for I/O problems
      */
-    RtfList newList(RtfAttributes attrs) throws IOException;
+    RtfList newList(final RtfAttributes attrs) throws IOException;
 }

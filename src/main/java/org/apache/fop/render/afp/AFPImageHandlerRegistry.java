@@ -22,9 +22,9 @@ package org.apache.fop.render.afp;
 import org.apache.fop.render.AbstractImageHandlerRegistry;
 
 /**
- * This class holds references to various image handlers used by the AFP renderer. It also
- * supports automatic discovery of additional handlers available through
- * the class path.
+ * This class holds references to various image handlers used by the AFP
+ * renderer. It also supports automatic discovery of additional handlers
+ * available through the class path.
  */
 public class AFPImageHandlerRegistry extends AbstractImageHandlerRegistry {
 
@@ -35,6 +35,7 @@ public class AFPImageHandlerRegistry extends AbstractImageHandlerRegistry {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getHandlerClass() {
         return AFPImageHandler.class;
     }

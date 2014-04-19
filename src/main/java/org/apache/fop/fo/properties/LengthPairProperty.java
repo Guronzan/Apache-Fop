@@ -37,16 +37,19 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     public static class Maker extends CompoundPropertyMaker {
 
         /**
-         * @param propId name of property for which this Maker should be created
+         * @param propId
+         *            name of property for which this Maker should be created
          */
-        public Maker(int propId) {
+        public Maker(final int propId) {
             super(propId);
         }
 
         /**
          * Create a new empty instance of LengthPairProperty.
+         *
          * @return the new instance.
          */
+        @Override
         public Property makeNewProperty() {
             return new LengthPairProperty();
         }
@@ -54,8 +57,10 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
         /**
          * {@inheritDoc}
          */
-        public Property convertProperty(Property p, PropertyList propertyList, FObj fo)
-            throws PropertyException {
+        @Override
+        public Property convertProperty(final Property p,
+                final PropertyList propertyList, final FObj fo)
+                        throws PropertyException {
             if (p instanceof LengthPairProperty) {
                 return p;
             }
@@ -72,46 +77,53 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
 
     /**
      * Creates a new LengthPairProperty.
-     * @param ipd inline-progression-dimension
-     * @param bpd block-progression-dimension
+     *
+     * @param ipd
+     *            inline-progression-dimension
+     * @param bpd
+     *            block-progression-dimension
      */
-    public LengthPairProperty(Property ipd, Property bpd) {
+    public LengthPairProperty(final Property ipd, final Property bpd) {
         this();
         this.ipd = ipd;
         this.bpd = bpd;
     }
 
     /**
-     * Creates a new LengthPairProperty which sets both bpd and ipd to the
-     * same value.
-     * @param len length for both dimensions
+     * Creates a new LengthPairProperty which sets both bpd and ipd to the same
+     * value.
+     *
+     * @param len
+     *            length for both dimensions
      */
-    public LengthPairProperty(Property len) {
+    public LengthPairProperty(final Property len) {
         this(len, len);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setComponent(int cmpId, Property cmpnValue,
-                             boolean bIsDefault) {
+    @Override
+    public void setComponent(final int cmpId, final Property cmpnValue,
+            final boolean bIsDefault) {
         if (cmpId == CP_BLOCK_PROGRESSION_DIRECTION) {
-            bpd = cmpnValue;
+            this.bpd = cmpnValue;
         } else if (cmpId == CP_INLINE_PROGRESSION_DIRECTION) {
-            ipd = cmpnValue;
+            this.ipd = cmpnValue;
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public Property getComponent(int cmpId) {
+    @Override
+    public Property getComponent(final int cmpId) {
         if (cmpId == CP_BLOCK_PROGRESSION_DIRECTION) {
             return getBPD();
         } else if (cmpId == CP_INLINE_PROGRESSION_DIRECTION) {
             return getIPD();
         } else {
-            return null;    // SHOULDN'T HAPPEN
+            return null; // SHOULDN'T HAPPEN
         }
     }
 
@@ -130,15 +142,16 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "LengthPair["
-            + "ipd:" + getIPD().getObject()
-            + ", bpd:" + getBPD().getObject() + "]";
+        return "LengthPair[" + "ipd:" + getIPD().getObject() + ", bpd:"
+                + getBPD().getObject() + "]";
     }
 
     /**
      * @return this.lengthPair
      */
+    @Override
     public LengthPairProperty getLengthPair() {
         return this;
     }
@@ -146,6 +159,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     /**
      * @return this.lengthPair cast as an Object
      */
+    @Override
     public Object getObject() {
         return this;
     }

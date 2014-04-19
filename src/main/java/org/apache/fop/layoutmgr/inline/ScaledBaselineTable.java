@@ -19,53 +19,62 @@
 
 package org.apache.fop.layoutmgr.inline;
 
-import org.apache.fop.datatypes.Length;
 
 /**
- * The FOP specific incarnation of the XSL-FO scaled baseline table.
- * All baseline tables are scaled to the font size of the font they
- * apply to. This interface uses a coordinate system with its origin
- * where the dominant baseline intersects the start edge of the box.
- * All measurements are in mpt.
+ * The FOP specific incarnation of the XSL-FO scaled baseline table. All
+ * baseline tables are scaled to the font size of the font they apply to. This
+ * interface uses a coordinate system with its origin where the dominant
+ * baseline intersects the start edge of the box. All measurements are in mpt.
  */
 public interface ScaledBaselineTable {
 
     /**
      * Return the dominant baseline identifer for this alignment context.
+     * 
      * @return the dominant baseline identifier
      */
     int getDominantBaselineIdentifier();
 
     /**
      * Return the writing mode for this aligment context.
+     * 
      * @return the writing mode
      */
     int getWritingMode();
 
     /**
-     * Return the offset measured from the dominant
-     * baseline for the given baseline identifier.
-     * @param baselineIdentifier the baseline identifier
+     * Return the offset measured from the dominant baseline for the given
+     * baseline identifier.
+     * 
+     * @param baselineIdentifier
+     *            the baseline identifier
      * @return the baseline offset
      */
-    int getBaseline(int baselineIdentifier);
+    int getBaseline(final int baselineIdentifier);
 
     /**
-     * Sets the position of the before and after baselines.
-     * This is usually only done for line areas. For other
-     * areas the position of the before and after baselines
-     * are fixed when the table is constructed.
-     * @param beforeBaseline the offset of the before-edge baseline from the dominant baseline
-     * @param afterBaseline the offset of the after-edge baseline from the dominant baseline
+     * Sets the position of the before and after baselines. This is usually only
+     * done for line areas. For other areas the position of the before and after
+     * baselines are fixed when the table is constructed.
+     * 
+     * @param beforeBaseline
+     *            the offset of the before-edge baseline from the dominant
+     *            baseline
+     * @param afterBaseline
+     *            the offset of the after-edge baseline from the dominant
+     *            baseline
      */
-    void setBeforeAndAfterBaselines(int beforeBaseline, int afterBaseline);
+    void setBeforeAndAfterBaselines(final int beforeBaseline,
+            final int afterBaseline);
 
     /**
-     * Return a new baseline table for the given baseline based
-     * on the current baseline table.
-     * @param baselineIdentifier the baseline identifer
+     * Return a new baseline table for the given baseline based on the current
+     * baseline table.
+     * 
+     * @param baselineIdentifier
+     *            the baseline identifer
      * @return a new baseline with the new baseline
      */
-    ScaledBaselineTable deriveScaledBaselineTable(int baselineIdentifier);
+    ScaledBaselineTable deriveScaledBaselineTable(final int baselineIdentifier);
 
 }

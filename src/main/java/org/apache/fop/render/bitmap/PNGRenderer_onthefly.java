@@ -27,20 +27,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.xmlgraphics.image.codec.png.PNGEncodeParam;
-import org.apache.xmlgraphics.image.codec.png.PNGImageEncoder;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.area.PageViewport;
 import org.apache.fop.render.java2d.Java2DRenderer;
+import org.apache.xmlgraphics.image.codec.png.PNGEncodeParam;
+import org.apache.xmlgraphics.image.codec.png.PNGImageEncoder;
 
 /**
  * PNG Renderer This class actually does not render itself, instead it extends
  * <code>org.apache.fop.render.java2D.Java2DRenderer</code> and just encode
  * rendering results into PNG format using Batik's image codec
  */
+@Slf4j
 public class PNGRenderer_onthefly extends Java2DRenderer {
 
     /** The MIME type for png-Rendering */
@@ -59,17 +60,21 @@ public class PNGRenderer_onthefly extends Java2DRenderer {
     private OutputStream firstOutputStream;
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsOutOfOrder() {
         return true;
     }
 
     /** {@inheritDoc} */
-    public void startRenderer(OutputStream outputStream) throws IOException {
+    @Override
+    public void startRenderer(final OutputStream outputStream)
+            throws IOException {
         log.info("rendering areas to PNG");
         setOutputDirectory();
         this.firstOutputStream = outputStream;
@@ -83,38 +88,40 @@ public class PNGRenderer_onthefly extends Java2DRenderer {
     private void setOutputDirectory() {
 
         // the file provided on the command line
-        File f = getUserAgent().getOutputFile();
+        final File f = getUserAgent().getOutputFile();
 
-        outputDir = f.getParentFile();
+        this.outputDir = f.getParentFile();
 
         // extracting file name syntax
-        String s = f.getName();
+        final String s = f.getName();
         int i = s.lastIndexOf(".");
         if (s.charAt(i - 1) == '1') {
             i--; // getting rid of the "1"
         }
-        fileSyntax = s.substring(0, i);
+        this.fileSyntax = s.substring(0, i);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void renderPage(PageViewport pageViewport) throws IOException {
+    @Override
+    public void renderPage(final PageViewport pageViewport) throws IOException {
 
         // Do the rendering: get the image for this page
-        RenderedImage image = (RenderedImage) getPageImage(pageViewport);
+        final RenderedImage image = getPageImage(pageViewport);
 
         // Encode this image
         log.debug("Encoding page" + (getCurrentPageNumber() + 1));
-        renderParams = PNGEncodeParam.getDefaultEncodeParam(image);
-        OutputStream os = getCurrentOutputStream(getCurrentPageNumber());
+        this.renderParams = PNGEncodeParam.getDefaultEncodeParam(image);
+        final OutputStream os = getCurrentOutputStream(getCurrentPageNumber());
         if (os != null) {
             try {
-                PNGImageEncoder encoder = new PNGImageEncoder(os, renderParams);
+                final PNGImageEncoder encoder = new PNGImageEncoder(os,
+                        this.renderParams);
                 encoder.encode(image);
             } finally {
-                //Only close self-created OutputStreams
-                if (os != firstOutputStream) {
+                // Only close self-created OutputStreams
+                if (os != this.firstOutputStream) {
                     IOUtils.closeQuietly(os);
                 }
             }
@@ -125,21 +132,23 @@ public class PNGRenderer_onthefly extends Java2DRenderer {
 
     /**
      * Builds the OutputStream corresponding to this page
+     *
      * @param 0-based pageNumber
      * @return the corresponding OutputStream
      */
-    private OutputStream getCurrentOutputStream(int pageNumber) {
+    private OutputStream getCurrentOutputStream(final int pageNumber) {
 
         if (pageNumber == 0) {
-            return firstOutputStream;
+            return this.firstOutputStream;
         }
 
-        File f = new File(outputDir + File.separator + fileSyntax
-                + (pageNumber + 1) + ".png");
+        final File f = new File(this.outputDir + File.separator
+                + this.fileSyntax + (pageNumber + 1) + ".png");
         try {
-            OutputStream os = new BufferedOutputStream(new FileOutputStream(f));
+            final OutputStream os = new BufferedOutputStream(
+                    new FileOutputStream(f));
             return os;
-        } catch (FileNotFoundException e) {
+        } catch (final FileNotFoundException e) {
             new FOPException("Can't build the OutputStream\n" + e);
             return null;
         }

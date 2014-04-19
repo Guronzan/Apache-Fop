@@ -29,13 +29,15 @@ import org.apache.fop.fo.expr.PropertyException;
 public interface ShorthandParser {
 
     /**
-     * @param propId the property ID in the Constants interface
-     * @param maker Maker object for the Property
-     * @param propertyList list of properties
+     * @param propId
+     *            the property ID in the Constants interface
+     * @param maker
+     *            Maker object for the Property
+     * @param propertyList
+     *            list of properties
      * @return Property object corresponding to propName
      */
-    Property getValueForProperty(int propId,
-                                 Property property,
-                                 PropertyMaker maker,
-                                 PropertyList propertyList) throws PropertyException;
+    Property getValueForProperty(final int propId, final Property property,
+            final PropertyMaker maker, final PropertyList propertyList)
+            throws PropertyException;
 }

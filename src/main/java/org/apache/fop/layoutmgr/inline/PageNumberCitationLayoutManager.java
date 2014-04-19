@@ -25,49 +25,52 @@ import org.apache.fop.area.inline.TextArea;
 import org.apache.fop.area.inline.UnresolvedPageNumber;
 import org.apache.fop.fo.flow.PageNumberCitation;
 import org.apache.fop.layoutmgr.LayoutContext;
-import org.apache.fop.layoutmgr.LayoutManager;
 
 /**
  * LayoutManager for the fo:page-number-citation formatting object
  */
-public class PageNumberCitationLayoutManager extends AbstractPageNumberCitationLayoutManager {
+public class PageNumberCitationLayoutManager extends
+        AbstractPageNumberCitationLayoutManager {
 
     /**
      * Constructor
      *
-     * @param node the formatting object that creates this area
+     * @param node
+     *            the formatting object that creates this area
      * @todo better retrieval of font info
      */
-    public PageNumberCitationLayoutManager(PageNumberCitation node) {
+    public PageNumberCitationLayoutManager(final PageNumberCitation node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    public InlineArea get(LayoutContext context) {
-        curArea = getPageNumberCitationInlineArea();
-        return curArea;
+    @Override
+    public InlineArea get(final LayoutContext context) {
+        this.curArea = getPageNumberCitationInlineArea();
+        return this.curArea;
     }
 
     /**
-     * if id can be resolved then simply return a word, otherwise
-     * return a resolvable area
+     * if id can be resolved then simply return a word, otherwise return a
+     * resolvable area
      */
     private InlineArea getPageNumberCitationInlineArea() {
-        PageViewport page = getPSLM().getFirstPVWithID(fobj.getRefId());
+        final PageViewport page = getPSLM().getFirstPVWithID(
+                this.fobj.getRefId());
         TextArea text = null;
         if (page != null) {
-            String str = page.getPageNumberString();
+            final String str = page.getPageNumberString();
             // get page string from parent, build area
             text = new TextArea();
-            int width = getStringWidth(str);
+            final int width = getStringWidth(str);
             text.addWord(str, 0);
             text.setIPD(width);
-            resolved = true;
+            this.resolved = true;
         } else {
-            resolved = false;
-            text = new UnresolvedPageNumber(fobj.getRefId(), font);
-            String str = "MMM"; // reserve three spaces for page number
-            int width = getStringWidth(str);
+            this.resolved = false;
+            text = new UnresolvedPageNumber(this.fobj.getRefId(), this.font);
+            final String str = "MMM"; // reserve three spaces for page number
+            final int width = getStringWidth(str);
             text.setIPD(width);
         }
         updateTextAreaTraits(text);
@@ -76,4 +79,3 @@ public class PageNumberCitationLayoutManager extends AbstractPageNumberCitationL
     }
 
 }
-

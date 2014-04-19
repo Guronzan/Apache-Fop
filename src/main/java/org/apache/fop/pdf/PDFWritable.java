@@ -24,19 +24,26 @@ import java.io.OutputStream;
 import java.io.Writer;
 
 /**
- * This interface is implemented by classes that can be serialized to a PDF file either by
- * serializing the object or by writing a indirect reference to the actual object.
+ * This interface is implemented by classes that can be serialized to a PDF file
+ * either by serializing the object or by writing a indirect reference to the
+ * actual object.
  */
 public interface PDFWritable {
 
     /**
-     * Writes a "direct object" (inline object) representation to the stream. A Writer is given
-     * for optimized encoding of text content. Since the Writer is buffered, make sure
-     * <code>flush()</code> is called before any direct calls to <code>out</code> are made.
-     * @param out the OutputStream (for binary content)
-     * @param writer the Writer (for text content, wraps the above OutputStream)
-     * @throws IOException if an I/O error occurs
+     * Writes a "direct object" (inline object) representation to the stream. A
+     * Writer is given for optimized encoding of text content. Since the Writer
+     * is buffered, make sure <code>flush()</code> is called before any direct
+     * calls to <code>out</code> are made.
+     * 
+     * @param out
+     *            the OutputStream (for binary content)
+     * @param writer
+     *            the Writer (for text content, wraps the above OutputStream)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    void outputInline(OutputStream out, Writer writer) throws IOException;
+    void outputInline(final OutputStream out, final Writer writer)
+            throws IOException;
 
 }

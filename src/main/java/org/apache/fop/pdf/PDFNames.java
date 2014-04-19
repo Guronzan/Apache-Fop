@@ -34,17 +34,20 @@ public class PDFNames extends PDFDictionary {
 
     /**
      * Returns the Dests object
+     * 
      * @return the Dests object, or null if it's not used
      */
     public PDFDests getDests() {
-        return (PDFDests)get("Dests");
+        return (PDFDests) get("Dests");
     }
 
     /**
      * Set the Dests object
-     * @param dests the Dests object
+     * 
+     * @param dests
+     *            the Dests object
      */
-    public void setDests(PDFDests dests) {
+    public void setDests(final PDFDests dests) {
         put("Dests", dests);
     }
 

@@ -20,15 +20,19 @@
 package org.apache.fop.hyphenation;
 
 /**
- * @author Carlos Villegas <cav@uniscope.co.jp>
- * (todo) Derive from FOPException
+ * @author Carlos Villegas <cav@uniscope.co.jp> (todo) Derive from FOPException
  */
 public class HyphenationException extends Exception {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = -4563527283721381009L;
+
+    /**
      * @see java.lang.Throwable#Throwable(String)
      */
-    public HyphenationException(String msg) {
+    public HyphenationException(final String msg) {
         super(msg);
     }
 

@@ -28,12 +28,14 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 /**
  * Simplistic options definitions for RTF generation
+ * 
  * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 public class RtfOptions {
     /**
      * If this returns true, RtfParagraphs that have no children will not
      * generate any RTF code
+     * 
      * @return true
      */
     public boolean ignoreEmptyParagraphs() {
@@ -42,10 +44,12 @@ public class RtfOptions {
 
     /**
      * If this returns false, RtfContainer will not generate any RTF
-     * @param c RtfContainer to be tested
+     * 
+     * @param c
+     *            RtfContainer to be tested
      * @return true
      */
-    public boolean renderContainer(RtfContainer c) {
+    public boolean renderContainer(final RtfContainer c) {
         return true;
     }
 }

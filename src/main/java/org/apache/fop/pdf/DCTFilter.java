@@ -20,10 +20,10 @@
 package org.apache.fop.pdf;
 
 /**
- * DCT Filter class. Right now it is just used as a dummy filter flag so
- * we can write JPG images to the PDF. The encode method just returns the
- * data passed to it. In the future an actual JPEG compression should be
- * added to the encode method so other images can be compressed.
+ * DCT Filter class. Right now it is just used as a dummy filter flag so we can
+ * write JPG images to the PDF. The encode method just returns the data passed
+ * to it. In the future an actual JPEG compression should be added to the encode
+ * method so other images can be compressed.
  *
  * @author Eric Dalquist
  */
@@ -31,19 +31,22 @@ public class DCTFilter extends NullFilter {
 
     /**
      * Get filter name.
+     *
      * @return the pdf name for the DCT filter
      */
+    @Override
     public String getName() {
         return "/DCTDecode";
     }
 
     /**
      * Get the decode params for this filter.
+     *
      * @return the DCT filter has no decode params
      */
+    @Override
     public PDFObject getDecodeParms() {
         return null;
     }
 
 }
-

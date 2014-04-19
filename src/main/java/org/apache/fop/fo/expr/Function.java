@@ -19,8 +19,8 @@
 
 package org.apache.fop.fo.expr;
 
-import org.apache.fop.fo.properties.Property;
 import org.apache.fop.datatypes.PercentBase;
+import org.apache.fop.fo.properties.Property;
 
 /**
  * Interface for managing XSL-FO Functions
@@ -29,8 +29,9 @@ public interface Function {
 
     /**
      * @return the number of arguments that must be passed to this function. For
-     * example, if the function should determine the minimum of two numbers, it
-     * must be passed two arguments, one for each of the two values.
+     *         example, if the function should determine the minimum of two
+     *         numbers, it must be passed two arguments, one for each of the two
+     *         values.
      */
     int nbArgs();
 
@@ -41,17 +42,21 @@ public interface Function {
 
     /**
      * Evaluate the function
-     * @param args an array of Properties that should be evaluated
-     * @param propInfo the PropertyInfo
+     * 
+     * @param args
+     *            an array of Properties that should be evaluated
+     * @param propInfo
+     *            the PropertyInfo
      * @return the Property satisfying the function
-     * @throws PropertyException for problems when evaluating the function
+     * @throws PropertyException
+     *             for problems when evaluating the function
      */
-    Property eval(Property[] args,
-                  PropertyInfo propInfo) throws PropertyException;
+    Property eval(final Property[] args, final PropertyInfo propInfo)
+            throws PropertyException;
 
     /**
-     * @return if it is allowed to fill up the property list with
-     * the property name if only one arg is missing.
+     * @return if it is allowed to fill up the property list with the property
+     *         name if only one arg is missing.
      */
     boolean padArgsWithPropertyName();
 }

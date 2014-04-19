@@ -26,8 +26,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.util.XMLResourceBundle;
 import org.apache.fop.util.text.AdvancedMessageFormat;
@@ -37,32 +36,33 @@ import org.apache.fop.util.text.AdvancedMessageFormat.PartFactory;
 /**
  * Converts events into human-readable, localized messages.
  */
+@Slf4j
 public final class EventFormatter {
 
-    private static final Pattern INCLUDES_PATTERN = Pattern.compile("\\{\\{.+\\}\\}");
-
-    private static Log log = LogFactory.getLog(EventFormatter.class);
+    private static final Pattern INCLUDES_PATTERN = Pattern
+            .compile("\\{\\{.+\\}\\}");
 
     private EventFormatter() {
-        //utility class
+        // utility class
     }
 
     /**
      * Formats an event using the default locale.
-     * @param event the event
+     *
+     * @param event
+     *            the event
      * @return the formatted message
      */
-    public static String format(Event event) {
+    public static String format(final Event event) {
         ResourceBundle bundle = null;
-        String groupID = event.getEventGroupID();
+        final String groupID = event.getEventGroupID();
         if (groupID != null) {
             try {
-                 bundle = XMLResourceBundle.getXMLBundle(
-                        groupID,
+                bundle = XMLResourceBundle.getXMLBundle(groupID,
                         EventFormatter.class.getClassLoader());
-            } catch (MissingResourceException mre) {
-                throw new IllegalStateException("No XMLResourceBundle for " + groupID
-                        + " available.");
+            } catch (final MissingResourceException mre) {
+                throw new IllegalStateException("No XMLResourceBundle for "
+                        + groupID + " available.");
             }
         }
         return format(event, bundle);
@@ -70,39 +70,42 @@ public final class EventFormatter {
 
     /**
      * Formats an event using a given locale.
-     * @param event the event
-     * @param locale the locale
+     *
+     * @param event
+     *            the event
+     * @param locale
+     *            the locale
      * @return the formatted message
      */
-    public static String format(Event event, Locale locale) {
+    public static String format(final Event event, final Locale locale) {
         ResourceBundle bundle = null;
-        String groupID = event.getEventGroupID();
+        final String groupID = event.getEventGroupID();
         if (groupID != null) {
             try {
-                 bundle = XMLResourceBundle.getXMLBundle(
-                        groupID, locale,
+                bundle = XMLResourceBundle.getXMLBundle(groupID, locale,
                         EventFormatter.class.getClassLoader());
-            } catch (MissingResourceException mre) {
+            } catch (final MissingResourceException mre) {
                 if (log.isTraceEnabled()) {
-                    log.trace("No XMLResourceBundle for " + groupID + " available.");
+                    log.trace("No XMLResourceBundle for " + groupID
+                            + " available.");
                 }
             }
         }
         if (bundle == null) {
             bundle = XMLResourceBundle.getXMLBundle(
-                    EventFormatter.class.getName(),
-                    locale,
+                    EventFormatter.class.getName(), locale,
                     EventFormatter.class.getClassLoader());
         }
         return format(event, bundle);
     }
 
-    private static String format(Event event, ResourceBundle bundle) {
-        String template = bundle.getString(event.getEventKey());
+    private static String format(final Event event, final ResourceBundle bundle) {
+        final String template = bundle.getString(event.getEventKey());
         return format(event, processIncludes(template, bundle));
     }
 
-    private static String processIncludes(String template, ResourceBundle bundle) {
+    private static String processIncludes(final String template,
+            final ResourceBundle bundle) {
         CharSequence input = template;
         int replacements;
         StringBuffer sb;
@@ -111,14 +114,14 @@ public final class EventFormatter {
             replacements = processIncludesInner(input, sb, bundle);
             input = sb;
         } while (replacements > 0);
-        String s = sb.toString();
+        final String s = sb.toString();
         return s;
     }
 
-    private static int processIncludesInner(CharSequence template, StringBuffer sb,
-            ResourceBundle bundle) {
+    private static int processIncludesInner(final CharSequence template,
+            final StringBuffer sb, final ResourceBundle bundle) {
         int replacements = 0;
-        Matcher m = INCLUDES_PATTERN.matcher(template);
+        final Matcher m = INCLUDES_PATTERN.matcher(template);
         while (m.find()) {
             String include = m.group();
             include = include.substring(2, include.length() - 2);
@@ -130,15 +133,19 @@ public final class EventFormatter {
     }
 
     /**
-     * Formats the event using a given pattern. The pattern needs to be compatible with
-     * {@link AdvancedMessageFormat}.
-     * @param event the event
-     * @param pattern the pattern (compatible with {@link AdvancedMessageFormat})
+     * Formats the event using a given pattern. The pattern needs to be
+     * compatible with {@link AdvancedMessageFormat}.
+     *
+     * @param event
+     *            the event
+     * @param pattern
+     *            the pattern (compatible with {@link AdvancedMessageFormat})
      * @return the formatted message
      */
-    public static String format(Event event, String pattern) {
-        AdvancedMessageFormat format = new AdvancedMessageFormat(pattern);
-        Map params = new java.util.HashMap(event.getParams());
+    public static String format(final Event event, final String pattern) {
+        final AdvancedMessageFormat format = new AdvancedMessageFormat(pattern);
+        final Map<String, Object> params = new java.util.HashMap<>(
+                event.getParams());
         params.put("source", event.getSource());
         params.put("severity", event.getSeverity());
         return format.format(params);
@@ -146,26 +153,29 @@ public final class EventFormatter {
 
     private static class LookupFieldPart implements Part {
 
-        private String fieldName;
+        private final String fieldName;
 
-        public LookupFieldPart(String fieldName) {
+        public LookupFieldPart(final String fieldName) {
             this.fieldName = fieldName;
         }
 
-        public boolean isGenerated(Map params) {
+        @Override
+        public boolean isGenerated(final Map<String, Object> params) {
             return getKey(params) != null;
         }
 
-        public void write(StringBuffer sb, Map params) {
+        @Override
+        public void write(final StringBuilder sb, final Map params) {
             // TODO there's no defaultBundle anymore
-//            sb.append(defaultBundle.getString(getKey(params)));
+            // sb.append(defaultBundle.getString(getKey(params)));
         }
 
-        private String getKey(Map params) {
-            return (String)params.get(fieldName);
+        private Object getKey(final Map<String, Object> params) {
+            return params.get(this.fieldName);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "{" + this.fieldName + ", lookup}";
         }
@@ -176,11 +186,13 @@ public final class EventFormatter {
     public static class LookupFieldPartFactory implements PartFactory {
 
         /** {@inheritDoc} */
-        public Part newPart(String fieldName, String values) {
+        @Override
+        public Part newPart(final String fieldName, final String values) {
             return new LookupFieldPart(fieldName);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getFormat() {
             return "lookup";
         }

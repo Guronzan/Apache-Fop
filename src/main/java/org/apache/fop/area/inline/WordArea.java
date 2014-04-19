@@ -23,6 +23,11 @@ package org.apache.fop.area.inline;
  */
 public class WordArea extends InlineArea {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 6444644662158970942L;
+
     /** The text for this word area */
     protected String word;
 
@@ -34,13 +39,17 @@ public class WordArea extends InlineArea {
 
     /**
      * Create a word area
-     * @param w the word string
-     * @param o the offset for the next area
-     * @param la the letter adjust array (may be null)
+     * 
+     * @param w
+     *            the word string
+     * @param o
+     *            the offset for the next area
+     * @param la
+     *            the letter adjust array (may be null)
      */
-    public WordArea(String w, int o, int[] la) {
-        word = w;
-        offset = o;
+    public WordArea(final String w, final int o, final int[] la) {
+        this.word = w;
+        this.offset = o;
         this.letterAdjust = la;
     }
 
@@ -48,20 +57,24 @@ public class WordArea extends InlineArea {
      * @return Returns the word.
      */
     public String getWord() {
-        return word;
+        return this.word;
     }
 
     /**
      * @return Returns the offset.
      */
+    @Override
     public int getOffset() {
-        return offset;
+        return this.offset;
     }
+
     /**
-     * @param o The offset to set.
+     * @param o
+     *            The offset to set.
      */
-    public void setOffset(int o) {
-        offset = o;
+    @Override
+    public void setOffset(final int o) {
+        this.offset = o;
     }
 
     /** @return the array of letter adjust widths */

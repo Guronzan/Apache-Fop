@@ -29,23 +29,28 @@ public class RDFElement extends AbstractMetadataElement {
 
     /**
      * Main constructor.
-     * @param parent the parent formatting object
+     * 
+     * @param parent
+     *            the parent formatting object
      */
-    public RDFElement(FONode parent) {
+    public RDFElement(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "RDF";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "rdf";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return XMPConstants.RDF_NAMESPACE;
     }

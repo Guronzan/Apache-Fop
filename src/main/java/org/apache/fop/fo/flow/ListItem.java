@@ -19,8 +19,6 @@
 
 package org.apache.fop.fo.flow;
 
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
@@ -30,6 +28,7 @@ import org.apache.fop.fo.properties.BreakPropertySet;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonMarginBlock;
 import org.apache.fop.fo.properties.KeepProperty;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href=http://www.w3.org/TR/xsl/#fo_list-item">
@@ -45,11 +44,11 @@ public class ListItem extends FObj implements BreakPropertySet {
     private KeepProperty keepWithNext;
     private KeepProperty keepWithPrevious;
     // Unused but valid items, commented out for performance:
-    //     private CommonAccessibility commonAccessibility;
-    //     private CommonAural commonAural;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private int intrusionDisplace;
-    //     private int relativeAlign;
+    // private CommonAccessibility commonAccessibility;
+    // private CommonAural commonAural;
+    // private CommonRelativePosition commonRelativePosition;
+    // private int intrusionDisplace;
+    // private int relativeAlign;
     // End of property values
 
     private ListItemLabel label = null;
@@ -58,57 +57,64 @@ public class ListItem extends FObj implements BreakPropertySet {
     /**
      * Base constructor
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public ListItem(FONode parent) {
+    public ListItem(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonMarginBlock = pList.getMarginBlockProps();
-        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
-        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonMarginBlock = pList.getMarginBlockProps();
+        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startListItem(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
-        if (label == null || body == null) {
+        if (this.label == null || this.body == null) {
             missingChildElementError("marker* (list-item-label,list-item-body)");
         }
         getFOEventHandler().endListItem(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: marker* (list-item-label,list-item-body)
+     * {@inheritDoc} <br>
+     * XSL Content Model: marker* (list-item-label,list-item-body)
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-        throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("marker")) {
-                if (label != null) {
+                if (this.label != null) {
                     nodesOutOfOrderError(loc, "fo:marker", "fo:list-item-label");
                 }
             } else if (localName.equals("list-item-label")) {
-                if (label != null) {
+                if (this.label != null) {
                     tooManyNodesError(loc, "fo:list-item-label");
                 }
             } else if (localName.equals("list-item-body")) {
-                if (label == null) {
-                    nodesOutOfOrderError(loc, "fo:list-item-label", "fo:list-item-body");
-                } else if (body != null) {
+                if (this.label == null) {
+                    nodesOutOfOrderError(loc, "fo:list-item-label",
+                            "fo:list-item-body");
+                } else if (this.body != null) {
                     tooManyNodesError(loc, "fo:list-item-body");
                 }
             } else {
@@ -119,16 +125,18 @@ public class ListItem extends FObj implements BreakPropertySet {
 
     /**
      * {@inheritDoc}
-     * @todo see if can/should rely on base class for this
-     *    (i.e., add to childNodes instead)
+     *
+     * @todo see if can/should rely on base class for this (i.e., add to
+     *       childNodes instead)
      */
-    public void addChildNode(FONode child) {
-        int nameId = child.getNameId();
+    @Override
+    public void addChildNode(final FONode child) {
+        final int nameId = child.getNameId();
 
         if (nameId == FO_LIST_ITEM_LABEL) {
-            label = (ListItemLabel) child;
+            this.label = (ListItemLabel) child;
         } else if (nameId == FO_LIST_ITEM_BODY) {
-            body = (ListItemBody) child;
+            this.body = (ListItemBody) child;
         } else if (nameId == FO_MARKER) {
             addMarker((Marker) child);
         }
@@ -136,62 +144,66 @@ public class ListItem extends FObj implements BreakPropertySet {
 
     /** @return the {@link CommonMarginBlock} */
     public CommonMarginBlock getCommonMarginBlock() {
-        return commonMarginBlock;
+        return this.commonMarginBlock;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /** @return the "break-after" property */
+    @Override
     public int getBreakAfter() {
-        return breakAfter;
+        return this.breakAfter;
     }
 
     /** @return the "break-before" property */
+    @Override
     public int getBreakBefore() {
-        return breakBefore;
+        return this.breakBefore;
     }
 
     /** @return the "keep-with-next" property */
     public KeepProperty getKeepWithNext() {
-        return keepWithNext;
+        return this.keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property  */
+    /** @return the "keep-with-previous" property */
     public KeepProperty getKeepWithPrevious() {
-        return keepWithPrevious;
+        return this.keepWithPrevious;
     }
 
-    /** @return the "keep-together" property  */
+    /** @return the "keep-together" property */
     public KeepProperty getKeepTogether() {
-        return keepTogether;
+        return this.keepTogether;
     }
 
     /** @return the label of the list item */
     public ListItemLabel getLabel() {
-        return label;
+        return this.label;
     }
 
     /**
      * @return the body of the list item
      */
     public ListItemBody getBody() {
-        return body;
+        return this.body;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-item";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_ITEM;
     }
 }
-

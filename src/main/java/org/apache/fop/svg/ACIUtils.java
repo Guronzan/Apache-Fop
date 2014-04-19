@@ -30,18 +30,20 @@ import java.util.Map;
 public final class ACIUtils {
 
     private ACIUtils() {
-        //This class shouldn't be instantiated.
+        // This class shouldn't be instantiated.
     }
 
     /**
      * Dumps the contents of an ACI to System.out. Used for debugging only.
-     * @param aci the ACI to dump
+     * 
+     * @param aci
+     *            the ACI to dump
      */
-    public static void dumpAttrs(AttributedCharacterIterator aci) {
+    public static void dumpAttrs(final AttributedCharacterIterator aci) {
         aci.first();
-        Iterator i = aci.getAttributes().entrySet().iterator();
+        final Iterator i = aci.getAttributes().entrySet().iterator();
         while (i.hasNext()) {
-            Map.Entry entry = (Map.Entry)i.next();
+            final Map.Entry entry = (Map.Entry) i.next();
             if (entry.getValue() != null) {
                 System.out.println(entry.getKey() + ": " + entry.getValue());
             }
@@ -49,7 +51,7 @@ public final class ACIUtils {
         int start = aci.getBeginIndex();
         System.out.print("AttrRuns: ");
         while (aci.current() != CharacterIterator.DONE) {
-            int end = aci.getRunLimit();
+            final int end = aci.getRunLimit();
             System.out.print("" + (end - start) + ", ");
             aci.setIndex(end);
             if (start == end) {

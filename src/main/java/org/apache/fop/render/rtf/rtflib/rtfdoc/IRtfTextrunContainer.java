@@ -24,19 +24,21 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 
 import java.io.IOException;
-import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfTextrun;
 
-/**  Interface which enables an implementing class to contain linear text runs.
- *  @author Peter Herweg, pherweg@web.de
+/**
+ * Interface which enables an implementing class to contain linear text runs.
+ * 
+ * @author Peter Herweg, pherweg@web.de
  */
 
 public interface IRtfTextrunContainer {
 
     /**
-     * Returns the current RtfTextrun object.
-     * Opens a new one if necessary.
+     * Returns the current RtfTextrun object. Opens a new one if necessary.
+     * 
      * @return The RtfTextrun object
-     * @throws IOException Thrown when an IO-problem occurs
+     * @throws IOException
+     *             Thrown when an IO-problem occurs
      */
     RtfTextrun getTextrun() throws IOException;
 }

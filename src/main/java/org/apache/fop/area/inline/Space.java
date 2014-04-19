@@ -20,9 +20,13 @@
 package org.apache.fop.area.inline;
 
 /**
- * Inline space area.
- * This is used for adding a inline space to the output.
+ * Inline space area. This is used for adding a inline space to the output.
  */
 public class Space extends InlineArea {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -8748265505356839796L;
 
 }

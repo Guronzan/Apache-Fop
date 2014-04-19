@@ -19,8 +19,8 @@
 
 package org.apache.fop.fo.flow.table;
 
-import org.apache.fop.fo.FONode;
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.fo.FONode;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_table-body">
@@ -29,35 +29,41 @@ import org.apache.fop.apps.FOPException;
 public class TableBody extends TablePart {
 
     /**
-     * Create a TableBody instance with the given {@link FONode}
-     * as parent.
-     * @param parent FONode that is the parent of the object
+     * Create a TableBody instance with the given {@link FONode} as parent.
+     * 
+     * @param parent
+     *            FONode that is the parent of the object
      */
-    public TableBody(FONode parent) {
+    public TableBody(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-body";
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_BODY}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_BODY;
     }

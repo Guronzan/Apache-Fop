@@ -22,13 +22,17 @@ package org.apache.fop.hyphenation;
 import java.io.Serializable;
 
 /**
- * This class implements a simple byte vector with access to the
- * underlying array.
+ * This class implements a simple byte vector with access to the underlying
+ * array.
  *
  * @author Carlos Villegas <cav@uniscope.co.jp>
  */
 public class ByteVector implements Serializable {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1554572867863466772L;
     /**
      * Capacity increment size
      */
@@ -49,78 +53,78 @@ public class ByteVector implements Serializable {
         this(DEFAULT_BLOCK_SIZE);
     }
 
-    public ByteVector(int capacity) {
+    public ByteVector(final int capacity) {
         if (capacity > 0) {
-            blockSize = capacity;
+            this.blockSize = capacity;
         } else {
-            blockSize = DEFAULT_BLOCK_SIZE;
+            this.blockSize = DEFAULT_BLOCK_SIZE;
         }
-        array = new byte[blockSize];
-        n = 0;
+        this.array = new byte[this.blockSize];
+        this.n = 0;
     }
 
-    public ByteVector(byte[] a) {
-        blockSize = DEFAULT_BLOCK_SIZE;
-        array = a;
-        n = 0;
+    public ByteVector(final byte[] a) {
+        this.blockSize = DEFAULT_BLOCK_SIZE;
+        this.array = a;
+        this.n = 0;
     }
 
-    public ByteVector(byte[] a, int capacity) {
+    public ByteVector(final byte[] a, final int capacity) {
         if (capacity > 0) {
-            blockSize = capacity;
+            this.blockSize = capacity;
         } else {
-            blockSize = DEFAULT_BLOCK_SIZE;
+            this.blockSize = DEFAULT_BLOCK_SIZE;
         }
-        array = a;
-        n = 0;
+        this.array = a;
+        this.n = 0;
     }
 
     public byte[] getArray() {
-        return array;
+        return this.array;
     }
 
     /**
      * return number of items in array
      */
     public int length() {
-        return n;
+        return this.n;
     }
 
     /**
      * returns current capacity of array
      */
     public int capacity() {
-        return array.length;
+        return this.array.length;
     }
 
-    public void put(int index, byte val) {
-        array[index] = val;
+    public void put(final int index, final byte val) {
+        this.array[index] = val;
     }
 
-    public byte get(int index) {
-        return array[index];
+    public byte get(final int index) {
+        return this.array[index];
     }
 
     /**
      * This is to implement memory allocation in the array. Like malloc().
      */
-    public int alloc(int size) {
-        int index = n;
-        int len = array.length;
-        if (n + size >= len) {
-            byte[] aux = new byte[len + blockSize];
-            System.arraycopy(array, 0, aux, 0, len);
-            array = aux;
+    public int alloc(final int size) {
+        final int index = this.n;
+        final int len = this.array.length;
+        if (this.n + size >= len) {
+            final byte[] aux = new byte[len + this.blockSize];
+            System.arraycopy(this.array, 0, aux, 0, len);
+            this.array = aux;
         }
-        n += size;
+        this.n += size;
         return index;
     }
 
     public void trimToSize() {
-        if (n < array.length) {
-            byte[] aux = new byte[n];
-            System.arraycopy(array, 0, aux, 0, n);
-            array = aux;
+        if (this.n < this.array.length) {
+            final byte[] aux = new byte[this.n];
+            System.arraycopy(this.array, 0, aux, 0, this.n);
+            this.array = aux;
         }
     }
 

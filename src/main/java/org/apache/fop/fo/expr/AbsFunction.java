@@ -30,20 +30,25 @@ public class AbsFunction extends FunctionBase {
     /**
      * @return 1 (the number of arguments required for the abs function)
      */
+    @Override
     public int nbArgs() {
         return 1;
     }
 
     /**
-     * @param args array of arguments to be evaluated, the first of which
-     * should be a numeric value
-     * @param propInfo the PropertyInfo object to be evaluated
+     * @param args
+     *            array of arguments to be evaluated, the first of which should
+     *            be a numeric value
+     * @param propInfo
+     *            the PropertyInfo object to be evaluated
      * @return the absolute value of the input
-     * @throws PropertyException for non-numeric input
+     * @throws PropertyException
+     *             for non-numeric input
      */
-    public Property eval(Property[] args,
-                         PropertyInfo propInfo) throws PropertyException {
-        Numeric num = args[0].getNumeric();
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo propInfo)
+            throws PropertyException {
+        final Numeric num = args[0].getNumeric();
         if (num == null) {
             throw new PropertyException("Non numeric operand to abs function");
         }
@@ -52,4 +57,3 @@ public class AbsFunction extends FunctionBase {
     }
 
 }
-

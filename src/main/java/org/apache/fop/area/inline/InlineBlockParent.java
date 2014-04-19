@@ -22,13 +22,16 @@ package org.apache.fop.area.inline;
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Block;
 
-
 /**
- * Inline block parent area.
- * This is an inline area that can have one block area as a child
+ * Inline block parent area. This is an inline area that can have one block area
+ * as a child
  */
 public class InlineBlockParent extends InlineArea {
 
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3661746143321407377L;
     /**
      * The list of inline areas added to this inline parent.
      */
@@ -43,20 +46,24 @@ public class InlineBlockParent extends InlineArea {
     /**
      * Override generic Area method.
      *
-     * @param childArea the child area to add
+     * @param childArea
+     *            the child area to add
      */
-    public void addChildArea(Area childArea) {
-        if (child != null) {
-            throw new IllegalStateException("InlineBlockParent may have only one child area.");
+    @Override
+    public void addChildArea(final Area childArea) {
+        if (this.child != null) {
+            throw new IllegalStateException(
+                    "InlineBlockParent may have only one child area.");
         }
         if (childArea instanceof Block) {
-            child = (Block) childArea;
-            //Update extents from the child
+            this.child = (Block) childArea;
+            // Update extents from the child
             setIPD(childArea.getAllocIPD());
             setBPD(childArea.getAllocBPD());
         } else {
-            throw new IllegalArgumentException("The child of an InlineBlockParent must be a"
-                    + " Block area");
+            throw new IllegalArgumentException(
+                    "The child of an InlineBlockParent must be a"
+                            + " Block area");
         }
     }
 
@@ -66,7 +73,7 @@ public class InlineBlockParent extends InlineArea {
      * @return the list of child areas
      */
     public Block getChildArea() {
-        return child;
+        return this.child;
     }
 
 }

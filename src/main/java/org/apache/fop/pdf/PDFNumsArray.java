@@ -38,14 +38,17 @@ public class PDFNumsArray extends PDFObject {
 
     /**
      * Create a new, empty array object.
-     * @param parent the object's parent if any
+     *
+     * @param parent
+     *            the object's parent if any
      */
-    public PDFNumsArray(PDFObject parent) {
+    public PDFNumsArray(final PDFObject parent) {
         super(parent);
     }
 
     /**
      * Returns the length of the array
+     *
      * @return the length of the array
      */
     public int length() {
@@ -54,53 +57,64 @@ public class PDFNumsArray extends PDFObject {
 
     /**
      * Sets an entry.
-     * @param key the key of the value to set
-     * @param obj the new value
+     *
+     * @param key
+     *            the key of the value to set
+     * @param obj
+     *            the new value
      */
-    public void put(Integer key, Object obj) {
+    public void put(final Integer key, final Object obj) {
         this.map.put(key, obj);
     }
 
     /**
      * Sets an entry.
-     * @param key the key of the value to set
-     * @param obj the new value
+     *
+     * @param key
+     *            the key of the value to set
+     * @param obj
+     *            the new value
      */
-    public void put(int key, Object obj) {
+    public void put(final int key, final Object obj) {
         put(new Integer(key), obj);
     }
 
     /**
      * Gets an entry.
-     * @param key the key of requested value
+     *
+     * @param key
+     *            the key of requested value
      * @return the requested value
      */
-    public Object get(Integer key) {
+    public Object get(final Integer key) {
         return this.map.get(key);
     }
 
     /**
      * Gets an entry.
-     * @param key the key of requested value
+     *
+     * @param key
+     *            the key of requested value
      * @return the requested value
      */
-    public Object get(int key) {
+    public Object get(final int key) {
         return get(new Integer(key));
     }
 
     /** {@inheritDoc} */
-    protected int output(OutputStream stream) throws IOException {
-        CountingOutputStream cout = new CountingOutputStream(stream);
-        Writer writer = PDFDocument.getWriterFor(cout);
+    @Override
+    protected int output(final OutputStream stream) throws IOException {
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final Writer writer = PDFDocument.getWriterFor(cout);
         if (hasObjectNumber()) {
             writer.write(getObjectID());
         }
 
         writer.write('[');
         boolean first = true;
-        Iterator iter = this.map.entrySet().iterator();
+        final Iterator iter = this.map.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry)iter.next();
+            final Map.Entry entry = (Map.Entry) iter.next();
             if (!first) {
                 writer.write(" ");
             }

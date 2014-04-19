@@ -20,7 +20,8 @@
 package org.apache.fop.pdf;
 
 /**
- * Represents a device-specific color space. Used for mapping DeviceRGB, DeviceCMYK and DeviceGray.
+ * Represents a device-specific color space. Used for mapping DeviceRGB,
+ * DeviceCMYK and DeviceGray.
  */
 public class PDFDeviceColorSpace implements PDFColorSpace {
 
@@ -56,19 +57,20 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     /**
      * Create a PDF colorspace object.
      *
-     * @param theColorSpace the current colorspace
+     * @param theColorSpace
+     *            the current colorspace
      */
-    public PDFDeviceColorSpace(int theColorSpace) {
+    public PDFDeviceColorSpace(final int theColorSpace) {
         this.currentColorSpace = theColorSpace;
-        numComponents = calculateNumComponents();
+        this.numComponents = calculateNumComponents();
     }
 
     private int calculateNumComponents() {
-        if (currentColorSpace == DEVICE_GRAY) {
+        if (this.currentColorSpace == DEVICE_GRAY) {
             return 1;
-        } else if (currentColorSpace == DEVICE_RGB) {
+        } else if (this.currentColorSpace == DEVICE_RGB) {
             return 3;
-        } else if (currentColorSpace == DEVICE_CMYK) {
+        } else if (this.currentColorSpace == DEVICE_CMYK) {
             return 4;
         } else {
             return 0;
@@ -78,11 +80,12 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     /**
      * Set the current colorspace.
      *
-     * @param theColorSpace the new color space value
+     * @param theColorSpace
+     *            the new color space value
      */
-    public void setColorSpace(int theColorSpace) {
+    public void setColorSpace(final int theColorSpace) {
         this.currentColorSpace = theColorSpace;
-        numComponents = calculateNumComponents();
+        this.numComponents = calculateNumComponents();
     }
 
     /**
@@ -91,7 +94,7 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
      * @return the colorspace value
      */
     public int getColorSpace() {
-        return (this.currentColorSpace);
+        return this.currentColorSpace;
     }
 
     /**
@@ -99,13 +102,15 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
      *
      * @return the number of components
      */
+    @Override
     public int getNumComponents() {
-        return numComponents;
+        return this.numComponents;
     }
 
     /** @return the name of the color space */
+    @Override
     public String getName() {
-        switch (currentColorSpace) {
+        switch (this.currentColorSpace) {
         case DEVICE_CMYK:
             return "DeviceCMYK";
         case DEVICE_GRAY:
@@ -118,21 +123,25 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isDeviceColorSpace() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isRGBColorSpace() {
         return getColorSpace() == DEVICE_RGB;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCMYKColorSpace() {
         return getColorSpace() == DEVICE_CMYK;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGrayColorSpace() {
         return getColorSpace() == DEVICE_GRAY;
     }

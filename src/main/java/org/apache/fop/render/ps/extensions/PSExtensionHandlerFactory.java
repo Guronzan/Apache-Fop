@@ -27,14 +27,16 @@ import org.xml.sax.ContentHandler;
  */
 public class PSExtensionHandlerFactory implements ContentHandlerFactory {
 
-    private static final String[] NAMESPACES = new String[] {PSSetupCode.CATEGORY};
+    private static final String[] NAMESPACES = new String[] { PSSetupCode.CATEGORY };
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() {
         return new PSExtensionHandler();
     }

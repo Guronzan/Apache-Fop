@@ -22,54 +22,65 @@ package org.apache.fop.layoutmgr.inline;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fonts.Font;
 
-
 /**
- * A factory class for making alignment contexts.
- * Currently supports alignment contexts for basic fonts
- * and graphic inlines.
+ * A factory class for making alignment contexts. Currently supports alignment
+ * contexts for basic fonts and graphic inlines.
  */
 public class ScaledBaselineTableFactory implements Constants {
 
     /**
-     * Creates a new instance of BasicScaledBaselineTable for the given
-     * font, baseline and writingmode.
-     * @param font the font for which a baseline table is requested
-     * @param dominantBaselineIdentifier the dominant baseline given as an integer constant
-     * @param writingMode the writing mode given as an integer constant
+     * Creates a new instance of BasicScaledBaselineTable for the given font,
+     * baseline and writingmode.
+     * 
+     * @param font
+     *            the font for which a baseline table is requested
+     * @param dominantBaselineIdentifier
+     *            the dominant baseline given as an integer constant
+     * @param writingMode
+     *            the writing mode given as an integer constant
      * @return a scaled baseline table for the given font
      */
-    public static ScaledBaselineTable makeFontScaledBaselineTable(Font font
-                                                                  , int dominantBaselineIdentifier
-                                                                  , int writingMode) {
-        return new BasicScaledBaselineTable(font.getAscender(), font.getDescender()
-                                    , font.getXHeight(), dominantBaselineIdentifier, writingMode);
+    public static ScaledBaselineTable makeFontScaledBaselineTable(
+            final Font font, final int dominantBaselineIdentifier,
+            final int writingMode) {
+        return new BasicScaledBaselineTable(font.getAscender(),
+                font.getDescender(), font.getXHeight(),
+                dominantBaselineIdentifier, writingMode);
     }
 
     /**
-     * Creates a new instance of BasicScaledBaselineTable for the given
-     * font and writingmode. It assumes an alphabetic baseline.
-     * @param font the font for which a baseline table is requested
-     * @param writingMode the writing mode given as an integer constant
+     * Creates a new instance of BasicScaledBaselineTable for the given font and
+     * writingmode. It assumes an alphabetic baseline.
+     * 
+     * @param font
+     *            the font for which a baseline table is requested
+     * @param writingMode
+     *            the writing mode given as an integer constant
      * @return a scaled baseline table for the given font
      */
-    public static ScaledBaselineTable makeFontScaledBaselineTable(Font font, int writingMode) {
+    public static ScaledBaselineTable makeFontScaledBaselineTable(
+            final Font font, final int writingMode) {
         return makeFontScaledBaselineTable(font, EN_ALPHABETIC, writingMode);
     }
 
     /**
-     * Creates a new instance of BasicScaledBaselineTable for the given
-     * height, baseline and writingmode. This is used for non font based areas like
+     * Creates a new instance of BasicScaledBaselineTable for the given height,
+     * baseline and writingmode. This is used for non font based areas like
      * external graphic or inline foreign object.
-     * @param height the height for which a baseline table is requested
-     * @param dominantBaselineIdentifier the dominant baseline given as an integer constant
-     * @param writingMode the writing mode given as an integer constant
+     * 
+     * @param height
+     *            the height for which a baseline table is requested
+     * @param dominantBaselineIdentifier
+     *            the dominant baseline given as an integer constant
+     * @param writingMode
+     *            the writing mode given as an integer constant
      * @return a scaled baseline table for the given dimensions
      */
-    public static ScaledBaselineTable makeGraphicsScaledBaselineTable(int height
-                                                                , int dominantBaselineIdentifier
-                                                                , int writingMode) {
-        return new BasicScaledBaselineTable(height, 0, height
-                                            , dominantBaselineIdentifier, writingMode);
+    public static ScaledBaselineTable makeGraphicsScaledBaselineTable(
+            final int height, final int dominantBaselineIdentifier,
+            final int writingMode) {
+        return new BasicScaledBaselineTable(height, 0, height,
+                dominantBaselineIdentifier, writingMode);
     }
 
 }

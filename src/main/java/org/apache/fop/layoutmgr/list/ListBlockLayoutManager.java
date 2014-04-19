@@ -23,8 +23,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Block;
@@ -44,17 +43,12 @@ import org.apache.fop.traits.MinOptMax;
 import org.apache.fop.traits.SpaceVal;
 
 /**
- * LayoutManager for a list-block FO.
- * A list block contains list items which are stacked within
- * the list block area..
+ * LayoutManager for a list-block FO. A list block contains list items which are
+ * stacked within the list block area..
  */
+@Slf4j
 public class ListBlockLayoutManager extends BlockStackingLayoutManager
-                implements ConditionalElementListener {
-
-    /**
-     * logging instance
-     */
-    private static Log log = LogFactory.getLog(ListBlockLayoutManager.class);
+implements ConditionalElementListener {
 
     private Block curBlockArea;
 
@@ -66,43 +60,51 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
     private MinOptMax effSpaceAfter;
 
     private static class StackingIter extends PositionIterator {
-        StackingIter(Iterator parentIter) {
+        StackingIter(final Iterator parentIter) {
             super(parentIter);
         }
 
-        protected LayoutManager getLM(Object nextObj) {
+        @Override
+        protected LayoutManager getLM(final Object nextObj) {
             return ((Position) nextObj).getLM();
         }
 
-        protected Position getPos(Object nextObj) {
-            return ((Position) nextObj);
+        @Override
+        protected Position getPos(final Object nextObj) {
+            return (Position) nextObj;
         }
     }
 
     /**
      * Create a new list block layout manager.
-     * @param node list-block to create the layout manager for
+     *
+     * @param node
+     *            list-block to create the layout manager for
      */
-    public ListBlockLayoutManager(ListBlock node) {
+    public ListBlockLayoutManager(final ListBlock node) {
         super(node);
     }
 
     /**
      * Convenience method.
+     *
      * @return the ListBlock node
      */
     protected ListBlock getListBlockFO() {
-        return (ListBlock)fobj;
+        return (ListBlock) this.fobj;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize() {
-        foSpaceBefore = new SpaceVal(
-                getListBlockFO().getCommonMarginBlock().spaceBefore, this).getSpace();
-        foSpaceAfter = new SpaceVal(
-                getListBlockFO().getCommonMarginBlock().spaceAfter, this).getSpace();
-        startIndent = getListBlockFO().getCommonMarginBlock().startIndent.getValue(this);
-        endIndent = getListBlockFO().getCommonMarginBlock().endIndent.getValue(this);
+        this.foSpaceBefore = new SpaceVal(getListBlockFO()
+                .getCommonMarginBlock().spaceBefore, this).getSpace();
+        this.foSpaceAfter = new SpaceVal(getListBlockFO()
+                .getCommonMarginBlock().spaceAfter, this).getSpace();
+        this.startIndent = getListBlockFO().getCommonMarginBlock().startIndent
+                .getValue(this);
+        this.endIndent = getListBlockFO().getCommonMarginBlock().endIndent
+                .getValue(this);
     }
 
     private void resetSpaces() {
@@ -115,46 +117,56 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
     }
 
     /** {@inheritDoc} */
-    public List getNextKnuthElements(LayoutContext context, int alignment) {
+    @Override
+    public List getNextKnuthElements(final LayoutContext context,
+            final int alignment) {
         resetSpaces();
-        List returnList = super.getNextKnuthElements(context, alignment);
+        final List returnList = super.getNextKnuthElements(context, alignment);
 
-        //fox:widow-content-limit
-        int widowRowLimit = getListBlockFO().getWidowContentLimit().getValue();
+        // fox:widow-content-limit
+        final int widowRowLimit = getListBlockFO().getWidowContentLimit()
+                .getValue();
         if (widowRowLimit != 0) {
             ElementListUtils.removeLegalBreaks(returnList, widowRowLimit);
         }
 
-        //fox:orphan-content-limit
-        int orphanRowLimit = getListBlockFO().getOrphanContentLimit().getValue();
+        // fox:orphan-content-limit
+        final int orphanRowLimit = getListBlockFO().getOrphanContentLimit()
+                .getValue();
         if (orphanRowLimit != 0) {
-            ElementListUtils.removeLegalBreaksFromEnd(returnList, orphanRowLimit);
+            ElementListUtils.removeLegalBreaksFromEnd(returnList,
+                    orphanRowLimit);
         }
 
         return returnList;
     }
 
     /** {@inheritDoc} */
-    public List getChangedKnuthElements(List oldList, int alignment) {
-        //log.debug("LBLM.getChangedKnuthElements>");
+    @Override
+    public List getChangedKnuthElements(final List oldList, final int alignment) {
+        // log.debug("LBLM.getChangedKnuthElements>");
         return super.getChangedKnuthElements(oldList, alignment);
     }
 
     /**
-     * The table area is a reference area that contains areas for
-     * columns, bodies, rows and the contents are in cells.
+     * The table area is a reference area that contains areas for columns,
+     * bodies, rows and the contents are in cells.
      *
-     * @param parentIter the position iterator
-     * @param layoutContext the layout context for adding areas
+     * @param parentIter
+     *            the position iterator
+     * @param layoutContext
+     *            the layout context for adding areas
      */
-    public void addAreas(PositionIterator parentIter,
-                         LayoutContext layoutContext) {
+    @Override
+    public void addAreas(final PositionIterator parentIter,
+            final LayoutContext layoutContext) {
         getParentArea(null);
 
         // if this will create the first block area in a page
         // and display-align is after or center, add space before
         if (layoutContext.getSpaceBefore() > 0) {
-            addBlockSpacing(0.0, MinOptMax.getInstance(layoutContext.getSpaceBefore()));
+            addBlockSpacing(0.0,
+                    MinOptMax.getInstance(layoutContext.getSpaceBefore()));
         }
 
         addId();
@@ -162,7 +174,7 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
         // the list block contains areas stacked from each list item
 
         LayoutManager childLM;
-        LayoutContext lc = new LayoutContext(0);
+        final LayoutContext lc = new LayoutContext(0);
         LayoutManager firstLM = null;
         LayoutManager lastLM = null;
         Position firstPos = null;
@@ -170,18 +182,17 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        LinkedList positionList = new LinkedList();
+        final LinkedList positionList = new LinkedList();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position)parentIter.next();
+            pos = (Position) parentIter.next();
             if (pos.getIndex() >= 0) {
                 if (firstPos == null) {
                     firstPos = pos;
                 }
                 lastPos = pos;
             }
-            if (pos instanceof NonLeafPosition
-                    && (pos.getPosition() != null)
+            if (pos instanceof NonLeafPosition && pos.getPosition() != null
                     && pos.getPosition().getLM() != this) {
                 // pos was created by a child of this ListBlockLM
                 positionList.add(pos.getPosition());
@@ -194,7 +205,8 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
 
         addMarkersToPage(true, isFirst(firstPos), isLast(lastPos));
 
-        StackingIter childPosIter = new StackingIter(positionList.listIterator());
+        final StackingIter childPosIter = new StackingIter(
+                positionList.listIterator());
         while ((childLM = childPosIter.getNextChildLM()) != null) {
             // Add the block areas to Area
             // set the space adjustment ratio
@@ -208,110 +220,120 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
         addMarkersToPage(false, isFirst(firstPos), isLast(lastPos));
 
         // We are done with this area add the background
-        TraitSetter.addBackground(curBlockArea,
-                getListBlockFO().getCommonBorderPaddingBackground(),
-                this);
-        TraitSetter.addSpaceBeforeAfter(curBlockArea, layoutContext.getSpaceAdjust(),
-                effSpaceBefore, effSpaceAfter);
+        TraitSetter.addBackground(this.curBlockArea, getListBlockFO()
+                .getCommonBorderPaddingBackground(), this);
+        TraitSetter.addSpaceBeforeAfter(this.curBlockArea,
+                layoutContext.getSpaceAdjust(), this.effSpaceBefore,
+                this.effSpaceAfter);
 
         flush();
 
-        curBlockArea = null;
+        this.curBlockArea = null;
         resetSpaces();
 
         checkEndOfLayout(lastPos);
     }
 
     /**
-     * Return an Area which can contain the passed childArea. The childArea
-     * may not yet have any content, but it has essential traits set.
-     * In general, if the LayoutManager already has an Area it simply returns
-     * it. Otherwise, it makes a new Area of the appropriate class.
-     * It gets a parent area for its area by calling its parent LM.
-     * Finally, based on the dimensions of the parent area, it initializes
-     * its own area. This includes setting the content IPD and the maximum
-     * BPD.
+     * Return an Area which can contain the passed childArea. The childArea may
+     * not yet have any content, but it has essential traits set. In general, if
+     * the LayoutManager already has an Area it simply returns it. Otherwise, it
+     * makes a new Area of the appropriate class. It gets a parent area for its
+     * area by calling its parent LM. Finally, based on the dimensions of the
+     * parent area, it initializes its own area. This includes setting the
+     * content IPD and the maximum BPD.
      *
-     * @param childArea the child area
+     * @param childArea
+     *            the child area
      * @return the parent area of the child
      */
-    public Area getParentArea(Area childArea) {
-        if (curBlockArea == null) {
-            curBlockArea = new Block();
+    @Override
+    public Area getParentArea(final Area childArea) {
+        if (this.curBlockArea == null) {
+            this.curBlockArea = new Block();
 
             // Set up dimensions
             // Must get dimensions from parent area
-            /*Area parentArea =*/ parentLayoutManager.getParentArea(curBlockArea);
+            /* Area parentArea = */this.parentLayoutManager
+            .getParentArea(this.curBlockArea);
 
             // set traits
-            TraitSetter.setProducerID(curBlockArea, getListBlockFO().getId());
-            TraitSetter.addBorders(curBlockArea,
-                    getListBlockFO().getCommonBorderPaddingBackground(),
-                    discardBorderBefore, discardBorderAfter, false, false, this);
-            TraitSetter.addPadding(curBlockArea,
-                    getListBlockFO().getCommonBorderPaddingBackground(),
-                    discardPaddingBefore, discardPaddingAfter, false, false, this);
-            TraitSetter.addMargins(curBlockArea,
-                    getListBlockFO().getCommonBorderPaddingBackground(),
-                    getListBlockFO().getCommonMarginBlock(),
-                    this);
-            TraitSetter.addBreaks(curBlockArea,
-                    getListBlockFO().getBreakBefore(),
-                    getListBlockFO().getBreakAfter());
+            TraitSetter.setProducerID(this.curBlockArea, getListBlockFO()
+                    .getId());
+            TraitSetter.addBorders(this.curBlockArea, getListBlockFO()
+                    .getCommonBorderPaddingBackground(),
+                    this.discardBorderBefore, this.discardBorderAfter, false,
+                    false, this);
+            TraitSetter.addPadding(this.curBlockArea, getListBlockFO()
+                    .getCommonBorderPaddingBackground(),
+                    this.discardPaddingBefore, this.discardPaddingAfter, false,
+                    false, this);
+            TraitSetter.addMargins(this.curBlockArea, getListBlockFO()
+                    .getCommonBorderPaddingBackground(), getListBlockFO()
+                    .getCommonMarginBlock(), this);
+            TraitSetter.addBreaks(this.curBlockArea, getListBlockFO()
+                    .getBreakBefore(), getListBlockFO().getBreakAfter());
 
-            int contentIPD = referenceIPD - getIPIndents();
-            curBlockArea.setIPD(contentIPD);
+            final int contentIPD = this.referenceIPD - getIPIndents();
+            this.curBlockArea.setIPD(contentIPD);
 
-            setCurrentArea(curBlockArea);
+            setCurrentArea(this.curBlockArea);
         }
-        return curBlockArea;
+        return this.curBlockArea;
     }
 
     /**
      * Add the child area to this layout manager.
      *
-     * @param childArea the child area to add
+     * @param childArea
+     *            the child area to add
      */
-    public void addChildArea(Area childArea) {
-        if (curBlockArea != null) {
-            curBlockArea.addBlock((Block) childArea);
+    @Override
+    public void addChildArea(final Area childArea) {
+        if (this.curBlockArea != null) {
+            this.curBlockArea.addBlock((Block) childArea);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public KeepProperty getKeepTogetherProperty() {
         return getListBlockFO().getKeepTogether();
     }
 
     /** {@inheritDoc} */
+    @Override
     public KeepProperty getKeepWithPreviousProperty() {
         return getListBlockFO().getKeepWithPrevious();
     }
 
     /** {@inheritDoc} */
+    @Override
     public KeepProperty getKeepWithNextProperty() {
         return getListBlockFO().getKeepWithNext();
     }
 
     /** {@inheritDoc} */
-    public void notifySpace(RelSide side, MinOptMax effectiveLength) {
+    @Override
+    public void notifySpace(final RelSide side, final MinOptMax effectiveLength) {
         if (RelSide.BEFORE == side) {
             if (log.isDebugEnabled()) {
-                log.debug(this + ": Space " + side + ", "
-                        + this.effSpaceBefore + "-> " + effectiveLength);
+                log.debug(this + ": Space " + side + ", " + this.effSpaceBefore
+                        + "-> " + effectiveLength);
             }
             this.effSpaceBefore = effectiveLength;
         } else {
             if (log.isDebugEnabled()) {
-                log.debug(this + ": Space " + side + ", "
-                        + this.effSpaceAfter + "-> " + effectiveLength);
+                log.debug(this + ": Space " + side + ", " + this.effSpaceAfter
+                        + "-> " + effectiveLength);
             }
             this.effSpaceAfter = effectiveLength;
         }
     }
 
     /** {@inheritDoc} */
-    public void notifyBorder(RelSide side, MinOptMax effectiveLength) {
+    @Override
+    public void notifyBorder(final RelSide side, final MinOptMax effectiveLength) {
         if (effectiveLength == null) {
             if (RelSide.BEFORE == side) {
                 this.discardBorderBefore = true;
@@ -325,7 +347,9 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
     }
 
     /** {@inheritDoc} */
-    public void notifyPadding(RelSide side, MinOptMax effectiveLength) {
+    @Override
+    public void notifyPadding(final RelSide side,
+            final MinOptMax effectiveLength) {
         if (effectiveLength == null) {
             if (RelSide.BEFORE == side) {
                 this.discardPaddingBefore = true;
@@ -339,4 +363,3 @@ public class ListBlockLayoutManager extends BlockStackingLayoutManager
     }
 
 }
-

@@ -22,9 +22,8 @@ package org.apache.fop.svg;
 import org.apache.batik.gvt.TextPainter;
 
 /**
- * Bridge class for the &lt;text> element.
- * This bridge will use the direct text painter if the text
- * for the element is simple.
+ * Bridge class for the &lt;text> element. This bridge will use the direct text
+ * painter if the text for the element is simple.
  *
  * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
@@ -33,10 +32,10 @@ public class PDFTextElementBridge extends AbstractFOPTextElementBridge {
     /**
      * Constructs a new bridge for the &lt;text> element.
      *
-     * @param textPainter the text painter to use
+     * @param textPainter
+     *            the text painter to use
      */
-    public PDFTextElementBridge(TextPainter textPainter) {
+    public PDFTextElementBridge(final TextPainter textPainter) {
         super(textPainter);
     }
 }
-

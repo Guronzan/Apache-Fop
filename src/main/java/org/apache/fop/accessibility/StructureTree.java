@@ -44,15 +44,16 @@ public final class StructureTree {
     /**
      * Package-private default constructor.
      */
-    StructureTree() { }
+    StructureTree() {
+    }
 
-    private static boolean flowOrStaticContentNodes(NodeList nodes) {
+    private static boolean flowOrStaticContentNodes(final NodeList nodes) {
         for (int i = 0; i < nodes.getLength(); i++) {
-            Node node = nodes.item(i);
+            final Node node = nodes.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 return false;
             }
-            String name = node.getLocalName();
+            final String name = node.getLocalName();
             if (!(name.equals("flow") || name.equals("static-content"))) {
                 return false;
             }
@@ -60,19 +61,21 @@ public final class StructureTree {
         return true;
     }
 
-    void addPageSequenceStructure(NodeList structureTree) {
+    void addPageSequenceStructure(final NodeList structureTree) {
         assert flowOrStaticContentNodes(structureTree);
-        pageSequenceStructures.add(structureTree);
+        this.pageSequenceStructures.add(structureTree);
     }
 
     /**
-     * Returns the list of nodes that are the children of the given page sequence.
+     * Returns the list of nodes that are the children of the given page
+     * sequence.
      *
-     * @param index index of the page sequence, 0-based
+     * @param index
+     *            index of the page sequence, 0-based
      * @return its children nodes
      */
-    public NodeList getPageSequence(int index) {
-        return (NodeList) pageSequenceStructures.get(index);
+    public NodeList getPageSequence(final int index) {
+        return (NodeList) this.pageSequenceStructures.get(index);
     }
 
     /**
@@ -81,20 +84,25 @@ public final class StructureTree {
      * <strong>Note:</strong> use only for debugging purpose, as this method
      * performs non-trivial operations.
      * </p>
+     * 
      * @return a string representation of this object
      */
+    @Override
     public String toString() {
         try {
-            Transformer t = TransformerFactory.newInstance().newTransformer();
-            Writer str = new StringWriter();
-            for (Iterator iter = pageSequenceStructures.iterator(); iter.hasNext();) {
-                NodeList nodes = (NodeList) iter.next();
+            final Transformer t = TransformerFactory.newInstance()
+                    .newTransformer();
+            final Writer str = new StringWriter();
+            for (final Iterator iter = this.pageSequenceStructures.iterator(); iter
+                    .hasNext();) {
+                final NodeList nodes = (NodeList) iter.next();
                 for (int i = 0, c = nodes.getLength(); i < c; i++) {
-                    t.transform(new DOMSource(nodes.item(i)), new StreamResult(str));
+                    t.transform(new DOMSource(nodes.item(i)), new StreamResult(
+                            str));
                 }
             }
             return str.toString();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return e.toString();
         }
     }

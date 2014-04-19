@@ -23,7 +23,6 @@ package org.apache.fop.fonts;
 import java.text.DecimalFormat;
 import java.util.Map;
 
-
 /**
  * Generic MultiByte (CID) font
  */
@@ -32,14 +31,14 @@ public class MultiByteFont extends CIDFont {
     private static int uniqueCounter = -1;
 
     private String ttcName = null;
-    private String encoding = "Identity-H";
+    private final String encoding = "Identity-H";
 
     private int defaultWidth = 0;
     private CIDFontType cidType = CIDFontType.CIDTYPE2;
 
-    private String namePrefix = null;    // Quasi unique prefix
+    private String namePrefix = null; // Quasi unique prefix
 
-    private CIDSubset subset = new CIDSubset();
+    private final CIDSubset subset = new CIDSubset();
 
     /** A map from Unicode indices to glyph indices */
     private BFEntry[] bfentries = null;
@@ -49,68 +48,77 @@ public class MultiByteFont extends CIDFont {
      */
     public MultiByteFont() {
         // Make sure that the 3 first glyphs are included
-        subset.setupFirstThreeGlyphs();
+        this.subset.setupFirstThreeGlyphs();
 
         // Create a quasiunique prefix for fontname
         synchronized (this.getClass()) {
             uniqueCounter++;
             if (uniqueCounter > 99999 || uniqueCounter < 0) {
-                uniqueCounter = 0; //We need maximum 5 character then we start again
+                uniqueCounter = 0; // We need maximum 5 character then we start
+                                   // again
             }
         }
-        DecimalFormat counterFormat = new DecimalFormat("00000");
-        String cntString = counterFormat.format(uniqueCounter);
+        final DecimalFormat counterFormat = new DecimalFormat("00000");
+        final String cntString = counterFormat.format(uniqueCounter);
 
-        //Subset prefix as described in chapter 5.5.3 of PDF 1.4
-        StringBuffer sb = new StringBuffer("E");
+        // Subset prefix as described in chapter 5.5.3 of PDF 1.4
+        final StringBuilder sb = new StringBuilder("E");
         for (int i = 0, c = cntString.length(); i < c; i++) {
-            //translate numbers to uppercase characters
-            sb.append((char)(cntString.charAt(i) + (65 - 48)));
+            // translate numbers to uppercase characters
+            sb.append((char) (cntString.charAt(i) + (65 - 48)));
         }
         sb.append("+");
-        namePrefix = sb.toString();
+        this.namePrefix = sb.toString();
 
         setFontType(FontType.TYPE0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDefaultWidth() {
-        return defaultWidth;
+        return this.defaultWidth;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getRegistry() {
         return "Adobe";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getOrdering() {
         return "UCS";
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getSupplement() {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CIDFontType getCIDType() {
-        return cidType;
+        return this.cidType;
     }
 
     /**
      * Sets the CIDType.
-     * @param cidType The cidType to set
+     * 
+     * @param cidType
+     *            The cidType to set
      */
-    public void setCIDType(CIDFontType cidType) {
+    public void setCIDType(final CIDFontType cidType) {
         this.cidType = cidType;
     }
 
     private String getPrefixedFontName() {
-        return namePrefix + FontUtil.stripWhiteSpace(super.getFontName());
+        return this.namePrefix + FontUtil.stripWhiteSpace(super.getFontName());
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEmbedFontName() {
         if (isEmbeddable()) {
             return getPrefixedFontName();
@@ -120,61 +128,68 @@ public class MultiByteFont extends CIDFont {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isEmbeddable() {
         return !(getEmbedFileName() == null && getEmbedResourceName() == null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public CIDSubset getCIDSubset() {
         return this.subset;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEncodingName() {
-        return encoding;
+        return this.encoding;
     }
 
     /** {@inheritDoc} */
-    public int getWidth(int i, int size) {
+    @Override
+    public int getWidth(final int i, final int size) {
         if (isEmbeddable()) {
-            int glyphIndex = subset.getGlyphIndexForSubsetIndex(i);
-            return size * width[glyphIndex];
+            final int glyphIndex = this.subset.getGlyphIndexForSubsetIndex(i);
+            return size * this.width[glyphIndex];
         } else {
-            return size * width[i];
+            return size * this.width[i];
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public int[] getWidths() {
-        int[] arr = new int[width.length];
-        System.arraycopy(width, 0, arr, 0, width.length);
+        final int[] arr = new int[this.width.length];
+        System.arraycopy(this.width, 0, arr, 0, this.width.length);
         return arr;
     }
 
     /**
-     * Returns the glyph index for a Unicode character. The method returns 0 if there's no
-     * such glyph in the character map.
-     * @param c the Unicode character index
+     * Returns the glyph index for a Unicode character. The method returns 0 if
+     * there's no such glyph in the character map.
+     * 
+     * @param c
+     *            the Unicode character index
      * @return the glyph index (or 0 if the glyph is not available)
      */
-    private int findGlyphIndex(char c) {
-        int idx = (int)c;
+    private int findGlyphIndex(final char c) {
+        final int idx = c;
         int retIdx = SingleByteEncoding.NOT_FOUND_CODE_POINT;
 
-        for (int i = 0; (i < bfentries.length) && retIdx == 0; i++) {
-            if (bfentries[i].getUnicodeStart() <= idx
-                    && bfentries[i].getUnicodeEnd() >= idx) {
+        for (int i = 0; i < this.bfentries.length && retIdx == 0; i++) {
+            if (this.bfentries[i].getUnicodeStart() <= idx
+                    && this.bfentries[i].getUnicodeEnd() >= idx) {
 
-                retIdx = bfentries[i].getGlyphStartIndex()
-                    + idx
-                    - bfentries[i].getUnicodeStart();
+                retIdx = this.bfentries[i].getGlyphStartIndex() + idx
+                        - this.bfentries[i].getUnicodeStart();
             }
         }
         return retIdx;
     }
 
     /** {@inheritDoc} */
-    public char mapChar(char c) {
+    @Override
+    public char mapChar(final char c) {
         notifyMapOperation();
         int glyphIndex = findGlyphIndex(c);
         if (glyphIndex == SingleByteEncoding.NOT_FOUND_CODE_POINT) {
@@ -182,63 +197,74 @@ public class MultiByteFont extends CIDFont {
             glyphIndex = findGlyphIndex(Typeface.NOT_FOUND);
         }
         if (isEmbeddable()) {
-            glyphIndex = subset.mapSubsetChar(glyphIndex, c);
+            glyphIndex = this.subset.mapSubsetChar(glyphIndex, c);
         }
-        return (char)glyphIndex;
+        return (char) glyphIndex;
     }
 
     /** {@inheritDoc} */
-    public boolean hasChar(char c) {
-        return (findGlyphIndex(c) != SingleByteEncoding.NOT_FOUND_CODE_POINT);
+    @Override
+    public boolean hasChar(final char c) {
+        return findGlyphIndex(c) != SingleByteEncoding.NOT_FOUND_CODE_POINT;
     }
 
     /**
-     * Sets the array of BFEntry instances which constitutes the Unicode to glyph index map for
-     * a font. ("BF" means "base font")
-     * @param entries the Unicode to glyph index map
+     * Sets the array of BFEntry instances which constitutes the Unicode to
+     * glyph index map for a font. ("BF" means "base font")
+     * 
+     * @param entries
+     *            the Unicode to glyph index map
      */
-    public void setBFEntries(BFEntry[] entries) {
+    public void setBFEntries(final BFEntry[] entries) {
         this.bfentries = entries;
     }
 
     /**
      * Sets the defaultWidth.
-     * @param defaultWidth The defaultWidth to set
+     * 
+     * @param defaultWidth
+     *            The defaultWidth to set
      */
-    public void setDefaultWidth(int defaultWidth) {
+    public void setDefaultWidth(final int defaultWidth) {
         this.defaultWidth = defaultWidth;
     }
 
     /**
      * Returns the TrueType Collection Name.
+     * 
      * @return the TrueType Collection Name
      */
     public String getTTCName() {
-        return ttcName;
+        return this.ttcName;
     }
 
     /**
      * Sets the the TrueType Collection Name.
-     * @param ttcName the TrueType Collection Name
+     * 
+     * @param ttcName
+     *            the TrueType Collection Name
      */
-    public void setTTCName(String ttcName) {
+    public void setTTCName(final String ttcName) {
         this.ttcName = ttcName;
     }
 
     /**
      * Sets the width array.
-     * @param wds array of widths.
+     * 
+     * @param wds
+     *            array of widths.
      */
-    public void setWidthArray(int[] wds) {
+    public void setWidthArray(final int[] wds) {
         this.width = wds;
     }
 
     /**
      * Returns a Map of used Glyphs.
+     * 
      * @return Map Map of used Glyphs
      */
     public Map getUsedGlyphs() {
-        return subset.getSubsetGlyphs();
+        return this.subset.getSubsetGlyphs();
     }
 
     /** {@inheritDoc} */
@@ -246,7 +272,6 @@ public class MultiByteFont extends CIDFont {
         if (!isEmbeddable()) {
             return null;
         }
-        return subset.getSubsetChars();
+        return this.subset.getSubsetChars();
     }
 }
-

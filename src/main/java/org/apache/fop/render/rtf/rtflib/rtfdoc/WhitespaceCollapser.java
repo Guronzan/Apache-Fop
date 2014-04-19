@@ -17,7 +17,6 @@
 
 /* $Id: WhitespaceCollapser.java 679326 2008-07-24 09:35:34Z vhennebert $ */
 
-
 /*
  * This file is part of the RTF library of the FOP project, which was originally
  * created by Bertrand Delacretaz <bdelacretaz@codeconsult.ch> and by other
@@ -30,8 +29,10 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-/**  Collapses whitespace of an RtfContainer that contains RtfText elements
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Collapses whitespace of an RtfContainer that contains RtfText elements
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 class WhitespaceCollapser {
@@ -39,25 +40,26 @@ class WhitespaceCollapser {
     private boolean lastEndSpace = true;
 
     /** remove extra whitespace in RtfText elements that are inside c */
-    WhitespaceCollapser(RtfContainer c) {
+    WhitespaceCollapser(final RtfContainer c) {
         // process all texts
-        for (Iterator it = c.getChildren().iterator(); it.hasNext();) {
+        for (final Iterator it = c.getChildren().iterator(); it.hasNext();) {
             final Object kid = it.next();
             if (kid instanceof RtfText) {
-                RtfText current = (RtfText)kid;
+                final RtfText current = (RtfText) kid;
                 processText(current);
             } else if (kid instanceof RtfString) {
-                RtfString current = (RtfString)kid;
+                final RtfString current = (RtfString) kid;
                 processString(current);
             } else {
-                // if there is something between two texts, it counts for a space
-                lastEndSpace = true;
+                // if there is something between two texts, it counts for a
+                // space
+                this.lastEndSpace = true;
             }
         }
     }
 
     /** process one RtfText from our container */
-    private void processText(RtfText txt) {
+    private void processText(final RtfText txt) {
         final String newString = processString(txt.getText());
         if (newString != null) {
             txt.setText(newString);
@@ -65,7 +67,7 @@ class WhitespaceCollapser {
     }
 
     /** process one RtfString from our container */
-    private void processString(RtfString txt) {
+    private void processString(final RtfString txt) {
         final String newString = processString(txt.getText());
         if (newString != null) {
             txt.setText(newString);
@@ -73,7 +75,7 @@ class WhitespaceCollapser {
     }
 
     /** process one String */
-    private String processString(String txt) {
+    private String processString(final String txt) {
         final String orig = txt;
 
         // tokenize the text based on whitespace and regenerate it so as
@@ -83,22 +85,23 @@ class WhitespaceCollapser {
         } else if (orig.length() > 0) {
             final boolean allSpaces = orig.trim().length() == 0;
             final boolean endSpace = allSpaces
-                                     || Character.isWhitespace(orig.charAt(orig.length() - 1));
+                    || Character.isWhitespace(orig.charAt(orig.length() - 1));
             final boolean beginSpace = Character.isWhitespace(orig.charAt(0));
-            final StringBuffer sb = new StringBuffer(orig.length());
+            final StringBuilder sb = new StringBuilder(orig.length());
 
             // if text contains spaces only, keep at most one
             if (allSpaces) {
-                if (!lastEndSpace) {
+                if (!this.lastEndSpace) {
                     sb.append(SPACE);
                 }
             } else {
-                // TODO to be compatible with different Locales, should use Character.isWhitespace
+                // TODO to be compatible with different Locales, should use
+                // Character.isWhitespace
                 // instead of this limited list
                 boolean first = true;
                 final StringTokenizer stk = new StringTokenizer(txt, " \t\n\r");
                 while (stk.hasMoreTokens()) {
-                    if (first && beginSpace && !lastEndSpace) {
+                    if (first && beginSpace && !this.lastEndSpace) {
                         sb.append(SPACE);
                     }
                     first = false;
@@ -110,7 +113,7 @@ class WhitespaceCollapser {
                 }
             }
 
-            lastEndSpace = endSpace;
+            this.lastEndSpace = endSpace;
             return sb.toString();
         } else {
             return "";

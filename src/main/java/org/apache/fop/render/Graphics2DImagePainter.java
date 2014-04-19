@@ -20,11 +20,14 @@
 package org.apache.fop.render;
 
 /**
- * This interface is used by the Graphics2DAdapter. Components that can paint using
- * a Graphics2D instance can implement this interface to paint themselves.
- * @deprecated use {@link org.apache.xmlgraphics.java2d.Graphics2DImagePainter} directly!
+ * This interface is used by the Graphics2DAdapter. Components that can paint
+ * using a Graphics2D instance can implement this interface to paint themselves.
+ *
+ * @deprecated use {@link org.apache.xmlgraphics.java2d.Graphics2DImagePainter}
+ *             directly!
  */
-public interface Graphics2DImagePainter
-        extends org.apache.xmlgraphics.java2d.Graphics2DImagePainter {
+@Deprecated
+public interface Graphics2DImagePainter extends
+org.apache.xmlgraphics.java2d.Graphics2DImagePainter {
 
 }

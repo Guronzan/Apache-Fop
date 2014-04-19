@@ -27,9 +27,10 @@ import org.apache.fop.fo.properties.LengthRangeProperty;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_leader">
- * <code>fo:leader</code></a> object.
- * The main property of <code>fo:leader</code> is leader-pattern.
- * The following patterns are treated: rule, space, dots and use-content.
+ * <code>fo:leader</code></a> object. The main property of
+ * <code>fo:leader</code> is leader-pattern. The following patterns are treated:
+ * rule, space, dots and use-content.
+ *
  * @todo implement validateChildNode()
  */
 public class Leader extends InlineLevel {
@@ -45,43 +46,47 @@ public class Leader extends InlineLevel {
     private Length leaderPatternWidth;
     private int ruleStyle;
     private Length ruleThickness;
+
     // private ToBeImplementedProperty letterSpacing;
     // private ToBeImplementedProperty textShadow;
     // Unused but valid items, commented out for performance:
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private Length textDepth;
-    //     private Length textAltitude;
+    // private CommonRelativePosition commonRelativePosition;
+    // private Length textDepth;
+    // private Length textAltitude;
     // End of property values
 
     /**
      * Base constructor
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public Leader(FONode parent) {
+    public Leader(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
-        leaderAlignment = pList.get(PR_LEADER_ALIGNMENT).getEnum();
-        leaderLength = pList.get(PR_LEADER_LENGTH).getLengthRange();
-        leaderPattern = pList.get(PR_LEADER_PATTERN).getEnum();
-        leaderPatternWidth = pList.get(PR_LEADER_PATTERN_WIDTH).getLength();
-        ruleThickness = pList.get(PR_RULE_THICKNESS).getLength();
-        switch(leaderPattern) {
+        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        this.leaderAlignment = pList.get(PR_LEADER_ALIGNMENT).getEnum();
+        this.leaderLength = pList.get(PR_LEADER_LENGTH).getLengthRange();
+        this.leaderPattern = pList.get(PR_LEADER_PATTERN).getEnum();
+        this.leaderPatternWidth = pList.get(PR_LEADER_PATTERN_WIDTH)
+                .getLength();
+        this.ruleThickness = pList.get(PR_RULE_THICKNESS).getLength();
+        switch (this.leaderPattern) {
         case EN_SPACE:
             // use Space
             break;
         case EN_RULE:
             // the following properties only apply
             // for leader-pattern = "rule"
-            ruleStyle = pList.get(PR_RULE_STYLE).getEnum();
+            this.ruleStyle = pList.get(PR_RULE_STYLE).getEnum();
             break;
         case EN_DOTS:
             break;
@@ -90,7 +95,8 @@ public class Leader extends InlineLevel {
             // add the inline parent multiple times until leader full
             break;
         default:
-            throw new RuntimeException("Invalid leader pattern: " + leaderPattern);
+            throw new RuntimeException("Invalid leader pattern: "
+                    + this.leaderPattern);
         }
         // letterSpacing = pList.get(PR_LETTER_SPACING);
         // textShadow = pList.get(PR_TEXT_SHADOW);
@@ -98,63 +104,66 @@ public class Leader extends InlineLevel {
 
     /** @return the "rule-style" property */
     public int getRuleStyle() {
-        return ruleStyle;
+        return this.ruleStyle;
     }
 
     /** @return the "rule-thickness" property */
     public Length getRuleThickness() {
-        return ruleThickness;
+        return this.ruleThickness;
     }
 
     /** @return the "leader-alignment" property */
     public int getLeaderAlignment() {
-        return leaderAlignment;
+        return this.leaderAlignment;
     }
 
     /** @return the "leader-length" property */
     public LengthRangeProperty getLeaderLength() {
-        return leaderLength;
+        return this.leaderLength;
     }
 
     /** @return the "leader-pattern" property */
     public int getLeaderPattern() {
-        return leaderPattern;
+        return this.leaderPattern;
     }
 
     /** @return the "leader-pattern-width" property */
     public Length getLeaderPatternWidth() {
-        return leaderPatternWidth;
+        return this.leaderPatternWidth;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        return alignmentAdjust;
+        return this.alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return alignmentBaseline;
+        return this.alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return baselineShift;
+        return this.baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return dominantBaseline;
+        return this.dominantBaseline;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "leader";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_LEADER}
      */
+    @Override
     public int getNameId() {
         return FO_LEADER;
     }

@@ -30,29 +30,36 @@ import org.apache.fop.layoutmgr.SpaceResolver.SpaceHandlingBreakPosition;
 public class AreaAdditionUtil {
 
     private static class StackingIter extends PositionIterator {
-        StackingIter(Iterator parentIter) {
+        StackingIter(final Iterator parentIter) {
             super(parentIter);
         }
 
-        protected LayoutManager getLM(Object nextObj) {
+        @Override
+        protected LayoutManager getLM(final Object nextObj) {
             return ((Position) nextObj).getLM();
         }
 
-        protected Position getPos(Object nextObj) {
-            return ((Position) nextObj);
+        @Override
+        protected Position getPos(final Object nextObj) {
+            return (Position) nextObj;
         }
     }
 
     /**
      * Creates the child areas for the given layout manager.
-     * @param bslm the BlockStackingLayoutManager instance for which "addAreas" is performed.
-     * @param parentIter the position iterator
-     * @param layoutContext the layout context
+     * 
+     * @param bslm
+     *            the BlockStackingLayoutManager instance for which "addAreas"
+     *            is performed.
+     * @param parentIter
+     *            the position iterator
+     * @param layoutContext
+     *            the layout context
      */
-    public static void addAreas(BlockStackingLayoutManager bslm,
-            PositionIterator parentIter, LayoutContext layoutContext) {
+    public static void addAreas(final BlockStackingLayoutManager bslm,
+            final PositionIterator parentIter, final LayoutContext layoutContext) {
         LayoutManager childLM = null;
-        LayoutContext lc = new LayoutContext(0);
+        final LayoutContext lc = new LayoutContext(0);
         LayoutManager firstLM = null;
         LayoutManager lastLM = null;
         Position firstPos = null;
@@ -60,10 +67,10 @@ public class AreaAdditionUtil {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        LinkedList positionList = new LinkedList();
+        final LinkedList positionList = new LinkedList();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position)parentIter.next();
+            pos = (Position) parentIter.next();
             if (pos == null) {
                 continue;
             }
@@ -87,24 +94,24 @@ public class AreaAdditionUtil {
             }
         }
         if (firstPos == null) {
-            return; //Nothing to do, return early
-            //TODO This is a hack to avoid an NPE in the code block below.
-            //If there's no firstPos/lastPos there's currently no way to
-            //correctly determine first and last conditions. The Iterator
-            //doesn't give us that info.
+            return; // Nothing to do, return early
+            // TODO This is a hack to avoid an NPE in the code block below.
+            // If there's no firstPos/lastPos there's currently no way to
+            // correctly determine first and last conditions. The Iterator
+            // doesn't give us that info.
         }
 
         if (bslm != null) {
-            bslm.addMarkersToPage(
-                    true,
-                    bslm.isFirst(firstPos),
+            bslm.addMarkersToPage(true, bslm.isFirst(firstPos),
                     bslm.isLast(lastPos));
         }
 
-        StackingIter childPosIter = new StackingIter(positionList.listIterator());
+        final StackingIter childPosIter = new StackingIter(
+                positionList.listIterator());
 
         while ((childLM = childPosIter.getNextChildLM()) != null) {
-            // TODO vh: the test above might be problematic in some cases. See comment in
+            // TODO vh: the test above might be problematic in some cases. See
+            // comment in
             // the TableCellLM.getNextKnuthElements method
             // Add the block areas to Area
             lc.setFlags(LayoutContext.FIRST_AREA, childLM == firstLM);
@@ -113,7 +120,8 @@ public class AreaAdditionUtil {
             lc.setSpaceAdjust(layoutContext.getSpaceAdjust());
             // set space before for the first LM, in order to implement
             // display-align = center or after
-            lc.setSpaceBefore((childLM == firstLM ? layoutContext.getSpaceBefore() : 0));
+            lc.setSpaceBefore(childLM == firstLM ? layoutContext
+                    .getSpaceBefore() : 0);
             // set space after for each LM, in order to implement
             // display-align = distribute
             lc.setSpaceAfter(layoutContext.getSpaceAfter());
@@ -122,12 +130,9 @@ public class AreaAdditionUtil {
         }
 
         if (bslm != null) {
-            bslm.addMarkersToPage(
-                    false,
-                    bslm.isFirst(firstPos),
+            bslm.addMarkersToPage(false, bslm.isFirst(firstPos),
                     bslm.isLast(lastPos));
         }
-
 
     }
 

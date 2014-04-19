@@ -32,43 +32,63 @@ public interface FontEventProducer extends EventProducer {
      */
     final class Provider {
 
-        private Provider() { }
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * @param broadcaster the event broadcaster to use
+         * 
+         * @param broadcaster
+         *            the event broadcaster to use
          * @return the event producer
          */
-        public static FontEventProducer get(EventBroadcaster broadcaster) {
-            return (FontEventProducer) broadcaster.getEventProducerFor(FontEventProducer.class);
+        public static FontEventProducer get(final EventBroadcaster broadcaster) {
+            return (FontEventProducer) broadcaster
+                    .getEventProducerFor(FontEventProducer.class);
         }
     }
 
     /**
-     * Notifies about a font being substituted as the requested one isn't available.
-     * @param source the event source
-     * @param requested the requested font triplet
-     * @param effective the effective font triplet
+     * Notifies about a font being substituted as the requested one isn't
+     * available.
+     * 
+     * @param source
+     *            the event source
+     * @param requested
+     *            the requested font triplet
+     * @param effective
+     *            the effective font triplet
      * @event.severity WARN
      */
-    void fontSubstituted(Object source, FontTriplet requested, FontTriplet effective);
+    void fontSubstituted(final Object source, final FontTriplet requested,
+            final FontTriplet effective);
 
     /**
      * An error occurred while loading a font for auto-detection.
-     * @param source the event source
-     * @param fontURL the font URL
-     * @param e the original exception
+     * 
+     * @param source
+     *            the event source
+     * @param fontURL
+     *            the font URL
+     * @param e
+     *            the original exception
      * @event.severity WARN
      */
-    void fontLoadingErrorAtAutoDetection(Object source, String fontURL, Exception e);
+    void fontLoadingErrorAtAutoDetection(final Object source,
+            final String fontURL, final Exception e);
 
     /**
      * A glyph has been requested that is not available in the font.
-     * @param source the event source
-     * @param ch the character for which the glyph isn't available
-     * @param fontName the name of the font
+     * 
+     * @param source
+     *            the event source
+     * @param ch
+     *            the character for which the glyph isn't available
+     * @param fontName
+     *            the name of the font
      * @event.severity WARN
      */
-    void glyphNotAvailable(Object source, char ch, String fontName);
+    void glyphNotAvailable(final Object source, final char ch,
+            final String fontName);
 
 }

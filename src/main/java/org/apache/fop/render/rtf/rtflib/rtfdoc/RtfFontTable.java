@@ -26,26 +26,30 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
-/**  RTF font table
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
- *  @author Andreas Putz a.putz@skynamics.com
+/**
+ * RTF font table
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * @author Andreas Putz a.putz@skynamics.com
  */
 
 class RtfFontTable extends RtfElement {
     /** Create an RTF header */
-    RtfFontTable(RtfHeader h, Writer w) throws IOException {
+    RtfFontTable(final RtfHeader h, final Writer w) throws IOException {
         super(h, w);
     }
 
     /** write our contents to m_writer. */
+    @Override
     protected void writeRtfContent() throws IOException {
-        RtfFontManager.getInstance ().writeFonts ((RtfHeader)parent);
+        RtfFontManager.getInstance().writeFonts((RtfHeader) this.parent);
     }
 
     /** true if this element would generate no "useful" RTF content */
+    @Override
     public boolean isEmpty() {
         return false;
     }

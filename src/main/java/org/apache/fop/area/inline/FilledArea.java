@@ -19,21 +19,22 @@
 
 package org.apache.fop.area.inline;
 
-import java.util.List;
-import java.util.ListIterator;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
- * Filled area.
- * This inline area contains some inline areas.
- * When the renderer gets the child areas to render
- * the inline areas are repeated to fill the ipd of
- * this inline parent.
- * This extends InlineParent so that the renderer will render
- * this as a normal inline parent.
+ * Filled area. This inline area contains some inline areas. When the renderer
+ * gets the child areas to render the inline areas are repeated to fill the ipd
+ * of this inline parent. This extends InlineParent so that the renderer will
+ * render this as a normal inline parent.
  */
 public class FilledArea extends InlineParent {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8586584705587017474L;
     private int unitWidth;
 
     /**
@@ -43,22 +44,23 @@ public class FilledArea extends InlineParent {
     }
 
     /**
-     * Set the offset of the descendant TextAreas,
-     * instead of the offset of the FilledArea itself.
+     * Set the offset of the descendant TextAreas, instead of the offset of the
+     * FilledArea itself.
      *
-     * @param v the offset
+     * @param v
+     *            the offset
      */
     /*
-    public void setOffset(int v) {
-        setChildOffset(inlines.listIterator(), v);
-    }
-    */
+     * public void setOffset(int v) { setChildOffset(inlines.listIterator(), v);
+     * }
+     */
 
-    private void setChildOffset(ListIterator childrenIterator, int v) {
+    private void setChildOffset(final ListIterator childrenIterator, final int v) {
         while (childrenIterator.hasNext()) {
-            InlineArea child = (InlineArea) childrenIterator.next();
+            final InlineArea child = (InlineArea) childrenIterator.next();
             if (child instanceof InlineParent) {
-                setChildOffset(((InlineParent) child).getChildAreas().listIterator(), v);
+                setChildOffset(((InlineParent) child).getChildAreas()
+                        .listIterator(), v);
             } else if (child instanceof org.apache.fop.area.inline.Viewport) {
                 // nothing
             } else {
@@ -70,9 +72,10 @@ public class FilledArea extends InlineParent {
     /**
      * Set the unit width for the areas to fill the full width.
      *
-     * @param width the unit width
+     * @param width
+     *            the unit width
      */
-    public void setUnitWidth(int width) {
+    public void setUnitWidth(final int width) {
         this.unitWidth = width;
     }
 
@@ -88,10 +91,12 @@ public class FilledArea extends InlineParent {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getBPD() {
         int bpd = 0;
-        for (Iterator childAreaIt = getChildAreas().iterator(); childAreaIt.hasNext();) {
-            InlineArea area = (InlineArea)childAreaIt.next();
+        for (final Iterator childAreaIt = getChildAreas().iterator(); childAreaIt
+                .hasNext();) {
+            final InlineArea area = (InlineArea) childAreaIt.next();
             if (bpd < area.getBPD()) {
                 bpd = area.getBPD();
             }
@@ -100,33 +105,38 @@ public class FilledArea extends InlineParent {
     }
 
     /**
-     * Get the child areas for this filled area.
-     * This copies the references of the inline areas so that
-     * it fills the total width of the area a whole number of times
-     * for the unit width.
+     * Get the child areas for this filled area. This copies the references of
+     * the inline areas so that it fills the total width of the area a whole
+     * number of times for the unit width.
      *
      * @return the list of child areas copied to fill the width
      */
+    @Override
     public List getChildAreas() {
-        int units = (int)(getIPD() / unitWidth);
-        List newList = new ArrayList();
+        final int units = getIPD() / this.unitWidth;
+        final List newList = new ArrayList();
         for (int count = 0; count < units; count++) {
-            newList.addAll(inlines);
+            newList.addAll(this.inlines);
         }
         return newList;
     }
 
     /**
      * Recursively apply the variation factor to all descendant areas
-     * @param variationFactor the variation factor that must be applied to adjustments
-     * @param lineStretch     the total stretch of the line
-     * @param lineShrink      the total shrink of the line
+     *
+     * @param variationFactor
+     *            the variation factor that must be applied to adjustments
+     * @param lineStretch
+     *            the total stretch of the line
+     * @param lineShrink
+     *            the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
      */
-    public boolean applyVariationFactor(double variationFactor,
-                                        int lineStretch, int lineShrink) {
-        setIPD(getIPD() + adjustingInfo.applyVariationFactor(variationFactor));
+    @Override
+    public boolean applyVariationFactor(final double variationFactor,
+            final int lineStretch, final int lineShrink) {
+        setIPD(getIPD()
+                + this.adjustingInfo.applyVariationFactor(variationFactor));
         return false;
     }
 }
-

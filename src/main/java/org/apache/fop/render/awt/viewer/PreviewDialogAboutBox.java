@@ -26,51 +26,59 @@ import java.awt.Dialog;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
 
 //FOP
 import org.apache.fop.Version;
 
 /**
- * AWT Viewer's "About" dialog.
- * Originally contributed by:
- * Juergen Verwohlt: Juergen.Verwohlt@jCatalog.com,
- * Rainer Steinkuhle: Rainer.Steinkuhle@jCatalog.com,
- * Stanislav Gorkhover: Stanislav.Gorkhover@jCatalog.com
+ * AWT Viewer's "About" dialog. Originally contributed by: Juergen Verwohlt:
+ * Juergen.Verwohlt@jCatalog.com, Rainer Steinkuhle:
+ * Rainer.Steinkuhle@jCatalog.com, Stanislav Gorkhover:
+ * Stanislav.Gorkhover@jCatalog.com
  */
 public class PreviewDialogAboutBox extends Dialog implements ActionListener {
-    private JButton okButton;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8492691309486668733L;
+    private final JButton okButton;
 
     /**
      * Creates modal "About" dialog, attached to a given parent frame.
-     * @param parent parent frame
-     * @param translator Translator for localization
+     *
+     * @param parent
+     *            parent frame
+     * @param translator
+     *            Translator for localization
      */
-    public PreviewDialogAboutBox(Frame parent, Translator translator) {
+    public PreviewDialogAboutBox(final Frame parent, final Translator translator) {
         super(parent, true);
         enableEvents(AWTEvent.WINDOW_EVENT_MASK);
         setTitle(translator.getString("About.Title"));
         setResizable(false);
-        JPanel panel1 = new JPanel();
-        JPanel panel2 = new JPanel();
-        JPanel insetsPanel1 = new JPanel();
-        JPanel insetsPanel2 = new JPanel();
-        JPanel insetsPanel3 = new JPanel();
-        okButton = new JButton();
-        JLabel imageControl1 = new JLabel();
-        imageControl1.setIcon(new ImageIcon(getClass().getResource("images/fop.gif")));
-        JLabel label1 = new JLabel(translator.getString("About.Product"));
-        JLabel label2 = new JLabel(translator.getString("About.Version")
-                                            + " " + Version.getVersion());
-        JLabel label3 = new JLabel(translator.getString("About.Copyright"));
+        final JPanel panel1 = new JPanel();
+        final JPanel panel2 = new JPanel();
+        final JPanel insetsPanel1 = new JPanel();
+        final JPanel insetsPanel2 = new JPanel();
+        final JPanel insetsPanel3 = new JPanel();
+        this.okButton = new JButton();
+        final JLabel imageControl1 = new JLabel();
+        imageControl1.setIcon(new ImageIcon(getClass().getResource(
+                "images/fop.gif")));
+        final JLabel label1 = new JLabel(translator.getString("About.Product"));
+        final JLabel label2 = new JLabel(translator.getString("About.Version")
+                + " " + Version.getVersion());
+        final JLabel label3 = new JLabel(
+                translator.getString("About.Copyright"));
         panel1.setLayout(new BorderLayout());
         panel2.setLayout(new BorderLayout());
         insetsPanel1.setLayout(new FlowLayout());
@@ -78,15 +86,15 @@ public class PreviewDialogAboutBox extends Dialog implements ActionListener {
         insetsPanel2.setBorder(new EmptyBorder(10, 10, 10, 10));
         insetsPanel3.setLayout(new GridLayout(3, 1));
         insetsPanel3.setBorder(new EmptyBorder(10, 10, 10, 10));
-        okButton.setText(translator.getString("Button.Ok"));
-        okButton.addActionListener(this);
+        this.okButton.setText(translator.getString("Button.Ok"));
+        this.okButton.addActionListener(this);
         insetsPanel2.add(imageControl1, null);
         panel2.add(insetsPanel2, BorderLayout.WEST);
         insetsPanel3.add(label1);
         insetsPanel3.add(label2);
         insetsPanel3.add(label3);
         panel2.add(insetsPanel3, BorderLayout.CENTER);
-        insetsPanel1.add(okButton);
+        insetsPanel1.add(this.okButton);
         panel1.add(insetsPanel1, BorderLayout.SOUTH);
         panel1.add(panel2, BorderLayout.NORTH);
         add(panel1);
@@ -96,7 +104,8 @@ public class PreviewDialogAboutBox extends Dialog implements ActionListener {
     /**
      * {@inheritDoc}
      */
-    protected void processWindowEvent(WindowEvent e) {
+    @Override
+    protected void processWindowEvent(final WindowEvent e) {
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
             cancel();
         }
@@ -110,10 +119,10 @@ public class PreviewDialogAboutBox extends Dialog implements ActionListener {
     /**
      * {@inheritDoc}
      */
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == okButton) {
+    @Override
+    public void actionPerformed(final ActionEvent e) {
+        if (e.getSource() == this.okButton) {
             cancel();
         }
     }
 }
-

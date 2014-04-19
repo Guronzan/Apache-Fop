@@ -17,7 +17,6 @@
 
 /* $Id: RtfString.java 679326 2008-07-24 09:35:34Z vhennebert $ */
 
-
 /*
  * This file is part of the RTF library of the FOP project, which was originally
  * created by Bertrand Delacretaz <bdelacretaz@codeconsult.ch> and by other
@@ -30,40 +29,46 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 import java.io.Writer;
 
-/** Plain text in a RTF file, without any formatings.
- *  @author Peter Herweg, pherweg@web.de
+/**
+ * Plain text in a RTF file, without any formatings.
+ * 
+ * @author Peter Herweg, pherweg@web.de
  */
 
 public class RtfString extends RtfElement {
     private String text = "";
 
-    RtfString(RtfContainer parent, Writer w, String s)
-    throws IOException {
+    RtfString(final RtfContainer parent, final Writer w, final String s)
+            throws IOException {
         super(parent, w);
 
-        text = s;
+        this.text = s;
     }
 
     /**
-    * @return true if this element would generate no "useful" RTF content
-    */
+     * @return true if this element would generate no "useful" RTF content
+     */
+    @Override
     public boolean isEmpty() {
-        return text.trim().equals("");
+        return this.text.trim().equals("");
     }
 
     /**
-    * write RTF code of all our children
-    * @throws IOException for I/O problems
-    */
+     * write RTF code of all our children
+     * 
+     * @throws IOException
+     *             for I/O problems
+     */
+    @Override
     protected void writeRtfContent() throws IOException {
-        RtfStringConverter.getInstance().writeRtfString(writer, text);
+        RtfStringConverter.getInstance().writeRtfString(this.writer, this.text);
     }
 
     public String getText() {
-        return text;
+        return this.text;
     }
 
-    public void setText(String s) {
-        text = s;
+    public void setText(final String s) {
+        this.text = s;
     }
 }

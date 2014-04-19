@@ -23,9 +23,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 import org.apache.fop.events.EventBroadcaster;
 import org.apache.fop.fo.extensions.ExtensionElementMapping;
 import org.apache.fop.fo.extensions.InternalElementMapping;
@@ -38,7 +35,8 @@ import org.apache.fop.pdf.PDFPage;
 import org.apache.fop.pdf.PDFParentTree;
 import org.apache.fop.pdf.PDFStructElem;
 import org.apache.fop.pdf.PDFStructTreeRoot;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Handles the creation of the logical structure in the PDF document.
@@ -49,7 +47,8 @@ class PDFLogicalStructureHandler {
 
     private static final PDFName OBJR = new PDFName("OBJR");
 
-    private static final MarkedContentInfo ARTIFACT = new MarkedContentInfo(null, -1, null);
+    private static final MarkedContentInfo ARTIFACT = new MarkedContentInfo(
+            null, -1, null);
 
     private final PDFDocument pdfDoc;
 
@@ -74,7 +73,7 @@ class PDFLogicalStructureHandler {
      */
     private PDFArray pageParentTreeArray;
 
-    private PDFStructElem rootStructureElement;
+    private final PDFStructElem rootStructureElement;
 
     /**
      * Class providing the necessary information for bracketing content
@@ -90,13 +89,15 @@ class PDFLogicalStructureHandler {
         final String tag;
 
         /**
-         * The value for the MCID entry of the marked-content sequence's property list.
+         * The value for the MCID entry of the marked-content sequence's
+         * property list.
          */
         final int mcid;
 
         private final PDFStructElem parent;
 
-        private MarkedContentInfo(String tag, int mcid, PDFStructElem parent) {
+        private MarkedContentInfo(final String tag, final int mcid,
+                final PDFStructElem parent) {
             this.tag = tag;
             this.mcid = mcid;
             this.parent = parent;
@@ -104,65 +105,82 @@ class PDFLogicalStructureHandler {
     }
 
     /**
-     * Creates a new instance for handling the logical structure of the given document.
+     * Creates a new instance for handling the logical structure of the given
+     * document.
      *
-     * @param pdfDoc a document
+     * @param pdfDoc
+     *            a document
      */
-    PDFLogicalStructureHandler(PDFDocument pdfDoc, EventBroadcaster eventBroadcaster) {
+    PDFLogicalStructureHandler(final PDFDocument pdfDoc,
+            final EventBroadcaster eventBroadcaster) {
         this.pdfDoc = pdfDoc;
         this.eventBroadcaster = eventBroadcaster;
-        PDFStructTreeRoot structTreeRoot = pdfDoc.getFactory().makeStructTreeRoot(parentTree);
-        rootStructureElement = pdfDoc.getFactory().makeStructureElement(
-                FOToPDFRoleMap.mapFormattingObject("root", structTreeRoot), structTreeRoot);
-        structTreeRoot.addKid(rootStructureElement);
+        final PDFStructTreeRoot structTreeRoot = pdfDoc.getFactory()
+                .makeStructTreeRoot(this.parentTree);
+        this.rootStructureElement = pdfDoc.getFactory().makeStructureElement(
+                FOToPDFRoleMap.mapFormattingObject("root", structTreeRoot),
+                structTreeRoot);
+        structTreeRoot.addKid(this.rootStructureElement);
     }
 
     /**
      * Converts the given structure tree into PDF.
      *
-     * @param structureTree the structure tree of the current page sequence
-     * @param language language set on the page sequence
+     * @param structureTree
+     *            the structure tree of the current page sequence
+     * @param language
+     *            language set on the page sequence
      */
-    void processStructureTree(NodeList structureTree, Locale language) {
-        pdfDoc.enforceLanguageOnRoot();
-        PDFStructElem structElemPart = pdfDoc.getFactory().makeStructureElement(
-                FOToPDFRoleMap.mapFormattingObject("page-sequence", rootStructureElement),
-                rootStructureElement);
-        rootStructureElement.addKid(structElemPart);
+    void processStructureTree(final NodeList structureTree,
+            final Locale language) {
+        this.pdfDoc.enforceLanguageOnRoot();
+        final PDFStructElem structElemPart = this.pdfDoc.getFactory()
+                .makeStructureElement(
+                        FOToPDFRoleMap.mapFormattingObject("page-sequence",
+                                this.rootStructureElement),
+                        this.rootStructureElement);
+        this.rootStructureElement.addKid(structElemPart);
         if (language != null) {
             structElemPart.setLanguage(language);
         }
 
         for (int i = 0, n = structureTree.getLength(); i < n; i++) {
-            Node node = structureTree.item(i);
+            final Node node = structureTree.item(i);
             assert node.getLocalName().equals("flow")
-                    || node.getLocalName().equals("static-content");
-            PDFStructElem structElemSect = pdfDoc.getFactory().makeStructureElement(
-                    FOToPDFRoleMap.mapFormattingObject(node.getLocalName(), structElemPart),
-                    structElemPart);
+            || node.getLocalName().equals("static-content");
+            final PDFStructElem structElemSect = this.pdfDoc.getFactory()
+                    .makeStructureElement(
+                            FOToPDFRoleMap.mapFormattingObject(
+                                    node.getLocalName(), structElemPart),
+                            structElemPart);
             structElemPart.addKid(structElemSect);
-            NodeList childNodes = node.getChildNodes();
+            final NodeList childNodes = node.getChildNodes();
             for (int j = 0, m = childNodes.getLength(); j < m; j++) {
                 processNode(childNodes.item(j), structElemSect, true);
             }
         }
     }
 
-    private void processNode(Node node, PDFStructElem parent, boolean addKid) {
-        Node attr = node.getAttributes().getNamedItemNS(InternalElementMapping.URI, "ptr");
+    private void processNode(final Node node, final PDFStructElem parent,
+            final boolean addKid) {
+        final Node attr = node.getAttributes().getNamedItemNS(
+                InternalElementMapping.URI, "ptr");
         assert attr != null;
-        String ptr = attr.getNodeValue();
-        PDFStructElem structElem = pdfDoc.getFactory().makeStructureElement(
-                FOToPDFRoleMap.mapFormattingObject(node, parent, eventBroadcaster), parent);
+        final String ptr = attr.getNodeValue();
+        final PDFStructElem structElem = this.pdfDoc.getFactory()
+                .makeStructureElement(
+                        FOToPDFRoleMap.mapFormattingObject(node, parent,
+                                this.eventBroadcaster), parent);
         // TODO necessary? If a page-sequence is empty (e.g., contains a single
         // empty fo:block), should the block still be added to the structure
         // tree? This is not being done for descendant empty elements...
         if (addKid) {
             parent.addKid(structElem);
         }
-        String nodeName = node.getLocalName();
-        if (nodeName.equals("external-graphic") || nodeName.equals("instream-foreign-object")) {
-            Node altTextNode = node.getAttributes().getNamedItemNS(
+        final String nodeName = node.getLocalName();
+        if (nodeName.equals("external-graphic")
+                || nodeName.equals("instream-foreign-object")) {
+            final Node altTextNode = node.getAttributes().getNamedItemNS(
                     ExtensionElementMapping.URI, "alt-text");
             if (altTextNode != null) {
                 structElem.put("Alt", altTextNode.getNodeValue());
@@ -170,26 +188,27 @@ class PDFLogicalStructureHandler {
                 structElem.put("Alt", "No alternate text specified");
             }
         }
-        structTreeMap.put(ptr, structElem);
-        NodeList nodes = node.getChildNodes();
+        this.structTreeMap.put(ptr, structElem);
+        final NodeList nodes = node.getChildNodes();
         for (int i = 0, n = nodes.getLength(); i < n; i++) {
             processNode(nodes.item(i), structElem, false);
         }
     }
 
     private int getNextParentTreeKey() {
-        return parentTreeKey++;
+        return this.parentTreeKey++;
     }
 
     /**
      * Receive notification of the beginning of a new page.
      *
-     * @param page the page that will be rendered in PDF
+     * @param page
+     *            the page that will be rendered in PDF
      */
-    void startPage(PDFPage page) {
-        currentPage = page;
-        currentPage.setStructParents(getNextParentTreeKey());
-        pageParentTreeArray = new PDFArray();
+    void startPage(final PDFPage page) {
+        this.currentPage = page;
+        this.currentPage.setStructParents(getNextParentTreeKey());
+        this.pageParentTreeArray = new PDFArray();
     }
 
     /**
@@ -204,18 +223,20 @@ class PDFLogicalStructureHandler {
         // before the array is complete, which would result in only part of it
         // being output to the PDF.
         // This should really be handled by PDFNumsArray
-        pdfDoc.registerObject(pageParentTreeArray);
-        parentTree.getNums().put(currentPage.getStructParents(), pageParentTreeArray);
+        this.pdfDoc.registerObject(this.pageParentTreeArray);
+        this.parentTree.getNums().put(this.currentPage.getStructParents(),
+                this.pageParentTreeArray);
     }
 
-    private MarkedContentInfo addToParentTree(String structurePointer) {
-        PDFStructElem parent = (PDFStructElem) structTreeMap.get(structurePointer);
+    private MarkedContentInfo addToParentTree(final String structurePointer) {
+        final PDFStructElem parent = (PDFStructElem) this.structTreeMap
+                .get(structurePointer);
         if (parent == null) {
             return ARTIFACT;
         } else {
-            pageParentTreeArray.add(parent);
-            String type = parent.getStructureType().toString();
-            int mcid = pageParentTreeArray.length() - 1;
+            this.pageParentTreeArray.add(parent);
+            final String type = parent.getStructureType().toString();
+            final int mcid = this.pageParentTreeArray.length() - 1;
             return new MarkedContentInfo(type, mcid, parent);
         }
     }
@@ -224,18 +245,18 @@ class PDFLogicalStructureHandler {
      * Adds a content item corresponding to text into the structure tree, if
      * there is a structure element associated to it.
      *
-     * @param structurePointer reference to the parent structure element of the
-     * piece of text
+     * @param structurePointer
+     *            reference to the parent structure element of the piece of text
      * @return the necessary information for bracketing the content as a
-     * marked-content sequence. If there is no element in the structure tree
-     * associated to that content, returns an instance whose
-     * {@link MarkedContentInfo#tag} value is <code>null</code>. The content
-     * must then be treated as an artifact.
+     *         marked-content sequence. If there is no element in the structure
+     *         tree associated to that content, returns an instance whose
+     *         {@link MarkedContentInfo#tag} value is <code>null</code>. The
+     *         content must then be treated as an artifact.
      */
-    MarkedContentInfo addTextContentItem(String structurePointer) {
-        MarkedContentInfo mci = addToParentTree(structurePointer);
+    MarkedContentInfo addTextContentItem(final String structurePointer) {
+        final MarkedContentInfo mci = addToParentTree(structurePointer);
         if (mci != ARTIFACT) {
-            PDFDictionary contentItem = new PDFDictionary();
+            final PDFDictionary contentItem = new PDFDictionary();
             contentItem.put("Type", MCR);
             contentItem.put("Pg", this.currentPage);
             contentItem.put("MCID", mci.mcid);
@@ -248,16 +269,16 @@ class PDFLogicalStructureHandler {
      * Adds a content item corresponding to an image into the structure tree, if
      * there is a structure element associated to it.
      *
-     * @param structurePointer reference to the parent structure element of the
-     * image
+     * @param structurePointer
+     *            reference to the parent structure element of the image
      * @return the necessary information for bracketing the content as a
-     * marked-content sequence. If there is no element in the structure tree
-     * associated to that image, returns an instance whose
-     * {@link MarkedContentInfo#tag} value is <code>null</code>. The image
-     * must then be treated as an artifact.
+     *         marked-content sequence. If there is no element in the structure
+     *         tree associated to that image, returns an instance whose
+     *         {@link MarkedContentInfo#tag} value is <code>null</code>. The
+     *         image must then be treated as an artifact.
      */
-    MarkedContentInfo addImageContentItem(String structurePointer) {
-        MarkedContentInfo mci = addToParentTree(structurePointer);
+    MarkedContentInfo addImageContentItem(final String structurePointer) {
+        final MarkedContentInfo mci = addToParentTree(structurePointer);
         if (mci != ARTIFACT) {
             mci.parent.setMCIDKid(mci.mcid);
             mci.parent.setPage(this.currentPage);
@@ -269,34 +290,37 @@ class PDFLogicalStructureHandler {
     // makes the Acrobat Pro checker complain that the image is not accessible.
     // Its alt-text is still read aloud though. Using marked-content sequences
     // like for text works.
-//    MarkedContentInfo addImageObject(String parentReference) {
-//        MarkedContentInfo mci = addToParentTree(parentReference);
-//        if (mci != ARTIFACT) {
-//            PDFDictionary contentItem = new PDFDictionary();
-//            contentItem.put("Type", OBJR);
-//            contentItem.put("Pg", this.currentPage);
-//            contentItem.put("Obj", null);
-//            mci.parent.addKid(contentItem);
-//        }
-//        return mci;
-//    }
+    // MarkedContentInfo addImageObject(String parentReference) {
+    // MarkedContentInfo mci = addToParentTree(parentReference);
+    // if (mci != ARTIFACT) {
+    // PDFDictionary contentItem = new PDFDictionary();
+    // contentItem.put("Type", OBJR);
+    // contentItem.put("Pg", this.currentPage);
+    // contentItem.put("Obj", null);
+    // mci.parent.addKid(contentItem);
+    // }
+    // return mci;
+    // }
 
     /**
      * Adds a content item corresponding to the given link into the structure
      * tree.
      *
-     * @param link a link
-     * @param structurePointer reference to the corresponding parent structure element
+     * @param link
+     *            a link
+     * @param structurePointer
+     *            reference to the corresponding parent structure element
      */
-    void addLinkContentItem(PDFLink link, String structurePointer) {
-        int structParent = getNextParentTreeKey();
+    void addLinkContentItem(final PDFLink link, final String structurePointer) {
+        final int structParent = getNextParentTreeKey();
         link.setStructParent(structParent);
-        parentTree.getNums().put(structParent, link);
-        PDFDictionary contentItem = new PDFDictionary();
+        this.parentTree.getNums().put(structParent, link);
+        final PDFDictionary contentItem = new PDFDictionary();
         contentItem.put("Type", OBJR);
         contentItem.put("Pg", this.currentPage);
         contentItem.put("Obj", link);
-        PDFStructElem parent = (PDFStructElem) structTreeMap.get(structurePointer);
+        final PDFStructElem parent = (PDFStructElem) this.structTreeMap
+                .get(structurePointer);
         parent.addKid(contentItem);
     }
 

@@ -21,25 +21,24 @@ package org.apache.fop.layoutmgr;
 
 public class Position {
 
-    private LayoutManager layoutManager;
+    private final LayoutManager layoutManager;
     private int index = -1;
 
-    public Position(LayoutManager lm) {
-        layoutManager = lm;
+    public Position(final LayoutManager lm) {
+        this.layoutManager = lm;
     }
 
-   public Position(LayoutManager lm, int index) {
+    public Position(final LayoutManager lm, final int index) {
         this(lm);
         setIndex(index);
     }
 
     public LayoutManager getLM() {
-        return layoutManager;
+        return this.layoutManager;
     }
 
     /**
-     * Overridden by NonLeafPosition to return the Position of its
-     * child LM.
+     * Overridden by NonLeafPosition to return the Position of its child LM.
      */
     public Position getPosition() {
         return null;
@@ -52,9 +51,10 @@ public class Position {
     /**
      * Sets the index of this position in the sequence of Position elements.
      *
-     * @param value this position's index
+     * @param value
+     *            this position's index
      */
-    public void setIndex(int value) {
+    public void setIndex(final int value) {
         this.index = value;
     }
 
@@ -69,10 +69,10 @@ public class Position {
 
     public String getShortLMName() {
         if (getLM() != null) {
-            String lm = getLM().toString();
-            int idx = lm.lastIndexOf('.');
+            final String lm = getLM().toString();
+            final int idx = lm.lastIndexOf('.');
             if (idx >= 0 && lm.indexOf('@') > 0) {
-                return(lm.substring(idx + 1));
+                return lm.substring(idx + 1);
             } else {
                 return lm;
             }
@@ -82,12 +82,12 @@ public class Position {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("Position:").append(getIndex()).append("(");
         sb.append(getShortLMName());
         sb.append(")");
         return sb.toString();
     }
 }
-

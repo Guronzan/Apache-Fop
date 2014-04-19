@@ -38,7 +38,7 @@ public final class ListUtil {
      *            The list to work on
      * @return last element
      */
-    public static Object getLast(List list) {
+    public static Object getLast(final List list) {
         return list.get(list.size() - 1);
     }
 
@@ -49,7 +49,7 @@ public final class ListUtil {
      *            The list to work on
      * @return previous last element
      */
-    public static Object removeLast(List list) {
+    public static Object removeLast(final List list) {
         return list.remove(list.size() - 1);
     }
 }

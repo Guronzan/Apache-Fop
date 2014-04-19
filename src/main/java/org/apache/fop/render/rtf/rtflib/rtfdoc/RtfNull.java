@@ -26,16 +26,15 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
 /**
  * @author Christopher Scott, scottc@westinghouse.com
  */
-public class RtfNull
-extends RtfContainer {
+public class RtfNull extends RtfContainer {
 
-    RtfNull(RtfPage parent, Writer w) throws IOException {
-        super((RtfContainer)parent, w);
+    RtfNull(final RtfPage parent, final Writer w) throws IOException {
+        super(parent, w);
     }
 }

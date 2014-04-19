@@ -22,48 +22,51 @@ package org.apache.fop.hyphenation;
 import java.io.Serializable;
 
 /**
- * This class represents a hyphen. A 'full' hyphen is made of 3 parts:
- * the pre-break text, post-break text and no-break. If no line-break
- * is generated at this position, the no-break text is used, otherwise,
- * pre-break and post-break are used. Typically, pre-break is equal to
- * the hyphen character and the others are empty. However, this general
- * scheme allows support for cases in some languages where words change
- * spelling if they're split across lines, like german's 'backen' which
- * hyphenates 'bak-ken'. BTW, this comes from TeX.
+ * This class represents a hyphen. A 'full' hyphen is made of 3 parts: the
+ * pre-break text, post-break text and no-break. If no line-break is generated
+ * at this position, the no-break text is used, otherwise, pre-break and
+ * post-break are used. Typically, pre-break is equal to the hyphen character
+ * and the others are empty. However, this general scheme allows support for
+ * cases in some languages where words change spelling if they're split across
+ * lines, like german's 'backen' which hyphenates 'bak-ken'. BTW, this comes
+ * from TeX.
  *
  * @author Carlos Villegas <cav@uniscope.co.jp>
  */
 
 public class Hyphen implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8028626241673257599L;
     public String preBreak;
     public String noBreak;
     public String postBreak;
 
-    Hyphen(String pre, String no, String post) {
-        preBreak = pre;
-        noBreak = no;
-        postBreak = post;
+    Hyphen(final String pre, final String no, final String post) {
+        this.preBreak = pre;
+        this.noBreak = no;
+        this.postBreak = post;
     }
 
-    Hyphen(String pre) {
-        preBreak = pre;
-        noBreak = null;
-        postBreak = null;
+    Hyphen(final String pre) {
+        this.preBreak = pre;
+        this.noBreak = null;
+        this.postBreak = null;
     }
 
+    @Override
     public String toString() {
-        if (noBreak == null
-                && postBreak == null
-                && preBreak != null
-                && preBreak.equals("-")) {
+        if (this.noBreak == null && this.postBreak == null
+                && this.preBreak != null && this.preBreak.equals("-")) {
             return "-";
-                }
-        StringBuffer res = new StringBuffer("{");
-        res.append(preBreak);
+        }
+        final StringBuilder res = new StringBuilder("{");
+        res.append(this.preBreak);
         res.append("}{");
-        res.append(postBreak);
+        res.append(this.postBreak);
         res.append("}{");
-        res.append(noBreak);
+        res.append(this.noBreak);
         res.append('}');
         return res.toString();
     }

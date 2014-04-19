@@ -23,6 +23,6 @@ package org.apache.fop.fo;
  * A PropertyListMaker is a factory that creates PropertyLists.
  */
 public interface PropertyListMaker {
-    PropertyList make(FObj fobj, PropertyList parentPropertyList);
+    PropertyList make(final FObj fobj, final PropertyList parentPropertyList);
 
 }

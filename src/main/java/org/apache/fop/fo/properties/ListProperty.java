@@ -35,17 +35,19 @@ public class ListProperty extends Property {
     public static class Maker extends PropertyMaker {
 
         /**
-         * @param propId ID of the property for which Maker should be created
+         * @param propId
+         *            ID of the property for which Maker should be created
          */
-        public Maker(int propId) {
+        public Maker(final int propId) {
             super(propId);
         }
 
         /**
          * {@inheritDoc}
          */
-        public Property convertProperty(Property p,
-                                        PropertyList propertyList, FObj fo) {
+        @Override
+        public Property convertProperty(final Property p,
+                final PropertyList propertyList, final FObj fo) {
             if (p instanceof ListProperty) {
                 return p;
             } else {
@@ -62,37 +64,42 @@ public class ListProperty extends Property {
      * Simple constructor used by subclasses to do some special processing.
      */
     protected ListProperty() {
-        //nop
+        // nop
     }
 
     /**
-     * @param prop the first Property to be added to the list
+     * @param prop
+     *            the first Property to be added to the list
      */
-    public ListProperty(Property prop) {
+    public ListProperty(final Property prop) {
         this();
         addProperty(prop);
     }
 
     /**
      * Add a new property to the list
-     * @param prop Property to be added to the list
+     *
+     * @param prop
+     *            Property to be added to the list
      */
-    public void addProperty(Property prop) {
-        list.add(prop);
+    public void addProperty(final Property prop) {
+        this.list.add(prop);
     }
 
     /**
      * @return this.list
      */
+    @Override
     public List getList() {
-        return list;
+        return this.list;
     }
 
     /**
      * @return this.list cast as an Object
      */
+    @Override
     public Object getObject() {
-        return list;
+        return this.list;
     }
 
 }

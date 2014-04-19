@@ -19,71 +19,77 @@
 
 package org.apache.fop.fo;
 
-import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
-import org.apache.fop.util.CharUtilities;
 import java.util.NoSuchElementException;
 
+import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
+import org.apache.fop.util.CharUtilities;
+
 /**
- * A recursive char iterator that indicates boundaries by returning
- * an EOT char.
+ * A recursive char iterator that indicates boundaries by returning an EOT char.
  */
 public class InlineCharIterator extends RecursiveCharIterator {
     private boolean startBoundary = false;
     private boolean endBoundary = false;
 
     /**
-     * @param fobj the object for whose character contents and for whose
-     * descendant's character contents should be iterated
-     * @param bpb the CommonBorderPaddingBackground properties to be applied
+     * @param fobj
+     *            the object for whose character contents and for whose
+     *            descendant's character contents should be iterated
+     * @param bpb
+     *            the CommonBorderPaddingBackground properties to be applied
      */
-    public InlineCharIterator(FObj fobj, CommonBorderPaddingBackground bpb) {
+    public InlineCharIterator(final FObj fobj,
+            final CommonBorderPaddingBackground bpb) {
         super(fobj);
         checkBoundaries(bpb);
     }
 
-
-    private void checkBoundaries(CommonBorderPaddingBackground bpb) {
-        /* Current understanding is that an <fo:inline> is always a boundary for
-         * whitespace collapse if it has a border or not
-        startBoundary = (bpb.getBorderStartWidth(false) > 0
-                       || bpb.getPaddingStart(false, null) > 0); // TODO do we need context here?
-        endBoundary = (bpb.getBorderEndWidth(false) > 0
-                     || bpb.getPaddingEnd(false, null) > 0); // TODO do we need context here?
+    private void checkBoundaries(final CommonBorderPaddingBackground bpb) {
+        /*
+         * Current understanding is that an <fo:inline> is always a boundary for
+         * whitespace collapse if it has a border or not startBoundary =
+         * (bpb.getBorderStartWidth(false) > 0 || bpb.getPaddingStart(false,
+         * null) > 0); // TODO do we need context here? endBoundary =
+         * (bpb.getBorderEndWidth(false) > 0 || bpb.getPaddingEnd(false, null) >
+         * 0); // TODO do we need context here?
          */
-        startBoundary = true;
-        endBoundary = true;
+        this.startBoundary = true;
+        this.endBoundary = true;
     }
 
     /**
      * @return true if there are more characters
      */
+    @Override
     public boolean hasNext() {
-        if (startBoundary) {
+        if (this.startBoundary) {
             return true;
         }
-        return (super.hasNext() || endBoundary);
-        /* If super.hasNext() returns false,
-         * we return true if we are going to return a "boundary" signal
-         * else false.
+        return super.hasNext() || this.endBoundary;
+        /*
+         * If super.hasNext() returns false, we return true if we are going to
+         * return a "boundary" signal else false.
          */
     }
 
     /**
      * @return the next character
-     * @throws NoSuchElementException if there are no more characters
+     * @throws NoSuchElementException
+     *             if there are no more characters
      */
+    @Override
     public char nextChar() throws NoSuchElementException {
-        if (startBoundary) {
-            startBoundary = false;
+        if (this.startBoundary) {
+            this.startBoundary = false;
             return CharUtilities.CODE_EOT;
         }
         try {
             return super.nextChar();
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             // Underlying has nothing more to return
             // Check end boundary char
-            if (endBoundary) {
-                endBoundary = false;
+            if (this.endBoundary) {
+                this.endBoundary = false;
                 return CharUtilities.CODE_EOT;
             } else {
                 throw e;
@@ -91,4 +97,3 @@ public class InlineCharIterator extends RecursiveCharIterator {
         }
     }
 }
-

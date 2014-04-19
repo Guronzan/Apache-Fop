@@ -31,26 +31,28 @@ import org.apache.fop.render.RendererConfigurator;
 public class PCLRendererMaker extends AbstractRendererMaker {
 
     private static final String[] MIMES = new String[] {
-        MimeConstants.MIME_PCL,
-        MimeConstants.MIME_PCL_ALT
-    };
+            MimeConstants.MIME_PCL, MimeConstants.MIME_PCL_ALT };
 
-    /**{@inheritDoc} */
-    public Renderer makeRenderer(FOUserAgent userAgent) {
+    /** {@inheritDoc} */
+    @Override
+    public Renderer makeRenderer(final FOUserAgent userAgent) {
         return new PCLRenderer();
     }
 
     /** {@inheritDoc} */
-    public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
+    @Override
+    public RendererConfigurator getConfigurator(final FOUserAgent userAgent) {
         return new PCLRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

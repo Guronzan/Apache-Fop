@@ -19,18 +19,23 @@
 
 package org.apache.fop.layoutmgr;
 
-import org.apache.fop.util.ListUtil;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.apache.fop.util.ListUtil;
 
 /**
  * Represents a list of {@link KnuthElement Knuth elements}.
  */
 public abstract class KnuthSequence extends ArrayList {
 
-    //TODO: do not extend ArrayList
+    /**
+     *
+     */
+    private static final long serialVersionUID = 3931547566277902329L;
+
+    // TODO: do not extend ArrayList
 
     /**
      * Creates a new and empty list.
@@ -41,9 +46,11 @@ public abstract class KnuthSequence extends ArrayList {
 
     /**
      * Creates a new list from an existing list.
-     * @param list The list from which to create the new list.
+     *
+     * @param list
+     *            The list from which to create the new list.
      */
-    public KnuthSequence(List list) {
+    public KnuthSequence(final List list) {
         super(list);
     }
 
@@ -55,41 +62,53 @@ public abstract class KnuthSequence extends ArrayList {
 
     /**
      * Finalizes a Knuth sequence.
+     *
      * @return a finalized sequence.
      */
     public abstract KnuthSequence endSequence();
 
     /**
      * Can sequence be appended to this sequence?
-     * @param sequence The sequence that may be appended.
+     *
+     * @param sequence
+     *            The sequence that may be appended.
      * @return whether the sequence can be appended to this sequence.
      */
-    public abstract boolean canAppendSequence(KnuthSequence sequence);
+    public abstract boolean canAppendSequence(final KnuthSequence sequence);
 
     /**
      * Append sequence to this sequence if it can be appended.
-     * @param sequence The sequence that is to be appended.
-     * @param keepTogether Whether the two sequences must be kept together.
-     * @param breakElement The BreakElement that may be inserted between the two sequences.
+     *
+     * @param sequence
+     *            The sequence that is to be appended.
+     * @param keepTogether
+     *            Whether the two sequences must be kept together.
+     * @param breakElement
+     *            The BreakElement that may be inserted between the two
+     *            sequences.
      * @return whether the sequence was succesfully appended to this sequence.
      */
-    public abstract boolean appendSequence(KnuthSequence sequence, boolean keepTogether,
-                                           BreakElement breakElement);
+    public abstract boolean appendSequence(final KnuthSequence sequence,
+            final boolean keepTogether, final BreakElement breakElement);
 
     /**
      * Append sequence to this sequence if it can be appended.
-     * @param sequence The sequence that is to be appended.
+     *
+     * @param sequence
+     *            The sequence that is to be appended.
      * @return whether the sequence was succesfully appended to this sequence.
      */
-    public abstract boolean appendSequence(KnuthSequence sequence);
+    public abstract boolean appendSequence(final KnuthSequence sequence);
 
     /**
-     * Append sequence to this sequence if it can be appended.
-     * If that is not possible, close this sequence.
-     * @param sequence The sequence that is to be appended.
+     * Append sequence to this sequence if it can be appended. If that is not
+     * possible, close this sequence.
+     *
+     * @param sequence
+     *            The sequence that is to be appended.
      * @return whether the sequence was succesfully appended to this sequence.
      */
-    public boolean appendSequenceOrClose(KnuthSequence sequence) {
+    public boolean appendSequenceOrClose(final KnuthSequence sequence) {
         if (!appendSequence(sequence)) {
             endSequence();
             return false;
@@ -99,15 +118,20 @@ public abstract class KnuthSequence extends ArrayList {
     }
 
     /**
-     * Append sequence to this sequence if it can be appended.
-     * If that is not possible, close this sequence.
-     * @param sequence The sequence that is to be appended.
-     * @param keepTogether Whether the two sequences must be kept together.
-     * @param breakElement The BreakElement that may be inserted between the two sequences.
+     * Append sequence to this sequence if it can be appended. If that is not
+     * possible, close this sequence.
+     *
+     * @param sequence
+     *            The sequence that is to be appended.
+     * @param keepTogether
+     *            Whether the two sequences must be kept together.
+     * @param breakElement
+     *            The BreakElement that may be inserted between the two
+     *            sequences.
      * @return whether the sequence was succesfully appended to this sequence.
      */
-    public boolean appendSequenceOrClose(KnuthSequence sequence, boolean keepTogether,
-                                         BreakElement breakElement) {
+    public boolean appendSequenceOrClose(final KnuthSequence sequence,
+            final boolean keepTogether, final BreakElement breakElement) {
         if (!appendSequence(sequence, keepTogether, breakElement)) {
             endSequence();
             return false;
@@ -117,16 +141,19 @@ public abstract class KnuthSequence extends ArrayList {
     }
 
     /**
-     * Wrap the Positions of the elements of this sequence in a Position for LayoutManager lm.
-     * @param lm The LayoutManager for the Positions that will be created.
+     * Wrap the Positions of the elements of this sequence in a Position for
+     * LayoutManager lm.
+     *
+     * @param lm
+     *            The LayoutManager for the Positions that will be created.
      */
-    public void wrapPositions(LayoutManager lm) {
-        ListIterator listIter = listIterator();
+    public void wrapPositions(final LayoutManager lm) {
+        final ListIterator<ListElement> listIter = listIterator();
         ListElement element;
         while (listIter.hasNext()) {
-            element = (ListElement) listIter.next();
-            element.setPosition
-            (lm.notifyPos(new NonLeafPosition(lm, element.getPosition())));
+            element = listIter.next();
+            element.setPosition(lm.notifyPos(new NonLeafPosition(lm, element
+                    .getPosition())));
         }
     }
 
@@ -134,29 +161,25 @@ public abstract class KnuthSequence extends ArrayList {
      * @return the last element of this sequence.
      */
     public ListElement getLast() {
-        return (isEmpty()
-                ? null
-                : (ListElement) ListUtil.getLast(this));
+        return isEmpty() ? null : (ListElement) ListUtil.getLast(this);
     }
 
     /**
      * Remove the last element of this sequence.
+     *
      * @return the removed element.
      */
     public ListElement removeLast() {
-        return (isEmpty()
-                ? null
-                : (ListElement) ListUtil.removeLast(this));
+        return isEmpty() ? null : (ListElement) ListUtil.removeLast(this);
     }
 
     /**
-     * @param index The index of the element to be returned
+     * @param index
+     *            The index of the element to be returned
      * @return the element at index index.
      */
-    public ListElement getElement(int index) {
-        return (index >= size() || index < 0)
-                ? null
-                : (ListElement) get(index);
+    public ListElement getElement(final int index) {
+        return index >= size() || index < 0 ? null : (ListElement) get(index);
     }
 
     /** @return the position index of the first box in this sequence */
@@ -169,25 +192,26 @@ public abstract class KnuthSequence extends ArrayList {
     }
 
     /**
-     * Get the position index of the first box in this sequence,
-     * starting at the given index. If there is no box after the
-     * passed {@code startIndex}, the starting index itself is returned.
-     * @param startIndex    the starting index for the lookup
-     * @return  the absolute position index of the next box element
+     * Get the position index of the first box in this sequence, starting at the
+     * given index. If there is no box after the passed {@code startIndex}, the
+     * starting index itself is returned.
+     *
+     * @param startIndex
+     *            the starting index for the lookup
+     * @return the absolute position index of the next box element
      */
-    protected int getFirstBoxIndex(int startIndex) {
+    protected int getFirstBoxIndex(final int startIndex) {
         if (isEmpty() || startIndex < 0 || startIndex >= size()) {
             return -1;
         } else {
             ListElement element = null;
             int posIndex = startIndex;
-            int lastIndex = size();
+            final int lastIndex = size();
             while (posIndex < lastIndex
                     && !(element = getElement(posIndex)).isBox()) {
                 posIndex++;
             }
-            if (posIndex != startIndex
-                    && element.isBox()) {
+            if (posIndex != startIndex && element.isBox()) {
                 return posIndex - 1;
             } else {
                 return startIndex;
@@ -197,11 +221,13 @@ public abstract class KnuthSequence extends ArrayList {
 
     /**
      * Is this an inline or a block sequence?
+     *
      * @return true if this is an inline sequence
      */
     public abstract boolean isInlineSequence();
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "<KnuthSequence " + super.toString() + ">";
     }

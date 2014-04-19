@@ -23,19 +23,19 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.fop.apps.FOUserAgent;
 import org.apache.xmlgraphics.util.QName;
 
-import org.apache.fop.apps.FOUserAgent;
-
 /**
- * This class provides a context object that is valid for a single processing run to create
- * an output file using the intermediate format. It allows access to the user agent and other
- * context information, such as foreign attributes for certain elements in the intermediate
- * format.
+ * This class provides a context object that is valid for a single processing
+ * run to create an output file using the intermediate format. It allows access
+ * to the user agent and other context information, such as foreign attributes
+ * for certain elements in the intermediate format.
  * <p>
- * Foreign attributes are usually specific to a particular output format implementation. Most
- * implementations will just ignore all foreign attributes for most elements. That's why the
- * main IF interfaces are not burdened with this.
+ * Foreign attributes are usually specific to a particular output format
+ * implementation. Most implementations will just ignore all foreign attributes
+ * for most elements. That's why the main IF interfaces are not burdened with
+ * this.
  */
 public class IFContext {
 
@@ -50,17 +50,21 @@ public class IFContext {
 
     /**
      * Main constructor.
-     * @param ua the user agent
+     * 
+     * @param ua
+     *            the user agent
      */
-    public IFContext(FOUserAgent ua) {
+    public IFContext(final FOUserAgent ua) {
         setUserAgent(ua);
     }
 
     /**
      * Set the user agent.
-     * @param ua the user agent
+     * 
+     * @param ua
+     *            the user agent
      */
-    public void setUserAgent(FOUserAgent ua) {
+    public void setUserAgent(final FOUserAgent ua) {
         if (this.userAgent != null) {
             throw new IllegalStateException("The user agent was already set");
         }
@@ -69,6 +73,7 @@ public class IFContext {
 
     /**
      * Returns the associated user agent.
+     * 
      * @return the user agent
      */
     public FOUserAgent getUserAgent() {
@@ -77,6 +82,7 @@ public class IFContext {
 
     /**
      * Returns the currently applicable foreign attributes.
+     * 
      * @return a Map<QName, Object>
      */
     public Map getForeignAttributes() {
@@ -85,23 +91,29 @@ public class IFContext {
 
     /**
      * Returns a foreign attribute.
-     * @param qName the qualified name of the foreign attribute
-     * @return the value of the foreign attribute or null if the attribute isn't specified
+     * 
+     * @param qName
+     *            the qualified name of the foreign attribute
+     * @return the value of the foreign attribute or null if the attribute isn't
+     *         specified
      */
-    public Object getForeignAttribute(QName qName) {
+    public Object getForeignAttribute(final QName qName) {
         return this.foreignAttributes.get(qName);
     }
 
     /**
      * Sets the currently applicable foreign attributes.
-     * @param foreignAttributes a Map<QName, Object> or null to reset
+     * 
+     * @param foreignAttributes
+     *            a Map<QName, Object> or null to reset
      */
-    public void setForeignAttributes(Map foreignAttributes) {
+    public void setForeignAttributes(final Map foreignAttributes) {
         if (foreignAttributes != null) {
             this.foreignAttributes = foreignAttributes;
         } else {
-            //Make sure there is always at least an empty map so we don't have to check
-            //in the implementation code
+            // Make sure there is always at least an empty map so we don't have
+            // to check
+            // in the implementation code
             this.foreignAttributes = Collections.EMPTY_MAP;
         }
     }
@@ -115,14 +127,17 @@ public class IFContext {
 
     /**
      * Sets the currently applicable language.
-     * @param lang the language
+     * 
+     * @param lang
+     *            the language
      */
-    public void setLanguage(Locale lang) {
+    public void setLanguage(final Locale lang) {
         this.language = lang;
     }
 
     /**
      * Returns the currently applicable language.
+     * 
      * @return the language (or null if the language is undefined)
      */
     public Locale getLanguage() {
@@ -130,16 +145,19 @@ public class IFContext {
     }
 
     /**
-     * Sets the structure pointer for the following painted marks. This method is used when
-     * accessibility features are enabled.
-     * @param ptr the structure pointer
+     * Sets the structure pointer for the following painted marks. This method
+     * is used when accessibility features are enabled.
+     * 
+     * @param ptr
+     *            the structure pointer
      */
-    public void setStructurePointer(String ptr) {
+    public void setStructurePointer(final String ptr) {
         this.structurePointer = ptr;
     }
 
     /**
      * Resets the current structure pointer.
+     * 
      * @see #setStructurePointer(String)
      */
     public void resetStructurePointer() {
@@ -148,6 +166,7 @@ public class IFContext {
 
     /**
      * Returns the current structure pointer.
+     * 
      * @return the structure pointer (or null if no pointer is active)
      * @see #setStructurePointer(String)
      */

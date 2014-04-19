@@ -19,6 +19,7 @@
 
 package org.apache.fop.events;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -29,27 +30,34 @@ import org.apache.xmlgraphics.util.Service;
  */
 public class EventExceptionManager {
 
-    private static final Map EXCEPTION_FACTORIES = new java.util.HashMap();
+    private static final Map<String, ExceptionFactory> EXCEPTION_FACTORIES = new HashMap<>();
 
     static {
-        Iterator iter;
-        iter = Service.providers(ExceptionFactory.class, true);
+        final Iterator<ExceptionFactory> iter = Service
+                .providers(ExceptionFactory.class);
         while (iter.hasNext()) {
-            ExceptionFactory factory = (ExceptionFactory)iter.next();
-            EXCEPTION_FACTORIES.put(factory.getExceptionClass().getName(), factory);
+            final ExceptionFactory factory = iter.next();
+            EXCEPTION_FACTORIES.put(factory.getExceptionClass().getName(),
+                    factory);
         }
     }
 
     /**
-     * Converts an event into an exception and throws that. If the exception class is null,
-     * a {@link RuntimeException} will be thrown.
-     * @param event the event to be converted
-     * @param exceptionClass the exception class to be thrown
-     * @throws Throwable this happens always
+     * Converts an event into an exception and throws that. If the exception
+     * class is null, a {@link RuntimeException} will be thrown.
+     *
+     * @param event
+     *            the event to be converted
+     * @param exceptionClass
+     *            the exception class to be thrown
+     * @throws Throwable
+     *             this happens always
      */
-    public static void throwException(Event event, String exceptionClass) throws Throwable {
+    public static void throwException(final Event event,
+            final String exceptionClass) throws Throwable {
         if (exceptionClass != null) {
-            ExceptionFactory factory = (ExceptionFactory)EXCEPTION_FACTORIES.get(exceptionClass);
+            final ExceptionFactory factory = EXCEPTION_FACTORIES
+                    .get(exceptionClass);
             if (factory != null) {
                 throw factory.createException(event);
             } else {
@@ -57,14 +65,13 @@ public class EventExceptionManager {
                         "No such ExceptionFactory available: " + exceptionClass);
             }
         } else {
-            String msg = EventFormatter.format(event);
-            //Get original exception as cause if it is given as one of the parameters
+            final String msg = EventFormatter.format(event);
+            // Get original exception as cause if it is given as one of the
+            // parameters
             Throwable t = null;
-            Iterator iter = event.getParams().values().iterator();
-            while (iter.hasNext()) {
-                Object o = iter.next();
+            for (final Object o : event.getParams().values()) {
                 if (o instanceof Throwable) {
-                    t = (Throwable)o;
+                    t = (Throwable) o;
                     break;
                 }
             }
@@ -77,20 +84,23 @@ public class EventExceptionManager {
     }
 
     /**
-     * This interface is implementation by exception factories that can create exceptions from
-     * events.
+     * This interface is implementation by exception factories that can create
+     * exceptions from events.
      */
     public interface ExceptionFactory {
 
         /**
          * Creates an exception from an event.
-         * @param event the event
+         *
+         * @param event
+         *            the event
          * @return the newly created exception
          */
-        Throwable createException(Event event);
+        Throwable createException(final Event event);
 
         /**
          * Returns the {@link Exception} class created by this factory.
+         *
          * @return the exception class
          */
         Class getExceptionClass();

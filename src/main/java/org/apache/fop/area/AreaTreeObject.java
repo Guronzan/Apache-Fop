@@ -24,9 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.xmlgraphics.util.QName;
-
 import org.apache.fop.fo.extensions.ExtensionAttachment;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * Abstract base class for all area tree objects.
@@ -37,14 +36,17 @@ public abstract class AreaTreeObject {
     protected Map foreignAttributes = null;
 
     /** Extension attachments */
-    protected List/*<ExtensionAttachment>*/ extensionAttachments = null;
+    protected List/* <ExtensionAttachment> */extensionAttachments = null;
 
     /**
      * Sets a foreign attribute.
-     * @param name the qualified name of the attribute
-     * @param value the attribute value
+     * 
+     * @param name
+     *            the qualified name of the attribute
+     * @param value
+     *            the attribute value
      */
-    public void setForeignAttribute(QName name, String value) {
+    public void setForeignAttribute(final QName name, final String value) {
         if (this.foreignAttributes == null) {
             this.foreignAttributes = new java.util.HashMap();
         }
@@ -53,29 +55,34 @@ public abstract class AreaTreeObject {
 
     /**
      * Set foreign attributes from a Map.
-     * @param atts a Map with attributes (keys: QName, values: String)
+     * 
+     * @param atts
+     *            a Map with attributes (keys: QName, values: String)
      */
-    public void setForeignAttributes(Map atts) {
+    public void setForeignAttributes(final Map atts) {
         if (atts.size() == 0) {
             return;
         }
-        Iterator iter = atts.entrySet().iterator();
+        final Iterator iter = atts.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry)iter.next();
-            String value = (String)entry.getValue();
-            //The casting is only to ensure type safety (too bad we can't use generics, yet)
-            setForeignAttribute((QName)entry.getKey(), value);
+            final Map.Entry entry = (Map.Entry) iter.next();
+            final String value = (String) entry.getValue();
+            // The casting is only to ensure type safety (too bad we can't use
+            // generics, yet)
+            setForeignAttribute((QName) entry.getKey(), value);
         }
     }
 
     /**
      * Returns the value of a foreign attribute on the area.
-     * @param name the qualified name of the attribute
+     * 
+     * @param name
+     *            the qualified name of the attribute
      * @return the attribute value or null if it isn't set
      */
-    public String getForeignAttributeValue(QName name) {
+    public String getForeignAttributeValue(final QName name) {
         if (this.foreignAttributes != null) {
-            return (String)this.foreignAttributes.get(name);
+            return (String) this.foreignAttributes.get(name);
         } else {
             return null;
         }
@@ -92,24 +99,32 @@ public abstract class AreaTreeObject {
 
     private void prepareExtensionAttachmentContainer() {
         if (this.extensionAttachments == null) {
-            this.extensionAttachments = new java.util.ArrayList/*<ExtensionAttachment>*/();
+            this.extensionAttachments = new java.util.ArrayList/*
+                                                                * <
+                                                                * ExtensionAttachment
+                                                                * >
+                                                                */();
         }
     }
 
     /**
      * Adds a new ExtensionAttachment instance to this page.
-     * @param attachment the ExtensionAttachment
+     * 
+     * @param attachment
+     *            the ExtensionAttachment
      */
-    public void addExtensionAttachment(ExtensionAttachment attachment) {
+    public void addExtensionAttachment(final ExtensionAttachment attachment) {
         prepareExtensionAttachmentContainer();
-        extensionAttachments.add(attachment);
+        this.extensionAttachments.add(attachment);
     }
 
     /**
      * Set extension attachments from a List
-     * @param extensionAttachments a List with extension attachments
+     * 
+     * @param extensionAttachments
+     *            a List with extension attachments
      */
-    public void setExtensionAttachments(List extensionAttachments) {
+    public void setExtensionAttachments(final List extensionAttachments) {
         prepareExtensionAttachmentContainer();
         this.extensionAttachments.addAll(extensionAttachments);
     }
@@ -125,10 +140,12 @@ public abstract class AreaTreeObject {
 
     /**
      * Indicates whether this area tree object has any extension attachments.
+     * 
      * @return true if there are extension attachments
      */
     public boolean hasExtensionAttachments() {
-        return this.extensionAttachments != null && !this.extensionAttachments.isEmpty();
+        return this.extensionAttachments != null
+                && !this.extensionAttachments.isEmpty();
     }
 
 }

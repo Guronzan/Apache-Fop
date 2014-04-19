@@ -21,33 +21,35 @@ package org.apache.fop.layoutmgr;
 
 public class LeafPosition extends Position {
 
-    private int leafPos;
+    private final int leafPos;
 
-    public LeafPosition(LayoutManager layoutManager, int pos) {
+    public LeafPosition(final LayoutManager layoutManager, final int pos) {
         super(layoutManager);
-        leafPos = pos;
+        this.leafPos = pos;
     }
 
-    public LeafPosition(LayoutManager layoutManager, int pos, int index) {
+    public LeafPosition(final LayoutManager layoutManager, final int pos,
+            final int index) {
         super(layoutManager, index);
-        leafPos = pos;
+        this.leafPos = pos;
     }
 
     public int getLeafPos() {
-        return leafPos;
+        return this.leafPos;
     }
 
+    @Override
     public boolean generatesAreas() {
         return getLM() != null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("LeafPos:").append(getIndex()).append("(");
         sb.append("pos=").append(getLeafPos());
         sb.append(", lm=").append(getShortLMName()).append(")");
         return sb.toString();
     }
 }
-

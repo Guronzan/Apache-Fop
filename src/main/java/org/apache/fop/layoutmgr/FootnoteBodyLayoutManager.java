@@ -31,25 +31,29 @@ public class FootnoteBodyLayoutManager extends BlockStackingLayoutManager {
 
     /**
      * Creates a new FootnoteBodyLayoutManager.
-     * @param body the footnote-body element
+     *
+     * @param body
+     *            the footnote-body element
      */
-    public FootnoteBodyLayoutManager(FootnoteBody body) {
+    public FootnoteBodyLayoutManager(final FootnoteBody body) {
         super(body);
     }
 
     /** {@inheritDoc} */
-    public void addAreas(PositionIterator parentIter, LayoutContext layoutContext) {
+    @Override
+    public void addAreas(final PositionIterator parentIter,
+            final LayoutContext layoutContext) {
         LayoutManager childLM = null;
         LayoutManager lastLM = null;
-        LayoutContext lc = new LayoutContext(0);
+        final LayoutContext lc = new LayoutContext(0);
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        LinkedList positionList = new LinkedList();
+        final LinkedList positionList = new LinkedList();
         Position pos;
         while (parentIter.hasNext()) {
             pos = (Position) parentIter.next();
-            //log.trace("pos = " + pos.getClass().getName() + "; " + pos);
+            // log.trace("pos = " + pos.getClass().getName() + "; " + pos);
             Position innerPosition = pos;
             if (pos instanceof NonLeafPosition) {
                 innerPosition = ((NonLeafPosition) pos).getPosition();
@@ -57,51 +61,56 @@ public class FootnoteBodyLayoutManager extends BlockStackingLayoutManager {
                     // pos was created by this LM and was inside a penalty
                     // allowing or forbidding a page break
                     // nothing to do
-                    //log.trace(" penalty");
+                    // log.trace(" penalty");
                 } else {
                     // innerPosition was created by another LM
                     positionList.add(innerPosition);
                     lastLM = innerPosition.getLM();
-                    //log.trace(" " + innerPosition.getClass().getName());
+                    // log.trace(" " + innerPosition.getClass().getName());
                 }
             }
         }
 
         // the Positions in positionList were inside the elements
         // created by the LineLM
-        StackingIter childPosIter = new StackingIter(positionList.listIterator());
+        final StackingIter childPosIter = new StackingIter(
+                positionList.listIterator());
 
         while ((childLM = childPosIter.getNextChildLM()) != null) {
             // set last area flag
-            lc.setFlags(LayoutContext.LAST_AREA,
-                    (layoutContext.isLastArea() && childLM == lastLM));
+            lc.setFlags(LayoutContext.LAST_AREA, layoutContext.isLastArea()
+                    && childLM == lastLM);
             // Add the line areas to Area
             childLM.addAreas(childPosIter, lc);
         }
     }
 
     /** {@inheritDoc} */
-    public void addChildArea(Area childArea) {
+    @Override
+    public void addChildArea(final Area childArea) {
         childArea.setAreaClass(Area.CLASS_FOOTNOTE);
-        parentLayoutManager.addChildArea(childArea);
+        this.parentLayoutManager.addChildArea(childArea);
     }
 
     /** @return the FootnoteBody node */
     protected FootnoteBody getFootnodeBodyFO() {
-        return (FootnoteBody) fobj;
+        return (FootnoteBody) this.fobj;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepTogether() {
         return getParentKeepTogether();
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithNext() {
         return Keep.KEEP_AUTO;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithPrevious() {
         return Keep.KEEP_AUTO;
     }

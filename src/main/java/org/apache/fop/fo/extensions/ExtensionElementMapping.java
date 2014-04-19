@@ -22,12 +22,11 @@ package org.apache.fop.fo.extensions;
 import java.util.HashMap;
 import java.util.Set;
 
-import org.apache.xmlgraphics.util.QName;
-
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.UnknownXMLObj;
 import org.apache.fop.fo.extensions.destination.Destination;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * Element mapping for FOP's proprietary extension to XSL-FO.
@@ -40,13 +39,13 @@ public class ExtensionElementMapping extends ElementMapping {
     private static final Set propertyAttributes = new java.util.HashSet();
 
     static {
-        //These are FOP's standard extension properties (fox:*)
+        // These are FOP's standard extension properties (fox:*)
         propertyAttributes.add("block-progression-unit");
         propertyAttributes.add("widow-content-limit");
         propertyAttributes.add("orphan-content-limit");
         propertyAttributes.add("internal-destination");
         propertyAttributes.add("disable-column-balancing");
-        //These are FOP's extension properties for accessibility
+        // These are FOP's extension properties for accessibility
         propertyAttributes.add("alt-text");
     }
 
@@ -54,41 +53,46 @@ public class ExtensionElementMapping extends ElementMapping {
      * Constructor.
      */
     public ExtensionElementMapping() {
-        namespaceURI = URI;
+        this.namespaceURI = URI;
     }
 
     /**
      * Initialize the data structures.
      */
+    @Override
     protected void initialize() {
-        if (foObjs == null) {
-            foObjs = new HashMap();
-            foObjs.put("outline", new UnknownXMLObj.Maker(URI));
-            foObjs.put("label", new UnknownXMLObj.Maker(URI));
-            foObjs.put("destination", new DestinationMaker());
-            foObjs.put("external-document", new ExternalDocumentMaker());
+        if (this.foObjs == null) {
+            this.foObjs = new HashMap();
+            this.foObjs.put("outline", new UnknownXMLObj.Maker(URI));
+            this.foObjs.put("label", new UnknownXMLObj.Maker(URI));
+            this.foObjs.put("destination", new DestinationMaker());
+            this.foObjs.put("external-document", new ExternalDocumentMaker());
         }
     }
 
     static class DestinationMaker extends ElementMapping.Maker {
-        public FONode make(FONode parent) {
+        @Override
+        public FONode make(final FONode parent) {
             return new Destination(parent);
         }
     }
 
     static class ExternalDocumentMaker extends ElementMapping.Maker {
-        public FONode make(FONode parent) {
+        @Override
+        public FONode make(final FONode parent) {
             return new ExternalDocument(parent);
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getStandardPrefix() {
         return "fox";
     }
 
     /** {@inheritDoc} */
-    public boolean isAttributeProperty(QName attributeName) {
+    @Override
+    public boolean isAttributeProperty(final QName attributeName) {
         if (!URI.equals(attributeName.getNamespaceURI())) {
             throw new IllegalArgumentException("The namespace URIs don't match");
         }

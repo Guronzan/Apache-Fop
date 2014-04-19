@@ -25,15 +25,16 @@ import org.apache.fop.render.rtf.rtflib.exceptions.RtfException;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.IRtfOptions;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfContainer;
 
-
-/**  A BuilderContext holds context information when building an RTF document
+/**
+ * A BuilderContext holds context information when building an RTF document
  *
- *  @author Bertrand Delacretaz <bdelacretaz@codeconsult.ch>
- *  @author putzi
- *  @author Peter Herweg <pherweg@web.de>
+ * @author Bertrand Delacretaz <bdelacretaz@codeconsult.ch>
+ * @author putzi
+ * @author Peter Herweg <pherweg@web.de>
  *
- *  This class was originally developed by Bertrand Delacretaz bdelacretaz@codeconsult.ch
- *  for the JFOR project and is now integrated into FOP.
+ *         This class was originally developed by Bertrand Delacretaz
+ *         bdelacretaz@codeconsult.ch for the JFOR project and is now integrated
+ *         into FOP.
  */
 
 public class BuilderContext {
@@ -47,18 +48,20 @@ public class BuilderContext {
     private final Stack builders = new Stack();
 
     /** Rtf options */
-    private IRtfOptions options;
+    private final IRtfOptions options;
 
-    public BuilderContext(IRtfOptions rtfOptions) {
-        options = rtfOptions;
+    public BuilderContext(final IRtfOptions rtfOptions) {
+        this.options = rtfOptions;
     }
 
-    /** find first object of given class from top of stack s
-     *  @return null if not found
+    /**
+     * find first object of given class from top of stack s
+     * 
+     * @return null if not found
      */
-    private Object getObjectFromStack(Stack s, Class desiredClass) {
+    private Object getObjectFromStack(final Stack s, final Class desiredClass) {
         Object result = null;
-        final Stack copy = (Stack)s.clone();
+        final Stack copy = (Stack) s.clone();
         while (!copy.isEmpty()) {
             final Object o = copy.pop();
             if (desiredClass.isAssignableFrom(o.getClass())) {
@@ -69,100 +72,99 @@ public class BuilderContext {
         return result;
     }
 
-    /* find the "nearest" IBuilder of given class /
-    public Object getBuilder(Class builderClass,boolean required)
-    throws Exception
-    {
-        final IBuilder result = (IBuilder)getObjectFromStack(builders,builderClass);
-        if(result == null && required) {
-            throw new Exception(
-                "IBuilder of class '" + builderClass.getName() + "' not found on builders stack"
-               );
-        }
-        return result;
-    }*/
-
-    /** find the "nearest" container that implements the given interface on our stack
-     *  @param required if true, ConverterException is thrown if no container found
-     *  @param forWhichBuilder used in error message if container not found
+    /*
+     * find the "nearest" IBuilder of given class / public Object
+     * getBuilder(Class builderClass,boolean required) throws Exception { final
+     * IBuilder result = (IBuilder)getObjectFromStack(builders,builderClass);
+     * if(result == null && required) { throw new Exception(
+     * "IBuilder of class '" + builderClass.getName() +
+     * "' not found on builders stack" ); } return result; }
      */
-    public RtfContainer getContainer(Class containerClass, boolean required,
-                              Object /*IBuilder*/ forWhichBuilder) throws RtfException {
-        // TODO what to do if the desired container is not at the top of the stack?
+
+    /**
+     * find the "nearest" container that implements the given interface on our
+     * stack
+     * 
+     * @param required
+     *            if true, ConverterException is thrown if no container found
+     * @param forWhichBuilder
+     *            used in error message if container not found
+     */
+    public RtfContainer getContainer(final Class containerClass,
+            final boolean required, final Object /* IBuilder */forWhichBuilder)
+            throws RtfException {
+        // TODO what to do if the desired container is not at the top of the
+        // stack?
         // close top-of-stack container?
-        final RtfContainer result = (RtfContainer)getObjectFromStack(containers,
-                containerClass);
+        final RtfContainer result = (RtfContainer) getObjectFromStack(
+                this.containers, containerClass);
 
         if (result == null && required) {
-            throw new RtfException(
-                "No RtfContainer of class '" + containerClass.getName()
-                + "' available for '" + forWhichBuilder.getClass().getName() + "' builder"
-               );
+            throw new RtfException("No RtfContainer of class '"
+                    + containerClass.getName() + "' available for '"
+                    + forWhichBuilder.getClass().getName() + "' builder");
         }
 
         return result;
     }
 
     /** push an RtfContainer on our stack */
-    public void pushContainer(RtfContainer c) {
-        containers.push(c);
+    public void pushContainer(final RtfContainer c) {
+        this.containers.push(c);
     }
 
     /**
      * In some cases an RtfContainer must be replaced by another one on the
      * stack. This happens when handling nested fo:blocks for example: after
      * handling a nested block the enclosing block must switch to a new
-     * paragraph container to handle what follows the nested block.
-     * TODO: what happens to elements that are "more on top" than oldC on the
-     * stack? shouldn't they be closed or something?
+     * paragraph container to handle what follows the nested block. TODO: what
+     * happens to elements that are "more on top" than oldC on the stack?
+     * shouldn't they be closed or something?
      */
-    public void replaceContainer(RtfContainer oldC, RtfContainer newC)
-    throws Exception {
-        // treating the Stack as a Vector allows such manipulations (yes, I hear you screaming ;-)
-        final int index = containers.indexOf(oldC);
+    public void replaceContainer(final RtfContainer oldC,
+            final RtfContainer newC) throws Exception {
+        // treating the Stack as a Vector allows such manipulations (yes, I hear
+        // you screaming ;-)
+        final int index = this.containers.indexOf(oldC);
         if (index < 0) {
             throw new Exception("container to replace not found:" + oldC);
         }
-        containers.setElementAt(newC, index);
+        this.containers.setElementAt(newC, index);
     }
 
     /** pop the topmost RtfContainer from our stack */
     public void popContainer() {
-        containers.pop();
+        this.containers.pop();
     }
 
-    /* push an IBuilder to our stack /
-    public void pushBuilder(IBuilder b)
-    {
-        builders.push(b);
-    }*/
+    /*
+     * push an IBuilder to our stack / public void pushBuilder(IBuilder b) {
+     * builders.push(b); }
+     */
 
-    /** pop the topmost IBuilder from our stack and return previous builder on stack
-     *  @return null if builders stack is empty
-
-    public IBuilder popBuilderAndGetPreviousOne()
-    {
-        IBuilder result = null;
-        builders.pop();
-        if(!builders.isEmpty()) {
-            result = (IBuilder)builders.peek();
-        }
-        return result;
-    }
-    */
+    /**
+     * pop the topmost IBuilder from our stack and return previous builder on
+     * stack
+     * 
+     * @return null if builders stack is empty
+     * 
+     *         public IBuilder popBuilderAndGetPreviousOne() { IBuilder result =
+     *         null; builders.pop(); if(!builders.isEmpty()) { result =
+     *         (IBuilder)builders.peek(); } return result; }
+     */
     /** return the current TableContext */
     public TableContext getTableContext() {
-        return (TableContext)tableContexts.peek();
+        return (TableContext) this.tableContexts.peek();
     }
 
     /** push a TableContext to our stack */
-    public void pushTableContext(TableContext tc) {
-        tableContexts.push(tc);
+    public void pushTableContext(final TableContext tc) {
+        this.tableContexts.push(tc);
     }
 
     /** pop a TableContext from our stack */
     public void popTableContext() {
-        tableContexts.pop();
+        this.tableContexts.pop();
     }
 
 }

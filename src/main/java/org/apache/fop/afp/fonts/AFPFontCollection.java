@@ -36,33 +36,38 @@ public class AFPFontCollection implements FontCollection {
 
     private final EventBroadcaster eventBroadcaster;
 
-    private final List/*<AFPFontInfo>*/ fontInfoList;
+    private final List/* <AFPFontInfo> */fontInfoList;
 
     /**
      * Main constructor
      *
-     * @param eventBroadcaster the event broadcaster
-     * @param fontInfoList the font info list
+     * @param eventBroadcaster
+     *            the event broadcaster
+     * @param fontInfoList
+     *            the font info list
      */
-    public AFPFontCollection(EventBroadcaster eventBroadcaster,
-            List/*<AFPFontInfo>*/ fontInfoList) {
+    public AFPFontCollection(final EventBroadcaster eventBroadcaster,
+            final List/* <AFPFontInfo> */fontInfoList) {
         this.eventBroadcaster = eventBroadcaster;
         this.fontInfoList = fontInfoList;
     }
 
     /** {@inheritDoc} */
-    public int setup(int start, FontInfo fontInfo) {
+    @Override
+    public int setup(final int start, final FontInfo fontInfo) {
         int num = 1;
-        AFPEventProducer eventProducer = AFPEventProducer.Provider.get(eventBroadcaster);
-        if (fontInfoList != null && fontInfoList.size() > 0) {
-            for (Iterator it = fontInfoList.iterator(); it.hasNext();) {
-                AFPFontInfo afpFontInfo = (AFPFontInfo)it.next();
-                AFPFont afpFont = afpFontInfo.getAFPFont();
-                List/*<FontTriplet>*/ tripletList = afpFontInfo.getFontTriplets();
-                for (Iterator it2 = tripletList.iterator(); it2.hasNext();) {
-                    FontTriplet triplet = (FontTriplet)it2.next();
-                    fontInfo.addFontProperties("F" + num,
-                            triplet.getName(), triplet.getStyle(), triplet.getWeight());
+        final AFPEventProducer eventProducer = AFPEventProducer.Provider
+                .get(this.eventBroadcaster);
+        if (this.fontInfoList != null && this.fontInfoList.size() > 0) {
+            for (final Iterator it = this.fontInfoList.iterator(); it.hasNext();) {
+                final AFPFontInfo afpFontInfo = (AFPFontInfo) it.next();
+                final AFPFont afpFont = afpFontInfo.getAFPFont();
+                final List/* <FontTriplet> */tripletList = afpFontInfo
+                        .getFontTriplets();
+                for (final Iterator it2 = tripletList.iterator(); it2.hasNext();) {
+                    final FontTriplet triplet = (FontTriplet) it2.next();
+                    fontInfo.addFontProperties("F" + num, triplet.getName(),
+                            triplet.getStyle(), triplet.getWeight());
                     fontInfo.addMetrics("F" + num, afpFont);
                     num++;
                 }
@@ -79,14 +84,15 @@ public class AFPFontCollection implements FontCollection {
             eventProducer.warnDefaultFontSetup(this);
 
             // Go with a default base 12 configuration for AFP environments
-            FontCollection base12FontCollection = new AFPBase12FontCollection();
+            final FontCollection base12FontCollection = new AFPBase12FontCollection();
             num = base12FontCollection.setup(num, fontInfo);
         }
         return num;
     }
 
-    private void checkDefaultFontAvailable(FontInfo fontInfo, AFPEventProducer eventProducer,
-            String style, int weight) {
+    private void checkDefaultFontAvailable(final FontInfo fontInfo,
+            final AFPEventProducer eventProducer, final String style,
+            final int weight) {
         if (!fontInfo.hasFont("any", style, weight)) {
             eventProducer.warnMissingDefaultFont(this, style, weight);
         }

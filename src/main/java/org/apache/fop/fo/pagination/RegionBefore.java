@@ -35,50 +35,56 @@ import org.apache.fop.fo.FONode;
 public class RegionBefore extends RegionBA {
 
     /**
-     * Create a RegionBefore instance that is a child of the
-     * given parent {@link FONode}.
-     * @param parent    the {@link FONode} that is to be the parent
+     * Create a RegionBefore instance that is a child of the given parent
+     * {@link FONode}.
+     * 
+     * @param parent
+     *            the {@link FONode} that is to be the parent
      */
-    public RegionBefore(FONode parent) {
+    public RegionBefore(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-before";
     }
 
     /** {@inheritDoc} */
-    public Rectangle getViewportRectangle (FODimension reldims, SimplePageMaster spm) {
-        /* Special rules apply to resolving extent as values are resolved relative
-         * to the page size and reference orientation.
+    @Override
+    public Rectangle getViewportRectangle(final FODimension reldims,
+            final SimplePageMaster spm) {
+        /*
+         * Special rules apply to resolving extent as values are resolved
+         * relative to the page size and reference orientation.
          */
         SimplePercentBaseContext pageWidthContext;
         SimplePercentBaseContext pageHeightContext;
         if (spm.getReferenceOrientation() % 180 == 0) {
             pageWidthContext = new SimplePercentBaseContext(null,
-                                                            LengthBase.CUSTOM_BASE,
-                                                            spm.getPageWidth().getValue());
+                    LengthBase.CUSTOM_BASE, spm.getPageWidth().getValue());
             pageHeightContext = new SimplePercentBaseContext(null,
-                                                             LengthBase.CUSTOM_BASE,
-                                                             spm.getPageHeight().getValue());
+                    LengthBase.CUSTOM_BASE, spm.getPageHeight().getValue());
         } else {
-            // invert width and height since top left are rotated by 90 (cl or ccl)
+            // invert width and height since top left are rotated by 90 (cl or
+            // ccl)
             pageWidthContext = new SimplePercentBaseContext(null,
-                                                            LengthBase.CUSTOM_BASE,
-                                                            spm.getPageHeight().getValue());
+                    LengthBase.CUSTOM_BASE, spm.getPageHeight().getValue());
             pageHeightContext = new SimplePercentBaseContext(null,
-                                                             LengthBase.CUSTOM_BASE,
-                                                             spm.getPageWidth().getValue());
+                    LengthBase.CUSTOM_BASE, spm.getPageWidth().getValue());
         }
         SimplePercentBaseContext neighbourContext;
         Rectangle vpRect;
-        if (spm.getWritingMode() == EN_LR_TB || spm.getWritingMode() == EN_RL_TB) {
+        if (spm.getWritingMode() == EN_LR_TB
+                || spm.getWritingMode() == EN_RL_TB) {
             neighbourContext = pageWidthContext;
-            vpRect = new Rectangle(0, 0, reldims.ipd, getExtent().getValue(pageHeightContext));
+            vpRect = new Rectangle(0, 0, reldims.ipd, getExtent().getValue(
+                    pageHeightContext));
         } else {
             neighbourContext = pageHeightContext;
-            vpRect = new Rectangle(0, 0, getExtent().getValue(pageWidthContext), reldims.ipd);
+            vpRect = new Rectangle(0, 0,
+                    getExtent().getValue(pageWidthContext), reldims.ipd);
         }
         if (getPrecedence() == EN_FALSE) {
             adjustIPD(vpRect, spm.getWritingMode(), neighbourContext);
@@ -87,16 +93,18 @@ public class RegionBefore extends RegionBA {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-before";
     }
 
     /**
      * {@inheritDoc}
+     * 
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_BEFORE}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_BEFORE;
     }
 }
-

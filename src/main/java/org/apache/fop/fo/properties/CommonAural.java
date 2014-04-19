@@ -22,8 +22,7 @@ package org.apache.fop.fo.properties;
 import org.apache.fop.fo.PropertyList;
 
 /**
- * Stores all common aural properties.
- * See Sec. 7.6 of the XSL-FO Standard.
+ * Stores all common aural properties. See Sec. 7.6 of the XSL-FO Standard.
  * Public "structure" allows direct member access.
  */
 public class CommonAural {
@@ -119,8 +118,10 @@ public class CommonAural {
 
     /**
      * Create a CommonAbsolutePosition object.
-     * @param pList The PropertyList with propery values.
+     * 
+     * @param pList
+     *            The PropertyList with propery values.
      */
-    public CommonAural(PropertyList pList) {
+    public CommonAural(final PropertyList pList) {
     }
 }

@@ -24,10 +24,9 @@ import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 
+import org.apache.fop.util.DelegatingContentHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
-
-import org.apache.fop.util.DelegatingContentHandler;
 
 /**
  * Helper class that re-builds a structure tree from what is stored in an
@@ -42,10 +41,11 @@ public final class StructureTreeBuilder {
     /**
      * Creates a new instance.
      *
-     * @param factory a factory internally used to build the structures of page
-     * sequences
+     * @param factory
+     *            a factory internally used to build the structures of page
+     *            sequences
      */
-    public StructureTreeBuilder(SAXTransformerFactory factory) {
+    public StructureTreeBuilder(final SAXTransformerFactory factory) {
         this.factory = factory;
     }
 
@@ -55,7 +55,7 @@ public final class StructureTreeBuilder {
      * @return the structure tree built by this object
      */
     public StructureTree getStructureTree() {
-        return structureTree;
+        return this.structureTree;
     }
 
     /**
@@ -63,31 +63,36 @@ public final class StructureTreeBuilder {
      * It is assumed that page sequences are being parsed in the document order.
      *
      * @return a handler for parsing the &lt;structure-tree&gt; or
-     * &lt;structureTree&gt; element and its descendants
-     * @throws SAXException if there is an error when creating the handler
+     *         &lt;structureTree&gt; element and its descendants
+     * @throws SAXException
+     *             if there is an error when creating the handler
      */
     public ContentHandler getHandlerForNextPageSequence() throws SAXException {
         TransformerHandler structureTreeBuilder;
         try {
-            structureTreeBuilder = factory.newTransformerHandler();
-        } catch (TransformerConfigurationException e) {
+            structureTreeBuilder = this.factory.newTransformerHandler();
+        } catch (final TransformerConfigurationException e) {
             throw new SAXException(e);
         }
         final DOMResult domResult = new DOMResult();
         structureTreeBuilder.setResult(domResult);
         return new DelegatingContentHandler(structureTreeBuilder) {
 
-            public void characters(char[] ch, int start, int length) throws SAXException {
+            @Override
+            public void characters(final char[] ch, final int start,
+                    final int length) throws SAXException {
                 /*
                  * There's no text node in the structure tree. This is just
                  * whitespace => ignore
                  */
             }
 
+            @Override
             public void endDocument() throws SAXException {
                 super.endDocument();
-                structureTree.addPageSequenceStructure(domResult.getNode().getFirstChild()
-                        .getChildNodes());
+                StructureTreeBuilder.this.structureTree
+                .addPageSequenceStructure(domResult.getNode()
+                        .getFirstChild().getChildNodes());
             }
         };
     }

@@ -53,12 +53,17 @@ public class PDFRectangle implements PDFWritable {
     /**
      * create a rectangle giving the four separate values
      *
-     * @param llx  lower left x coordinate
-     * @param lly  lower left y coordinate
-     * @param urx  upper right x coordinate
-     * @param ury  upper right y coordinate
+     * @param llx
+     *            lower left x coordinate
+     * @param lly
+     *            lower left y coordinate
+     * @param urx
+     *            upper right x coordinate
+     * @param ury
+     *            upper right y coordinate
      */
-    public PDFRectangle(int llx, int lly, int urx, int ury) {
+    public PDFRectangle(final int llx, final int lly, final int urx,
+            final int ury) {
         this.llx = llx;
         this.lly = lly;
         this.urx = urx;
@@ -68,9 +73,10 @@ public class PDFRectangle implements PDFWritable {
     /**
      * create a rectangle giving an array of four values
      *
-     * @param array values in the order llx, lly, urx, ury
+     * @param array
+     *            values in the order llx, lly, urx, ury
      */
-    public PDFRectangle(int[] array) {
+    public PDFRectangle(final int[] array) {
         this.llx = array[0];
         this.lly = array[1];
         this.urx = array[2];
@@ -78,16 +84,20 @@ public class PDFRectangle implements PDFWritable {
     }
 
     private String format() {
-        return "[" + llx + " " + lly + " " + urx + " " + ury + "]";
+        return "[" + this.llx + " " + this.lly + " " + this.urx + " "
+                + this.ury + "]";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "PDFRectangle" + format();
     }
 
     /** {@inheritDoc} */
-    public void outputInline(OutputStream out, Writer writer) throws IOException {
+    @Override
+    public void outputInline(final OutputStream out, final Writer writer)
+            throws IOException {
         writer.write(format());
     }
 }

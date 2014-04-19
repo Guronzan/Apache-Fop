@@ -31,26 +31,28 @@ import org.apache.fop.render.RendererConfigurator;
 public class AFPRendererMaker extends AbstractRendererMaker {
 
     private static final String[] MIMES = new String[] {
-        MimeConstants.MIME_AFP,
-        MimeConstants.MIME_AFP_ALT};
+            MimeConstants.MIME_AFP, MimeConstants.MIME_AFP_ALT };
 
-
-    /**{@inheritDoc} */
-    public Renderer makeRenderer(FOUserAgent userAgent) {
+    /** {@inheritDoc} */
+    @Override
+    public Renderer makeRenderer(final FOUserAgent userAgent) {
         return new AFPRenderer();
     }
 
     /** {@inheritDoc} */
-    public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
+    @Override
+    public RendererConfigurator getConfigurator(final FOUserAgent userAgent) {
         return new AFPRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

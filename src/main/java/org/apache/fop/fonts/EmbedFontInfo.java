@@ -42,24 +42,35 @@ public class EmbedFontInfo implements Serializable {
 
     /** the PostScript name of the font */
     protected String postScriptName = null;
-    /** the sub-fontname of the font (used for TrueType Collections, null otherwise) */
+    /**
+     * the sub-fontname of the font (used for TrueType Collections, null
+     * otherwise)
+     */
     protected String subFontName = null;
 
     /** the list of associated font triplets */
-    private List/*<FontTriplet>*/ fontTriplets = null;
+    private List/* <FontTriplet> */fontTriplets = null;
 
     private transient boolean embedded = true;
 
     /**
      * Main constructor
-     * @param metricsFile Path to the xml file containing font metrics
-     * @param kerning True if kerning should be enabled
-     * @param fontTriplets List of font triplets to associate with this font
-     * @param embedFile Path to the embeddable font file (may be null)
-     * @param subFontName the sub-fontname used for TrueType Collections (null otherwise)
+     * 
+     * @param metricsFile
+     *            Path to the xml file containing font metrics
+     * @param kerning
+     *            True if kerning should be enabled
+     * @param fontTriplets
+     *            List of font triplets to associate with this font
+     * @param embedFile
+     *            Path to the embeddable font file (may be null)
+     * @param subFontName
+     *            the sub-fontname used for TrueType Collections (null
+     *            otherwise)
      */
-    public EmbedFontInfo(String metricsFile, boolean kerning,
-                    List/*<FontTriplet>*/ fontTriplets, String embedFile, String subFontName) {
+    public EmbedFontInfo(final String metricsFile, final boolean kerning,
+            final List/* <FontTriplet> */fontTriplets, final String embedFile,
+            final String subFontName) {
         this.metricsFile = metricsFile;
         this.embedFile = embedFile;
         this.kerning = kerning;
@@ -69,31 +80,36 @@ public class EmbedFontInfo implements Serializable {
 
     /**
      * Returns the path to the metrics file
+     * 
      * @return the metrics file path
      */
     public String getMetricsFile() {
-        return metricsFile;
+        return this.metricsFile;
     }
 
     /**
      * Returns the path to the embeddable font file
+     * 
      * @return the font file path
      */
     public String getEmbedFile() {
-        return embedFile;
+        return this.embedFile;
     }
 
     /**
      * Determines if kerning is enabled
+     * 
      * @return True if enabled
      */
     public boolean getKerning() {
-        return kerning;
+        return this.kerning;
     }
 
     /**
-     * Returns the sub-font name of the font. This is primarily used for TrueType Collections
-     * to select one of the sub-fonts. For all other fonts, this is always null.
+     * Returns the sub-font name of the font. This is primarily used for
+     * TrueType Collections to select one of the sub-fonts. For all other fonts,
+     * this is always null.
+     * 
      * @return the sub-font name (or null)
      */
     public String getSubFontName() {
@@ -102,34 +118,39 @@ public class EmbedFontInfo implements Serializable {
 
     /**
      * Returns the PostScript name of the font.
+     * 
      * @return the PostScript name
      */
     public String getPostScriptName() {
-        return postScriptName;
+        return this.postScriptName;
     }
 
     /**
      * Sets the PostScript name of the font
-     * @param postScriptName the PostScript name
+     * 
+     * @param postScriptName
+     *            the PostScript name
      */
-    public void setPostScriptName(String postScriptName) {
+    public void setPostScriptName(final String postScriptName) {
         this.postScriptName = postScriptName;
     }
 
     /**
      * Returns the list of font triplets associated with this font.
+     * 
      * @return List of font triplets
      */
-    public List/*<FontTriplet>*/ getFontTriplets() {
-        return fontTriplets;
+    public List/* <FontTriplet> */getFontTriplets() {
+        return this.fontTriplets;
     }
 
     /**
      * Indicates whether the font is only referenced rather than embedded.
+     * 
      * @return true if the font is embedded, false if it is referenced.
      */
     public boolean isEmbedded() {
-        if (metricsFile != null && embedFile == null) {
+        if (this.metricsFile != null && this.embedFile == null) {
             return false;
         } else {
             return this.embedded;
@@ -138,14 +159,17 @@ public class EmbedFontInfo implements Serializable {
 
     /**
      * Defines whether the font is embedded or not.
-     * @param value true to embed the font, false to reference it
+     * 
+     * @param value
+     *            true to embed the font, false to reference it
      */
-    public void setEmbedded(boolean value) {
+    public void setEmbedded(final boolean value) {
         this.embedded = value;
     }
 
     /**
      * Returns the requested encoding mode for this font.
+     * 
      * @return the encoding mode
      */
     public EncodingMode getEncodingMode() {
@@ -154,29 +178,38 @@ public class EmbedFontInfo implements Serializable {
 
     /**
      * Sets the requested encoding mode for this font.
-     * @param mode the new encoding mode
+     * 
+     * @param mode
+     *            the new encoding mode
      */
-    public void setEncodingMode(EncodingMode mode) {
+    public void setEncodingMode(final EncodingMode mode) {
         if (mode == null) {
             throw new NullPointerException("mode must not be null");
         }
         this.encodingMode = mode;
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-                throws IOException, ClassNotFoundException {
+    private void readObject(final java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         this.embedded = true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "metrics-url=" + metricsFile + ", embed-url=" + embedFile
-            + ", kerning=" + kerning
-            + ", enc-mode=" + encodingMode
-            + ", font-triplet=" + fontTriplets
-            + (getSubFontName() != null ? ", sub-font=" + getSubFontName() : "")
-            + (isEmbedded() ? "" : ", NOT embedded");
+        return "metrics-url="
+                + this.metricsFile
+                + ", embed-url="
+                + this.embedFile
+                + ", kerning="
+                + this.kerning
+                + ", enc-mode="
+                + this.encodingMode
+                + ", font-triplet="
+                + this.fontTriplets
+                + (getSubFontName() != null ? ", sub-font=" + getSubFontName()
+                        : "") + (isEmbedded() ? "" : ", NOT embedded");
     }
 
 }

@@ -22,34 +22,40 @@ package org.apache.fop.area;
 import java.util.List;
 
 /**
- * The span-reference-area.
- * This is a block-area with 0 border and padding that is stacked
- * within the main-reference-area
- * This object holds one or more normal-flow-reference-area children
- * based on the column-count trait in effect for this span.
- * See fo:region-body definition in the XSL Rec for more information.
+ * The span-reference-area. This is a block-area with 0 border and padding that
+ * is stacked within the main-reference-area This object holds one or more
+ * normal-flow-reference-area children based on the column-count trait in effect
+ * for this span. See fo:region-body definition in the XSL Rec for more
+ * information.
  */
 public class Span extends Area {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -5551430053660081549L;
     // the list of flow reference areas in this span area
     private List flowAreas;
-    private int colCount;
-    private int colGap;
+    private final int colCount;
+    private final int colGap;
     private int colWidth; // width for each normal flow, calculated value
-    private int curFlowIdx;  // n-f-r-a currently being processed, zero-based
+    private int curFlowIdx; // n-f-r-a currently being processed, zero-based
 
     /**
      * Create a span area with the number of columns for this span area.
      *
-     * @param colCount the number of columns in the span
-     * @param colGap the column gap between each column
-     * @param ipd the total ipd of the span
+     * @param colCount
+     *            the number of columns in the span
+     * @param colGap
+     *            the column gap between each column
+     * @param ipd
+     *            the total ipd of the span
      */
-    public Span(int colCount, int colGap, int ipd) {
+    public Span(final int colCount, final int colGap, final int ipd) {
         addTrait(Trait.IS_REFERENCE_AREA, Boolean.TRUE);
         this.colCount = colCount;
         this.colGap = colGap;
         this.ipd = ipd;
-        curFlowIdx = 0;
+        this.curFlowIdx = 0;
         createNormalFlows();
     }
 
@@ -57,12 +63,13 @@ public class Span extends Area {
      * Create the normal flows for this Span
      */
     private void createNormalFlows() {
-        flowAreas = new java.util.ArrayList(colCount);
-        colWidth = (ipd - ((colCount - 1) * colGap)) / colCount;
+        this.flowAreas = new java.util.ArrayList(this.colCount);
+        this.colWidth = (this.ipd - (this.colCount - 1) * this.colGap)
+                / this.colCount;
 
-        for (int i = 0; i < colCount; i++) {
-            NormalFlow newFlow = new NormalFlow(colWidth);
-            flowAreas.add(newFlow);
+        for (int i = 0; i < this.colCount; i++) {
+            final NormalFlow newFlow = new NormalFlow(this.colWidth);
+            this.flowAreas.add(newFlow);
         }
     }
 
@@ -72,7 +79,7 @@ public class Span extends Area {
      * @return the number of columns defined for this span area
      */
     public int getColumnCount() {
-        return colCount;
+        return this.colCount;
     }
 
     /**
@@ -81,7 +88,7 @@ public class Span extends Area {
      * @return the width of a single column
      */
     public int getColumnWidth() {
-        return colWidth;
+        return this.colWidth;
     }
 
     /**
@@ -93,20 +100,20 @@ public class Span extends Area {
         return getBPD();
     }
 
-
     /**
      * Get the normal flow area for a particular column.
      *
-     * @param colRequested the zero-based column number of the flow
+     * @param colRequested
+     *            the zero-based column number of the flow
      * @return the flow area for the requested column
      */
-    public NormalFlow getNormalFlow(int colRequested) {
-        if (colRequested >= 0 && colRequested < colCount) {
-            return (NormalFlow) flowAreas.get(colRequested);
+    public NormalFlow getNormalFlow(final int colRequested) {
+        if (colRequested >= 0 && colRequested < this.colCount) {
+            return (NormalFlow) this.flowAreas.get(colRequested);
         } else { // internal error
             throw new IllegalArgumentException("Invalid column number "
-                    + colRequested + " requested; only 0-" + (colCount - 1)
-                    + " available.");
+                    + colRequested + " requested; only 0-"
+                    + (this.colCount - 1) + " available.");
         }
     }
 
@@ -116,76 +123,77 @@ public class Span extends Area {
      * @return the current NormalFlow
      */
     public NormalFlow getCurrentFlow() {
-        return getNormalFlow(curFlowIdx);
+        return getNormalFlow(this.curFlowIdx);
     }
 
     /** @return the index of the current normal flow */
     public int getCurrentFlowIndex() {
-        return curFlowIdx;
+        return this.curFlowIdx;
     }
 
     /**
-     * Indicate to the Span that the next column is being
-     * processed.
+     * Indicate to the Span that the next column is being processed.
      *
      * @return the new NormalFlow (in the next column)
      */
     public NormalFlow moveToNextFlow() {
         if (hasMoreFlows()) {
-            curFlowIdx++;
-            return getNormalFlow(curFlowIdx);
+            this.curFlowIdx++;
+            return getNormalFlow(this.curFlowIdx);
         } else {
-            throw new IllegalStateException("(Internal error.) No more flows left in span.");
+            throw new IllegalStateException(
+                    "(Internal error.) No more flows left in span.");
         }
     }
 
     /**
      * Indicates if the Span has unprocessed flows.
      *
-     * @return true if Span can increment to the next flow,
-     * false otherwise.
+     * @return true if Span can increment to the next flow, false otherwise.
      */
     public boolean hasMoreFlows() {
-        return (curFlowIdx < colCount - 1);
+        return this.curFlowIdx < this.colCount - 1;
     }
 
     /**
-     * Called to notify the span that all its flows have been fully generated so it can update
-     * its own BPD extent.
+     * Called to notify the span that all its flows have been fully generated so
+     * it can update its own BPD extent.
      */
     public void notifyFlowsFinished() {
         int maxFlowBPD = Integer.MIN_VALUE;
-        for (int i = 0; i < colCount; i++) {
+        for (int i = 0; i < this.colCount; i++) {
             maxFlowBPD = Math.max(maxFlowBPD, getNormalFlow(i).getAllocBPD());
         }
-        bpd = maxFlowBPD;
+        this.bpd = maxFlowBPD;
     }
 
     /**
      * Indicates whether any child areas have been added to this span area.
      *
      * This is achieved by looping through each flow.
+     * 
      * @return true if no child areas have been added yet.
      */
     public boolean isEmpty() {
         int areaCount = 0;
         for (int i = 0; i < getColumnCount(); i++) {
-            NormalFlow flow = getNormalFlow(i);
+            final NormalFlow flow = getNormalFlow(i);
             if (flow != null) {
                 if (flow.getChildAreas() != null) {
                     areaCount += flow.getChildAreas().size();
                 }
             }
         }
-        return (areaCount == 0);
+        return areaCount == 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
-        if (colCount > 1) {
-            sb.append(" {colCount=").append(colCount);
-            sb.append(", colWidth=").append(colWidth);
+        final StringBuilder sb = new StringBuilder(super.toString());
+        if (this.colCount > 1) {
+            sb.append(" {colCount=").append(this.colCount);
+            sb.append(", colWidth=").append(this.colWidth);
             sb.append(", curFlowIdx=").append(this.curFlowIdx);
             sb.append("}");
         }
@@ -193,4 +201,3 @@ public class Span extends Area {
     }
 
 }
-

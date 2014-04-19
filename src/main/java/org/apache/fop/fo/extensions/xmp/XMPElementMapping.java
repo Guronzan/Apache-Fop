@@ -21,10 +21,9 @@ package org.apache.fop.fo.extensions.xmp;
 
 import java.util.HashMap;
 
-import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.ElementMapping;
+import org.apache.fop.fo.FONode;
 import org.apache.xmlgraphics.xmp.XMPConstants;
-
 import org.w3c.dom.DOMImplementation;
 
 /**
@@ -34,24 +33,27 @@ public class XMPElementMapping extends ElementMapping {
 
     /** Main constructor. */
     public XMPElementMapping() {
-        namespaceURI = XMPConstants.XMP_NAMESPACE;
+        this.namespaceURI = XMPConstants.XMP_NAMESPACE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public DOMImplementation getDOMImplementation() {
         return getDefaultDOMImplementation();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initialize() {
-        if (foObjs == null) {
-            foObjs = new HashMap();
-            foObjs.put("xmpmeta", new XMPMetaElementMaker());
+        if (this.foObjs == null) {
+            this.foObjs = new HashMap();
+            this.foObjs.put("xmpmeta", new XMPMetaElementMaker());
         }
     }
 
     static class XMPMetaElementMaker extends ElementMapping.Maker {
-        public FONode make(FONode parent) {
+        @Override
+        public FONode make(final FONode parent) {
             return new XMPMetaElement(parent);
         }
     }

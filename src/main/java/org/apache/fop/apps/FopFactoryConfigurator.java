@@ -23,24 +23,22 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.xml.sax.SAXException;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfigurationBuilder;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.image.loader.spi.ImageImplRegistry;
-import org.apache.xmlgraphics.image.loader.util.Penalty;
-
 import org.apache.fop.fonts.FontManager;
 import org.apache.fop.fonts.FontManagerConfigurator;
 import org.apache.fop.util.LogUtil;
+import org.apache.xmlgraphics.image.loader.spi.ImageImplRegistry;
+import org.apache.xmlgraphics.image.loader.util.Penalty;
+import org.xml.sax.SAXException;
 
 /**
  * FopFactory configurator
  */
+@Slf4j
 public class FopFactoryConfigurator {
 
     /** Defines if FOP should use an alternative rule to determine text indents */
@@ -59,15 +57,12 @@ public class FopFactoryConfigurator {
     public static final String DEFAULT_PAGE_HEIGHT = "11in";
 
     /** Defines the default source resolution (72dpi) for FOP */
-    public static final float DEFAULT_SOURCE_RESOLUTION = 72.0f; //dpi
+    public static final float DEFAULT_SOURCE_RESOLUTION = 72.0f; // dpi
 
     /** Defines the default target resolution (72dpi) for FOP */
-    public static final float DEFAULT_TARGET_RESOLUTION = 72.0f; //dpi
+    public static final float DEFAULT_TARGET_RESOLUTION = 72.0f; // dpi
 
     private static final String PREFER_RENDERER = "prefer-renderer";
-
-    /** logger instance */
-    private final Log log = LogFactory.getLog(FopFactoryConfigurator.class);
 
     /** Fop factory */
     private FopFactory factory = null;
@@ -77,153 +72,163 @@ public class FopFactoryConfigurator {
 
     /**
      * Default constructor
-     * @param factory fop factory
+     *
+     * @param factory
+     *            fop factory
      */
-    public FopFactoryConfigurator(FopFactory factory) {
+    public FopFactoryConfigurator(final FopFactory factory) {
         super();
         this.factory = factory;
     }
 
     /**
-     * Initializes user agent settings from the user configuration
-     * file, if present: baseURL, resolution, default page size,...
-     * @param factory fop factory
-     * @throws FOPException fop exception
+     * Initializes user agent settings from the user configuration file, if
+     * present: baseURL, resolution, default page size,...
+     *
+     * @param factory
+     *            fop factory
+     * @throws FOPException
+     *             fop exception
      */
-    public void configure(FopFactory factory) throws FOPException {
+    public void configure(final FopFactory factory) throws FOPException {
         if (log.isDebugEnabled()) {
             log.debug("Initializing FopFactory Configuration");
         }
 
-        if (cfg.getChild("accessibility", false) != null) {
+        if (this.cfg.getChild("accessibility", false) != null) {
             try {
-                this.factory.setAccessibility(
-                        cfg.getChild("accessibility").getValueAsBoolean());
-            } catch (ConfigurationException e) {
+                this.factory.setAccessibility(this.cfg
+                        .getChild("accessibility").getValueAsBoolean());
+            } catch (final ConfigurationException e) {
                 throw new FOPException(e);
             }
         }
 
         // strict configuration
-        if (cfg.getChild("strict-configuration", false) != null) {
+        if (this.cfg.getChild("strict-configuration", false) != null) {
             try {
-                factory.setStrictUserConfigValidation(
-                        cfg.getChild("strict-configuration").getValueAsBoolean());
-            } catch (ConfigurationException e) {
+                factory.setStrictUserConfigValidation(this.cfg.getChild(
+                        "strict-configuration").getValueAsBoolean());
+            } catch (final ConfigurationException e) {
                 LogUtil.handleException(log, e, false);
             }
         }
-        boolean strict = factory.validateUserConfigStrictly();
+        final boolean strict = factory.validateUserConfigStrictly();
 
         // strict fo validation
-        if (cfg.getChild("strict-validation", false) != null) {
+        if (this.cfg.getChild("strict-validation", false) != null) {
             try {
-                factory.setStrictValidation(
-                        cfg.getChild("strict-validation").getValueAsBoolean());
-            } catch (ConfigurationException e) {
+                factory.setStrictValidation(this.cfg.getChild(
+                        "strict-validation").getValueAsBoolean());
+            } catch (final ConfigurationException e) {
                 LogUtil.handleException(log, e, strict);
             }
         }
 
         // base definitions for relative path resolution
-        if (cfg.getChild("base", false) != null) {
+        if (this.cfg.getChild("base", false) != null) {
             try {
-                factory.setBaseURL(
-                        cfg.getChild("base").getValue(null));
-            } catch (MalformedURLException mfue) {
+                factory.setBaseURL(this.cfg.getChild("base").getValue(null));
+            } catch (final MalformedURLException mfue) {
                 LogUtil.handleException(log, mfue, strict);
             }
         }
-        if (cfg.getChild("hyphenation-base", false) != null) {
+        if (this.cfg.getChild("hyphenation-base", false) != null) {
             try {
-                factory.setHyphenBaseURL(
-                        cfg.getChild("hyphenation-base").getValue(null));
-            } catch (MalformedURLException mfue) {
+                factory.setHyphenBaseURL(this.cfg.getChild("hyphenation-base")
+                        .getValue(null));
+            } catch (final MalformedURLException mfue) {
                 LogUtil.handleException(log, mfue, strict);
             }
         }
 
         // renderer options
-        if (cfg.getChild("source-resolution", false) != null) {
-            factory.setSourceResolution(
-                    cfg.getChild("source-resolution").getValueAsFloat(
+        if (this.cfg.getChild("source-resolution", false) != null) {
+            factory.setSourceResolution(this.cfg.getChild("source-resolution")
+                    .getValueAsFloat(
                             FopFactoryConfigurator.DEFAULT_SOURCE_RESOLUTION));
             if (log.isDebugEnabled()) {
-                log.debug("source-resolution set to: " + factory.getSourceResolution()
-                    + "dpi (px2mm=" + factory.getSourcePixelUnitToMillimeter() + ")");
+                log.debug("source-resolution set to: "
+                        + factory.getSourceResolution() + "dpi (px2mm="
+                        + factory.getSourcePixelUnitToMillimeter() + ")");
             }
         }
-        if (cfg.getChild("target-resolution", false) != null) {
-            factory.setTargetResolution(
-                    cfg.getChild("target-resolution").getValueAsFloat(
+        if (this.cfg.getChild("target-resolution", false) != null) {
+            factory.setTargetResolution(this.cfg.getChild("target-resolution")
+                    .getValueAsFloat(
                             FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION));
             if (log.isDebugEnabled()) {
-                log.debug("target-resolution set to: " + factory.getTargetResolution()
-                        + "dpi (px2mm=" + factory.getTargetPixelUnitToMillimeter()
-                        + ")");
+                log.debug("target-resolution set to: "
+                        + factory.getTargetResolution() + "dpi (px2mm="
+                        + factory.getTargetPixelUnitToMillimeter() + ")");
             }
         }
-        if (cfg.getChild("break-indent-inheritance", false) != null) {
+        if (this.cfg.getChild("break-indent-inheritance", false) != null) {
             try {
-                factory.setBreakIndentInheritanceOnReferenceAreaBoundary(
-                        cfg.getChild("break-indent-inheritance").getValueAsBoolean());
-            } catch (ConfigurationException e) {
+                factory.setBreakIndentInheritanceOnReferenceAreaBoundary(this.cfg
+                        .getChild("break-indent-inheritance")
+                        .getValueAsBoolean());
+            } catch (final ConfigurationException e) {
                 LogUtil.handleException(log, e, strict);
             }
         }
-        Configuration pageConfig = cfg.getChild("default-page-settings");
+        final Configuration pageConfig = this.cfg
+                .getChild("default-page-settings");
         if (pageConfig.getAttribute("height", null) != null) {
-            factory.setPageHeight(
-                    pageConfig.getAttribute("height", FopFactoryConfigurator.DEFAULT_PAGE_HEIGHT));
+            factory.setPageHeight(pageConfig.getAttribute("height",
+                    FopFactoryConfigurator.DEFAULT_PAGE_HEIGHT));
             if (log.isInfoEnabled()) {
-                log.info("Default page-height set to: " + factory.getPageHeight());
+                log.info("Default page-height set to: "
+                        + factory.getPageHeight());
             }
         }
         if (pageConfig.getAttribute("width", null) != null) {
-            factory.setPageWidth(
-                    pageConfig.getAttribute("width", FopFactoryConfigurator.DEFAULT_PAGE_WIDTH));
+            factory.setPageWidth(pageConfig.getAttribute("width",
+                    FopFactoryConfigurator.DEFAULT_PAGE_WIDTH));
             if (log.isInfoEnabled()) {
                 log.info("Default page-width set to: " + factory.getPageWidth());
             }
         }
 
         // prefer Renderer over IFDocumentHandler
-        if (cfg.getChild(PREFER_RENDERER, false) != null) {
+        if (this.cfg.getChild(PREFER_RENDERER, false) != null) {
             try {
                 factory.getRendererFactory().setRendererPreferred(
-                        cfg.getChild(PREFER_RENDERER).getValueAsBoolean());
-            } catch (ConfigurationException e) {
+                        this.cfg.getChild(PREFER_RENDERER).getValueAsBoolean());
+            } catch (final ConfigurationException e) {
                 LogUtil.handleException(log, e, strict);
             }
         }
 
         // configure font manager
-        FontManager fontManager = factory.getFontManager();
-        FontManagerConfigurator fontManagerConfigurator = new FontManagerConfigurator(cfg);
+        final FontManager fontManager = factory.getFontManager();
+        final FontManagerConfigurator fontManagerConfigurator = new FontManagerConfigurator(
+                this.cfg);
         fontManagerConfigurator.configure(fontManager, strict);
 
         // configure image loader framework
-        configureImageLoading(cfg.getChild("image-loading", false), strict);
+        configureImageLoading(this.cfg.getChild("image-loading", false), strict);
     }
 
-    private void configureImageLoading(Configuration parent, boolean strict) throws FOPException {
+    private void configureImageLoading(final Configuration parent,
+            final boolean strict) throws FOPException {
         if (parent == null) {
             return;
         }
-        ImageImplRegistry registry = factory.getImageManager().getRegistry();
-        Configuration[] penalties = parent.getChildren("penalty");
+        final ImageImplRegistry registry = this.factory.getImageManager()
+                .getRegistry();
+        final Configuration[] penalties = parent.getChildren("penalty");
         try {
-            for (int i = 0, c = penalties.length; i < c; i++) {
-                Configuration penaltyCfg = penalties[i];
-                String className = penaltyCfg.getAttribute("class");
-                String value = penaltyCfg.getAttribute("value");
+            for (final Configuration penaltyCfg : penalties) {
+                final String className = penaltyCfg.getAttribute("class");
+                final String value = penaltyCfg.getAttribute("value");
                 Penalty p = null;
                 if (value.toUpperCase().startsWith("INF")) {
                     p = Penalty.INFINITE_PENALTY;
                 } else {
                     try {
                         p = Penalty.toPenalty(Integer.parseInt(value));
-                    } catch (NumberFormatException nfe) {
+                    } catch (final NumberFormatException nfe) {
                         LogUtil.handleException(log, nfe, strict);
                     }
                 }
@@ -231,53 +236,67 @@ public class FopFactoryConfigurator {
                     registry.setAdditionalPenalty(className, p);
                 }
             }
-        } catch (ConfigurationException e) {
+        } catch (final ConfigurationException e) {
             LogUtil.handleException(log, e, strict);
         }
     }
 
     /**
      * Set the user configuration.
-     * @param userConfigFile the configuration file
-     * @throws IOException if an I/O error occurs
-     * @throws SAXException if a parsing error occurs
+     *
+     * @param userConfigFile
+     *            the configuration file
+     * @throws IOException
+     *             if an I/O error occurs
+     * @throws SAXException
+     *             if a parsing error occurs
      */
-    public void setUserConfig(File userConfigFile) throws SAXException, IOException {
+    public void setUserConfig(final File userConfigFile) throws SAXException,
+    IOException {
         try {
-            DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
+            final DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
             setUserConfig(cfgBuilder.buildFromFile(userConfigFile));
-        } catch (ConfigurationException e) {
+        } catch (final ConfigurationException e) {
             throw new FOPException(e);
         }
     }
 
     /**
      * Set the user configuration from an URI.
-     * @param uri the URI to the configuration file
-     * @throws IOException if an I/O error occurs
-     * @throws SAXException if a parsing error occurs
+     *
+     * @param uri
+     *            the URI to the configuration file
+     * @throws IOException
+     *             if an I/O error occurs
+     * @throws SAXException
+     *             if a parsing error occurs
      */
-    public void setUserConfig(String uri) throws SAXException, IOException {
+    public void setUserConfig(final String uri) throws SAXException,
+    IOException {
         try {
-            DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
+            final DefaultConfigurationBuilder cfgBuilder = new DefaultConfigurationBuilder();
             setUserConfig(cfgBuilder.build(uri));
-        } catch (ConfigurationException e) {
+        } catch (final ConfigurationException e) {
             throw new FOPException(e);
         }
     }
 
     /**
      * Set the user configuration.
-     * @param cfg avalon configuration
-     * @throws FOPException if a configuration problem occurs
+     *
+     * @param cfg
+     *            avalon configuration
+     * @throws FOPException
+     *             if a configuration problem occurs
      */
-    public void setUserConfig(Configuration cfg) throws FOPException {
+    public void setUserConfig(final Configuration cfg) throws FOPException {
         this.cfg = cfg;
         configure(this.factory);
     }
 
     /**
      * Get the avalon user configuration.
+     *
      * @return the user configuration
      */
     public Configuration getUserConfig() {

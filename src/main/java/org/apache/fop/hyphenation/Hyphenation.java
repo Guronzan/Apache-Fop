@@ -26,60 +26,61 @@ package org.apache.fop.hyphenation;
  */
 public class Hyphenation {
 
-    private int[] hyphenPoints;
-    private String word;
+    private final int[] hyphenPoints;
+    private final String word;
 
     /**
      * number of hyphenation points in word
      */
-    private int len;
+    private final int len;
 
     /**
      * rawWord as made of alternating strings and {@link Hyphen Hyphen}
      * instances
      */
-    Hyphenation(String word, int[] points) {
+    Hyphenation(final String word, final int[] points) {
         this.word = word;
-        hyphenPoints = points;
-        len = points.length;
+        this.hyphenPoints = points;
+        this.len = points.length;
     }
 
     /**
      * @return the number of hyphenation points in the word
      */
     public int length() {
-        return len;
+        return this.len;
     }
 
     /**
      * @return the pre-break text, not including the hyphen character
      */
-    public String getPreHyphenText(int index) {
-        return word.substring(0, hyphenPoints[index]);
+    public String getPreHyphenText(final int index) {
+        return this.word.substring(0, this.hyphenPoints[index]);
     }
 
     /**
      * @return the post-break text
      */
-    public String getPostHyphenText(int index) {
-        return word.substring(hyphenPoints[index]);
+    public String getPostHyphenText(final int index) {
+        return this.word.substring(this.hyphenPoints[index]);
     }
 
     /**
      * @return the hyphenation points
      */
     public int[] getHyphenationPoints() {
-        return hyphenPoints;
+        return this.hyphenPoints;
     }
 
+    @Override
     public String toString() {
-        StringBuffer str = new StringBuffer();
+        final StringBuilder str = new StringBuilder();
         int start = 0;
-        for (int i = 0; i < len; i++) {
-            str.append(word.substring(start, hyphenPoints[i]) + "-");
-            start = hyphenPoints[i];
+        for (int i = 0; i < this.len; i++) {
+            str.append(this.word.substring(start, this.hyphenPoints[i]) + "-");
+            start = this.hyphenPoints[i];
         }
-        str.append(word.substring(start));
+        str.append(this.word.substring(start));
         return str.toString();
     }
 

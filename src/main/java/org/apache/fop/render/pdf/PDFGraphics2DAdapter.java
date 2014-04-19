@@ -28,90 +28,93 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
-
 import org.apache.fop.render.AbstractGraphics2DAdapter;
 import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RendererContext.RendererContextWrapper;
 import org.apache.fop.svg.PDFGraphics2D;
+import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
 
 /**
  * Graphics2DAdapter implementation for PDF.
  */
 public class PDFGraphics2DAdapter extends AbstractGraphics2DAdapter {
 
-    private PDFRenderer renderer;
+    private final PDFRenderer renderer;
 
     /**
      * Main constructor
-     * @param renderer the Renderer instance to which this instance belongs
+     * 
+     * @param renderer
+     *            the Renderer instance to which this instance belongs
      */
-    public PDFGraphics2DAdapter(PDFRenderer renderer) {
+    public PDFGraphics2DAdapter(final PDFRenderer renderer) {
         this.renderer = renderer;
     }
 
     /** {@inheritDoc} */
-    public void paintImage(Graphics2DImagePainter painter,
-            RendererContext context,
-            int x, int y, int width, int height) throws IOException {
+    @Override
+    public void paintImage(final Graphics2DImagePainter painter,
+            final RendererContext context, final int x, final int y,
+            final int width, final int height) throws IOException {
 
-        PDFContentGenerator generator = renderer.getGenerator();
-        PDFSVGHandler.PDFInfo pdfInfo = PDFSVGHandler.getPDFInfo(context);
-        float fwidth = width / 1000f;
-        float fheight = height / 1000f;
-        float fx = x / 1000f;
-        float fy = y / 1000f;
+        final PDFContentGenerator generator = this.renderer.getGenerator();
+        final PDFSVGHandler.PDFInfo pdfInfo = PDFSVGHandler.getPDFInfo(context);
+        final float fwidth = width / 1000f;
+        final float fheight = height / 1000f;
+        final float fx = x / 1000f;
+        final float fy = y / 1000f;
 
         // get the 'width' and 'height' attributes of the SVG document
-        Dimension dim = painter.getImageSize();
-        float imw = (float)dim.getWidth() / 1000f;
-        float imh = (float)dim.getHeight() / 1000f;
+        final Dimension dim = painter.getImageSize();
+        final float imw = (float) dim.getWidth() / 1000f;
+        final float imh = (float) dim.getHeight() / 1000f;
 
-        float sx = pdfInfo.paintAsBitmap ? 1.0f : (fwidth / (float)imw);
-        float sy = pdfInfo.paintAsBitmap ? 1.0f : (fheight / (float)imh);
+        final float sx = pdfInfo.paintAsBitmap ? 1.0f : fwidth / imw;
+        final float sy = pdfInfo.paintAsBitmap ? 1.0f : fheight / imh;
 
         generator.comment("G2D start");
         generator.saveGraphicsState();
         generator.updateColor(Color.black, false, null);
         generator.updateColor(Color.black, true, null);
 
-        //TODO Clip to the image area.
+        // TODO Clip to the image area.
 
         // transform so that the coordinates (0,0) is from the top left
         // and positive is down and to the right. (0,0) is where the
         // viewBox puts it.
-        generator.add(sx + " 0 0 " + sy + " " + fx + " "
-                          + fy + " cm\n");
-
+        generator.add(sx + " 0 0 " + sy + " " + fx + " " + fy + " cm\n");
 
         final boolean textAsShapes = false;
         if (pdfInfo.pdfContext == null) {
             pdfInfo.pdfContext = pdfInfo.pdfPage;
         }
-        PDFGraphics2D graphics = new PDFGraphics2D(textAsShapes,
-                pdfInfo.fi, pdfInfo.pdfDoc,
-                pdfInfo.pdfContext, pdfInfo.pdfPage.referencePDF(),
-                pdfInfo.currentFontName,
+        final PDFGraphics2D graphics = new PDFGraphics2D(textAsShapes,
+                pdfInfo.fi, pdfInfo.pdfDoc, pdfInfo.pdfContext,
+                pdfInfo.pdfPage.referencePDF(), pdfInfo.currentFontName,
                 pdfInfo.currentFontSize);
         graphics.setGraphicContext(new org.apache.xmlgraphics.java2d.GraphicContext());
 
-        AffineTransform transform = new AffineTransform();
+        final AffineTransform transform = new AffineTransform();
         transform.translate(fx, fy);
         generator.getState().concatenate(transform);
         graphics.setPaintingState(generator.getState());
         graphics.setOutputStream(pdfInfo.outputStream);
 
         if (pdfInfo.paintAsBitmap) {
-            //Fallback solution: Paint to a BufferedImage
-            int resolution = (int)Math.round(context.getUserAgent().getTargetResolution());
-            RendererContextWrapper ctx = RendererContext.wrapRendererContext(context);
-            BufferedImage bi = paintToBufferedImage(painter, ctx, resolution, false, false);
+            // Fallback solution: Paint to a BufferedImage
+            final int resolution = Math.round(context.getUserAgent()
+                    .getTargetResolution());
+            final RendererContextWrapper ctx = RendererContext
+                    .wrapRendererContext(context);
+            final BufferedImage bi = paintToBufferedImage(painter, ctx,
+                    resolution, false, false);
 
-            float scale = PDFRenderer.NORMAL_PDF_RESOLUTION
-                            / context.getUserAgent().getTargetResolution();
-            graphics.drawImage(bi, new AffineTransform(scale, 0, 0, scale, 0, 0), null);
+            final float scale = PDFRenderer.NORMAL_PDF_RESOLUTION
+                    / context.getUserAgent().getTargetResolution();
+            graphics.drawImage(bi,
+                    new AffineTransform(scale, 0, 0, scale, 0, 0), null);
         } else {
-            Rectangle2D area = new Rectangle2D.Double(0.0, 0.0, imw, imh);
+            final Rectangle2D area = new Rectangle2D.Double(0.0, 0.0, imw, imh);
             painter.paint(graphics, area);
         }
 
@@ -121,7 +124,8 @@ public class PDFGraphics2DAdapter extends AbstractGraphics2DAdapter {
     }
 
     /** {@inheritDoc} */
-    protected void setRenderingHintsForBufferedImage(Graphics2D g2d) {
+    @Override
+    protected void setRenderingHintsForBufferedImage(final Graphics2D g2d) {
         super.setRenderingHintsForBufferedImage(g2d);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);

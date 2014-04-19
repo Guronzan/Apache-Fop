@@ -33,12 +33,14 @@ public class PDFStructElem extends PDFDictionary {
     /**
      * Creates a new structure element.
      *
-     * @param parent parent of this element
-     * @param structureType the structure type of this element
+     * @param parent
+     *            parent of this element
+     * @param structureType
+     *            the structure type of this element
      */
-    PDFStructElem(PDFObject parent, PDFName structureType) {
+    PDFStructElem(final PDFObject parent, final PDFName structureType) {
         if (parent instanceof PDFStructElem) {
-            parentElement = (PDFStructElem) parent;
+            this.parentElement = (PDFStructElem) parent;
         }
         put("Type", new PDFName("StructElem"));
         put("S", structureType);
@@ -49,16 +51,17 @@ public class PDFStructElem extends PDFDictionary {
      * Returns the parent of this structure element.
      *
      * @return the parent, <code>null</code> if the parent is not a structure
-     * element (i.e., is the structure tree root)
+     *         element (i.e., is the structure tree root)
      */
     public PDFStructElem getParentStructElem() {
-        return parentElement;
+        return this.parentElement;
     }
 
     /** {@inheritDoc} */
-    public void setParent(PDFObject parent) {
+    @Override
+    public void setParent(final PDFObject parent) {
         if (parent != null) {
-           put("P", new PDFReference(parent));
+            put("P", new PDFReference(parent));
         }
     }
 
@@ -76,9 +79,10 @@ public class PDFStructElem extends PDFDictionary {
      * its parent structure element if it has not already, and so will the
      * parent, and so on.
      *
-     * @param kid element to be added
+     * @param kid
+     *            element to be added
      */
-    public void addKid(PDFObject kid) {
+    public void addKid(final PDFObject kid) {
         PDFArray kids = getKids();
         if (kids == null) {
             kids = new PDFArray();
@@ -88,14 +92,14 @@ public class PDFStructElem extends PDFDictionary {
         joinHierarchy();
     }
 
-    private boolean containsKid(PDFObject kid) {
-        PDFArray kids = getKids();
+    private boolean containsKid(final PDFObject kid) {
+        final PDFArray kids = getKids();
         return kids != null && kids.contains(kid);
     }
 
     private void joinHierarchy() {
-        if (parentElement != null && !parentElement.containsKid(this)) {
-            parentElement.addKid(this);
+        if (this.parentElement != null && !this.parentElement.containsKid(this)) {
+            this.parentElement.addKid(this);
         }
     }
 
@@ -104,10 +108,11 @@ public class PDFStructElem extends PDFDictionary {
      * will then add itself to its parent structure element if it has not
      * already, and so will the parent, and so on.
      *
-     * @param mcid mcid of the marked-content sequence corresponding to this
-     * structure element's kid
+     * @param mcid
+     *            mcid of the marked-content sequence corresponding to this
+     *            structure element's kid
      */
-    public void setMCIDKid(int mcid) {
+    public void setMCIDKid(final int mcid) {
         put("K", mcid);
         joinHierarchy();
     }
@@ -115,9 +120,10 @@ public class PDFStructElem extends PDFDictionary {
     /**
      * Sets the page reference of this structure element.
      *
-     * @param page value for the Pg entry
+     * @param page
+     *            value for the Pg entry
      */
-    public void setPage(PDFPage page) {
+    public void setPage(final PDFPage page) {
         put("Pg", page);
     }
 
@@ -127,33 +133,37 @@ public class PDFStructElem extends PDFDictionary {
      * @return the value of the S entry
      */
     public PDFName getStructureType() {
-        return (PDFName)get("S");
+        return (PDFName) get("S");
     }
 
     /**
      * Sets the language of this structure element.
-     * @param language the language (as defined in the section about
-     *                          "Natural Language Specification")
+     *
+     * @param language
+     *            the language (as defined in the section about
+     *            "Natural Language Specification")
      */
-    private void setLanguage(String language) {
+    private void setLanguage(final String language) {
         put("Lang", language);
     }
 
     /**
      * Sets the language of this structure element.
      *
-     * @param language a value for the Lang entry
+     * @param language
+     *            a value for the Lang entry
      */
-    public void setLanguage(Locale language) {
+    public void setLanguage(final Locale language) {
         setLanguage(XMLUtil.toRFC3066(language));
     }
 
     /**
      * Returns the language of this structure element.
      *
-     * @return the value of the Lang entry (<code>null</code> if no language was specified)
+     * @return the value of the Lang entry (<code>null</code> if no language was
+     *         specified)
      */
     public String getLanguage() {
-        return (String)get("Lang");
+        return (String) get("Lang");
     }
 }

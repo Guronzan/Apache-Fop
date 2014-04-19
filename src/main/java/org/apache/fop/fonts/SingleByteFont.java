@@ -24,16 +24,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Generic SingleByte font
  */
+@Slf4j
 public class SingleByteFont extends CustomFont {
-
-    /** logger */
-    private  static Log log = LogFactory.getLog(SingleByteFont.class);
 
     private SingleByteEncoding mapping;
     private boolean useNativeEncoding = false;
@@ -41,9 +38,8 @@ public class SingleByteFont extends CustomFont {
     private int[] width = null;
 
     private Map unencodedCharacters;
-    //Map<Character, UnencodedCharacter>
+    // Map<Character, UnencodedCharacter>
     private List additionalEncodings;
-
 
     /**
      * Main constructor.
@@ -53,18 +49,20 @@ public class SingleByteFont extends CustomFont {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isEmbeddable() {
-        return (!(getEmbedFileName() == null
-                && getEmbedResourceName() == null));
+        return !(getEmbedFileName() == null && getEmbedResourceName() == null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEncodingName() {
         return this.mapping.getName();
     }
 
     /**
      * Returns the code point mapping (encoding) of this font.
+     *
      * @return the code point mapping
      */
     public SingleByteEncoding getEncoding() {
@@ -72,90 +70,96 @@ public class SingleByteFont extends CustomFont {
     }
 
     /** {@inheritDoc} */
-    public int getWidth(int i, int size) {
+    @Override
+    public int getWidth(final int i, final int size) {
         if (i < 256) {
-            int idx = i - getFirstChar();
-            if (idx >= 0 && idx < width.length) {
-                return size * width[i - getFirstChar()];
+            final int idx = i - getFirstChar();
+            if (idx >= 0 && idx < this.width.length) {
+                return size * this.width[i - getFirstChar()];
             }
         } else if (this.additionalEncodings != null) {
-            int encodingIndex = (i / 256) - 1;
-            SimpleSingleByteEncoding encoding = getAdditionalEncoding(encodingIndex);
-            int codePoint = i % 256;
-            NamedCharacter nc = encoding.getCharacterForIndex(codePoint);
-            UnencodedCharacter uc
-                = (UnencodedCharacter)this.unencodedCharacters.get(
-                        new Character(nc.getSingleUnicodeValue()));
+            final int encodingIndex = i / 256 - 1;
+            final SimpleSingleByteEncoding encoding = getAdditionalEncoding(encodingIndex);
+            final int codePoint = i % 256;
+            final NamedCharacter nc = encoding.getCharacterForIndex(codePoint);
+            final UnencodedCharacter uc = (UnencodedCharacter) this.unencodedCharacters
+                    .get(new Character(nc.getSingleUnicodeValue()));
             return size * uc.getWidth();
         }
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int[] getWidths() {
-        int[] arr = new int[width.length];
-        System.arraycopy(width, 0, arr, 0, width.length);
+        final int[] arr = new int[this.width.length];
+        System.arraycopy(this.width, 0, arr, 0, this.width.length);
         return arr;
     }
 
     /** {@inheritDoc} */
-    public char mapChar(char c) {
+    @Override
+    public char mapChar(final char c) {
         notifyMapOperation();
-        char d = mapping.mapChar(c);
+        char d = this.mapping.mapChar(c);
         if (d != SingleByteEncoding.NOT_FOUND_CODE_POINT) {
             return d;
         }
 
-        //Check unencoded characters which are available in the font by character name
+        // Check unencoded characters which are available in the font by
+        // character name
         d = mapUnencodedChar(c);
         if (d != SingleByteEncoding.NOT_FOUND_CODE_POINT) {
             return d;
         }
-        this.warnMissingGlyph(c);
+        warnMissingGlyph(c);
         return Typeface.NOT_FOUND;
     }
 
-    private char mapUnencodedChar(char ch) {
+    private char mapUnencodedChar(final char ch) {
         if (this.unencodedCharacters != null) {
-            UnencodedCharacter unencoded
-                = (UnencodedCharacter)this.unencodedCharacters.get(new Character(ch));
+            final UnencodedCharacter unencoded = (UnencodedCharacter) this.unencodedCharacters
+                    .get(new Character(ch));
             if (unencoded != null) {
                 if (this.additionalEncodings == null) {
                     this.additionalEncodings = new java.util.ArrayList();
                 }
                 SimpleSingleByteEncoding encoding = null;
                 char mappedStart = 0;
-                int additionalsCount = this.additionalEncodings.size();
+                final int additionalsCount = this.additionalEncodings.size();
                 for (int i = 0; i < additionalsCount; i++) {
                     mappedStart += 256;
                     encoding = getAdditionalEncoding(i);
-                    char alt = encoding.mapChar(ch);
+                    final char alt = encoding.mapChar(ch);
                     if (alt != 0) {
-                        return (char)(mappedStart + alt);
+                        return (char) (mappedStart + alt);
                     }
                 }
                 if (encoding != null && encoding.isFull()) {
                     encoding = null;
                 }
                 if (encoding == null) {
-                    encoding = new SimpleSingleByteEncoding(
-                            getFontName() + "EncodingSupp" + (additionalsCount + 1));
+                    encoding = new SimpleSingleByteEncoding(getFontName()
+                            + "EncodingSupp" + (additionalsCount + 1));
                     this.additionalEncodings.add(encoding);
                     mappedStart += 256;
                 }
-                return (char)(mappedStart + encoding.addCharacter(unencoded.getCharacter()));
+                return (char) (mappedStart + encoding.addCharacter(unencoded
+                        .getCharacter()));
             }
         }
         return 0;
     }
 
     /** {@inheritDoc} */
-    public boolean hasChar(char c) {
-        char d = mapping.mapChar(c);
+    @Override
+    public boolean hasChar(final char c) {
+        char d = this.mapping.mapChar(c);
         if (d != SingleByteEncoding.NOT_FOUND_CODE_POINT) {
             return true;
         }
-        //Check unencoded characters which are available in the font by character name
+        // Check unencoded characters which are available in the font by
+        // character name
         d = mapUnencodedChar(c);
         if (d != SingleByteEncoding.NOT_FOUND_CODE_POINT) {
             return true;
@@ -167,44 +171,54 @@ public class SingleByteFont extends CustomFont {
 
     /**
      * Updates the mapping variable based on the encoding.
-     * @param encoding the name of the encoding
+     *
+     * @param encoding
+     *            the name of the encoding
      */
-    protected void updateMapping(String encoding) {
+    protected void updateMapping(final String encoding) {
         try {
             this.mapping = CodePointMapping.getMapping(encoding);
-        } catch (UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             log.error("Font '" + super.getFontName() + "': " + e.getMessage());
         }
     }
 
     /**
      * Sets the encoding of the font.
-     * @param encoding the encoding (ex. "WinAnsiEncoding" or "SymbolEncoding")
+     *
+     * @param encoding
+     *            the encoding (ex. "WinAnsiEncoding" or "SymbolEncoding")
      */
-    public void setEncoding(String encoding) {
+    public void setEncoding(final String encoding) {
         updateMapping(encoding);
     }
 
     /**
      * Sets the encoding of the font.
-     * @param encoding the encoding information
+     *
+     * @param encoding
+     *            the encoding information
      */
-    public void setEncoding(CodePointMapping encoding) {
+    public void setEncoding(final CodePointMapping encoding) {
         this.mapping = encoding;
     }
 
     /**
-     * Controls whether the font is configured to use its native encoding or if it
-     * may need to be re-encoded for the target format.
-     * @param value true indicates that the configured encoding is the font's native encoding
+     * Controls whether the font is configured to use its native encoding or if
+     * it may need to be re-encoded for the target format.
+     *
+     * @param value
+     *            true indicates that the configured encoding is the font's
+     *            native encoding
      */
-    public void setUseNativeEncoding(boolean value) {
+    public void setUseNativeEncoding(final boolean value) {
         this.useNativeEncoding = value;
     }
 
     /**
-     * Indicates whether this font is configured to use its native encoding. This
-     * method is used to determine whether the font needs to be re-encoded.
+     * Indicates whether this font is configured to use its native encoding.
+     * This method is used to determine whether the font needs to be re-encoded.
+     *
      * @return true if the font uses its native encoding.
      */
     public boolean isUsingNativeEncoding() {
@@ -213,10 +227,13 @@ public class SingleByteFont extends CustomFont {
 
     /**
      * Sets a width for a character.
-     * @param index index of the character
-     * @param w the width of the character
+     *
+     * @param index
+     *            index of the character
+     * @param w
+     *            the width of the character
      */
-    public void setWidth(int index, int w) {
+    public void setWidth(final int index, final int w) {
         if (this.width == null) {
             this.width = new int[getLastChar() - getFirstChar() + 1];
         }
@@ -224,50 +241,61 @@ public class SingleByteFont extends CustomFont {
     }
 
     /**
-     * Adds an unencoded character (one that is not supported by the primary encoding).
-     * @param ch the named character
-     * @param width the width of the character
+     * Adds an unencoded character (one that is not supported by the primary
+     * encoding).
+     *
+     * @param ch
+     *            the named character
+     * @param width
+     *            the width of the character
      */
-    public void addUnencodedCharacter(NamedCharacter ch, int width) {
+    public void addUnencodedCharacter(final NamedCharacter ch, final int width) {
         if (this.unencodedCharacters == null) {
             this.unencodedCharacters = new java.util.HashMap();
         }
         if (ch.hasSingleUnicodeValue()) {
-            UnencodedCharacter uc = new UnencodedCharacter(ch, width);
-            this.unencodedCharacters.put(new Character(ch.getSingleUnicodeValue()), uc);
+            final UnencodedCharacter uc = new UnencodedCharacter(ch, width);
+            this.unencodedCharacters.put(
+                    new Character(ch.getSingleUnicodeValue()), uc);
         } else {
-            //Cannot deal with unicode sequences, so ignore this character
+            // Cannot deal with unicode sequences, so ignore this character
         }
     }
 
     /**
-     * Makes all unencoded characters available through additional encodings. This method
-     * is used in cases where the fonts need to be encoded in the target format before
-     * all text of the document is processed (for example in PostScript when resource optimization
-     * is disabled).
+     * Makes all unencoded characters available through additional encodings.
+     * This method is used in cases where the fonts need to be encoded in the
+     * target format before all text of the document is processed (for example
+     * in PostScript when resource optimization is disabled).
      */
     public void encodeAllUnencodedCharacters() {
         if (this.unencodedCharacters != null) {
-            Set sortedKeys = new java.util.TreeSet(this.unencodedCharacters.keySet());
-            Iterator iter = sortedKeys.iterator();
+            final Set sortedKeys = new java.util.TreeSet(
+                    this.unencodedCharacters.keySet());
+            final Iterator iter = sortedKeys.iterator();
             while (iter.hasNext()) {
-                Character ch = (Character)iter.next();
-                char mapped = mapChar(ch.charValue());
+                final Character ch = (Character) iter.next();
+                final char mapped = mapChar(ch.charValue());
                 assert mapped != Typeface.NOT_FOUND;
             }
         }
     }
 
     /**
-     * Indicates whether the encoding has additional encodings besides the primary encoding.
+     * Indicates whether the encoding has additional encodings besides the
+     * primary encoding.
+     *
      * @return true if there are additional encodings.
      */
     public boolean hasAdditionalEncodings() {
-        return (this.additionalEncodings != null) && (this.additionalEncodings.size() > 0);
+        return this.additionalEncodings != null
+                && this.additionalEncodings.size() > 0;
     }
 
     /**
-     * Returns the number of additional encodings this single-byte font maintains.
+     * Returns the number of additional encodings this single-byte font
+     * maintains.
+     *
      * @return the number of additional encodings
      */
     public int getAdditionalEncodingCount() {
@@ -280,31 +308,39 @@ public class SingleByteFont extends CustomFont {
 
     /**
      * Returns an additional encoding.
-     * @param index the index of the additional encoding
+     *
+     * @param index
+     *            the index of the additional encoding
      * @return the additional encoding
-     * @throws IndexOutOfBoundsException if the index is out of bounds
+     * @throws IndexOutOfBoundsException
+     *             if the index is out of bounds
      */
-    public SimpleSingleByteEncoding getAdditionalEncoding(int index)
+    public SimpleSingleByteEncoding getAdditionalEncoding(final int index)
             throws IndexOutOfBoundsException {
         if (hasAdditionalEncodings()) {
-            return (SimpleSingleByteEncoding)this.additionalEncodings.get(index);
+            return (SimpleSingleByteEncoding) this.additionalEncodings
+                    .get(index);
         } else {
-            throw new IndexOutOfBoundsException("No additional encodings available");
+            throw new IndexOutOfBoundsException(
+                    "No additional encodings available");
         }
     }
 
     /**
      * Returns an array with the widths for an additional encoding.
-     * @param index the index of the additional encoding
+     *
+     * @param index
+     *            the index of the additional encoding
      * @return the width array
      */
-    public int[] getAdditionalWidths(int index) {
-        SimpleSingleByteEncoding enc = getAdditionalEncoding(index);
-        int[] arr = new int[enc.getLastChar() - enc.getFirstChar() + 1];
+    public int[] getAdditionalWidths(final int index) {
+        final SimpleSingleByteEncoding enc = getAdditionalEncoding(index);
+        final int[] arr = new int[enc.getLastChar() - enc.getFirstChar() + 1];
         for (int i = 0, c = arr.length; i < c; i++) {
-            NamedCharacter nc = enc.getCharacterForIndex(enc.getFirstChar() + i);
-            UnencodedCharacter uc = (UnencodedCharacter)this.unencodedCharacters.get(
-                    new Character(nc.getSingleUnicodeValue()));
+            final NamedCharacter nc = enc.getCharacterForIndex(enc
+                    .getFirstChar() + i);
+            final UnencodedCharacter uc = (UnencodedCharacter) this.unencodedCharacters
+                    .get(new Character(nc.getSingleUnicodeValue()));
             arr[i] = uc.getWidth();
         }
         return arr;
@@ -312,10 +348,11 @@ public class SingleByteFont extends CustomFont {
 
     private static final class UnencodedCharacter {
 
-        private NamedCharacter character;
-        private int width;
+        private final NamedCharacter character;
+        private final int width;
 
-        public UnencodedCharacter(NamedCharacter character, int width) {
+        public UnencodedCharacter(final NamedCharacter character,
+                final int width) {
             this.character = character;
             this.width = width;
         }
@@ -329,10 +366,10 @@ public class SingleByteFont extends CustomFont {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return getCharacter().toString();
         }
     }
 
 }
-

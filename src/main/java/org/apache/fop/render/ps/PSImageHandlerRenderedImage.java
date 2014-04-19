@@ -23,6 +23,7 @@ import java.awt.Rectangle;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 
+import org.apache.fop.render.RenderingContext;
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.ImageInfo;
@@ -32,68 +33,71 @@ import org.apache.xmlgraphics.ps.ImageFormGenerator;
 import org.apache.xmlgraphics.ps.PSGenerator;
 import org.apache.xmlgraphics.ps.PSImageUtils;
 
-import org.apache.fop.render.RenderingContext;
-
 /**
- * Image handler implementation which handles RenderedImage instances for PostScript output.
+ * Image handler implementation which handles RenderedImage instances for
+ * PostScript output.
  */
 public class PSImageHandlerRenderedImage implements PSImageHandler {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.BUFFERED_IMAGE,
-        ImageFlavor.RENDERED_IMAGE
-    };
+            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     /** {@inheritDoc} */
-    public void handleImage(RenderingContext context, Image image, Rectangle pos)
-                throws IOException {
-        PSRenderingContext psContext = (PSRenderingContext)context;
-        PSGenerator gen = psContext.getGenerator();
-        ImageRendered imageRend = (ImageRendered)image;
+    @Override
+    public void handleImage(final RenderingContext context, final Image image,
+            final Rectangle pos) throws IOException {
+        final PSRenderingContext psContext = (PSRenderingContext) context;
+        final PSGenerator gen = psContext.getGenerator();
+        final ImageRendered imageRend = (ImageRendered) image;
 
-        float x = (float)pos.getX() / 1000f;
-        float y = (float)pos.getY() / 1000f;
-        float w = (float)pos.getWidth() / 1000f;
-        float h = (float)pos.getHeight() / 1000f;
+        final float x = (float) pos.getX() / 1000f;
+        final float y = (float) pos.getY() / 1000f;
+        final float w = (float) pos.getWidth() / 1000f;
+        final float h = (float) pos.getHeight() / 1000f;
 
-        RenderedImage ri = imageRend.getRenderedImage();
+        final RenderedImage ri = imageRend.getRenderedImage();
         PSImageUtils.renderBitmapImage(ri, x, y, w, h, gen);
     }
 
     /** {@inheritDoc} */
-    public void generateForm(RenderingContext context, Image image, PSImageFormResource form)
-            throws IOException {
-        PSRenderingContext psContext = (PSRenderingContext)context;
-        PSGenerator gen = psContext.getGenerator();
-        ImageRendered imageRend = (ImageRendered)image;
-        ImageInfo info = image.getInfo();
-        String imageDescription = info.getMimeType() + " " + info.getOriginalURI();
+    @Override
+    public void generateForm(final RenderingContext context, final Image image,
+            final PSImageFormResource form) throws IOException {
+        final PSRenderingContext psContext = (PSRenderingContext) context;
+        final PSGenerator gen = psContext.getGenerator();
+        final ImageRendered imageRend = (ImageRendered) image;
+        final ImageInfo info = image.getInfo();
+        final String imageDescription = info.getMimeType() + " "
+                + info.getOriginalURI();
 
-        RenderedImage ri = imageRend.getRenderedImage();
-        FormGenerator formGen = new ImageFormGenerator(
-                form.getName(), imageDescription,
-                info.getSize().getDimensionPt(),
-                ri, false);
+        final RenderedImage ri = imageRend.getRenderedImage();
+        final FormGenerator formGen = new ImageFormGenerator(form.getName(),
+                imageDescription, info.getSize().getDimensionPt(), ri, false);
         formGen.generate(gen);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 300;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRendered.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
-    public boolean isCompatible(RenderingContext targetContext, Image image) {
+    @Override
+    public boolean isCompatible(final RenderingContext targetContext,
+            final Image image) {
         return (image == null || image instanceof ImageRendered)
                 && targetContext instanceof PSRenderingContext;
     }

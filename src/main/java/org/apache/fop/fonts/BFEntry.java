@@ -20,21 +20,27 @@
 package org.apache.fop.fonts;
 
 /**
- * This is just a holder class for bfentries, groups of characters of a base font (bf).
+ * This is just a holder class for bfentries, groups of characters of a base
+ * font (bf).
  */
 public class BFEntry {
 
-    private int unicodeStart;
-    private int unicodeEnd;
-    private int glyphStartIndex;
+    private final int unicodeStart;
+    private final int unicodeEnd;
+    private final int glyphStartIndex;
 
     /**
      * Main constructor.
-     * @param unicodeStart Unicode start index
-     * @param unicodeEnd Unicode end index
-     * @param glyphStartIndex glyph start index
+     * 
+     * @param unicodeStart
+     *            Unicode start index
+     * @param unicodeEnd
+     *            Unicode end index
+     * @param glyphStartIndex
+     *            glyph start index
      */
-    public BFEntry(int unicodeStart, int unicodeEnd, int glyphStartIndex) {
+    public BFEntry(final int unicodeStart, final int unicodeEnd,
+            final int glyphStartIndex) {
         this.unicodeStart = unicodeStart;
         this.unicodeEnd = unicodeEnd;
         this.glyphStartIndex = glyphStartIndex;
@@ -42,26 +48,29 @@ public class BFEntry {
 
     /**
      * Returns the unicodeStart.
+     * 
      * @return the Unicode start index
      */
     public int getUnicodeStart() {
-        return unicodeStart;
+        return this.unicodeStart;
     }
 
     /**
      * Returns the unicodeEnd.
+     * 
      * @return the Unicode end index
      */
     public int getUnicodeEnd() {
-        return unicodeEnd;
+        return this.unicodeEnd;
     }
 
     /**
      * Returns the glyphStartIndex.
+     * 
      * @return the glyph start index
      */
     public int getGlyphStartIndex() {
-        return glyphStartIndex;
+        return this.glyphStartIndex;
     }
 
 }

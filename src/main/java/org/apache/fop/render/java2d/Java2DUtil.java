@@ -33,27 +33,30 @@ import org.apache.fop.fonts.FontManager;
 public class Java2DUtil {
 
     /**
-     * Builds a default {@link FontInfo} object for use with output formats using the Java2D
-     * font setup.
-     * @param fontInfo the font info object to populate
-     * @param userAgent the user agent
+     * Builds a default {@link FontInfo} object for use with output formats
+     * using the Java2D font setup.
+     * 
+     * @param fontInfo
+     *            the font info object to populate
+     * @param userAgent
+     *            the user agent
      * @return the populated font information object
      */
     public static FontInfo buildDefaultJava2DBasedFontInfo(
-            FontInfo fontInfo, FOUserAgent userAgent) {
-        Graphics2D graphics2D = Java2DFontMetrics.createFontMetricsGraphics2D();
+            final FontInfo fontInfo, final FOUserAgent userAgent) {
+        final Graphics2D graphics2D = Java2DFontMetrics
+                .createFontMetricsGraphics2D();
 
-        FontManager fontManager = userAgent.getFactory().getFontManager();
-        FontCollection[] fontCollections = new FontCollection[] {
-                new org.apache.fop.render.java2d.Base14FontCollection(graphics2D),
-                new InstalledFontCollection(graphics2D)
-        };
+        final FontManager fontManager = userAgent.getFactory().getFontManager();
+        final FontCollection[] fontCollections = new FontCollection[] {
+                new org.apache.fop.render.java2d.Base14FontCollection(
+                        graphics2D), new InstalledFontCollection(graphics2D) };
 
-        FontInfo fi = (fontInfo != null ? fontInfo : new FontInfo());
-        fi.setEventListener(new FontEventAdapter(userAgent.getEventBroadcaster()));
+        final FontInfo fi = fontInfo != null ? fontInfo : new FontInfo();
+        fi.setEventListener(new FontEventAdapter(userAgent
+                .getEventBroadcaster()));
         fontManager.setup(fi, fontCollections);
         return fi;
     }
-
 
 }

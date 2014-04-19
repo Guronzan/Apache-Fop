@@ -19,19 +19,18 @@
 
 package org.apache.fop.render.afp.extensions;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
 
 /**
  * This class extends the org.apache.fop.extensions.ExtensionObj class. The
- * object faciliates extraction of elements from formatted objects based on
- * the static list as defined in the AFPElementMapping implementation.
+ * object faciliates extraction of elements from formatted objects based on the
+ * static list as defined in the AFPElementMapping implementation.
  * <p/>
  */
 public class AFPPageSetupElement extends AbstractAFPExtensionObject {
@@ -42,39 +41,45 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     /**
      * Constructs an AFP object (called by Maker).
      *
-     * @param parent the parent formatting object
-     * @param name the name of the afp element
+     * @param parent
+     *            the parent formatting object
+     * @param name
+     *            the name of the afp element
      */
-    public AFPPageSetupElement(FONode parent, String name) {
+    public AFPPageSetupElement(final FONode parent, final String name) {
         super(parent, name);
     }
 
     private AFPPageSetup getPageSetupAttachment() {
-        return (AFPPageSetup)getExtensionAttachment();
+        return (AFPPageSetup) getExtensionAttachment();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (AFPElementMapping.TAG_LOGICAL_ELEMENT.equals(getLocalName())) {
-            if (parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER
-                    && parent.getNameId() != Constants.FO_PAGE_SEQUENCE) {
-                invalidChildError(getLocator(), parent.getName(), getNamespaceURI(), getName(),
-                    "rule.childOfPageSequenceOrSPM");
+            if (this.parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER
+                    && this.parent.getNameId() != Constants.FO_PAGE_SEQUENCE) {
+                invalidChildError(getLocator(), this.parent.getName(),
+                        getNamespaceURI(), getName(),
+                        "rule.childOfPageSequenceOrSPM");
             }
         } else {
-            if (parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER) {
-                invalidChildError(getLocator(), parent.getName(), getNamespaceURI(), getName(),
-                    "rule.childOfSPM");
+            if (this.parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER) {
+                invalidChildError(getLocator(), this.parent.getName(),
+                        getNamespaceURI(), getName(), "rule.childOfSPM");
             }
         }
     }
 
     /** {@inheritDoc} */
-    protected void characters(char[] data, int start, int length,
-                                 PropertyList pList, Locator locator) throws FOPException {
-        StringBuffer sb = new StringBuffer();
-        AFPPageSetup pageSetup = getPageSetupAttachment();
+    @Override
+    protected void characters(final char[] data, final int start,
+            final int length, final PropertyList pList, final Locator locator)
+                    throws FOPException {
+        final StringBuilder sb = new StringBuilder();
+        final AFPPageSetup pageSetup = getPageSetupAttachment();
         if (pageSetup.getContent() != null) {
             sb.append(pageSetup.getContent());
         }
@@ -83,20 +88,21 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
-    public void processNode(String elementName, Locator locator,
-                            Attributes attlist, PropertyList propertyList)
-                                throws FOPException {
+    @Override
+    public void processNode(final String elementName, final Locator locator,
+            final Attributes attlist, final PropertyList propertyList)
+                    throws FOPException {
         super.processNode(elementName, locator, attlist, propertyList);
-        AFPPageSetup pageSetup = getPageSetupAttachment();
+        final AFPPageSetup pageSetup = getPageSetupAttachment();
         if (AFPElementMapping.INCLUDE_PAGE_SEGMENT.equals(elementName)) {
-            String attr = attlist.getValue(ATT_SRC);
+            final String attr = attlist.getValue(ATT_SRC);
             if (attr != null && attr.length() > 0) {
                 pageSetup.setValue(attr);
             } else {
                 missingPropertyError(ATT_SRC);
             }
         } else if (AFPElementMapping.TAG_LOGICAL_ELEMENT.equals(elementName)) {
-            String attr = attlist.getValue(ATT_VALUE);
+            final String attr = attlist.getValue(ATT_VALUE);
             if (attr != null && attr.length() > 0) {
                 pageSetup.setValue(attr);
             } else {
@@ -106,6 +112,7 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPPageSetup(getLocalName());
     }

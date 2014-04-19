@@ -30,22 +30,28 @@ public final class PCLRenderingMode implements Serializable {
     private static final long serialVersionUID = 6359884255324755026L;
 
     /** "Quality" rendering (mixed native and bitmap for improved quality) */
-    public static final PCLRenderingMode QUALITY = new PCLRenderingMode("quality");
-    /** "Speed" rendering (maximum speed with native rendering, reduced visual quality) */
+    public static final PCLRenderingMode QUALITY = new PCLRenderingMode(
+            "quality");
+    /**
+     * "Speed" rendering (maximum speed with native rendering, reduced visual
+     * quality)
+     */
     public static final PCLRenderingMode SPEED = new PCLRenderingMode("speed");
     /**
-     * "Bitmap" rendering (pages are painted entirely as bitmaps, maximum quality,
-     * reduced performance)
+     * "Bitmap" rendering (pages are painted entirely as bitmaps, maximum
+     * quality, reduced performance)
      */
     public static final PCLRenderingMode BITMAP = new PCLRenderingMode("bitmap");
 
-    private String name;
+    private final String name;
 
     /**
      * Constructor to add a new named item.
-     * @param name Name of the item.
+     * 
+     * @param name
+     *            Name of the item.
      */
-    private PCLRenderingMode(String name) {
+    private PCLRenderingMode(final String name) {
         this.name = name;
     }
 
@@ -56,10 +62,12 @@ public final class PCLRenderingMode implements Serializable {
 
     /**
      * Returns the enumeration/singleton object based on its name.
-     * @param name the name of the enumeration value
+     * 
+     * @param name
+     *            the name of the enumeration value
      * @return the enumeration object
      */
-    public static PCLRenderingMode valueOf(String name) {
+    public static PCLRenderingMode valueOf(final String name) {
         if (QUALITY.getName().equalsIgnoreCase(name)) {
             return QUALITY;
         } else if (SPEED.getName().equalsIgnoreCase(name)) {
@@ -67,7 +75,8 @@ public final class PCLRenderingMode implements Serializable {
         } else if (BITMAP.getName().equalsIgnoreCase(name)) {
             return BITMAP;
         } else {
-            throw new IllegalArgumentException("Illegal value for enumeration: " + name);
+            throw new IllegalArgumentException(
+                    "Illegal value for enumeration: " + name);
         }
     }
 
@@ -76,7 +85,8 @@ public final class PCLRenderingMode implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "PCLRenderingMode:" + name;
+        return "PCLRenderingMode:" + this.name;
     }
 }

@@ -39,8 +39,8 @@ public class PDFDictionary extends PDFObject {
     protected Map entries = new java.util.HashMap();
 
     /**
-     * maintains the order of the entries added to the entry map. Whenever you modify
-     * "entries", always make sure you adjust this list accordingly.
+     * maintains the order of the entries added to the entry map. Whenever you
+     * modify "entries", always make sure you adjust this list accordingly.
      */
     protected List order = new java.util.ArrayList();
 
@@ -53,25 +53,30 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Create a new dictionary object.
-     * @param parent the object's parent if any
+     *
+     * @param parent
+     *            the object's parent if any
      */
-    public PDFDictionary(PDFObject parent) {
+    public PDFDictionary(final PDFObject parent) {
         super(parent);
     }
 
     /**
      * Puts a new name/value pair.
-     * @param name the name
-     * @param value the value
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
      */
-    public void put(String name, Object value) {
+    public void put(final String name, final Object value) {
         if (value instanceof PDFObject) {
-            PDFObject pdfObj = (PDFObject)value;
+            final PDFObject pdfObj = (PDFObject) value;
             if (!pdfObj.hasObjectNumber()) {
                 pdfObj.setParent(this);
             }
         }
-        if (!entries.containsKey(name)) {
+        if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
         this.entries.put(name, value);
@@ -79,11 +84,14 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Puts a new name/value pair.
-     * @param name the name
-     * @param value the value
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
      */
-    public void put(String name, int value) {
-        if (!entries.containsKey(name)) {
+    public void put(final String name, final int value) {
+        if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
         this.entries.put(name, new Integer(value));
@@ -91,17 +99,20 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Returns the value given a name.
-     * @param name the name of the value
+     *
+     * @param name
+     *            the name of the value
      * @return the value or null, if there's no value with the given name.
      */
-    public Object get(String name) {
+    public Object get(final String name) {
         return this.entries.get(name);
     }
 
     /** {@inheritDoc} */
-    protected int output(OutputStream stream) throws IOException {
-        CountingOutputStream cout = new CountingOutputStream(stream);
-        Writer writer = PDFDocument.getWriterFor(cout);
+    @Override
+    protected int output(final OutputStream stream) throws IOException {
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final Writer writer = PDFDocument.getWriterFor(cout);
         if (hasObjectNumber()) {
             writer.write(getObjectID());
         }
@@ -117,17 +128,22 @@ public class PDFDictionary extends PDFObject {
     }
 
     /**
-     * Writes the contents of the dictionary to a StringBuffer.
-     * @param out the OutputStream (for binary content)
-     * @param writer the Writer (for text content, wraps the above OutputStream)
-     * @throws IOException if an I/O error occurs
+     * Writes the contents of the dictionary to a StringBuilder.
+     *
+     * @param out
+     *            the OutputStream (for binary content)
+     * @param writer
+     *            the Writer (for text content, wraps the above OutputStream)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    protected void writeDictionary(OutputStream out, Writer writer) throws IOException {
+    protected void writeDictionary(final OutputStream out, final Writer writer)
+            throws IOException {
         writer.write("<<");
-        boolean compact = (this.order.size() <= 2);
-        Iterator iter = this.order.iterator();
+        final boolean compact = this.order.size() <= 2;
+        final Iterator iter = this.order.iterator();
         while (iter.hasNext()) {
-            String key = (String)iter.next();
+            final String key = (String) iter.next();
             if (compact) {
                 writer.write(' ');
             } else {
@@ -135,7 +151,7 @@ public class PDFDictionary extends PDFObject {
             }
             writer.write(PDFName.escapeName(key));
             writer.write(' ');
-            Object obj = this.entries.get(key);
+            final Object obj = this.entries.get(key);
             formatObject(obj, out, writer);
         }
         if (compact) {

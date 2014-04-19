@@ -17,7 +17,6 @@
 
 /* $Id: ImageConstants.java 679326 2008-07-24 09:35:34Z vhennebert $ */
 
-
 /*
  * This file is part of the RTF library of the FOP project, which was originally
  * created by Bertrand Delacretaz <bdelacretaz@codeconsult.ch> and by other
@@ -27,16 +26,17 @@
 
 package org.apache.fop.render.rtf.rtflib.tools;
 
-
-/** Here will be defined all supported image formats.
- *  This class belongs to the <fo:external-graphic> tag processing.
- *  @author a.putz@skynamics.com (Andreas Putz)
+/**
+ * Here will be defined all supported image formats. This class belongs to the
+ * <fo:external-graphic> tag processing.
+ * 
+ * @author a.putz@skynamics.com (Andreas Putz)
  */
 
 public class ImageConstants {
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
     // @@ Symbolic constants
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
 
     /** Defines the case, if image is not supported */
     public static final int I_NOT_SUPPORTED = -1;
@@ -65,9 +65,9 @@ public class ImageConstants {
     /** GIF file extension */
     public static final String GIF_EXT = "gif";
 
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
     // @@ Construction
-    //////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
 
     /**
      * Private constructor.

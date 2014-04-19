@@ -19,53 +19,57 @@
 
 package org.apache.fop.layoutmgr;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.traits.MinOptMax;
 
 /**
- * This is a the breaking algorithm that is responsible for balancing columns in multi-column
- * layout.
+ * This is a the breaking algorithm that is responsible for balancing columns in
+ * multi-column layout.
  */
+@Slf4j
 public class BalancingColumnBreakingAlgorithm extends PageBreakingAlgorithm {
 
-    private Log log = LogFactory.getLog(BalancingColumnBreakingAlgorithm.class);
-
-    private int columnCount;
+    private final int columnCount;
     private int fullLen;
     private int idealPartLen;
 
-    public BalancingColumnBreakingAlgorithm(LayoutManager topLevelLM,
-            PageProvider pageProvider,
-            PageBreakingLayoutListener layoutListener,
-            int alignment, int alignmentLast,
-            MinOptMax footnoteSeparatorLength,
-            boolean partOverflowRecovery,
-            int columnCount) {
-        super(topLevelLM, pageProvider, layoutListener,
-                alignment, alignmentLast,
-                footnoteSeparatorLength, partOverflowRecovery, false, false);
+    public BalancingColumnBreakingAlgorithm(final LayoutManager topLevelLM,
+            final PageProvider pageProvider,
+            final PageBreakingLayoutListener layoutListener,
+            final int alignment, final int alignmentLast,
+            final MinOptMax footnoteSeparatorLength,
+            final boolean partOverflowRecovery, final int columnCount) {
+        super(topLevelLM, pageProvider, layoutListener, alignment,
+                alignmentLast, footnoteSeparatorLength, partOverflowRecovery,
+                false, false);
         this.columnCount = columnCount;
-        this.considerTooShort = true; //This is important!
+        this.considerTooShort = true; // This is important!
     }
 
     /** {@inheritDoc} */
-    protected double computeDemerits(KnuthNode activeNode,
-            KnuthElement element, int fitnessClass, double r) {
-        double dem = super.computeDemerits(activeNode, element, fitnessClass, r);
+    @Override
+    protected double computeDemerits(final KnuthNode activeNode,
+            final KnuthElement element, final int fitnessClass, final double r) {
+        double dem = super
+                .computeDemerits(activeNode, element, fitnessClass, r);
         if (log.isTraceEnabled()) {
-            log.trace("original demerit=" + dem + " " + totalWidth
-                    + " line=" + activeNode.line + "/" + columnCount
-                    + " pos=" + activeNode.position + "/" + (par.size() - 1));
+            log.trace("original demerit=" + dem + " " + this.totalWidth
+                    + " line=" + activeNode.line + "/" + this.columnCount
+                    + " pos=" + activeNode.position + "/"
+                    + (this.par.size() - 1));
         }
-        int remParts = columnCount - activeNode.line;
-        int curPos = par.indexOf(element);
-        if (fullLen == 0) {
-            fullLen = ElementListUtils.calcContentLength(par, activeNode.position, par.size() - 1);
-            this.idealPartLen = (fullLen / columnCount);
+        final int remParts = this.columnCount - activeNode.line;
+        final int curPos = this.par.indexOf(element);
+        if (this.fullLen == 0) {
+            this.fullLen = ElementListUtils.calcContentLength(this.par,
+                    activeNode.position, this.par.size() - 1);
+            this.idealPartLen = this.fullLen / this.columnCount;
         }
-        int partLen = ElementListUtils.calcContentLength(par, activeNode.position, curPos - 1);
-        int restLen = ElementListUtils.calcContentLength(par, curPos - 1, par.size() - 1);
+        final int partLen = ElementListUtils.calcContentLength(this.par,
+                activeNode.position, curPos - 1);
+        final int restLen = ElementListUtils.calcContentLength(this.par,
+                curPos - 1, this.par.size() - 1);
         int avgRestLen = 0;
         if (remParts > 0) {
             avgRestLen = restLen / remParts;
@@ -74,33 +78,34 @@ public class BalancingColumnBreakingAlgorithm extends PageBreakingAlgorithm {
             log.trace("remaining parts: " + remParts + " rest len: " + restLen
                     + " avg=" + avgRestLen);
         }
-        double balance = (idealPartLen - partLen) / 1000f;
+        final double balance = (this.idealPartLen - partLen) / 1000f;
         if (log.isTraceEnabled()) {
             log.trace("balance=" + balance);
         }
-        double absBalance = Math.abs(balance);
+        final double absBalance = Math.abs(balance);
         dem = absBalance;
-        //Step 1: This does the rough balancing
-        if (columnCount > 2) {
+        // Step 1: This does the rough balancing
+        if (this.columnCount > 2) {
             if (balance > 0) {
-                //shorter parts are less desired than longer ones
+                // shorter parts are less desired than longer ones
                 dem = dem * 1.2f;
             }
         } else {
             if (balance < 0) {
-                //shorter parts are less desired than longer ones
+                // shorter parts are less desired than longer ones
                 dem = dem * 1.2f;
             }
         }
-        //Step 2: This helps keep the trailing parts shorter than the previous ones
-        dem += (avgRestLen) / 1000f;
+        // Step 2: This helps keep the trailing parts shorter than the previous
+        // ones
+        dem += avgRestLen / 1000f;
 
-        if (activeNode.line >= columnCount) {
-            //We don't want more columns than available
+        if (activeNode.line >= this.columnCount) {
+            // We don't want more columns than available
             dem = Double.MAX_VALUE;
         }
         if (log.isTraceEnabled()) {
-            log.trace("effective dem=" + dem + " " + totalWidth);
+            log.trace("effective dem=" + dem + " " + this.totalWidth);
         }
         return dem;
     }

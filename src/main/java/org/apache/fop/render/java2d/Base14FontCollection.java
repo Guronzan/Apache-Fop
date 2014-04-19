@@ -34,21 +34,23 @@ public class Base14FontCollection implements FontCollection {
 
     /**
      * Main constructor
-     * @param graphics2d a graphics 2D
+     * 
+     * @param graphics2d
+     *            a graphics 2D
      */
-    public Base14FontCollection(Graphics2D graphics2d) {
+    public Base14FontCollection(final Graphics2D graphics2d) {
         this.graphics2d = graphics2d;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int setup(int start, FontInfo fontInfo) {
+    @Override
+    public int setup(final int start, final FontInfo fontInfo) {
         /*
-         * available java fonts are:
-         * Serif - bold, normal, italic, bold-italic
-         * SansSerif - bold, normal, italic, bold-italic
-         * MonoSpaced - bold, normal, italic, bold-italic
+         * available java fonts are: Serif - bold, normal, italic, bold-italic
+         * SansSerif - bold, normal, italic, bold-italic MonoSpaced - bold,
+         * normal, italic, bold-italic
          */
         final int normal = java.awt.Font.PLAIN;
         final int bold = java.awt.Font.BOLD;
@@ -56,49 +58,57 @@ public class Base14FontCollection implements FontCollection {
         final int bolditalic = java.awt.Font.BOLD + java.awt.Font.ITALIC;
 
         FontMetricsMapper metric;
-        metric = new SystemFontMetricsMapper("SansSerif", normal, graphics2d);
-        // --> goes to  F1
+        metric = new SystemFontMetricsMapper("SansSerif", normal,
+                this.graphics2d);
+        // --> goes to F1
         fontInfo.addMetrics("F1", metric);
-        metric = new SystemFontMetricsMapper("SansSerif", italic, graphics2d);
-        // --> goes to  F2
+        metric = new SystemFontMetricsMapper("SansSerif", italic,
+                this.graphics2d);
+        // --> goes to F2
         fontInfo.addMetrics("F2", metric);
-        metric = new SystemFontMetricsMapper("SansSerif", bold, graphics2d);
-        // --> goes to  F3
+        metric = new SystemFontMetricsMapper("SansSerif", bold, this.graphics2d);
+        // --> goes to F3
         fontInfo.addMetrics("F3", metric);
-        metric = new SystemFontMetricsMapper("SansSerif", bolditalic, graphics2d);
-        // --> goes to  F4
+        metric = new SystemFontMetricsMapper("SansSerif", bolditalic,
+                this.graphics2d);
+        // --> goes to F4
         fontInfo.addMetrics("F4", metric);
 
-
-        metric = new SystemFontMetricsMapper("Serif", normal, graphics2d);
-        // --> goes to  F5
+        metric = new SystemFontMetricsMapper("Serif", normal, this.graphics2d);
+        // --> goes to F5
         fontInfo.addMetrics("F5", metric);
-        metric = new SystemFontMetricsMapper("Serif", italic, graphics2d);
-        // --> goes to  F6
+        metric = new SystemFontMetricsMapper("Serif", italic, this.graphics2d);
+        // --> goes to F6
         fontInfo.addMetrics("F6", metric);
-        metric = new SystemFontMetricsMapper("Serif", bold, graphics2d);
-        // --> goes to  F7
+        metric = new SystemFontMetricsMapper("Serif", bold, this.graphics2d);
+        // --> goes to F7
         fontInfo.addMetrics("F7", metric);
-        metric = new SystemFontMetricsMapper("Serif", bolditalic, graphics2d);
-        // --> goes to  F8
+        metric = new SystemFontMetricsMapper("Serif", bolditalic,
+                this.graphics2d);
+        // --> goes to F8
         fontInfo.addMetrics("F8", metric);
 
-        metric = new SystemFontMetricsMapper("MonoSpaced", normal, graphics2d);
-        // --> goes to  F9
+        metric = new SystemFontMetricsMapper("MonoSpaced", normal,
+                this.graphics2d);
+        // --> goes to F9
         fontInfo.addMetrics("F9", metric);
-        metric = new SystemFontMetricsMapper("MonoSpaced", italic, graphics2d);
-        // --> goes to  F10
+        metric = new SystemFontMetricsMapper("MonoSpaced", italic,
+                this.graphics2d);
+        // --> goes to F10
         fontInfo.addMetrics("F10", metric);
-        metric = new SystemFontMetricsMapper("MonoSpaced", bold, graphics2d);
-        // --> goes to  F11
+        metric = new SystemFontMetricsMapper("MonoSpaced", bold,
+                this.graphics2d);
+        // --> goes to F11
         fontInfo.addMetrics("F11", metric);
-        metric = new SystemFontMetricsMapper("MonoSpaced", bolditalic, graphics2d);
-        // --> goes to  F12
+        metric = new SystemFontMetricsMapper("MonoSpaced", bolditalic,
+                this.graphics2d);
+        // --> goes to F12
         fontInfo.addMetrics("F12", metric);
 
-        metric = new SystemFontMetricsMapper("Serif", normal, graphics2d);
-        //"Symbol" doesn't seem to work here, but "Serif" does the job just fine. *shrug*
-        // --> goes to  F13 and F14
+        metric = new SystemFontMetricsMapper("Serif", normal, this.graphics2d);
+        // "Symbol" doesn't seem to work here, but "Serif" does the job just
+        // fine. *shrug*
+        // --> goes to F13 and F14
         fontInfo.addMetrics("F13", metric);
         fontInfo.addMetrics("F14", metric);
 
@@ -108,73 +118,131 @@ public class Base14FontCollection implements FontCollection {
         // fontInfo.addMetrics("F17", new BauerBodoniBoldItalic());
 
         /* any is treated as serif */
-        fontInfo.addFontProperties("F5", "any", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "any", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "any", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F7", "any", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "any", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "any", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F5", "any", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "any", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "any", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F7", "any", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "any", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "any", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
 
-        fontInfo.addFontProperties("F1", "sans-serif", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F2", "sans-serif", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F2", "sans-serif", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F3", "sans-serif", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F4", "sans-serif", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F4", "sans-serif", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F5", "serif", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "serif", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "serif", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F7", "serif", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "serif", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "serif", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F9", "monospace", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F10", "monospace", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F10", "monospace", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F11", "monospace", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F12", "monospace", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F12", "monospace", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F1", "sans-serif", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F2", "sans-serif", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F2", "sans-serif", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F3", "sans-serif", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F4", "sans-serif", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F4", "sans-serif", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F5", "serif", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "serif", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "serif", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F7", "serif", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "serif", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "serif", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F9", "monospace", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F10", "monospace", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F10", "monospace", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F11", "monospace", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F12", "monospace", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F12", "monospace", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
 
-        fontInfo.addFontProperties("F1", "Helvetica", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F2", "Helvetica", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F2", "Helvetica", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F3", "Helvetica", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F4", "Helvetica", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F4", "Helvetica", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F5", "Times", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F7", "Times", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F9", "Courier", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F10", "Courier", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F10", "Courier", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F11", "Courier", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F12", "Courier", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F12", "Courier", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F13", "Symbol", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F14", "ZapfDingbats", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F1", "Helvetica", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F2", "Helvetica", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F2", "Helvetica", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F3", "Helvetica", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F4", "Helvetica", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F4", "Helvetica", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F5", "Times", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F7", "Times", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F9", "Courier", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F10", "Courier", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F10", "Courier", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F11", "Courier", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F12", "Courier", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F12", "Courier", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F13", "Symbol", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F14", "ZapfDingbats", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
 
         // Custom type 1 fonts step 2/2
         // fontInfo.addFontProperties("F15", "OMEP", "normal", FontInfo.NORMAL);
-        // fontInfo.addFontProperties("F16", "Garamond-LightCondensed", "normal", FontInfo.NORMAL);
-        // fontInfo.addFontProperties("F17", "BauerBodoni", "italic", FontInfo.BOLD);
+        // fontInfo.addFontProperties("F16", "Garamond-LightCondensed",
+        // "normal", FontInfo.NORMAL);
+        // fontInfo.addFontProperties("F17", "BauerBodoni", "italic",
+        // FontInfo.BOLD);
 
         /* for compatibility with PassiveTex */
-        fontInfo.addFontProperties("F5", "Times-Roman", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times-Roman", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times-Roman", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F7", "Times-Roman", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times-Roman", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times-Roman", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F5", "Times Roman", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times Roman", Font.STYLE_OBLIQUE, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F6", "Times Roman", Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-        fontInfo.addFontProperties("F7", "Times Roman", Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times Roman", Font.STYLE_OBLIQUE, Font.WEIGHT_BOLD);
-        fontInfo.addFontProperties("F8", "Times Roman", Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F5", "Times-Roman", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times-Roman", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times-Roman", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F7", "Times-Roman", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times-Roman", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times-Roman", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F5", "Times Roman", Font.STYLE_NORMAL,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times Roman", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F6", "Times Roman", Font.STYLE_ITALIC,
+                Font.WEIGHT_NORMAL);
+        fontInfo.addFontProperties("F7", "Times Roman", Font.STYLE_NORMAL,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times Roman", Font.STYLE_OBLIQUE,
+                Font.WEIGHT_BOLD);
+        fontInfo.addFontProperties("F8", "Times Roman", Font.STYLE_ITALIC,
+                Font.WEIGHT_BOLD);
         fontInfo.addFontProperties("F9", "Computer-Modern-Typewriter",
-                                   "normal", Font.WEIGHT_NORMAL);
+                "normal", Font.WEIGHT_NORMAL);
 
         return 15;
     }

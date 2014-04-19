@@ -28,25 +28,27 @@ import java.io.Writer;
 public class RtfGenerator extends RtfElement {
 
     /** Default constructor for the generator element. */
-    public RtfGenerator(RtfHeader h, Writer w) throws IOException {
+    public RtfGenerator(final RtfHeader h, final Writer w) throws IOException {
         super(h, w);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         newLine();
         writeGroupMark(true);
         writeStarControlWord("generator");
-        writer.write("Apache XML Graphics RTF Library");
-        writer.write(";");
+        this.writer.write("Apache XML Graphics RTF Library");
+        this.writer.write(";");
         writeGroupMark(false);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

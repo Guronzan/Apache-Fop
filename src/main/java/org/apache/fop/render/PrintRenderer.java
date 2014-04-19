@@ -24,8 +24,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Trait;
@@ -37,8 +35,9 @@ import org.apache.fop.fonts.FontManager;
 import org.apache.fop.fonts.FontResolver;
 import org.apache.fop.fonts.FontTriplet;
 import org.apache.fop.fonts.base14.Base14FontCollection;
+import org.w3c.dom.Document;
 
-/** Abstract base class of "Print" type renderers.  */
+/** Abstract base class of "Print" type renderers. */
 public abstract class PrintRenderer extends AbstractRenderer {
 
     /** Font configuration */
@@ -48,74 +47,85 @@ public abstract class PrintRenderer extends AbstractRenderer {
     protected FontResolver fontResolver = null;
 
     /** list of fonts */
-    protected List/*<EmbedFontInfo>*/ embedFontInfoList = null;
+    protected List/* <EmbedFontInfo> */embedFontInfoList = null;
 
     /**
      * Adds a font list to current list of fonts
-     * @param fontList a font info list
+     * 
+     * @param fontList
+     *            a font info list
      */
-    public void addFontList(List/*<EmbedFontInfo>*/ fontList) {
-        if (embedFontInfoList == null) {
+    public void addFontList(final List/* <EmbedFontInfo> */fontList) {
+        if (this.embedFontInfoList == null) {
             setFontList(fontList);
         } else {
-            embedFontInfoList.addAll(fontList);
+            this.embedFontInfoList.addAll(fontList);
         }
     }
 
     /**
-     * @param embedFontInfoList list of available fonts
+     * @param embedFontInfoList
+     *            list of available fonts
      */
-    public void setFontList(List/*<EmbedFontInfo>*/ embedFontInfoList) {
+    public void setFontList(final List/* <EmbedFontInfo> */embedFontInfoList) {
         this.embedFontInfoList = embedFontInfoList;
     }
 
     /**
      * @return list of available embedded fonts
      */
-    public List/*<EmbedFontInfo>*/ getFontList() {
+    public List/* <EmbedFontInfo> */getFontList() {
         return this.embedFontInfoList;
     }
 
     /** {@inheritDoc} */
-    public void setupFontInfo(FontInfo inFontInfo) throws FOPException {
+    @Override
+    public void setupFontInfo(final FontInfo inFontInfo) throws FOPException {
         this.fontInfo = inFontInfo;
-        FontManager fontManager = userAgent.getFactory().getFontManager();
-        FontCollection[] fontCollections = new FontCollection[] {
+        final FontManager fontManager = this.userAgent.getFactory()
+                .getFontManager();
+        final FontCollection[] fontCollections = new FontCollection[] {
                 new Base14FontCollection(fontManager.isBase14KerningEnabled()),
-                new CustomFontCollection(getFontResolver(), getFontList())
-        };
+                new CustomFontCollection(getFontResolver(), getFontList()) };
         fontManager.setup(getFontInfo(), fontCollections);
     }
 
     /**
-     * Returns the internal font key for a font triplet coming from the area tree
-     * @param area the area from which to retrieve the font triplet information
+     * Returns the internal font key for a font triplet coming from the area
+     * tree
+     * 
+     * @param area
+     *            the area from which to retrieve the font triplet information
      * @return the internal font key (F1, F2 etc.) or null if not found
      */
-    protected String getInternalFontNameForArea(Area area) {
-        FontTriplet triplet = (FontTriplet)area.getTrait(Trait.FONT);
-        String key = fontInfo.getInternalFontKey(triplet);
+    protected String getInternalFontNameForArea(final Area area) {
+        FontTriplet triplet = (FontTriplet) area.getTrait(Trait.FONT);
+        String key = this.fontInfo.getInternalFontKey(triplet);
         if (key == null) {
-            //Find a default fallback font as last resort
-            triplet = new FontTriplet("any", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-            key = fontInfo.getInternalFontKey(triplet);
+            // Find a default fallback font as last resort
+            triplet = new FontTriplet("any", Font.STYLE_NORMAL,
+                    Font.WEIGHT_NORMAL);
+            key = this.fontInfo.getInternalFontKey(triplet);
         }
         return key;
     }
 
     /**
      * Returns a Font object constructed based on the font traits in an area
-     * @param area the area from which to retrieve the font triplet information
+     * 
+     * @param area
+     *            the area from which to retrieve the font triplet information
      * @return the requested Font instance or null if not found
      */
-    protected Font getFontFromArea(Area area) {
-        FontTriplet triplet = (FontTriplet)area.getTrait(Trait.FONT);
-        int size = ((Integer)area.getTrait(Trait.FONT_SIZE)).intValue();
-        return fontInfo.getFontInstance(triplet, size);
+    protected Font getFontFromArea(final Area area) {
+        final FontTriplet triplet = (FontTriplet) area.getTrait(Trait.FONT);
+        final int size = ((Integer) area.getTrait(Trait.FONT_SIZE)).intValue();
+        return this.fontInfo.getFontInstance(triplet, size);
     }
 
     /**
      * Instantiates a RendererContext for an image
+     * 
      * @return a newly created RendererContext.
      */
     protected RendererContext instantiateRendererContext() {
@@ -124,47 +134,58 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * Creates a RendererContext for an image.
-     * @param x the x coordinate (in millipoints)
-     * @param y the y coordinate (in millipoints)
-     * @param width the width of the image (in millipoints)
-     * @param height the height of the image (in millipoints)
-     * @param foreignAttributes a Map or foreign attributes, may be null
+     * 
+     * @param x
+     *            the x coordinate (in millipoints)
+     * @param y
+     *            the y coordinate (in millipoints)
+     * @param width
+     *            the width of the image (in millipoints)
+     * @param height
+     *            the height of the image (in millipoints)
+     * @param foreignAttributes
+     *            a Map or foreign attributes, may be null
      * @return the RendererContext
      */
-    protected RendererContext createRendererContext(int x, int y, int width, int height,
-            Map foreignAttributes) {
-        RendererContext context = instantiateRendererContext();
-        context.setUserAgent(userAgent);
+    protected RendererContext createRendererContext(final int x, final int y,
+            final int width, final int height, final Map foreignAttributes) {
+        final RendererContext context = instantiateRendererContext();
+        context.setUserAgent(this.userAgent);
 
-        context.setProperty(RendererContextConstants.WIDTH,
-                            new Integer(width));
+        context.setProperty(RendererContextConstants.WIDTH, new Integer(width));
         context.setProperty(RendererContextConstants.HEIGHT,
-                            new Integer(height));
-        context.setProperty(RendererContextConstants.XPOS,
-                            new Integer(x));
-        context.setProperty(RendererContextConstants.YPOS,
-                            new Integer(y));
+                new Integer(height));
+        context.setProperty(RendererContextConstants.XPOS, new Integer(x));
+        context.setProperty(RendererContextConstants.YPOS, new Integer(y));
         context.setProperty(RendererContextConstants.PAGE_VIEWPORT,
-                            getCurrentPageViewport());
+                getCurrentPageViewport());
         if (foreignAttributes != null) {
-            context.setProperty(RendererContextConstants.FOREIGN_ATTRIBUTES, foreignAttributes);
+            context.setProperty(RendererContextConstants.FOREIGN_ATTRIBUTES,
+                    foreignAttributes);
         }
         return context;
     }
 
     /**
      * Renders an XML document (SVG for example).
-     * @param doc the DOM Document containing the XML document to be rendered
-     * @param ns the namespace URI for the XML document
-     * @param pos the position for the generated graphic/image
-     * @param foreignAttributes the foreign attributes containing rendering hints, or null
+     * 
+     * @param doc
+     *            the DOM Document containing the XML document to be rendered
+     * @param ns
+     *            the namespace URI for the XML document
+     * @param pos
+     *            the position for the generated graphic/image
+     * @param foreignAttributes
+     *            the foreign attributes containing rendering hints, or null
      */
-    public void renderDocument(Document doc, String ns, Rectangle2D pos, Map foreignAttributes) {
-        int x = currentIPPosition + (int) pos.getX();
-        int y = currentBPPosition + (int) pos.getY();
-        int width = (int)pos.getWidth();
-        int height = (int)pos.getHeight();
-        RendererContext context = createRendererContext(x, y, width, height, foreignAttributes);
+    public void renderDocument(final Document doc, final String ns,
+            final Rectangle2D pos, final Map foreignAttributes) {
+        final int x = this.currentIPPosition + (int) pos.getX();
+        final int y = this.currentBPPosition + (int) pos.getY();
+        final int width = (int) pos.getWidth();
+        final int height = (int) pos.getHeight();
+        final RendererContext context = createRendererContext(x, y, width,
+                height, foreignAttributes);
 
         renderXML(context, doc, ns);
     }

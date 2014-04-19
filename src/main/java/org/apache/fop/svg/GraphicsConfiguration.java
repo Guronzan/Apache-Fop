@@ -23,27 +23,33 @@ import java.awt.image.VolatileImage;
 
 /**
  * Adapter to allow subclassing java.awt.GraphicsConfiguration without
- * compilation errors.
- * The version for JDK 1.4 needs to add an override for the abstract
- * createCompatibleVolatileImage() method. It can't be overidden
- * for JDK 1.3 because there is no VolatileImage there.
+ * compilation errors. The version for JDK 1.4 needs to add an override for the
+ * abstract createCompatibleVolatileImage() method. It can't be overidden for
+ * JDK 1.3 because there is no VolatileImage there.
  *
  */
-abstract public class GraphicsConfiguration extends java.awt.GraphicsConfiguration {
+abstract public class GraphicsConfiguration extends
+        java.awt.GraphicsConfiguration {
 
     /**
-     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int)
+     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int,
+     *      int)
      * @since JDK 1.4
      */
-    public VolatileImage createCompatibleVolatileImage(int width, int height) {
+    @Override
+    public VolatileImage createCompatibleVolatileImage(final int width,
+            final int height) {
         return null;
     }
 
     /**
-     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int, int)
+     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int,
+     *      int, int)
      * @since JDK 1.5
      */
-    public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency) {
+    @Override
+    public VolatileImage createCompatibleVolatileImage(final int width,
+            final int height, final int transparency) {
         return null;
     }
 

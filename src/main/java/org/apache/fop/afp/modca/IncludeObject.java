@@ -43,20 +43,19 @@ import org.apache.fop.afp.util.BinaryUtils;
 public class IncludeObject extends AbstractNamedAFPObject {
 
     /** the object referenced is of type page segment */
-    public static final byte TYPE_PAGE_SEGMENT = (byte)0x5F;
+    public static final byte TYPE_PAGE_SEGMENT = (byte) 0x5F;
 
     /** the object referenced is of type other */
-    public static final byte TYPE_OTHER = (byte)0x92;
+    public static final byte TYPE_OTHER = (byte) 0x92;
 
     /** the object referenced is of type graphic */
-    public static final byte TYPE_GRAPHIC = (byte)0xBB;
+    public static final byte TYPE_GRAPHIC = (byte) 0xBB;
 
     /** the object referenced is of type barcode */
-    public static final byte TYPE_BARCODE = (byte)0xEB;
+    public static final byte TYPE_BARCODE = (byte) 0xEB;
 
     /** the object referenced is of type image */
-    public static final byte TYPE_IMAGE = (byte)0xFB;
-
+    public static final byte TYPE_IMAGE = (byte) 0xFB;
 
     /** the object type referenced (default is other) */
     private byte objectType = TYPE_OTHER;
@@ -81,9 +80,10 @@ public class IncludeObject extends AbstractNamedAFPObject {
      * be a fixed length of eight characters and is the name of the referenced
      * object.
      *
-     * @param name the name of this include object
+     * @param name
+     *            the name of this include object
      */
-    public IncludeObject(String name) {
+    public IncludeObject(final String name) {
         super(name);
     }
 
@@ -93,36 +93,40 @@ public class IncludeObject extends AbstractNamedAFPObject {
      * @param orientation
      *            The orientation (0,90, 180, 270)
      */
-    public void setObjectAreaOrientation(int orientation) {
+    public void setObjectAreaOrientation(final int orientation) {
         if (orientation == 0 || orientation == 90 || orientation == 180
-            || orientation == 270) {
+                || orientation == 270) {
             this.oaOrent = orientation;
         } else {
             throw new IllegalArgumentException(
-                "The orientation must be one of the values 0, 90, 180, 270");
+                    "The orientation must be one of the values 0, 90, 180, 270");
         }
     }
 
     /**
      * Sets the x and y offset to the origin in the object area
      *
-     * @param x the X-axis origin of the object area
-     * @param y the Y-axis origin of the object area
+     * @param x
+     *            the X-axis origin of the object area
+     * @param y
+     *            the Y-axis origin of the object area
      */
-    public void setObjectAreaOffset(int x, int y) {
+    public void setObjectAreaOffset(final int x, final int y) {
         this.xoaOset = x;
         this.yoaOset = y;
     }
 
     /**
-     * Sets the x and y offset of the content area to the object area
-     * used in conjunction with the {@link MappingOptionTriplet.POSITION} and
+     * Sets the x and y offset of the content area to the object area used in
+     * conjunction with the {@link MappingOptionTriplet.POSITION} and
      * {@link MappingOptionTriplet.POSITION_AND_TRIM}.
      *
-     * @param x the X-axis origin defined in the object
-     * @param y the Y-axis origin defined in the object
+     * @param x
+     *            the X-axis origin defined in the object
+     * @param y
+     *            the Y-axis origin defined in the object
      */
-    public void setContentAreaOffset(int x, int y) {
+    public void setContentAreaOffset(final int x, final int y) {
         this.xocaOset = x;
         this.yocaOset = y;
     }
@@ -130,106 +134,110 @@ public class IncludeObject extends AbstractNamedAFPObject {
     /**
      * Sets the data object type
      *
-     * @param type the data object type
+     * @param type
+     *            the data object type
      */
-    public void setObjectType(byte type) {
+    public void setObjectType(final byte type) {
         this.objectType = type;
     }
 
     /** {@inheritDoc} */
-    public void writeToStream(OutputStream os) throws IOException {
-        byte[] data = new byte[36];
+    @Override
+    public void writeToStream(final OutputStream os) throws IOException {
+        final byte[] data = new byte[36];
         super.copySF(data, Type.INCLUDE, Category.DATA_RESOURCE);
 
         // Set the total record length
-        int tripletDataLength = getTripletDataLength();
-        byte[] len = BinaryUtils.convert(35 + tripletDataLength, 2); //Ignore first byte
+        final int tripletDataLength = getTripletDataLength();
+        final byte[] len = BinaryUtils.convert(35 + tripletDataLength, 2); // Ignore
+                                                                           // first
+                                                                           // byte
         data[1] = len[0];
         data[2] = len[1];
 
         data[17] = 0x00; // reserved
-        data[18] = objectType;
+        data[18] = this.objectType;
 
-        //XoaOset (object area)
-        if (xoaOset > -1) {
-            byte[] x = BinaryUtils.convert(xoaOset, 3);
+        // XoaOset (object area)
+        if (this.xoaOset > -1) {
+            final byte[] x = BinaryUtils.convert(this.xoaOset, 3);
             data[19] = x[0];
             data[20] = x[1];
             data[21] = x[2];
         } else {
-            data[19] = (byte)0xFF;
-            data[20] = (byte)0xFF;
-            data[21] = (byte)0xFF;
+            data[19] = (byte) 0xFF;
+            data[20] = (byte) 0xFF;
+            data[21] = (byte) 0xFF;
         }
 
         // YoaOset (object area)
-        if (yoaOset > -1) {
-            byte[] y = BinaryUtils.convert(yoaOset, 3);
+        if (this.yoaOset > -1) {
+            final byte[] y = BinaryUtils.convert(this.yoaOset, 3);
             data[22] = y[0];
             data[23] = y[1];
             data[24] = y[2];
         } else {
-            data[22] = (byte)0xFF;
-            data[23] = (byte)0xFF;
-            data[24] = (byte)0xFF;
+            data[22] = (byte) 0xFF;
+            data[23] = (byte) 0xFF;
+            data[24] = (byte) 0xFF;
         }
 
         // XoaOrent/YoaOrent
-        switch (oaOrent) {
-            case -1: // use x/y axis orientation defined in object
-                data[25] = (byte)0xFF; // x axis rotation
-                data[26] = (byte)0xFF; //
-                data[27] = (byte)0xFF; // y axis rotation
-                data[28] = (byte)0xFF;
-                break;
-            case 90:
-                data[25] = 0x2D;
-                data[26] = 0x00;
-                data[27] = 0x5A;
-                data[28] = 0x00;
-                break;
-            case 180:
-                data[25] = 0x5A;
-                data[25] = 0x00;
-                data[27] = (byte)0x87;
-                data[28] = 0x00;
-                break;
-            case 270:
-                data[25] = (byte)0x87;
-                data[26] = 0x00;
-                data[27] = 0x00;
-                data[28] = 0x00;
-                break;
-            default: // 0 degrees
-                data[25] = 0x00;
-                data[26] = 0x00;
-                data[27] = 0x2D;
-                data[28] = 0x00;
-                break;
+        switch (this.oaOrent) {
+        case -1: // use x/y axis orientation defined in object
+            data[25] = (byte) 0xFF; // x axis rotation
+            data[26] = (byte) 0xFF; //
+            data[27] = (byte) 0xFF; // y axis rotation
+            data[28] = (byte) 0xFF;
+            break;
+        case 90:
+            data[25] = 0x2D;
+            data[26] = 0x00;
+            data[27] = 0x5A;
+            data[28] = 0x00;
+            break;
+        case 180:
+            data[25] = 0x5A;
+            data[25] = 0x00;
+            data[27] = (byte) 0x87;
+            data[28] = 0x00;
+            break;
+        case 270:
+            data[25] = (byte) 0x87;
+            data[26] = 0x00;
+            data[27] = 0x00;
+            data[28] = 0x00;
+            break;
+        default: // 0 degrees
+            data[25] = 0x00;
+            data[26] = 0x00;
+            data[27] = 0x2D;
+            data[28] = 0x00;
+            break;
         }
 
         // XocaOset (object content)
-        if (xocaOset > -1) {
-            byte[] x = BinaryUtils.convert(xocaOset, 3);
+        if (this.xocaOset > -1) {
+            final byte[] x = BinaryUtils.convert(this.xocaOset, 3);
             data[29] = x[0];
             data[30] = x[1];
             data[31] = x[2];
         } else {
-            data[29] = (byte)0xFF;
-            data[30] = (byte)0xFF;
-            data[31] = (byte)0xFF;
+            data[29] = (byte) 0xFF;
+            data[30] = (byte) 0xFF;
+            data[31] = (byte) 0xFF;
         }
 
         // YocaOset (object content)
-        if (yocaOset > -1) {
-            byte[] y = BinaryUtils.convert(yocaOset, 3);
+        if (this.yocaOset > -1) {
+            final byte[] y = BinaryUtils.convert(this.yocaOset, 3);
             data[32] = y[0];
             data[33] = y[1];
             data[34] = y[2];
         } else {
-            data[32] = (byte)0xFF;
-            data[33] = (byte)0xFF;
-            data[34] = (byte)0xFF;
+            data[32] = (byte) 0xFF;
+            data[33] = (byte) 0xFF;
+            data[34] = (byte) 0xFF;
         }
         // RefCSys (Reference coordinate system)
         data[35] = 0x01; // Page or overlay coordinate system
@@ -243,58 +251,61 @@ public class IncludeObject extends AbstractNamedAFPObject {
 
     private String getObjectTypeName() {
         String objectTypeName = null;
-        if (objectType == TYPE_PAGE_SEGMENT) {
+        if (this.objectType == TYPE_PAGE_SEGMENT) {
             objectTypeName = "page segment";
-        } else if (objectType == TYPE_OTHER) {
+        } else if (this.objectType == TYPE_OTHER) {
             objectTypeName = "other";
-        } else if (objectType == TYPE_GRAPHIC) {
+        } else if (this.objectType == TYPE_GRAPHIC) {
             objectTypeName = "graphic";
-        } else if (objectType == TYPE_BARCODE) {
+        } else if (this.objectType == TYPE_BARCODE) {
             objectTypeName = "barcode";
-        } else if (objectType == TYPE_IMAGE) {
+        } else if (this.objectType == TYPE_IMAGE) {
             objectTypeName = "image";
         }
         return objectTypeName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "IncludeObject{name=" + this.getName()
-            + ", objectType=" + getObjectTypeName()
-            + ", xoaOset=" + xoaOset
-            + ", yoaOset=" + yoaOset
-            + ", oaOrent" + oaOrent
-            + ", xocaOset=" + xocaOset
-            + ", yocaOset=" + yocaOset
-            + "}";
+        return "IncludeObject{name=" + getName() + ", objectType="
+                + getObjectTypeName() + ", xoaOset=" + this.xoaOset
+                + ", yoaOset=" + this.yoaOset + ", oaOrent" + this.oaOrent
+                + ", xocaOset=" + this.xocaOset + ", yocaOset=" + this.yocaOset
+                + "}";
     }
 
     /**
      * Sets the mapping option
      *
-     * @param optionValue the mapping option value
+     * @param optionValue
+     *            the mapping option value
      */
-    public void setMappingOption(byte optionValue) {
+    public void setMappingOption(final byte optionValue) {
         addTriplet(new MappingOptionTriplet(optionValue));
     }
 
     /**
      * Sets the extent of an object area in the X and Y directions
      *
-     * @param x the x direction extent
-     * @param y the y direction extent
+     * @param x
+     *            the x direction extent
+     * @param y
+     *            the y direction extent
      */
-    public void setObjectAreaSize(int x, int y) {
+    public void setObjectAreaSize(final int x, final int y) {
         addTriplet(new ObjectAreaSizeTriplet(x, y));
     }
 
     /**
      * Sets the measurement units used to specify the units of measure
      *
-     * @param xRes units per base on the x-axis
-     * @param yRes units per base on the y-axis
+     * @param xRes
+     *            units per base on the x-axis
+     * @param yRes
+     *            units per base on the y-axis
      */
-    public void setMeasurementUnits(int xRes, int yRes) {
+    public void setMeasurementUnits(final int xRes, final int yRes) {
         addTriplet(new MeasurementUnitsTriplet(xRes, xRes));
     }
 

@@ -57,83 +57,94 @@ public class BlockContainer extends FObj implements BreakPropertySet {
     private int disableColumnBalancing;
     private int writingMode;
     // Unused but valid items, commented out for performance:
-    //     private int intrusionDisplace;
-    //     private Numeric zIndex;
+    // private int intrusionDisplace;
+    // private Numeric zIndex;
     // End of property values
 
     /** used for FO validation */
     private boolean blockItemFound = false;
 
     /**
-     * Creates a new BlockContainer instance as a child of
-     * the given {@link FONode}.
+     * Creates a new BlockContainer instance as a child of the given
+     * {@link FONode}.
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public BlockContainer(FONode parent) {
+    public BlockContainer(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonAbsolutePosition = pList.getAbsolutePositionProps();
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonMarginBlock = pList.getMarginBlockProps();
-        blockProgressionDimension = pList.get(PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
-        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        this.commonAbsolutePosition = pList.getAbsolutePositionProps();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonMarginBlock = pList.getMarginBlockProps();
+        this.blockProgressionDimension = pList.get(
+                PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
+        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
         // clip = pList.get(PR_CLIP);
-        displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
-        inlineProgressionDimension = pList.get(PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
-        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        overflow = pList.get(PR_OVERFLOW).getEnum();
-        referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION).getNumeric();
-        span = pList.get(PR_SPAN).getEnum();
-        writingMode = pList.get(PR_WRITING_MODE).getEnum();
-        disableColumnBalancing = pList.get(PR_X_DISABLE_COLUMN_BALANCING).getEnum();
+        this.displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
+        this.inlineProgressionDimension = pList.get(
+                PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
+        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        this.overflow = pList.get(PR_OVERFLOW).getEnum();
+        this.referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION)
+                .getNumeric();
+        this.span = pList.get(PR_SPAN).getEnum();
+        this.writingMode = pList.get(PR_WRITING_MODE).getEnum();
+        this.disableColumnBalancing = pList.get(PR_X_DISABLE_COLUMN_BALANCING)
+                .getEnum();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBlockContainer(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: marker* (%block;)+
-     * <br><i><b>BUT</b>: "In addition an fo:block-container that does not generate an
-     * absolutely positioned area may have a sequence of zero or more
-     * fo:markers as its initial children."
-     * The latter refers to block-containers with absolute-position="absolute"
-     * or absolute-position="fixed".
+     * {@inheritDoc} <br>
+     * XSL Content Model: marker* (%block;)+ <br>
+     * <i><b>BUT</b>: "In addition an fo:block-container that does not generate
+     * an absolutely positioned area may have a sequence of zero or more
+     * fo:markers as its initial children." The latter refers to
+     * block-containers with absolute-position="absolute" or
+     * absolute-position="fixed".
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-        throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if ("marker".equals(localName)) {
-                if (commonAbsolutePosition.absolutePosition == EN_ABSOLUTE
-                        || commonAbsolutePosition.absolutePosition == EN_FIXED) {
+                if (this.commonAbsolutePosition.absolutePosition == EN_ABSOLUTE
+                        || this.commonAbsolutePosition.absolutePosition == EN_FIXED) {
                     getFOValidationEventProducer()
-                            .markerBlockContainerAbsolutePosition(this, locator);
+                            .markerBlockContainerAbsolutePosition(this,
+                            this.locator);
                 }
-                if (blockItemFound) {
-                   nodesOutOfOrderError(loc, "fo:marker", "(%block;)");
+                if (this.blockItemFound) {
+                    nodesOutOfOrderError(loc, "fo:marker", "(%block;)");
                 }
             } else if (!isBlockItem(FO_URI, localName)) {
                 invalidChildError(loc, FO_URI, localName);
             } else {
-                blockItemFound = true;
+                this.blockItemFound = true;
             }
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
-        if (!blockItemFound) {
+        if (!this.blockItemFound) {
             missingChildElementError("marker* (%block;)+");
         }
 
@@ -141,75 +152,78 @@ public class BlockContainer extends FObj implements BreakPropertySet {
     }
 
     /** @return <code>true</code> (BlockContainer can generate Reference Areas) */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
 
     /** @return the {@link CommonAbsolutePosition} */
     public CommonAbsolutePosition getCommonAbsolutePosition() {
-        return commonAbsolutePosition;
+        return this.commonAbsolutePosition;
     }
 
     /** @return the {@link CommonMarginBlock} */
     public CommonMarginBlock getCommonMarginBlock() {
-        return commonMarginBlock;
+        return this.commonMarginBlock;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /**
      * @return the "block-progression-dimension" property.
      */
     public LengthRangeProperty getBlockProgressionDimension() {
-        return blockProgressionDimension;
+        return this.blockProgressionDimension;
     }
 
     /** @return the "display-align" property. */
     public int getDisplayAlign() {
-        return displayAlign;
+        return this.displayAlign;
     }
 
     /** @return the "break-after" property. */
+    @Override
     public int getBreakAfter() {
-        return breakAfter;
+        return this.breakAfter;
     }
 
     /** @return the "break-before" property. */
+    @Override
     public int getBreakBefore() {
-        return breakBefore;
+        return this.breakBefore;
     }
 
-    /** @return the "keep-with-next" property.  */
+    /** @return the "keep-with-next" property. */
     public KeepProperty getKeepWithNext() {
-        return keepWithNext;
+        return this.keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property.  */
+    /** @return the "keep-with-previous" property. */
     public KeepProperty getKeepWithPrevious() {
-        return keepWithPrevious;
+        return this.keepWithPrevious;
     }
 
-    /** @return the "keep-together" property.  */
+    /** @return the "keep-together" property. */
     public KeepProperty getKeepTogether() {
-        return keepTogether;
+        return this.keepTogether;
     }
 
     /** @return the "inline-progression-dimension" property */
     public LengthRangeProperty getInlineProgressionDimension() {
-        return inlineProgressionDimension;
+        return this.inlineProgressionDimension;
     }
 
     /** @return the "overflow" property */
     public int getOverflow() {
-        return overflow;
+        return this.overflow;
     }
 
     /** @return the "reference-orientation" property */
     public int getReferenceOrientation() {
-        return referenceOrientation.getValue();
+        return this.referenceOrientation.getValue();
     }
 
     /** @return the "span" property */
@@ -219,29 +233,30 @@ public class BlockContainer extends FObj implements BreakPropertySet {
 
     /**
      * @return the "fox:disable-column-balancing" property, one of
-     * {@link Constants#EN_TRUE}, {@link Constants#EN_FALSE}
+     *         {@link Constants#EN_TRUE}, {@link Constants#EN_FALSE}
      */
     public int getDisableColumnBalancing() {
-        return disableColumnBalancing;
+        return this.disableColumnBalancing;
     }
-
 
     /** @return the "writing-mode" property */
     public int getWritingMode() {
-        return writingMode;
+        return this.writingMode;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "block-container";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_BLOCK_CONTAINER}
      */
+    @Override
     public int getNameId() {
         return FO_BLOCK_CONTAINER;
     }
 }
-

@@ -26,17 +26,20 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-import java.util.Map;
+import java.io.IOException;
+
+//import org.apache.fop.render.rtf.rtflib.jfor.main.JForVersionInfo;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.io.Writer;
-import java.io.IOException;
-//import org.apache.fop.render.rtf.rtflib.jfor.main.JForVersionInfo;
+import java.util.Map;
 
-/**  RTF file header, contains style, font and other document-level information.
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
- *  @author Andreas Putz a.putz@skynamics.com
- *  @author Marc Wilhelm Kuester
+/**
+ * RTF file header, contains style, font and other document-level information.
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * @author Andreas Putz a.putz@skynamics.com
+ * @author Marc Wilhelm Kuester
  */
 
 class RtfHeader extends RtfContainer {
@@ -44,16 +47,17 @@ class RtfHeader extends RtfContainer {
     private final Map userProperties = new HashMap();
 
     /** Create an RTF header */
-    RtfHeader(RtfFile f, Writer w) throws IOException {
+    RtfHeader(final RtfFile f, final Writer w) throws IOException {
         super(f, w);
         new RtfFontTable(this, w);
         new RtfGenerator(this, w);
-//        m_userProperties.put("jforVersion",JForVersionInfo.getLongVersionInfo());
+        // m_userProperties.put("jforVersion",JForVersionInfo.getLongVersionInfo());
     }
 
     /** Overridden to write our own data before our children's data */
+    @Override
     protected void writeRtfContent() throws IOException {
-        writeControlWord(charset);
+        writeControlWord(this.charset);
         writeUserProperties();
         RtfColorTable.getInstance().writeColors(this);
         super.writeRtfContent();
@@ -65,20 +69,21 @@ class RtfHeader extends RtfContainer {
 
     /** write user properties if any */
     private void writeUserProperties() throws IOException {
-        if (userProperties.size() > 0) {
+        if (this.userProperties.size() > 0) {
             writeGroupMark(true);
             writeStarControlWord("userprops");
-            for (Iterator it = userProperties.entrySet().iterator(); it.hasNext();) {
-                final Map.Entry entry = (Map.Entry)it.next();
+            for (final Iterator it = this.userProperties.entrySet().iterator(); it
+                    .hasNext();) {
+                final Map.Entry entry = (Map.Entry) it.next();
                 writeGroupMark(true);
                 writeControlWord("propname");
-                RtfStringConverter.getInstance().writeRtfString(writer,
+                RtfStringConverter.getInstance().writeRtfString(this.writer,
                         entry.getKey().toString());
                 writeGroupMark(false);
                 writeControlWord("proptype30");
                 writeGroupMark(true);
                 writeControlWord("staticval");
-                RtfStringConverter.getInstance().writeRtfString(writer,
+                RtfStringConverter.getInstance().writeRtfString(this.writer,
                         entry.getValue().toString());
                 writeGroupMark(false);
             }
@@ -86,27 +91,28 @@ class RtfHeader extends RtfContainer {
         }
     }
 
-    /** write directly to our Writer
-     *  TODO should check that this done at the right point, or even better, store
-     *  what is written here to render it in writeRtfContent. <-- it is for the color table
+    /**
+     * write directly to our Writer TODO should check that this done at the
+     * right point, or even better, store what is written here to render it in
+     * writeRtfContent. <-- it is for the color table
      */
-    void write(String toWrite) throws IOException {
-        writer.write(toWrite);
+    void write(final String toWrite) throws IOException {
+        this.writer.write(toWrite);
     }
 
     /** write to our Writer using an RtfStringConverter */
-    void writeRtfString(String toWrite) throws IOException {
-        RtfStringConverter.getInstance().writeRtfString(writer, toWrite);
+    void writeRtfString(final String toWrite) throws IOException {
+        RtfStringConverter.getInstance().writeRtfString(this.writer, toWrite);
     }
 
     /**
-     *write properties for footnote handling
+     * write properties for footnote handling
      */
     private void writeFootnoteProperties() throws IOException {
         newLine();
-        writeControlWord("fet0");  //footnotes, not endnotes
-        writeControlWord("ftnbj"); //place footnotes at the end of the
-                                   //page (should be the default, but
-                                   //Word 2000 thinks otherwise)
+        writeControlWord("fet0"); // footnotes, not endnotes
+        writeControlWord("ftnbj"); // place footnotes at the end of the
+        // page (should be the default, but
+        // Word 2000 thinks otherwise)
     }
 }

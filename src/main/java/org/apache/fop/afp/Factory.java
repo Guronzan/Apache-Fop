@@ -21,8 +21,6 @@ package org.apache.fop.afp;
 
 import java.io.OutputStream;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.fop.afp.goca.GraphicsData;
 import org.apache.fop.afp.ioca.ImageContent;
 import org.apache.fop.afp.ioca.ImageRasterData;
@@ -65,9 +63,6 @@ import org.apache.fop.afp.util.StringUtils;
  */
 public class Factory {
 
-    /** Static logging instance */
-    private static final Log log = LogFactory.getLog(Factory.class);
-
     private static final String OBJECT_ENVIRONMENT_GROUP_NAME_PREFIX = "OEG";
 
     private static final String ACTIVE_ENVIRONMENT_GROUP_NAME_PREFIX = "AEG";
@@ -75,10 +70,6 @@ public class Factory {
     private static final String IMAGE_NAME_PREFIX = "IMG";
 
     private static final String GRAPHIC_NAME_PREFIX = "GRA";
-
-    private static final String BARCODE_NAME_PREFIX = "BAR";
-
-//    private static final String OTHER_NAME_PREFIX = "OTH";
 
     private static final String OBJECT_CONTAINER_NAME_PREFIX = "OC";
 
@@ -99,7 +90,6 @@ public class Factory {
     private static final String IM_IMAGE_NAME_PREFIX = "IMIMG";
 
     private static final String IMAGE_SEGMENT_NAME_PREFIX = "IS";
-
 
     /** the page group count */
     private int pageGroupCount = 0;
@@ -155,9 +145,9 @@ public class Factory {
      * @return a new {@link ImageObject}
      */
     public ImageObject createImageObject() {
-        String name = IMAGE_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++imageCount), '0', 5);
-        ImageObject imageObject = new ImageObject(this, name);
+        final String name = IMAGE_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.imageCount), '0', 5);
+        final ImageObject imageObject = new ImageObject(this, name);
         return imageObject;
     }
 
@@ -167,9 +157,9 @@ public class Factory {
      * @return a new {@link IMImageObject}
      */
     public IMImageObject createIMImageObject() {
-        String name = IM_IMAGE_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++imImageCount), '0', 3);
-        IMImageObject imImageObject = new IMImageObject(name);
+        final String name = IM_IMAGE_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.imImageCount), '0', 3);
+        final IMImageObject imImageObject = new IMImageObject(name);
         return imImageObject;
     }
 
@@ -179,9 +169,9 @@ public class Factory {
      * @return a new {@link GraphicsObject}
      */
     public GraphicsObject createGraphicsObject() {
-        String name = GRAPHIC_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++graphicCount), '0', 5);
-        GraphicsObject graphicsObj = new GraphicsObject(this, name);
+        final String name = GRAPHIC_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.graphicCount), '0', 5);
+        final GraphicsObject graphicsObj = new GraphicsObject(this, name);
         return graphicsObj;
     }
 
@@ -191,18 +181,20 @@ public class Factory {
      * @return a new {@link ObjectContainer}
      */
     public ObjectContainer createObjectContainer() {
-        String name = OBJECT_CONTAINER_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++objectContainerCount), '0', 6);
+        final String name = OBJECT_CONTAINER_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.objectContainerCount),
+                        '0', 6);
         return new ObjectContainer(this, name);
     }
 
     /**
      * Creates a new MO:DCA {@link ResourceObject}
      *
-     * @param resourceName the resource object name
+     * @param resourceName
+     *            the resource object name
      * @return a new {@link ResourceObject}
      */
-    public ResourceObject createResource(String resourceName) {
+    public ResourceObject createResource(final String resourceName) {
         return new ResourceObject(resourceName);
     }
 
@@ -212,36 +204,47 @@ public class Factory {
      * @return a new {@link ResourceObject}
      */
     public ResourceObject createResource() {
-        String name = RESOURCE_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++resourceCount), '0', 5);
+        final String name = RESOURCE_NAME_PREFIX
+                + StringUtils
+                .lpad(String.valueOf(++this.resourceCount), '0', 5);
         return createResource(name);
     }
 
     /**
      * Creates a new MO:DCA {@link PageGroup}
-     * @param tleSequence current start tle sequence number within stream
+     *
+     * @param tleSequence
+     *            current start tle sequence number within stream
      * @return a new {@link PageGroup}
      */
-    public PageGroup createPageGroup(int tleSequence) {
-        String name = PAGE_GROUP_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++pageGroupCount), '0', 5);
+    public PageGroup createPageGroup(final int tleSequence) {
+        final String name = PAGE_GROUP_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.pageGroupCount), '0',
+                        5);
         return new PageGroup(this, name, tleSequence);
     }
 
     /**
      * Creates a new MO:DCA {@link ActiveEnvironmentGroup}
      *
-     * @param width the page width
-     * @param height the page height
-     * @param widthRes the page width resolution
-     * @param heightRes the page height resolution
+     * @param width
+     *            the page width
+     * @param height
+     *            the page height
+     * @param widthRes
+     *            the page width resolution
+     * @param heightRes
+     *            the page height resolution
      * @return a new {@link ActiveEnvironmentGroup}
      */
-    public ActiveEnvironmentGroup createActiveEnvironmentGroup(
-            int width, int height, int widthRes, int heightRes) {
-        String name = ACTIVE_ENVIRONMENT_GROUP_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++activeEnvironmentGroupCount ), '0', 5);
-        return new ActiveEnvironmentGroup(this, name, width, height, widthRes, heightRes);
+    public ActiveEnvironmentGroup createActiveEnvironmentGroup(final int width,
+            final int height, final int widthRes, final int heightRes) {
+        final String name = ACTIVE_ENVIRONMENT_GROUP_NAME_PREFIX
+                + StringUtils.lpad(
+                        String.valueOf(++this.activeEnvironmentGroupCount),
+                        '0', 5);
+        return new ActiveEnvironmentGroup(this, name, width, height, widthRes,
+                heightRes);
     }
 
     /**
@@ -250,20 +253,24 @@ public class Factory {
      * @return a new {@link ResourceGroup}
      */
     public ResourceGroup createResourceGroup() {
-        String name = RESOURCE_GROUP_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++resourceGroupCount), '0', 6);
+        final String name = RESOURCE_GROUP_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.resourceGroupCount),
+                        '0', 6);
         return new ResourceGroup(name);
     }
 
     /**
      * Creates a new MO:DCA {@link StreamedResourceGroup}
      *
-     * @param os the outputstream of the streamed resource group
+     * @param os
+     *            the outputstream of the streamed resource group
      * @return a new {@link StreamedResourceGroup}
      */
-    public StreamedResourceGroup createStreamedResourceGroup(OutputStream os) {
-        String name = RESOURCE_GROUP_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++resourceGroupCount), '0', 6);
+    public StreamedResourceGroup createStreamedResourceGroup(
+            final OutputStream os) {
+        final String name = RESOURCE_GROUP_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.resourceGroupCount),
+                        '0', 6);
         return new StreamedResourceGroup(name, os);
     }
 
@@ -283,14 +290,14 @@ public class Factory {
      *
      * @return a new {@link PageObject}
      */
-    public PageObject createPage(int pageWidth, int pageHeight, int pageRotation,
-            int pageWidthRes, int pageHeightRes) {
-        String pageName = PAGE_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++pageCount), '0', 5);
+    public PageObject createPage(final int pageWidth, final int pageHeight,
+            final int pageRotation, final int pageWidthRes,
+            final int pageHeightRes) {
+        final String pageName = PAGE_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.pageCount), '0', 5);
         return new PageObject(this, pageName, pageWidth, pageHeight,
-            pageRotation, pageWidthRes, pageHeightRes);
+                pageRotation, pageWidthRes, pageHeightRes);
     }
-
 
     /**
      * Creates a new MO:DCA {@link PresentationTextObject}.
@@ -298,11 +305,11 @@ public class Factory {
      * @return a new {@link PresentationTextObject}
      */
     public PresentationTextObject createPresentationTextObject() {
-        String textObjectName = PRESENTATION_TEXT_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++textObjectCount), '0', 6);
+        final String textObjectName = PRESENTATION_TEXT_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.textObjectCount), '0',
+                        6);
         return new PresentationTextObject(textObjectName);
     }
-
 
     /**
      * Creates a new MO:DCA {@link Overlay}.
@@ -320,11 +327,11 @@ public class Factory {
      *
      * @return a new {@link Overlay}.
      */
-    public Overlay createOverlay(int width, int height,
-            int widthRes, int heightRes, int overlayRotation) {
-        String overlayName = OVERLAY_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++overlayCount), '0', 5);
-        Overlay overlay = new Overlay(this, overlayName, width, height,
+    public Overlay createOverlay(final int width, final int height,
+            final int widthRes, final int heightRes, final int overlayRotation) {
+        final String overlayName = OVERLAY_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.overlayCount), '0', 5);
+        final Overlay overlay = new Overlay(this, overlayName, width, height,
                 overlayRotation, widthRes, heightRes);
         return overlay;
     }
@@ -335,9 +342,10 @@ public class Factory {
      * @return a new {@link Document}
      */
     public Document createDocument() {
-        String documentName = DOCUMENT_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++documentCount), '0', 5);
-        Document document = new Document(this, documentName);
+        final String documentName = DOCUMENT_NAME_PREFIX
+                + StringUtils
+                .lpad(String.valueOf(++this.documentCount), '0', 5);
+        final Document document = new Document(this, documentName);
         return document;
     }
 
@@ -347,71 +355,92 @@ public class Factory {
      * @return a new {@link MapCodedFont}
      */
     public MapCodedFont createMapCodedFont() {
-        MapCodedFont mapCodedFont = new MapCodedFont();
+        final MapCodedFont mapCodedFont = new MapCodedFont();
         return mapCodedFont;
     }
 
     /**
      * Creates a MO:DCA {@link IncludePageSegment}
      *
-     * @param name the page segment name
-     * @param x the x coordinate
-     * @param y the y coordinate
+     * @param name
+     *            the page segment name
+     * @param x
+     *            the x coordinate
+     * @param y
+     *            the y coordinate
      *
      * @return a new {@link IncludePageSegment}
      */
-    public IncludePageSegment createIncludePageSegment(String name, int x, int y) {
-        IncludePageSegment includePageSegment = new IncludePageSegment(name, x, y);
+    public IncludePageSegment createIncludePageSegment(final String name,
+            final int x, final int y) {
+        final IncludePageSegment includePageSegment = new IncludePageSegment(
+                name, x, y);
         return includePageSegment;
     }
 
     /**
      * Creates a MO:DCA {@link IncludeObject}
      *
-     * @param name the name of this include object
+     * @param name
+     *            the name of this include object
      * @return a new {@link IncludeObject}
      */
-    public IncludeObject createInclude(String name) {
-        IncludeObject includeObject = new IncludeObject(name);
+    public IncludeObject createInclude(final String name) {
+        final IncludeObject includeObject = new IncludeObject(name);
         return includeObject;
     }
 
     /**
      * Creates a MO:DCA {@link TagLogicalElement}
      *
-     * @param name name of the element
-     * @param value value of the element
-     * @param tleSequence current start tle sequence number within stream*
+     * @param name
+     *            name of the element
+     * @param value
+     *            value of the element
+     * @param tleSequence
+     *            current start tle sequence number within stream*
      * @return a new {@link TagLogicalElement}
      */
-    public TagLogicalElement createTagLogicalElement(String name, String value, int tleSequence) {
-        TagLogicalElement tle = new TagLogicalElement(name, value, tleSequence);
+    public TagLogicalElement createTagLogicalElement(final String name,
+            final String value, final int tleSequence) {
+        final TagLogicalElement tle = new TagLogicalElement(name, value,
+                tleSequence);
         return tle;
     }
 
     /**
      * Creates a new {@link DataStream}
      *
-     * @param paintingState the AFP painting state
-     * @param outputStream an outputstream to write to
+     * @param paintingState
+     *            the AFP painting state
+     * @param outputStream
+     *            an outputstream to write to
      * @return a new {@link DataStream}
      */
-    public DataStream createDataStream(AFPPaintingState paintingState, OutputStream outputStream) {
-        DataStream dataStream = new DataStream(this, paintingState, outputStream);
+    public DataStream createDataStream(final AFPPaintingState paintingState,
+            final OutputStream outputStream) {
+        final DataStream dataStream = new DataStream(this, paintingState,
+                outputStream);
         return dataStream;
     }
 
     /**
      * Creates a new MO:DCA {@link PageDescriptor}
      *
-     * @param width the page width.
-     * @param height the page height.
-     * @param widthRes the page width resolution.
-     * @param heightRes the page height resolution.
+     * @param width
+     *            the page width.
+     * @param height
+     *            the page height.
+     * @param widthRes
+     *            the page width resolution.
+     * @param heightRes
+     *            the page height resolution.
      * @return a new {@link PageDescriptor}
      */
-    public PageDescriptor createPageDescriptor(int width, int height, int widthRes, int heightRes) {
-        PageDescriptor pageDescriptor = new PageDescriptor(width, height, widthRes, heightRes);
+    public PageDescriptor createPageDescriptor(final int width,
+            final int height, final int widthRes, final int heightRes) {
+        final PageDescriptor pageDescriptor = new PageDescriptor(width, height,
+                widthRes, heightRes);
         return pageDescriptor;
     }
 
@@ -421,9 +450,12 @@ public class Factory {
      * @return a new {@link ObjectEnvironmentGroup}
      */
     public ObjectEnvironmentGroup createObjectEnvironmentGroup() {
-        String oegName = OBJECT_ENVIRONMENT_GROUP_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++objectEnvironmentGroupCount), '0', 5);
-        ObjectEnvironmentGroup objectEnvironmentGroup = new ObjectEnvironmentGroup(oegName);
+        final String oegName = OBJECT_ENVIRONMENT_GROUP_NAME_PREFIX
+                + StringUtils.lpad(
+                        String.valueOf(++this.objectEnvironmentGroupCount),
+                        '0', 5);
+        final ObjectEnvironmentGroup objectEnvironmentGroup = new ObjectEnvironmentGroup(
+                oegName);
         return objectEnvironmentGroup;
     }
 
@@ -433,53 +465,64 @@ public class Factory {
      * @return a new {@link GraphicsData}
      */
     public GraphicsData createGraphicsData() {
-        GraphicsData graphicsData = new GraphicsData();
+        final GraphicsData graphicsData = new GraphicsData();
         return graphicsData;
     }
 
     /**
      * Creates a new {@link ObjectAreaDescriptor}
      *
-     * @param width the object width.
-     * @param height the object height.
-     * @param widthRes the object width resolution.
-     * @param heightRes the object height resolution.
+     * @param width
+     *            the object width.
+     * @param height
+     *            the object height.
+     * @param widthRes
+     *            the object width resolution.
+     * @param heightRes
+     *            the object height resolution.
      * @return a new {@link ObjectAreaDescriptor}
      */
-    public ObjectAreaDescriptor createObjectAreaDescriptor(
-            int width, int height, int widthRes, int heightRes) {
-        ObjectAreaDescriptor objectAreaDescriptor
-            = new ObjectAreaDescriptor(width, height, widthRes, heightRes);
+    public ObjectAreaDescriptor createObjectAreaDescriptor(final int width,
+            final int height, final int widthRes, final int heightRes) {
+        final ObjectAreaDescriptor objectAreaDescriptor = new ObjectAreaDescriptor(
+                width, height, widthRes, heightRes);
         return objectAreaDescriptor;
     }
 
     /**
      * Creates a new {@link ObjectAreaPosition}
      *
-     * @param x the x coordinate.
-     * @param y the y coordinate.
-     * @param rotation the coordinate system rotation (must be 0, 90, 180, 270).
+     * @param x
+     *            the x coordinate.
+     * @param y
+     *            the y coordinate.
+     * @param rotation
+     *            the coordinate system rotation (must be 0, 90, 180, 270).
      * @return a new {@link ObjectAreaPosition}
      */
-    public ObjectAreaPosition createObjectAreaPosition(int x, int y,
-            int rotation) {
-        ObjectAreaPosition objectAreaPosition = new ObjectAreaPosition(
-                x, y, rotation);
+    public ObjectAreaPosition createObjectAreaPosition(final int x,
+            final int y, final int rotation) {
+        final ObjectAreaPosition objectAreaPosition = new ObjectAreaPosition(x,
+                y, rotation);
         return objectAreaPosition;
     }
 
     /**
      * Creates a new {@link ImageDataDescriptor}
      *
-     * @param width the image width
-     * @param height the image height
-     * @param widthRes the x resolution of the image
-     * @param heightRes the y resolution of the image
+     * @param width
+     *            the image width
+     * @param height
+     *            the image height
+     * @param widthRes
+     *            the x resolution of the image
+     * @param heightRes
+     *            the y resolution of the image
      * @return a new {@link ImageDataDescriptor}
      */
-    public ImageDataDescriptor createImageDataDescriptor(
-            int width, int height, int widthRes, int heightRes) {
-        ImageDataDescriptor imageDataDescriptor = new ImageDataDescriptor(
+    public ImageDataDescriptor createImageDataDescriptor(final int width,
+            final int height, final int widthRes, final int heightRes) {
+        final ImageDataDescriptor imageDataDescriptor = new ImageDataDescriptor(
                 width, height, widthRes, heightRes);
         return imageDataDescriptor;
     }
@@ -487,17 +530,24 @@ public class Factory {
     /**
      * Creates a new GOCA {@link GraphicsDataDescriptor}
      *
-     * @param xlwind the left edge of the graphics window
-     * @param xrwind the right edge of the graphics window
-     * @param ybwind the top edge of the graphics window
-     * @param ytwind the bottom edge of the graphics window
-     * @param widthRes the x resolution of the graphics window
-     * @param heightRes the y resolution of the graphics window
+     * @param xlwind
+     *            the left edge of the graphics window
+     * @param xrwind
+     *            the right edge of the graphics window
+     * @param ybwind
+     *            the top edge of the graphics window
+     * @param ytwind
+     *            the bottom edge of the graphics window
+     * @param widthRes
+     *            the x resolution of the graphics window
+     * @param heightRes
+     *            the y resolution of the graphics window
      * @return a new {@link GraphicsDataDescriptor}
      */
     public GraphicsDataDescriptor createGraphicsDataDescriptor(
-            int xlwind, int xrwind, int ybwind, int ytwind, int widthRes, int heightRes) {
-        GraphicsDataDescriptor graphicsDataDescriptor = new GraphicsDataDescriptor(
+            final int xlwind, final int xrwind, final int ybwind,
+            final int ytwind, final int widthRes, final int heightRes) {
+        final GraphicsDataDescriptor graphicsDataDescriptor = new GraphicsDataDescriptor(
                 xlwind, xrwind, ybwind, ytwind, widthRes, heightRes);
         return graphicsDataDescriptor;
     }
@@ -505,27 +555,34 @@ public class Factory {
     /**
      * Creates a new MO:DCA {@link ContainerDataDescriptor}
      *
-     * @param dataWidth the container data width
-     * @param dataHeight the container data height
-     * @param widthRes the container data width resolution
-     * @param heightRes the container data height resolution
+     * @param dataWidth
+     *            the container data width
+     * @param dataHeight
+     *            the container data height
+     * @param widthRes
+     *            the container data width resolution
+     * @param heightRes
+     *            the container data height resolution
      * @return a new {@link ContainerDataDescriptor}
      */
     public ContainerDataDescriptor createContainerDataDescriptor(
-            int dataWidth, int dataHeight, int widthRes, int heightRes) {
-        ContainerDataDescriptor containerDataDescriptor
-            = new ContainerDataDescriptor(dataWidth, dataHeight, widthRes, heightRes);
+            final int dataWidth, final int dataHeight, final int widthRes,
+            final int heightRes) {
+        final ContainerDataDescriptor containerDataDescriptor = new ContainerDataDescriptor(
+                dataWidth, dataHeight, widthRes, heightRes);
         return containerDataDescriptor;
     }
 
     /**
      * Creates a new MO:DCA {@link MapContainerData}
      *
-     * @param optionValue the option value
+     * @param optionValue
+     *            the option value
      * @return a new {@link MapContainerData}
      */
-    public MapContainerData createMapContainerData(byte optionValue) {
-        MapContainerData mapContainerData = new MapContainerData(optionValue);
+    public MapContainerData createMapContainerData(final byte optionValue) {
+        final MapContainerData mapContainerData = new MapContainerData(
+                optionValue);
         return mapContainerData;
     }
 
@@ -535,7 +592,7 @@ public class Factory {
      * @return a new {@link MapDataResource}
      */
     public MapDataResource createMapDataResource() {
-        MapDataResource mapDataResource = new MapDataResource();
+        final MapDataResource mapDataResource = new MapDataResource();
         return mapDataResource;
     }
 
@@ -545,10 +602,10 @@ public class Factory {
      * @return a new {@link PresentationTextDescriptor}
      */
     public PresentationTextDescriptor createPresentationTextDataDescriptor(
-            int width, int height, int widthRes, int heightRes) {
-        PresentationTextDescriptor presentationTextDescriptor
-            = new PresentationTextDescriptor(width, height,
-                widthRes, heightRes);
+            final int width, final int height, final int widthRes,
+            final int heightRes) {
+        final PresentationTextDescriptor presentationTextDescriptor = new PresentationTextDescriptor(
+                width, height, widthRes, heightRes);
         return presentationTextDescriptor;
     }
 
@@ -558,19 +615,19 @@ public class Factory {
      * @return a new {@link PresentationEnvironmentControl}
      */
     public PresentationEnvironmentControl createPresentationEnvironmentControl() {
-        PresentationEnvironmentControl presentationEnvironmentControl
-            = new PresentationEnvironmentControl();
+        final PresentationEnvironmentControl presentationEnvironmentControl = new PresentationEnvironmentControl();
         return presentationEnvironmentControl;
     }
 
     /**
      * Creates a new MO:DCA {@link InvokeMediumMap}
      *
-     * @param name the object name
+     * @param name
+     *            the object name
      * @return a new {@link InvokeMediumMap}
      */
-    public InvokeMediumMap createInvokeMediumMap(String name) {
-        InvokeMediumMap invokeMediumMap = new InvokeMediumMap(name);
+    public InvokeMediumMap createInvokeMediumMap(final String name) {
+        final InvokeMediumMap invokeMediumMap = new InvokeMediumMap(name);
         return invokeMediumMap;
     }
 
@@ -580,7 +637,7 @@ public class Factory {
      * @return a new {@link ResourceEnvironmentGroup}
      */
     public ResourceEnvironmentGroup createResourceEnvironmentGroup() {
-        ResourceEnvironmentGroup resourceEnvironmentGroup = new ResourceEnvironmentGroup();
+        final ResourceEnvironmentGroup resourceEnvironmentGroup = new ResourceEnvironmentGroup();
         return resourceEnvironmentGroup;
     }
 
@@ -590,9 +647,10 @@ public class Factory {
      * @return a new {@link ImageSegment}
      */
     public ImageSegment createImageSegment() {
-        String name = IMAGE_SEGMENT_NAME_PREFIX
-        + StringUtils.lpad(String.valueOf(++imageSegmentCount), '0', 2);
-        ImageSegment imageSegment = new ImageSegment(this, name);
+        final String name = IMAGE_SEGMENT_NAME_PREFIX
+                + StringUtils.lpad(String.valueOf(++this.imageSegmentCount),
+                        '0', 2);
+        final ImageSegment imageSegment = new ImageSegment(this, name);
         return imageSegment;
     }
 
@@ -602,34 +660,39 @@ public class Factory {
      * @return an {@link ImageContent}
      */
     public ImageContent createImageContent() {
-        ImageContent imageContent = new ImageContent();
+        final ImageContent imageContent = new ImageContent();
         return imageContent;
     }
 
     /**
      * Creates a new IOCA {@link ImageRasterData}
      *
-     * @param rasterData raster data
+     * @param rasterData
+     *            raster data
      * @return a new {@link ImageRasterData}
      */
-    public ImageRasterData createImageRasterData(byte[] rasterData) {
-        ImageRasterData imageRasterData = new ImageRasterData(rasterData);
+    public ImageRasterData createImageRasterData(final byte[] rasterData) {
+        final ImageRasterData imageRasterData = new ImageRasterData(rasterData);
         return imageRasterData;
     }
 
     /**
      * Creates an new IOCA {@link ImageSizeParameter}.
      *
-     * @param hsize The horizontal size of the image.
-     * @param vsize The vertical size of the image.
-     * @param hresol The horizontal resolution of the image.
-     * @param vresol The vertical resolution of the image.
+     * @param hsize
+     *            The horizontal size of the image.
+     * @param vsize
+     *            The vertical size of the image.
+     * @param hresol
+     *            The horizontal resolution of the image.
+     * @param vresol
+     *            The vertical resolution of the image.
      * @return a new {@link ImageSizeParameter}
      */
-    public ImageSizeParameter createImageSizeParameter(int hsize, int vsize,
-            int hresol, int vresol) {
-        ImageSizeParameter imageSizeParameter
-            = new ImageSizeParameter(hsize, vsize, hresol, vresol);
+    public ImageSizeParameter createImageSizeParameter(final int hsize,
+            final int vsize, final int hresol, final int vresol) {
+        final ImageSizeParameter imageSizeParameter = new ImageSizeParameter(
+                hsize, vsize, hresol, vresol);
         return imageSizeParameter;
     }
 

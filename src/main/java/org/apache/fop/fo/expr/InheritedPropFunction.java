@@ -30,8 +30,9 @@ public class InheritedPropFunction extends FunctionBase {
 
     /**
      * @return 1 (maximum number of arguments for the inherited-property-value
-     * function)
+     *         function)
      */
+    @Override
     public int nbArgs() {
         return 1;
     }
@@ -39,29 +40,35 @@ public class InheritedPropFunction extends FunctionBase {
     /**
      * @return true (allow padding of arglist with property name)
      */
+    @Override
     public boolean padArgsWithPropertyName() {
         return true;
     }
 
     /**
      *
-     * @param args arguments to be evaluated
-     * @param pInfo PropertyInfo object to be evaluated
+     * @param args
+     *            arguments to be evaluated
+     * @param pInfo
+     *            PropertyInfo object to be evaluated
      * @return Property satisfying the inherited-property-value
-     * @throws PropertyException for invalid parameter
+     * @throws PropertyException
+     *             for invalid parameter
      */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-        String propName = args[0].getString();
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        final String propName = args[0].getString();
         if (propName == null) {
-            throw new PropertyException("Incorrect parameter to inherited-property-value function");
+            throw new PropertyException(
+                    "Incorrect parameter to inherited-property-value function");
         }
 
-        int propId = FOPropertyMapping.getPropertyId(propName);
+        final int propId = FOPropertyMapping.getPropertyId(propName);
         if (propId < 0) {
             throw new PropertyException(
                     "Unknown property name used with inherited-property-value function: "
-                        + propName);
+                            + propName);
         }
         return pInfo.getPropertyList().getInherited(propId);
     }

@@ -26,16 +26,15 @@ import java.util.Set;
 
 import javax.xml.transform.Source;
 
-
 /**
  * Abstract base class for custom fonts loaded from files, for example.
  */
-public abstract class CustomFont extends Typeface
-            implements FontDescriptor, MutableFont {
+public abstract class CustomFont extends Typeface implements FontDescriptor,
+        MutableFont {
 
     private String fontName = null;
     private String fullName = null;
-    private Set familyNames = null; //Set<String>
+    private Set<String> familyNames = null;
     private String fontSubName = null;
     private String embedFileName = null;
     private String embedResourceName = null;
@@ -45,9 +44,9 @@ public abstract class CustomFont extends Typeface
     private int xHeight = 0;
     private int ascender = 0;
     private int descender = 0;
-    private int[] fontBBox = {0, 0, 0, 0};
+    private int[] fontBBox = { 0, 0, 0, 0 };
     private int flags = 4;
-    private int weight = 0; //0 means unknown weight
+    private int weight = 0; // 0 means unknown weight
     private int stemV = 0;
     private int italicAngle = 0;
     private int missingWidth = 0;
@@ -55,35 +54,41 @@ public abstract class CustomFont extends Typeface
     private int firstChar = 0;
     private int lastChar = 255;
 
-    private Map kerning;
+    private Map<Integer, Map> kerning;
 
     private boolean useKerning = true;
 
     /** {@inheritDoc} */
+    @Override
     public String getFontName() {
-        return fontName;
+        return this.fontName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEmbedFontName() {
         return getFontName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFullName() {
-        return fullName;
+        return this.fullName;
     }
 
     /**
      * Returns the font family names.
+     *
      * @return the font family names (a Set of Strings)
      */
-    public Set getFamilyNames() {
+    @Override
+    public Set<String> getFamilyNames() {
         return Collections.unmodifiableSet(this.familyNames);
     }
 
     /**
      * Returns the font family name stripped of whitespace.
+     *
      * @return the stripped font family
      * @see FontUtil#stripWhiteSpace(String)
      */
@@ -93,33 +98,37 @@ public abstract class CustomFont extends Typeface
 
     /**
      * Returns font's subfamily name.
+     *
      * @return the font's subfamily name
      */
     public String getFontSubName() {
-        return fontSubName;
+        return this.fontSubName;
     }
 
     /**
      * Returns an URI representing an embeddable font file. The URI will often
      * be a filename or an URL.
+     *
      * @return URI to an embeddable font file or null if not available.
      */
     public String getEmbedFileName() {
-        return embedFileName;
+        return this.embedFileName;
     }
 
     /**
      * Returns a Source representing an embeddable font file.
+     *
      * @return Source for an embeddable font file
-     * @throws IOException if embedFileName is not null but Source is not found
+     * @throws IOException
+     *             if embedFileName is not null but Source is not found
      */
     public Source getEmbedFileSource() throws IOException {
         Source result = null;
-        if (resolver != null && embedFileName != null) {
-            result = resolver.resolve(embedFileName);
+        if (this.resolver != null && this.embedFileName != null) {
+            result = this.resolver.resolve(this.embedFileName);
             if (result == null) {
                 throw new IOException("Unable to resolve Source '"
-                        + embedFileName + "' for embedded font");
+                        + this.embedFileName + "' for embedded font");
             }
         }
         return result;
@@ -127,85 +136,99 @@ public abstract class CustomFont extends Typeface
 
     /**
      * Returns the lookup name to an embeddable font file available as a
-     * resource.
-     * (todo) Remove this method, this should be done using a resource: URI.
+     * resource. (todo) Remove this method, this should be done using a
+     * resource: URI.
+     *
      * @return the lookup name
      */
     public String getEmbedResourceName() {
-        return embedResourceName;
+        return this.embedResourceName;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getAscender() {
-        return ascender;
+        return this.ascender;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getDescender() {
-        return descender;
+        return this.descender;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getCapHeight() {
-        return capHeight;
+        return this.capHeight;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getAscender(int size) {
-        return size * ascender;
+    @Override
+    public int getAscender(final int size) {
+        return size * this.ascender;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getDescender(int size) {
-        return size * descender;
+    @Override
+    public int getDescender(final int size) {
+        return size * this.descender;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getCapHeight(int size) {
-        return size * capHeight;
+    @Override
+    public int getCapHeight(final int size) {
+        return size * this.capHeight;
     }
 
     /**
      * {@inheritDoc}
      */
-    public int getXHeight(int size) {
-        return size * xHeight;
+    @Override
+    public int getXHeight(final int size) {
+        return size * this.xHeight;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int[] getFontBBox() {
-        return fontBBox;
+        return this.fontBBox;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getFlags() {
-        return flags;
+        return this.flags;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isSymbolicFont() {
-        return ((getFlags() & 4) != 0) || "ZapfDingbatsEncoding".equals(getEncodingName());
-        //Note: The check for ZapfDingbats is necessary as the PFM does not reliably indicate
-        //if a font is symbolic.
+        return (getFlags() & 4) != 0
+                || "ZapfDingbatsEncoding".equals(getEncodingName());
+        // Note: The check for ZapfDingbats is necessary as the PFM does not
+        // reliably indicate
+        // if a font is symbolic.
     }
 
     /**
-     * Returns the font weight (100, 200...800, 900). This value may be different from the
-     * one that was actually used to register the font.
+     * Returns the font weight (100, 200...800, 900). This value may be
+     * different from the one that was actually used to register the font.
+     *
      * @return the font weight (or 0 if the font weight is unknown)
      */
     public int getWeight() {
@@ -215,69 +238,79 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStemV() {
-        return stemV;
+        return this.stemV;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getItalicAngle() {
-        return italicAngle;
+        return this.italicAngle;
     }
 
     /**
      * Returns the width to be used when no width is available.
+     *
      * @return a character width
      */
     public int getMissingWidth() {
-        return missingWidth;
+        return this.missingWidth;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public FontType getFontType() {
-        return fontType;
+        return this.fontType;
     }
 
     /**
      * Returns the index of the first character defined in this font.
+     *
      * @return the index of the first character
      */
     public int getFirstChar() {
-        return firstChar;
+        return this.firstChar;
     }
 
     /**
      * Returns the index of the last character defined in this font.
+     *
      * @return the index of the last character
      */
     public int getLastChar() {
-        return lastChar;
+        return this.lastChar;
     }
 
     /**
      * Used to determine if kerning is enabled.
+     *
      * @return True if kerning is enabled.
      */
     public boolean isKerningEnabled() {
-        return useKerning;
+        return this.useKerning;
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public final boolean hasKerningInfo() {
-        return (isKerningEnabled() && (kerning != null) && !kerning.isEmpty());
+        return isKerningEnabled() && this.kerning != null
+                && !this.kerning.isEmpty();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public final Map getKerningInfo() {
         if (hasKerningInfo()) {
-            return kerning;
+            return this.kerning;
         } else {
             return java.util.Collections.EMPTY_MAP;
         }
@@ -286,91 +319,107 @@ public abstract class CustomFont extends Typeface
     /* ---- MutableFont interface ---- */
 
     /** {@inheritDoc} */
-    public void setFontName(String name) {
+    @Override
+    public void setFontName(final String name) {
         this.fontName = name;
     }
 
     /** {@inheritDoc} */
-    public void setFullName(String name) {
+    @Override
+    public void setFullName(final String name) {
         this.fullName = name;
     }
 
     /** {@inheritDoc} */
-    public void setFamilyNames(Set names) {
-        this.familyNames = new java.util.HashSet(names);
+    @Override
+    public void setFamilyNames(final Set names) {
+        this.familyNames = new java.util.HashSet<>(names);
     }
 
     /**
      * Sets the font's subfamily name.
-     * @param subFamilyName the subfamily name of the font
+     *
+     * @param subFamilyName
+     *            the subfamily name of the font
      */
-    public void setFontSubFamilyName(String subFamilyName) {
+    public void setFontSubFamilyName(final String subFamilyName) {
         this.fontSubName = subFamilyName;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setEmbedFileName(String path) {
+    @Override
+    public void setEmbedFileName(final String path) {
         this.embedFileName = path;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setEmbedResourceName(String name) {
+    @Override
+    public void setEmbedResourceName(final String name) {
         this.embedResourceName = name;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setCapHeight(int capHeight) {
+    @Override
+    public void setCapHeight(final int capHeight) {
         this.capHeight = capHeight;
     }
 
     /**
      * Returns the XHeight value of the font.
-     * @param xHeight the XHeight value
+     *
+     * @param xHeight
+     *            the XHeight value
      */
-    public void setXHeight(int xHeight) {
+    public void setXHeight(final int xHeight) {
         this.xHeight = xHeight;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setAscender(int ascender) {
+    @Override
+    public void setAscender(final int ascender) {
         this.ascender = ascender;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setDescender(int descender) {
+    @Override
+    public void setDescender(final int descender) {
         this.descender = descender;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFontBBox(int[] bbox) {
+    @Override
+    public void setFontBBox(final int[] bbox) {
         this.fontBBox = bbox;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFlags(int flags) {
+    @Override
+    public void setFlags(final int flags) {
         this.flags = flags;
     }
 
     /**
      * Sets the font weight. Valid values are 100, 200...800, 900.
-     * @param weight the font weight
+     *
+     * @param weight
+     *            the font weight
      */
     public void setWeight(int weight) {
-        weight = (weight / 100) * 100;
+        weight = weight / 100 * 100;
         weight = Math.max(100, weight);
         weight = Math.min(900, weight);
         this.weight = weight;
@@ -379,76 +428,88 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
-    public void setStemV(int stemV) {
+    @Override
+    public void setStemV(final int stemV) {
         this.stemV = stemV;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setItalicAngle(int italicAngle) {
+    @Override
+    public void setItalicAngle(final int italicAngle) {
         this.italicAngle = italicAngle;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setMissingWidth(int width) {
+    @Override
+    public void setMissingWidth(final int width) {
         this.missingWidth = width;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFontType(FontType fontType) {
+    @Override
+    public void setFontType(final FontType fontType) {
         this.fontType = fontType;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setFirstChar(int index) {
+    @Override
+    public void setFirstChar(final int index) {
         this.firstChar = index;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setLastChar(int index) {
+    @Override
+    public void setLastChar(final int index) {
         this.lastChar = index;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setKerningEnabled(boolean enabled) {
+    @Override
+    public void setKerningEnabled(final boolean enabled) {
         this.useKerning = enabled;
     }
 
     /**
      * Sets the font resolver. Needed for URI resolution.
-     * @param resolver the font resolver
+     *
+     * @param resolver
+     *            the font resolver
      */
-    public void setResolver(FontResolver resolver) {
+    public void setResolver(final FontResolver resolver) {
         this.resolver = resolver;
     }
 
     /** {@inheritDoc} */
-    public void putKerningEntry(Integer key, Map value) {
-        if (kerning == null) {
-            kerning = new java.util.HashMap();
+    @Override
+    public void putKerningEntry(final Integer key, final Map value) {
+        if (this.kerning == null) {
+            this.kerning = new java.util.HashMap<>();
         }
         this.kerning.put(key, value);
     }
 
     /**
      * Replaces the existing kerning map with a new one.
-     * @param kerningMap the kerning map (Map<Integer, Map<Integer, Integer>, the integers are
-     *                          character codes)
+     *
+     * @param kerningMap
+     *            the kerning map (Map<Integer, Map<Integer, Integer>, the
+     *            integers are character codes)
      */
-    public void replaceKerningMap(Map kerningMap) {
+    public void replaceKerningMap(final Map<Integer, Map> kerningMap) {
         if (kerningMap == null) {
-            this.kerning = Collections.EMPTY_MAP;
+            this.kerning = Collections.emptyMap();
         } else {
             this.kerning = kerningMap;
         }

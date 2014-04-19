@@ -20,12 +20,17 @@
 package org.apache.fop.pdf;
 
 /**
- * PDF Filter exception.
- * This is used for exceptions relating to use a PDF filter.
+ * PDF Filter exception. This is used for exceptions relating to use a PDF
+ * filter.
  *
  * @author Eric SCHAEFFER
  */
 public class PDFFilterException extends Exception {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1918563911064982515L;
+
     /**
      * Create a basic filter exception.
      */
@@ -35,10 +40,10 @@ public class PDFFilterException extends Exception {
     /**
      * Create a filter exception with a message.
      *
-     * @param message the error message
+     * @param message
+     *            the error message
      */
-    public PDFFilterException(String message) {
+    public PDFFilterException(final String message) {
         super(message);
     }
 }
-

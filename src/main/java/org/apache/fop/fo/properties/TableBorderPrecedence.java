@@ -24,7 +24,7 @@ import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
-public class TableBorderPrecedence extends NumberProperty.Maker{
+public class TableBorderPrecedence extends NumberProperty.Maker {
     private static Property num0 = NumberProperty.getInstance(0);
     private static Property num1 = NumberProperty.getInstance(1);
     private static Property num2 = NumberProperty.getInstance(2);
@@ -33,7 +33,7 @@ public class TableBorderPrecedence extends NumberProperty.Maker{
     private static Property num5 = NumberProperty.getInstance(5);
     private static Property num6 = NumberProperty.getInstance(6);
 
-    public TableBorderPrecedence(int propId) {
+    public TableBorderPrecedence(final int propId) {
         super(propId);
     }
 
@@ -42,8 +42,10 @@ public class TableBorderPrecedence extends NumberProperty.Maker{
      *
      * {@inheritDoc}
      */
-    public Property make(PropertyList propertyList) throws PropertyException {
-        FObj fo = propertyList.getFObj();
+    @Override
+    public Property make(final PropertyList propertyList)
+            throws PropertyException {
+        final FObj fo = propertyList.getFObj();
         switch (fo.getNameId()) {
         case Constants.FO_TABLE:
             return num6;

@@ -20,43 +20,47 @@
 package org.apache.fop.fo.pagination;
 
 /**
- * This class uses the 'format', 'groupingSeparator', 'groupingSize',
- * and 'letterValue' properties on fo:page-sequence to return a String
- * corresponding to the supplied integer page number.
+ * This class uses the 'format', 'groupingSeparator', 'groupingSize', and
+ * 'letterValue' properties on fo:page-sequence to return a String corresponding
+ * to the supplied integer page number.
  */
 public class PageNumberGenerator {
 
-    private String format;
-    private char groupingSeparator;
-    private int groupingSize;
-    private int letterValue;
+    private final String format;
+    private final char groupingSeparator;
+    private final int groupingSize;
+    private final int letterValue;
 
     // constants
-    private static final int DECIMAL = 1;       // '0*1'
-    private static final int LOWERALPHA = 2;    // 'a'
-    private static final int UPPERALPHA = 3;    // 'A'
-    private static final int LOWERROMAN = 4;    // 'i'
-    private static final int UPPERROMAN = 5;    // 'I'
+    private static final int DECIMAL = 1; // '0*1'
+    private static final int LOWERALPHA = 2; // 'a'
+    private static final int UPPERALPHA = 3; // 'A'
+    private static final int LOWERROMAN = 4; // 'i'
+    private static final int UPPERROMAN = 5; // 'I'
 
     // flags
     private int formatType = DECIMAL;
-    private int minPadding = 0;    // for decimal formats
+    private int minPadding = 0; // for decimal formats
 
     // preloaded strings of zeros
-    private String[] zeros = {
-        "", "0", "00", "000", "0000", "00000"
-    };
+    private final String[] zeros = { "", "0", "00", "000", "0000", "00000" };
 
     /**
      * Main constructor. For further information on the parameters see the XSLT
      * specs (Number to String Conversion Attributes).
-     * @param format format for the page number
-     * @param groupingSeparator grouping separator
-     * @param groupingSize grouping size
-     * @param letterValue letter value
+     * 
+     * @param format
+     *            format for the page number
+     * @param groupingSeparator
+     *            grouping separator
+     * @param groupingSize
+     *            grouping size
+     * @param letterValue
+     *            letter value
      */
-    public PageNumberGenerator(String format, char groupingSeparator,
-                               int groupingSize, int letterValue) {
+    public PageNumberGenerator(final String format,
+            final char groupingSeparator, final int groupingSize,
+            final int letterValue) {
         this.format = format;
         this.groupingSeparator = groupingSeparator;
         this.groupingSize = groupingSize;
@@ -64,24 +68,24 @@ public class PageNumberGenerator {
 
         // the only accepted format strings are currently '0*1' 'a', 'A', 'i'
         // and 'I'
-        int fmtLen = format.length();
+        final int fmtLen = format.length();
         if (fmtLen == 1) {
             if (format.equals("1")) {
-                formatType = DECIMAL;
-                minPadding = 0;
+                this.formatType = DECIMAL;
+                this.minPadding = 0;
             } else if (format.equals("a")) {
-                formatType = LOWERALPHA;
+                this.formatType = LOWERALPHA;
             } else if (format.equals("A")) {
-                formatType = UPPERALPHA;
+                this.formatType = UPPERALPHA;
             } else if (format.equals("i")) {
-                formatType = LOWERROMAN;
+                this.formatType = LOWERROMAN;
             } else if (format.equals("I")) {
-                formatType = UPPERROMAN;
+                this.formatType = UPPERROMAN;
             } else {
                 // token not handled
-                //getLogger().debug("'format' token not recognized; using '1'");
-                formatType = DECIMAL;
-                minPadding = 0;
+                // getLogger().debug("'format' token not recognized; using '1'");
+                this.formatType = DECIMAL;
+                this.minPadding = 0;
             }
         } else {
             // only accepted token is '0+1'at this stage. Because of the
@@ -89,11 +93,11 @@ public class PageNumberGenerator {
             // loop
             for (int i = 0; i < fmtLen - 1; i++) {
                 if (format.charAt(i) != '0') {
-                    //getLogger().debug("'format' token not recognized; using '1'");
-                    formatType = DECIMAL;
-                    minPadding = 0;
+                    // getLogger().debug("'format' token not recognized; using '1'");
+                    this.formatType = DECIMAL;
+                    this.minPadding = 0;
                 } else {
-                    minPadding = fmtLen - 1;
+                    this.minPadding = fmtLen - 1;
                 }
             }
         }
@@ -101,26 +105,29 @@ public class PageNumberGenerator {
 
     /**
      * Formats a page number.
-     * @param number page number to format
+     * 
+     * @param number
+     *            page number to format
      * @return the formatted page number as a String
      */
-    public String makeFormattedPageNumber(int number) {
+    public String makeFormattedPageNumber(final int number) {
         String pn = null;
-        if (formatType == DECIMAL) {
+        if (this.formatType == DECIMAL) {
             pn = Integer.toString(number);
-            if (minPadding >= pn.length()) {
-                int nz = minPadding - pn.length() + 1;
-                pn = zeros[nz] + pn;
+            if (this.minPadding >= pn.length()) {
+                final int nz = this.minPadding - pn.length() + 1;
+                pn = this.zeros[nz] + pn;
             }
-        } else if ((formatType == LOWERROMAN) || (formatType == UPPERROMAN)) {
+        } else if (this.formatType == LOWERROMAN
+                || this.formatType == UPPERROMAN) {
             pn = makeRoman(number);
-            if (formatType == UPPERROMAN) {
+            if (this.formatType == UPPERROMAN) {
                 pn = pn.toUpperCase();
             }
         } else {
             // alphabetic
             pn = makeAlpha(number);
-            if (formatType == UPPERALPHA) {
+            if (this.formatType == UPPERALPHA) {
                 pn = pn.toUpperCase();
             }
         }
@@ -128,16 +135,13 @@ public class PageNumberGenerator {
     }
 
     private String makeRoman(int num) {
-        int[] arabic = {
-            1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1
-        };
-        String[] roman = {
-            "m", "cm", "d", "cd", "c", "xc", "l", "xl", "x", "ix", "v", "iv",
-            "i"
-        };
+        final int[] arabic = { 1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5,
+                4, 1 };
+        final String[] roman = { "m", "cm", "d", "cd", "c", "xc", "l", "xl",
+                "x", "ix", "v", "iv", "i" };
 
         int i = 0;
-        StringBuffer romanNumber = new StringBuffer();
+        final StringBuilder romanNumber = new StringBuilder();
 
         while (num > 0) {
             while (num >= arabic[i]) {
@@ -150,10 +154,10 @@ public class PageNumberGenerator {
     }
 
     private String makeAlpha(int num) {
-        String letters = "abcdefghijklmnopqrstuvwxyz";
-        StringBuffer alphaNumber = new StringBuffer();
+        final String letters = "abcdefghijklmnopqrstuvwxyz";
+        final StringBuilder alphaNumber = new StringBuilder();
 
-        int base = 26;
+        final int base = 26;
         int rem = 0;
 
         num--;
@@ -170,4 +174,3 @@ public class PageNumberGenerator {
         return alphaNumber.reverse().toString();
     }
 }
-

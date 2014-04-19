@@ -30,30 +30,35 @@ import org.apache.commons.io.output.CountingOutputStream;
  */
 public class PDFName extends PDFObject {
 
-    private String name;
+    private final String name;
 
     /**
      * Creates a new PDF name object.
-     * @param name the name value
+     *
+     * @param name
+     *            the name value
      */
-    public PDFName(String name) {
+    public PDFName(final String name) {
         super();
         this.name = escapeName(name);
     }
 
-
     /**
-     * Escapes a PDF name. It adds the leading slash and escapes characters as necessary.
-     * @param name the name
+     * Escapes a PDF name. It adds the leading slash and escapes characters as
+     * necessary.
+     *
+     * @param name
+     *            the name
      * @return the escaped name
      */
-    static String escapeName(String name) {
-        StringBuffer sb = new StringBuffer(Math.min(16, name.length() + 4));
+    static String escapeName(final String name) {
+        final StringBuilder sb = new StringBuilder(
+                Math.min(16, name.length() + 4));
         if (!name.startsWith("/")) {
             sb.append('/');
         }
         for (int i = 0, c = name.length(); i < c; i++) {
-            char ch = name.charAt(i);
+            final char ch = name.charAt(i);
             if (ch >= 33 && ch <= 126) {
                 sb.append(ch);
             } else {
@@ -64,11 +69,10 @@ public class PDFName extends PDFObject {
         return sb.toString();
     }
 
-    private static final char[] DIGITS
-        = {'0', '1', '2', '3', '4', '5', '6', '7',
-           '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    private static final char[] DIGITS = { '0', '1', '2', '3', '4', '5', '6',
+        '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
-    private static void toHex(char ch, StringBuffer sb) {
+    private static void toHex(final char ch, final StringBuilder sb) {
         if (ch >= 256) {
             throw new IllegalArgumentException(
                     "Only 8-bit characters allowed by this implementation");
@@ -78,14 +82,16 @@ public class PDFName extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return this.name;
     }
 
     /** {@inheritDoc} */
-    protected int output(OutputStream stream) throws IOException {
-        CountingOutputStream cout = new CountingOutputStream(stream);
-        Writer writer = PDFDocument.getWriterFor(cout);
+    @Override
+    protected int output(final OutputStream stream) throws IOException {
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final Writer writer = PDFDocument.getWriterFor(cout);
         if (hasObjectNumber()) {
             writer.write(getObjectID());
         }
@@ -101,7 +107,9 @@ public class PDFName extends PDFObject {
     }
 
     /** {@inheritDoc} */
-    public void outputInline(OutputStream out, Writer writer) throws IOException {
+    @Override
+    public void outputInline(final OutputStream out, final Writer writer)
+            throws IOException {
         if (hasObjectNumber()) {
             writer.write(referencePDF());
         } else {

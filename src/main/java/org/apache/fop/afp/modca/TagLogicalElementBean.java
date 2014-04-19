@@ -20,45 +20,47 @@
 package org.apache.fop.afp.modca;
 
 /**
- * The TagLogicalElementBean provides a bean for holding the attributes of
- * a tag logical element as key value pairs.
+ * The TagLogicalElementBean provides a bean for holding the attributes of a tag
+ * logical element as key value pairs.
  * <p/>
  */
 public class TagLogicalElementBean {
 
     /** The key attribute */
-    private String key;
+    private final String key;
 
     /** The value attribute */
-    private String value;
+    private final String value;
 
     /**
      * Constructor for the TagLogicalElementBean.
-     * 
-     * @param key the key attribute
-     * @param value the value attribute
+     *
+     * @param key
+     *            the key attribute
+     * @param value
+     *            the value attribute
      */
-    public TagLogicalElementBean(String key, String value) {
+    public TagLogicalElementBean(final String key, final String value) {
         this.key = key;
         this.value = value;
     }
 
     /**
      * Getter for the key attribute.
-     * 
+     *
      * @return the key
      */
     public String getKey() {
-        return key;
+        return this.key;
     }
 
     /**
      * Getter for the value attribute.
-     * 
+     *
      * @return the value
      */
     public String getValue() {
-        return value;
+        return this.value;
     }
 
 }

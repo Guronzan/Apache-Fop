@@ -26,14 +26,14 @@ import org.apache.fop.afp.AFPConstants;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * The No Operation structured field may be used to carry comments
- * or any other type of unarchitected data. Although not recommended,
- * it may also be used to carry semantic data in private or exchange data
- * streams. However, because receivers of interchange data streams should
- * ignore the content of No Operation structured fields and because
- * receiver-generator products are not required to propagate
- * No Operation structured fields, no semantics should be attached to
- * the data carried by the No Operation structured field in interchange
+ * The No Operation structured field may be used to carry comments or any other
+ * type of unarchitected data. Although not recommended, it may also be used to
+ * carry semantic data in private or exchange data streams. However, because
+ * receivers of interchange data streams should ignore the content of No
+ * Operation structured fields and because receiver-generator products are not
+ * required to propagate No Operation structured fields, no semantics should be
+ * attached to the data carried by the No Operation structured field in
+ * interchange
  */
 public class NoOperation extends AbstractAFPObject {
 
@@ -43,14 +43,15 @@ public class NoOperation extends AbstractAFPObject {
     /**
      * Byte representation of the comment
      */
-    private String content;
+    private final String content;
 
     /**
      * Construct a tag logical element with the name and value specified.
      *
-     * @param content the content to record
+     * @param content
+     *            the content to record
      */
-    public NoOperation(String content) {
+    public NoOperation(final String content) {
         this.content = content;
     }
 
@@ -58,11 +59,15 @@ public class NoOperation extends AbstractAFPObject {
      * Accessor method to obtain the byte array AFP datastream for the
      * NoOperation.
      *
-     * @param os The outputsteam stream
-     * @throws java.io.IOException if an I/O exception occurs during processing
+     * @param os
+     *            The outputsteam stream
+     * @throws java.io.IOException
+     *             if an I/O exception occurs during processing
      */
-    public void writeToStream(OutputStream os) throws IOException {
-        byte[] contentData = content.getBytes(AFPConstants.EBCIDIC_ENCODING);
+    @Override
+    public void writeToStream(final OutputStream os) throws IOException {
+        final byte[] contentData = this.content
+                .getBytes(AFPConstants.EBCIDIC_ENCODING);
         int contentLen = contentData.length;
 
         // packet maximum of 32759 bytes
@@ -70,14 +75,14 @@ public class NoOperation extends AbstractAFPObject {
             contentLen = MAX_DATA_LEN;
         }
 
-        byte[] data = new byte[9 + contentLen];
+        final byte[] data = new byte[9 + contentLen];
 
         data[0] = 0x5A;
 
         // Set the total record length
-        byte[] rl1 = BinaryUtils.convert(8 + contentLen, 2);
+        final byte[] rl1 = BinaryUtils.convert(8 + contentLen, 2);
 
-        //Ignore first byte
+        // Ignore first byte
         data[1] = rl1[0];
         data[2] = rl1[1];
 

@@ -24,9 +24,9 @@ import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
 /**
- * This class provides a cache for {@link DecimalFormat} instance. {@link DecimalFormat} itself
- * is not thread-safe but since FOP needs to format a lot of numbers the same way, it shall
- * be cached in a {@link ThreadLocal}.
+ * This class provides a cache for {@link DecimalFormat} instance.
+ * {@link DecimalFormat} itself is not thread-safe but since FOP needs to format
+ * a lot of numbers the same way, it shall be cached in a {@link ThreadLocal}.
  */
 public class DecimalFormatCache {
 
@@ -34,23 +34,25 @@ public class DecimalFormatCache {
 
     private static class DecimalFormatThreadLocal extends ThreadLocal {
 
-        private int dec;
+        private final int dec;
 
-        public DecimalFormatThreadLocal(int dec) {
+        public DecimalFormatThreadLocal(final int dec) {
             this.dec = dec;
         }
 
+        @Override
         protected synchronized Object initialValue() {
             String s = "0";
-            if (dec > 0) {
-                s = BASE_FORMAT.substring(0, dec + 2);
+            if (this.dec > 0) {
+                s = BASE_FORMAT.substring(0, this.dec + 2);
             }
-            DecimalFormat df = new DecimalFormat(s, new DecimalFormatSymbols(Locale.US));
+            final DecimalFormat df = new DecimalFormat(s,
+                    new DecimalFormatSymbols(Locale.US));
             return df;
         }
     };
 
-    //DecimalFormat is not thread-safe!
+    // DecimalFormat is not thread-safe!
     private static final ThreadLocal[] DECIMAL_FORMAT_CACHE = new DecimalFormatThreadLocal[17];
     static {
         for (int i = 0, c = DECIMAL_FORMAT_CACHE.length; i < c; i++) {
@@ -59,16 +61,20 @@ public class DecimalFormatCache {
     }
 
     /**
-     * Returns a cached {@link DecimalFormat} instance for the given number of decimal digits.
-     * @param dec the number of decimal digits.
+     * Returns a cached {@link DecimalFormat} instance for the given number of
+     * decimal digits.
+     *
+     * @param dec
+     *            the number of decimal digits.
      * @return the DecimalFormat instance
      */
-    public static DecimalFormat getDecimalFormat(int dec) {
+    public static DecimalFormat getDecimalFormat(final int dec) {
         if (dec < 0 || dec >= DECIMAL_FORMAT_CACHE.length) {
-            throw new IllegalArgumentException("Parameter dec must be between 1 and "
-                    + (DECIMAL_FORMAT_CACHE.length + 1));
+            throw new IllegalArgumentException(
+                    "Parameter dec must be between 1 and "
+                            + (DECIMAL_FORMAT_CACHE.length + 1));
         }
-        return (DecimalFormat)DECIMAL_FORMAT_CACHE[dec].get();
+        return (DecimalFormat) DECIMAL_FORMAT_CACHE[dec].get();
     }
 
 }

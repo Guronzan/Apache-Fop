@@ -44,9 +44,10 @@ public class AFPPageSetup extends AFPExtensionAttachment {
     /**
      * Default constructor.
      *
-     * @param elementName the name of the setup code object, may be null
+     * @param elementName
+     *            the name of the setup code object, may be null
      */
-    public AFPPageSetup(String elementName) {
+    public AFPPageSetup(final String elementName) {
         super(elementName);
     }
 
@@ -54,56 +55,64 @@ public class AFPPageSetup extends AFPExtensionAttachment {
 
     /**
      * Returns the value of the extension.
+     * 
      * @return the value
      */
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     /**
      * Sets the value
-     * @param source The value name to set.
+     * 
+     * @param source
+     *            The value name to set.
      */
-    public void setValue(String source) {
+    public void setValue(final String source) {
         this.value = source;
     }
 
     /**
      * Returns the content of the extension.
+     * 
      * @return the data
      */
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     /**
      * Sets the data
-     * @param content The byte data to set.
+     * 
+     * @param content
+     *            The byte data to set.
      */
-    public void setContent(String content) {
+    public void setContent(final String content) {
         this.content = content;
     }
 
     /** {@inheritDoc} */
-    public void toSAX(ContentHandler handler) throws SAXException {
-        AttributesImpl atts = new AttributesImpl();
-        if (name != null && name.length() > 0) {
-            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", name);
+    @Override
+    public void toSAX(final ContentHandler handler) throws SAXException {
+        final AttributesImpl atts = new AttributesImpl();
+        if (this.name != null && this.name.length() > 0) {
+            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", this.name);
         }
-        if (value != null && value.length() > 0) {
-            atts.addAttribute(null, ATT_VALUE, ATT_VALUE, "CDATA", value);
+        if (this.value != null && this.value.length() > 0) {
+            atts.addAttribute(null, ATT_VALUE, ATT_VALUE, "CDATA", this.value);
         }
-        handler.startElement(CATEGORY, elementName, elementName, atts);
-        if (content != null && content.length() > 0) {
-            char[] chars = content.toCharArray();
+        handler.startElement(CATEGORY, this.elementName, this.elementName, atts);
+        if (this.content != null && this.content.length() > 0) {
+            final char[] chars = this.content.toCharArray();
             handler.characters(chars, 0, chars.length);
         }
-        handler.endElement(CATEGORY, elementName, elementName);
+        handler.endElement(CATEGORY, this.elementName, this.elementName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "AFPPageSetup(element-name=" + getElementName()
-            + " name=" + getName() + " value=" + getValue() + ")";
+        return "AFPPageSetup(element-name=" + getElementName() + " name="
+                + getName() + " value=" + getValue() + ")";
     }
 }

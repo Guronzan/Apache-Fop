@@ -22,9 +22,9 @@ package org.apache.fop.fonts;
 import java.io.ObjectStreamException;
 import java.io.Serializable;
 
-
 /**
- * This class enumerates all supported encoding modes for fonts: auto, single-byte and CID.
+ * This class enumerates all supported encoding modes for fonts: auto,
+ * single-byte and CID.
  */
 public final class EncodingMode implements Serializable {
 
@@ -34,19 +34,21 @@ public final class EncodingMode implements Serializable {
     public static final EncodingMode AUTO = new EncodingMode("auto");
 
     /** Single-byte encoding */
-    public static final EncodingMode SINGLE_BYTE = new EncodingMode("single-byte");
+    public static final EncodingMode SINGLE_BYTE = new EncodingMode(
+            "single-byte");
 
     /** CID encoding */
     public static final EncodingMode CID = new EncodingMode("cid");
 
-    private String name;
+    private final String name;
 
-    private EncodingMode(String name) {
+    private EncodingMode(final String name) {
         this.name = name;
     }
 
     /**
      * Returns the encoding mode name.
+     * 
      * @return the encoding mode name
      */
     public String getName() {
@@ -55,10 +57,12 @@ public final class EncodingMode implements Serializable {
 
     /**
      * Returns the {@link EncodingMode} by name.
-     * @param name the name of the encoding mode to look up
+     * 
+     * @param name
+     *            the name of the encoding mode to look up
      * @return the encoding mode constant
      */
-    public static EncodingMode valueOf(String name) {
+    public static EncodingMode valueOf(final String name) {
         if (name.equalsIgnoreCase(EncodingMode.AUTO.getName())) {
             return EncodingMode.AUTO;
         } else if (name.equalsIgnoreCase(EncodingMode.SINGLE_BYTE.getName())) {
@@ -75,6 +79,7 @@ public final class EncodingMode implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "EncodingMode:" + getName();
     }

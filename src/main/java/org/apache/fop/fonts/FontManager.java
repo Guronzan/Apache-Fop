@@ -34,8 +34,8 @@ import org.apache.fop.fonts.substitute.FontSubstitutions;
 // and start using POJO config/properties type classes
 
 /**
- * The manager of fonts. The class holds a reference to the font cache and information about
- * font substitution, referenced fonts and similar.
+ * The manager of fonts. The class holds a reference to the font cache and
+ * information about font substitution, referenced fonts and similar.
  */
 public class FontManager {
     /** Use cache (record previously detected font triplet info) */
@@ -53,7 +53,10 @@ public class FontManager {
     /** Allows enabling kerning on the base 14 fonts, default is false */
     private boolean enableBase14Kerning = false;
 
-    /** FontTriplet matcher for fonts that shall be referenced rather than embedded. */
+    /**
+     * FontTriplet matcher for fonts that shall be referenced rather than
+     * embedded.
+     */
     private FontTriplet.Matcher referencedFontsMatcher;
 
     /**
@@ -65,15 +68,20 @@ public class FontManager {
 
     /**
      * Sets the font base URL.
-     * @param fontBase font base URL
-     * @throws MalformedURLException if there's a problem with a URL
+     * 
+     * @param fontBase
+     *            font base URL
+     * @throws MalformedURLException
+     *             if there's a problem with a URL
      */
-    public void setFontBaseURL(String fontBase) throws MalformedURLException {
+    public void setFontBaseURL(final String fontBase)
+            throws MalformedURLException {
         this.fontBase = fontBase;
     }
 
     /**
      * Returns the font base URL.
+     * 
      * @return the font base URL (or null if none was set)
      */
     public String getFontBaseURL() {
@@ -87,36 +95,43 @@ public class FontManager {
 
     /**
      * Controls whether kerning is activated on base 14 fonts.
-     * @param value true if kerning should be activated
+     * 
+     * @param value
+     *            true if kerning should be activated
      */
-    public void setBase14KerningEnabled(boolean value) {
+    public void setBase14KerningEnabled(final boolean value) {
         this.enableBase14Kerning = value;
     }
 
     /**
      * Sets the font substitutions
-     * @param substitutions font substitutions
+     * 
+     * @param substitutions
+     *            font substitutions
      */
-    public void setFontSubstitutions(FontSubstitutions substitutions) {
+    public void setFontSubstitutions(final FontSubstitutions substitutions) {
         this.fontSubstitutions = substitutions;
     }
 
     /**
      * Returns the font substitution catalog
+     * 
      * @return the font substitution catalog
      */
     protected FontSubstitutions getFontSubstitutions() {
-        if (fontSubstitutions == null) {
+        if (this.fontSubstitutions == null) {
             this.fontSubstitutions = new FontSubstitutions();
         }
-        return fontSubstitutions;
+        return this.fontSubstitutions;
     }
 
     /**
      * Whether or not to cache results of font triplet detection/auto-config
-     * @param useCache use cache or not
+     * 
+     * @param useCache
+     *            use cache or not
      */
-    public void setUseCache(boolean useCache) {
+    public void setUseCache(final boolean useCache) {
         if (useCache) {
             this.fontCache = FontCache.load();
             if (this.fontCache == null) {
@@ -129,14 +144,16 @@ public class FontManager {
 
     /**
      * Cache results of font triplet detection/auto-config?
+     * 
      * @return true if this font manager uses the cache
      */
     public boolean useCache() {
-        return (this.fontCache != null);
+        return this.fontCache != null;
     }
 
     /**
      * Returns the font cache instance used by this font manager.
+     * 
      * @return the font cache
      */
     public FontCache getFontCache() {
@@ -144,16 +161,20 @@ public class FontManager {
     }
 
     /**
-     * Sets up the fonts on a given FontInfo object. The fonts to setup are defined by an
-     * array of {@link FontCollection} objects.
-     * @param fontInfo the FontInfo object to set up
-     * @param fontCollections the array of font collections/sources
+     * Sets up the fonts on a given FontInfo object. The fonts to setup are
+     * defined by an array of {@link FontCollection} objects.
+     * 
+     * @param fontInfo
+     *            the FontInfo object to set up
+     * @param fontCollections
+     *            the array of font collections/sources
      */
-    public void setup(FontInfo fontInfo, FontCollection[] fontCollections) {
+    public void setup(final FontInfo fontInfo,
+            final FontCollection[] fontCollections) {
         int startNum = 1;
 
-        for (int i = 0, c = fontCollections.length; i < c; i++) {
-            startNum = fontCollections[i].setup(startNum, fontInfo);
+        for (final FontCollection fontCollection : fontCollections) {
+            startNum = fontCollection.setup(startNum, fontInfo);
         }
         // Make any defined substitutions in the font info
         getFontSubstitutions().adjustFontInfo(fontInfo);
@@ -164,25 +185,29 @@ public class FontManager {
         return new FontResolver() {
 
             /** {@inheritDoc} */
-            public Source resolve(String href) {
-                //Minimal functionality here
+            @Override
+            public Source resolve(final String href) {
+                // Minimal functionality here
                 return new StreamSource(href);
             }
         };
     }
 
     /**
-     * Sets the {@link FontTriplet.Matcher} that can be used to identify the fonts that shall
-     * be referenced rather than embedded.
-     * @param matcher the font triplet matcher
+     * Sets the {@link FontTriplet.Matcher} that can be used to identify the
+     * fonts that shall be referenced rather than embedded.
+     * 
+     * @param matcher
+     *            the font triplet matcher
      */
-    public void setReferencedFontsMatcher(FontTriplet.Matcher matcher) {
+    public void setReferencedFontsMatcher(final FontTriplet.Matcher matcher) {
         this.referencedFontsMatcher = matcher;
     }
 
     /**
-     * Gets the {@link FontTriplet.Matcher} that can be used to identify the fonts that shall
-     * be referenced rather than embedded.
+     * Gets the {@link FontTriplet.Matcher} that can be used to identify the
+     * fonts that shall be referenced rather than embedded.
+     * 
      * @return the font triplet matcher (or null if none is set)
      */
     public Matcher getReferencedFontsMatcher() {
@@ -190,30 +215,36 @@ public class FontManager {
     }
 
     /**
-     * Updates the referenced font list using the FontManager's referenced fonts matcher
-     * ({@link #getReferencedFontsMatcher()}).
-     * @param fontInfoList a font info list
+     * Updates the referenced font list using the FontManager's referenced fonts
+     * matcher ({@link #getReferencedFontsMatcher()}).
+     * 
+     * @param fontInfoList
+     *            a font info list
      */
-    public void updateReferencedFonts(List fontInfoList) {
-        Matcher matcher = getReferencedFontsMatcher();
+    public void updateReferencedFonts(final List fontInfoList) {
+        final Matcher matcher = getReferencedFontsMatcher();
         updateReferencedFonts(fontInfoList, matcher);
     }
 
     /**
      * Updates the referenced font list.
-     * @param fontInfoList a font info list
-     * @param matcher the font triplet matcher to use
+     * 
+     * @param fontInfoList
+     *            a font info list
+     * @param matcher
+     *            the font triplet matcher to use
      */
-    public void updateReferencedFonts(List fontInfoList, Matcher matcher) {
+    public void updateReferencedFonts(final List fontInfoList,
+            final Matcher matcher) {
         if (matcher == null) {
-            return; //No referenced fonts
+            return; // No referenced fonts
         }
-        Iterator iter = fontInfoList.iterator();
+        final Iterator iter = fontInfoList.iterator();
         while (iter.hasNext()) {
-            EmbedFontInfo fontInfo = (EmbedFontInfo)iter.next();
-            Iterator triplets = fontInfo.getFontTriplets().iterator();
+            final EmbedFontInfo fontInfo = (EmbedFontInfo) iter.next();
+            final Iterator triplets = fontInfo.getFontTriplets().iterator();
             while (triplets.hasNext()) {
-                FontTriplet triplet = (FontTriplet)triplets.next();
+                final FontTriplet triplet = (FontTriplet) triplets.next();
                 if (matcher.matches(triplet)) {
                     fontInfo.setEmbedded(false);
                     break;

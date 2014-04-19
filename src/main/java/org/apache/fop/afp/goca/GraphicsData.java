@@ -44,6 +44,7 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 8 + super.getDataLength();
     }
@@ -54,9 +55,9 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
      * @return a new segment name
      */
     public String createSegmentName() {
-        return StringUtils.lpad(String.valueOf(
-                (super.objects != null ? super.objects.size() : 0) + 1),
-            '0', 4);
+        return StringUtils.lpad(
+                String.valueOf((super.objects != null ? super.objects.size()
+                        : 0) + 1), '0', 4);
     }
 
     /**
@@ -65,25 +66,26 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
      * @return a newly created graphics segment
      */
     public GraphicsChainedSegment newSegment() {
-        String segmentName = createSegmentName();
-        if (currentSegment == null) {
-            currentSegment = new GraphicsChainedSegment(segmentName);
+        final String segmentName = createSegmentName();
+        if (this.currentSegment == null) {
+            this.currentSegment = new GraphicsChainedSegment(segmentName);
         } else {
-            currentSegment.setComplete(true);
-            currentSegment = new GraphicsChainedSegment(segmentName, currentSegment.getNameBytes());
+            this.currentSegment.setComplete(true);
+            this.currentSegment = new GraphicsChainedSegment(segmentName,
+                    this.currentSegment.getNameBytes());
         }
-        super.addObject(currentSegment);
-        return currentSegment;
+        super.addObject(this.currentSegment);
+        return this.currentSegment;
     }
 
     /** {@inheritDoc} */
-    public void addObject(StructuredData object) {
-        if (currentSegment == null
-                || (currentSegment.getDataLength() + object.getDataLength())
-                >= GraphicsChainedSegment.MAX_DATA_LEN) {
+    @Override
+    public void addObject(final StructuredData object) {
+        if (this.currentSegment == null
+                || this.currentSegment.getDataLength() + object.getDataLength() >= GraphicsChainedSegment.MAX_DATA_LEN) {
             newSegment();
         }
-        currentSegment.addObject(object);
+        this.currentSegment.addObject(object);
     }
 
     /**
@@ -97,19 +99,21 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
     }
 
     /** {@inheritDoc} */
-    public void writeToStream(OutputStream os) throws IOException {
-        byte[] data = new byte[9];
+    @Override
+    public void writeToStream(final OutputStream os) throws IOException {
+        final byte[] data = new byte[9];
         copySF(data, SF_CLASS, Type.DATA, Category.GRAPHICS);
-        int dataLength = getDataLength();
-        byte[] len = BinaryUtils.convert(dataLength, 2);
+        final int dataLength = getDataLength();
+        final byte[] len = BinaryUtils.convert(dataLength, 2);
         data[1] = len[0]; // Length byte 1
         data[2] = len[1]; // Length byte 2
         os.write(data);
 
-        writeObjects(objects, os);
+        writeObjects(this.objects, os);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsData";
     }
@@ -117,10 +121,11 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
     /**
      * Adds the given segment to this graphics data
      *
-     * @param segment a graphics chained segment
+     * @param segment
+     *            a graphics chained segment
      */
-    public void addSegment(GraphicsChainedSegment segment) {
-        currentSegment = segment;
-        super.addObject(currentSegment);
+    public void addSegment(final GraphicsChainedSegment segment) {
+        this.currentSegment = segment;
+        super.addObject(this.currentSegment);
     }
 }

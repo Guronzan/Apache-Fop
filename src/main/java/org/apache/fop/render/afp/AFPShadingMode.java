@@ -32,13 +32,15 @@ public final class AFPShadingMode implements Serializable {
     /** the dithered mode */
     public static final AFPShadingMode DITHERED = new AFPShadingMode("DITHERED");
 
-    private String name;
+    private final String name;
 
     /**
      * Constructor to add a new named item.
-     * @param name Name of the item.
+     * 
+     * @param name
+     *            Name of the item.
      */
-    private AFPShadingMode(String name) {
+    private AFPShadingMode(final String name) {
         this.name = name;
     }
 
@@ -49,16 +51,19 @@ public final class AFPShadingMode implements Serializable {
 
     /**
      * Returns the enumeration/singleton object based on its name.
-     * @param name the name of the enumeration value
+     * 
+     * @param name
+     *            the name of the enumeration value
      * @return the enumeration object
      */
-    public static AFPShadingMode valueOf(String name) {
+    public static AFPShadingMode valueOf(final String name) {
         if (COLOR.getName().equalsIgnoreCase(name)) {
             return COLOR;
         } else if (DITHERED.getName().equalsIgnoreCase(name)) {
             return DITHERED;
         } else {
-            throw new IllegalArgumentException("Illegal value for enumeration: " + name);
+            throw new IllegalArgumentException(
+                    "Illegal value for enumeration: " + name);
         }
     }
 
@@ -67,8 +72,9 @@ public final class AFPShadingMode implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return getClass().getName() + ":" + name;
+        return getClass().getName() + ":" + this.name;
     }
 
 }

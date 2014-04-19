@@ -24,6 +24,11 @@ package org.apache.fop.area.inline;
 public class SpaceArea extends InlineArea {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 2218803009825411416L;
+
+    /**
      * The space for this space area
      */
     protected String space;
@@ -35,21 +40,25 @@ public class SpaceArea extends InlineArea {
 
     /**
      * Create a space area
-     * @param s the space character
-     * @param o the offset for the next area
-     * @param a is this space adjustable?
+     * 
+     * @param s
+     *            the space character
+     * @param o
+     *            the offset for the next area
+     * @param a
+     *            is this space adjustable?
      */
-    public SpaceArea(char s, int o, boolean a) {
-        space = new String() + s;
-        offset = o;
-        isAdjustable = a;
+    public SpaceArea(final char s, final int o, final boolean a) {
+        this.space = new String() + s;
+        this.offset = o;
+        this.isAdjustable = a;
     }
 
     /**
      * @return Returns the space.
      */
     public String getSpace() {
-        return new String(space);
+        return new String(this.space);
     }
 
     /** @return true if the space is adjustable (WRT word-space processing) */

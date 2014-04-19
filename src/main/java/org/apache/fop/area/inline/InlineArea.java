@@ -26,18 +26,26 @@ import org.apache.fop.area.LineArea;
 import org.apache.fop.area.Trait;
 
 /**
- * Inline Area
- * This area is for all inline areas that can be placed
- * in a line area.
+ * Inline Area This area is for all inline areas that can be placed in a line
+ * area.
  */
 public class InlineArea extends Area {
 
     /**
-     * this class stores information about potential adjustments
-     * that can be used in order to re-compute adjustments when a
-     * page-number or a page-number-citation is resolved
+     *
+     */
+    private static final long serialVersionUID = -8940066479810170980L;
+
+    /**
+     * this class stores information about potential adjustments that can be
+     * used in order to re-compute adjustments when a page-number or a
+     * page-number-citation is resolved
      */
     protected class InlineAdjustingInfo implements Serializable {
+        /**
+         *
+         */
+        private static final long serialVersionUID = -5601387735459712149L;
         /** stretch of the inline area */
         protected int availableStretch;
         /** shrink of the inline area */
@@ -48,26 +56,31 @@ public class InlineArea extends Area {
         /**
          * Constructor
          *
-         * @param stretch the available space for stretching
-         * @param shrink the available space for shrinking
-         * @param adj space adjustment type
+         * @param stretch
+         *            the available space for stretching
+         * @param shrink
+         *            the available space for shrinking
+         * @param adj
+         *            space adjustment type
          */
-        protected InlineAdjustingInfo(int stretch, int shrink, int adj) {
-            availableStretch = stretch;
-            availableShrink = shrink;
-            adjustment = adj;
+        protected InlineAdjustingInfo(final int stretch, final int shrink,
+                final int adj) {
+            this.availableStretch = stretch;
+            this.availableShrink = shrink;
+            this.adjustment = adj;
         }
 
         /**
          * Apply the variation factor
          *
-         * @param variationFactor the factor by which the adjustment is to be changed
+         * @param variationFactor
+         *            the factor by which the adjustment is to be changed
          * @return the IPD increase
          */
-        protected int applyVariationFactor(double variationFactor) {
-            int oldAdjustment = adjustment;
-            adjustment *= variationFactor;
-            return adjustment - oldAdjustment;
+        protected int applyVariationFactor(final double variationFactor) {
+            final int oldAdjustment = this.adjustment;
+            this.adjustment *= variationFactor;
+            return this.adjustment - oldAdjustment;
         }
     }
 
@@ -77,16 +90,15 @@ public class InlineArea extends Area {
     protected int offset = 0;
 
     /**
-     * parent area
-     * it is needed in order to recompute adjust ratio and indents
+     * parent area it is needed in order to recompute adjust ratio and indents
      * when a page-number or a page-number-citation is resolved
      */
     private Area parentArea = null;
 
     /**
-     * ipd variation of child areas: if this area has not already
-     * been added and cannot notify its parent area, store the variation
-     * and wait for the parent area to be set
+     * ipd variation of child areas: if this area has not already been added and
+     * cannot notify its parent area, store the variation and wait for the
+     * parent area to be set
      */
     private int storedIPDVariation = 0;
 
@@ -99,65 +111,74 @@ public class InlineArea extends Area {
      * @return the adjustment information object
      */
     public InlineAdjustingInfo getAdjustingInfo() {
-        return adjustingInfo;
+        return this.adjustingInfo;
     }
 
     /**
      * Create a new adjustment information object
-     * @param stretch the available space for stretching
-     * @param shrink the available space for shrinking
-     * @param adjustment space adjustment type
+     *
+     * @param stretch
+     *            the available space for stretching
+     * @param shrink
+     *            the available space for shrinking
+     * @param adjustment
+     *            space adjustment type
      */
-    public void setAdjustingInfo(int stretch, int shrink, int adjustment) {
-        adjustingInfo = new InlineAdjustingInfo(stretch, shrink, adjustment);
+    public void setAdjustingInfo(final int stretch, final int shrink,
+            final int adjustment) {
+        this.adjustingInfo = new InlineAdjustingInfo(stretch, shrink,
+                adjustment);
     }
 
     /**
      * Modify the adjustment value in the adjustment information object
-     * @param adjustment the new adjustment value
+     *
+     * @param adjustment
+     *            the new adjustment value
      */
-    public void setAdjustment(int adjustment) {
-        if (adjustingInfo != null) {
-            adjustingInfo.adjustment = adjustment;
+    public void setAdjustment(final int adjustment) {
+        if (this.adjustingInfo != null) {
+            this.adjustingInfo.adjustment = adjustment;
         }
     }
 
     /**
-     * Increase the inline progression dimensions of this area.
-     * This is used for inline parent areas that contain mulitple child areas.
+     * Increase the inline progression dimensions of this area. This is used for
+     * inline parent areas that contain mulitple child areas.
      *
-     * @param ipd the inline progression to increase by
+     * @param ipd
+     *            the inline progression to increase by
      */
-    public void increaseIPD(int ipd) {
+    public void increaseIPD(final int ipd) {
         this.ipd += ipd;
     }
 
     /**
-     * Set the offset of this inline area.
-     * This is used to set the offset of the inline area
-     * which is relative to the before edge of the parent area.
+     * Set the offset of this inline area. This is used to set the offset of the
+     * inline area which is relative to the before edge of the parent area.
      *
-     * @param offset the offset
+     * @param offset
+     *            the offset
      */
-    public void setOffset(int offset) {
+    public void setOffset(final int offset) {
         this.offset = offset;
     }
 
     /**
-     * Get the offset of this inline area.
-     * This returns the offset of the inline area
-     * which is relative to the before edge of the parent area.
+     * Get the offset of this inline area. This returns the offset of the inline
+     * area which is relative to the before edge of the parent area.
      *
      * @return the offset
      */
     public int getOffset() {
-        return offset;
+        return this.offset;
     }
 
     /**
-     * @param parentArea The parentArea to set.
+     * @param parentArea
+     *            The parentArea to set.
      */
-    public void setParentArea(Area parentArea) {
+    public void setParentArea(final Area parentArea) {
         this.parentArea = parentArea;
     }
 
@@ -165,7 +186,7 @@ public class InlineArea extends Area {
      * @return Returns the parentArea.
      */
     public Area getParentArea() {
-        return parentArea;
+        return this.parentArea;
     }
 
     /**
@@ -173,7 +194,8 @@ public class InlineArea extends Area {
      *
      * {@inheritDoc}
      */
-    public void addChildArea(Area childArea) {
+    @Override
+    public void addChildArea(final Area childArea) {
         super.addChildArea(childArea);
         if (childArea instanceof InlineArea) {
             ((InlineArea) childArea).setParentArea(this);
@@ -181,7 +203,7 @@ public class InlineArea extends Area {
     }
 
     /**
-     *@return true if the inline area is underlined.
+     * @return true if the inline area is underlined.
      */
     public boolean hasUnderline() {
         return getTraitAsBoolean(Trait.UNDERLINE);
@@ -204,39 +226,45 @@ public class InlineArea extends Area {
 
     /**
      * recursively apply the variation factor to all descendant areas
-     * @param variationFactor the variation factor that must be applied to adjustments
-     * @param lineStretch     the total stretch of the line
-     * @param lineShrink      the total shrink of the line
+     *
+     * @param variationFactor
+     *            the variation factor that must be applied to adjustments
+     * @param lineStretch
+     *            the total stretch of the line
+     * @param lineShrink
+     *            the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
      */
-    public boolean applyVariationFactor(double variationFactor,
-                                        int lineStretch, int lineShrink) {
+    public boolean applyVariationFactor(final double variationFactor,
+            final int lineStretch, final int lineShrink) {
         // default behaviour: update the IPD and return false
-        if (adjustingInfo != null) {
-            setIPD(getIPD() + adjustingInfo.applyVariationFactor(variationFactor));
+        if (this.adjustingInfo != null) {
+            setIPD(getIPD()
+                    + this.adjustingInfo.applyVariationFactor(variationFactor));
         }
         return false;
     }
 
-    public void handleIPDVariation(int ipdVariation) {
+    public void handleIPDVariation(final int ipdVariation) {
         increaseIPD(ipdVariation);
         notifyIPDVariation(ipdVariation);
     }
 
     /**
-     * notify the parent area about the ipd variation of this area
-     * or of a descendant area
-     * @param ipdVariation the difference between new and old ipd
+     * notify the parent area about the ipd variation of this area or of a
+     * descendant area
+     *
+     * @param ipdVariation
+     *            the difference between new and old ipd
      */
-    protected void notifyIPDVariation(int ipdVariation) {
+    protected void notifyIPDVariation(final int ipdVariation) {
         if (getParentArea() instanceof InlineArea) {
             ((InlineArea) getParentArea()).handleIPDVariation(ipdVariation);
         } else if (getParentArea() instanceof LineArea) {
             ((LineArea) getParentArea()).handleIPDVariation(ipdVariation);
         } else if (getParentArea() == null) {
             // parent area not yet set: store the variations
-            storedIPDVariation += ipdVariation;
+            this.storedIPDVariation += ipdVariation;
         }
     }
 }
-

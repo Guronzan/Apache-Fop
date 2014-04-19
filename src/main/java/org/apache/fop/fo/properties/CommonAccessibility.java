@@ -24,9 +24,8 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * Store all common accessibility properties.
- * See Sec 7.4 of the XSL-FO Standard.
- * Public "structure" allows direct member access.
+ * Store all common accessibility properties. See Sec 7.4 of the XSL-FO
+ * Standard. Public "structure" allows direct member access.
  */
 public class CommonAccessibility {
     /**
@@ -41,19 +40,21 @@ public class CommonAccessibility {
 
     /**
      * Create a <code>CommonAccessibility</code> object.
-     * @param pList The PropertyList with propery values.
+     * 
+     * @param pList
+     *            The PropertyList with propery values.
      */
-    public CommonAccessibility(PropertyList pList) throws PropertyException {
-        sourceDoc = pList.get(Constants.PR_SOURCE_DOCUMENT).getString();
-        if ("none".equals(sourceDoc)) {
-            sourceDoc = null;
+    public CommonAccessibility(final PropertyList pList)
+            throws PropertyException {
+        this.sourceDoc = pList.get(Constants.PR_SOURCE_DOCUMENT).getString();
+        if ("none".equals(this.sourceDoc)) {
+            this.sourceDoc = null;
         }
-        role = pList.get(Constants.PR_ROLE).getString();
-        if ("none".equals(role)) {
-            role = null;
+        this.role = pList.get(Constants.PR_ROLE).getString();
+        if ("none".equals(this.role)) {
+            this.role = null;
         }
 
     }
-
 
 }

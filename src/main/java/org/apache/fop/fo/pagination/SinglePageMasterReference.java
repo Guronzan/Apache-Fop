@@ -20,22 +20,21 @@
 package org.apache.fop.fo.pagination;
 
 // XML
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
+import org.xml.sax.Locator;
 
 /**
- * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_single-page-master-reference">
- * <code>fo:single-page-master-reference</code></a> object.
- * This is a reference for a single page. It returns the
- * master name only once until reset.
+ * Class modelling the <a
+ * href="http://www.w3.org/TR/xsl/#fo_single-page-master-reference">
+ * <code>fo:single-page-master-reference</code></a> object. This is a reference
+ * for a single page. It returns the master name only once until reset.
  */
-public class SinglePageMasterReference extends FObj
-    implements SubSequenceSpecifier {
+public class SinglePageMasterReference extends FObj implements
+SubSequenceSpecifier {
 
     // The value of properties relevant for fo:single-page-master-reference.
     private String masterReference;
@@ -47,62 +46,69 @@ public class SinglePageMasterReference extends FObj
     private int state;
 
     /**
-     * Creates a new SinglePageMasterReference instance that is
-     * a child of the given {@link FONode}.
-     * @param parent {@link FONode} that is the parent of this object
+     * Creates a new SinglePageMasterReference instance that is a child of the
+     * given {@link FONode}.
+     *
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public SinglePageMasterReference(FONode parent) {
+    public SinglePageMasterReference(final FONode parent) {
         super(parent);
         this.state = FIRST;
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
-        masterReference = pList.get(PR_MASTER_REFERENCE).getString();
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
+        this.masterReference = pList.get(PR_MASTER_REFERENCE).getString();
 
-        if (masterReference == null || masterReference.equals("")) {
+        if (this.masterReference == null || this.masterReference.equals("")) {
             missingPropertyError("master-reference");
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
-        PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) parent;
+        final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
         pageSequenceMaster.addSubsequenceSpecifier(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: empty
+     * {@inheritDoc} <br>
+     * XSL Content Model: empty
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-                throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /** {@inheritDoc} */
-    public String getNextPageMasterName(boolean isOddPage,
-                                        boolean isFirstPage,
-                                        boolean isLastPage,
-                                        boolean isBlankPage) {
+    @Override
+    public String getNextPageMasterName(final boolean isOddPage,
+            final boolean isFirstPage, final boolean isLastPage,
+            final boolean isBlankPage) {
         if (this.state == FIRST) {
             this.state = DONE;
-            return masterReference;
+            return this.masterReference;
         } else {
             return null;
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reset() {
         this.state = FIRST;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean goToPrevious() {
-        if (state == FIRST) {
+        if (this.state == FIRST) {
             return false;
         } else {
             this.state = FIRST;
@@ -111,27 +117,31 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasPagePositionLast() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasPagePositionOnly() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "single-page-master-reference";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_SINGLE_PAGE_MASTER_REFERENCE}
      */
+    @Override
     public int getNameId() {
         return FO_SINGLE_PAGE_MASTER_REFERENCE;
     }
 
 }
-

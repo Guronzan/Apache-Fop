@@ -36,50 +36,58 @@ public class TextDecorationProperty extends ListProperty {
     public static class Maker extends PropertyMaker {
 
         /**
-         * @param propId ID of the property for which Maker should be created
+         * @param propId
+         *            ID of the property for which Maker should be created
          */
-        public Maker(int propId) {
+        public Maker(final int propId) {
             super(propId);
         }
 
         /**
          * {@inheritDoc}
          */
-        public Property convertProperty(Property p,
-                                        PropertyList propertyList, FObj fo)
-                    throws PropertyException {
+        @Override
+        public Property convertProperty(final Property p,
+                final PropertyList propertyList, final FObj fo)
+                throws PropertyException {
             if (p instanceof TextDecorationProperty) {
                 return p;
             } else {
                 if (p instanceof ListProperty) {
-                    ListProperty lst = (ListProperty)p;
+                    ListProperty lst = (ListProperty) p;
                     lst = checkEnums(lst);
-                    return new TextDecorationProperty((ListProperty)p);
+                    return new TextDecorationProperty((ListProperty) p);
                 } else if (p instanceof EnumProperty) {
-                    ListProperty lst = new ListProperty(p);
+                    final ListProperty lst = new ListProperty(p);
                     return new TextDecorationProperty(lst);
                 } else {
-                    throw new PropertyException("Cannot convert anything other "
-                            + "than a list property, got a " + p.getClass().getName());
+                    throw new PropertyException(
+                            "Cannot convert anything other "
+                                    + "than a list property, got a "
+                                    + p.getClass().getName());
                 }
             }
         }
 
-        private ListProperty checkEnums(ListProperty lst) throws PropertyException {
-            List l = lst.getList();
+        private ListProperty checkEnums(final ListProperty lst)
+                throws PropertyException {
+            final List l = lst.getList();
             for (int i = 0; i < l.size(); i++) {
-                Property prop = (Property)l.get(i);
+                final Property prop = (Property) l.get(i);
                 if (prop instanceof EnumProperty) {
-                    //skip
+                    // skip
                 } else if (prop instanceof NCnameProperty) {
-                    Property prop_enum = checkEnumValues(((NCnameProperty)prop).getString());
+                    final Property prop_enum = checkEnumValues(((NCnameProperty) prop)
+                            .getString());
                     if (prop_enum == null) {
-                        throw new PropertyException("Illegal enum value: " + prop.getString());
+                        throw new PropertyException("Illegal enum value: "
+                                + prop.getString());
                     }
                     l.set(i, prop_enum);
                 } else {
-                    throw new PropertyException("Invalid content for text-decoration "
-                            + "property: " + prop);
+                    throw new PropertyException(
+                            "Invalid content for text-decoration "
+                                    + "property: " + prop);
                 }
             }
             return lst;
@@ -89,69 +97,76 @@ public class TextDecorationProperty extends ListProperty {
 
     /**
      * Constructs a new instance by converting a ListProperty.
-     * @param listProp the ListProperty to be converted
-     * @throws PropertyException in case the conversion fails
+     *
+     * @param listProp
+     *            the ListProperty to be converted
+     * @throws PropertyException
+     *             in case the conversion fails
      */
-    public TextDecorationProperty(ListProperty listProp) throws PropertyException {
-        List lst = listProp.getList();
+    public TextDecorationProperty(final ListProperty listProp)
+            throws PropertyException {
+        final List lst = listProp.getList();
         boolean none = false;
         boolean under = false;
         boolean over = false;
         boolean through = false;
         boolean blink = false;
-        Iterator i = lst.iterator();
+        final Iterator i = lst.iterator();
         while (i.hasNext()) {
-            Property prop = (Property)i.next();
+            final Property prop = (Property) i.next();
             switch (prop.getEnum()) {
-                case Constants.EN_NONE:
-                    if (under | over | through | blink) {
-                        throw new PropertyException(
-                                "Invalid combination of values");
-                    }
-                    none = true;
-                    break;
-                case Constants.EN_UNDERLINE:
-                case Constants.EN_NO_UNDERLINE:
-                    if (none) {
-                        throw new PropertyException("'none' specified, no additional values allowed");
-                    }
-                    if (under) {
-                        throw new PropertyException("Invalid combination of values");
-                    }
-                    under = true;
-                    break;
-                case Constants.EN_OVERLINE:
-                case Constants.EN_NO_OVERLINE:
-                    if (none) {
-                        throw new PropertyException("'none' specified, no additional values allowed");
-                    }
-                    if (over) {
-                        throw new PropertyException("Invalid combination of values");
-                    }
-                    over = true;
-                    break;
-                case Constants.EN_LINE_THROUGH:
-                case Constants.EN_NO_LINE_THROUGH:
-                    if (none) {
-                        throw new PropertyException("'none' specified, no additional values allowed");
-                    }
-                    if (through) {
-                        throw new PropertyException("Invalid combination of values");
-                    }
-                    through = true;
-                    break;
-                case Constants.EN_BLINK:
-                case Constants.EN_NO_BLINK:
-                    if (none) {
-                        throw new PropertyException("'none' specified, no additional values allowed");
-                    }
-                    if (blink) {
-                        throw new PropertyException("Invalid combination of values");
-                    }
-                    blink = true;
-                    break;
-                default:
-                    throw new PropertyException("Invalid value specified: " + prop);
+            case Constants.EN_NONE:
+                if (under | over | through | blink) {
+                    throw new PropertyException("Invalid combination of values");
+                }
+                none = true;
+                break;
+            case Constants.EN_UNDERLINE:
+            case Constants.EN_NO_UNDERLINE:
+                if (none) {
+                    throw new PropertyException(
+                            "'none' specified, no additional values allowed");
+                }
+                if (under) {
+                    throw new PropertyException("Invalid combination of values");
+                }
+                under = true;
+                break;
+            case Constants.EN_OVERLINE:
+            case Constants.EN_NO_OVERLINE:
+                if (none) {
+                    throw new PropertyException(
+                            "'none' specified, no additional values allowed");
+                }
+                if (over) {
+                    throw new PropertyException("Invalid combination of values");
+                }
+                over = true;
+                break;
+            case Constants.EN_LINE_THROUGH:
+            case Constants.EN_NO_LINE_THROUGH:
+                if (none) {
+                    throw new PropertyException(
+                            "'none' specified, no additional values allowed");
+                }
+                if (through) {
+                    throw new PropertyException("Invalid combination of values");
+                }
+                through = true;
+                break;
+            case Constants.EN_BLINK:
+            case Constants.EN_NO_BLINK:
+                if (none) {
+                    throw new PropertyException(
+                            "'none' specified, no additional values allowed");
+                }
+                if (blink) {
+                    throw new PropertyException("Invalid combination of values");
+                }
+                blink = true;
+                break;
+            default:
+                throw new PropertyException("Invalid value specified: " + prop);
             }
             addProperty(prop);
         }

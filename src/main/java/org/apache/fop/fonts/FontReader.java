@@ -27,6 +27,8 @@ import java.util.Set;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.fop.apps.FOPException;
+import org.apache.fop.fonts.apps.TTFReader;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
@@ -34,12 +36,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
-import org.apache.fop.apps.FOPException;
-import org.apache.fop.fonts.apps.TTFReader;
-
 /**
- * Class for reading a metric.xml file and creating a font object.
- * Typical usage:
+ * Class for reading a metric.xml file and creating a font object. Typical
+ * usage:
+ *
  * <pre>
  * FontReader reader = new FontReader(<path til metrics.xml>);
  * reader.setFontEmbedPath(<path to a .ttf or .pfb file or null to diable embedding>);
@@ -54,7 +54,7 @@ public class FontReader extends DefaultHandler {
     private CustomFont returnFont = null;
     private MultiByteFont multiFont = null;
     private SingleByteFont singleFont = null;
-    private StringBuffer text = new StringBuffer();
+    private final StringBuilder text = new StringBuilder();
 
     private List cidWidths = null;
     private int cidWidthIndex = 0;
@@ -63,14 +63,15 @@ public class FontReader extends DefaultHandler {
 
     private List bfranges = null;
 
-    private void createFont(InputSource source) throws FOPException {
+    private void createFont(final InputSource source) throws FOPException {
         XMLReader parser = null;
 
         try {
-            final SAXParserFactory factory = javax.xml.parsers.SAXParserFactory.newInstance();
+            final SAXParserFactory factory = javax.xml.parsers.SAXParserFactory
+                    .newInstance();
             factory.setNamespaceAware(true);
             parser = factory.newSAXParser().getXMLReader();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new FOPException(e);
         }
         if (parser == null) {
@@ -79,19 +80,19 @@ public class FontReader extends DefaultHandler {
 
         try {
             parser.setFeature("http://xml.org/sax/features/namespace-prefixes",
-                              false);
-        } catch (SAXException e) {
-            throw new FOPException("You need a SAX parser which supports SAX version 2",
-                                   e);
+                    false);
+        } catch (final SAXException e) {
+            throw new FOPException(
+                    "You need a SAX parser which supports SAX version 2", e);
         }
 
         parser.setContentHandler(this);
 
         try {
             parser.parse(source);
-        } catch (SAXException e) {
+        } catch (final SAXException e) {
             throw new FOPException(e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new FOPException(e);
         }
 
@@ -99,124 +100,141 @@ public class FontReader extends DefaultHandler {
 
     /**
      * Sets the path to embed a font. A null value disables font embedding.
-     * @param path URI for the embeddable file
+     *
+     * @param path
+     *            URI for the embeddable file
      */
-    public void setFontEmbedPath(String path) {
-        returnFont.setEmbedFileName(path);
+    public void setFontEmbedPath(final String path) {
+        this.returnFont.setEmbedFileName(path);
     }
 
     /**
      * Enable/disable use of kerning for the font
-     * @param enabled true to enable kerning, false to disable
+     *
+     * @param enabled
+     *            true to enable kerning, false to disable
      */
-    public void setKerningEnabled(boolean enabled) {
-        returnFont.setKerningEnabled(enabled);
+    public void setKerningEnabled(final boolean enabled) {
+        this.returnFont.setKerningEnabled(enabled);
     }
 
     /**
      * Sets the font resolver. Needed for URI resolution.
-     * @param resolver the font resolver
+     *
+     * @param resolver
+     *            the font resolver
      */
-    public void setResolver(FontResolver resolver) {
-        returnFont.setResolver(resolver);
+    public void setResolver(final FontResolver resolver) {
+        this.returnFont.setResolver(resolver);
     }
-
 
     /**
      * Get the generated font object
+     *
      * @return the font
      */
     public Typeface getFont() {
-        return returnFont;
+        return this.returnFont;
     }
 
     /**
-     * Construct a FontReader object from a path to a metric.xml file
-     * and read metric data
-     * @param source Source of the font metric file
-     * @throws FOPException if loading the font fails
+     * Construct a FontReader object from a path to a metric.xml file and read
+     * metric data
+     *
+     * @param source
+     *            Source of the font metric file
+     * @throws FOPException
+     *             if loading the font fails
      */
-    public FontReader(InputSource source) throws FOPException {
+    public FontReader(final InputSource source) throws FOPException {
         createFont(source);
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void startDocument() {
     }
 
     /**
      * {@inheritDoc}
      */
-    public void setDocumentLocator(Locator locator) {
+    @Override
+    public void setDocumentLocator(final Locator locator) {
         this.locator = locator;
     }
 
     /**
      * {@inheritDoc}
      */
-    public void startElement(String uri, String localName, String qName,
-                             Attributes attributes) throws SAXException {
+    @Override
+    public void startElement(final String uri, final String localName,
+            final String qName, final Attributes attributes)
+                    throws SAXException {
         if (localName.equals("font-metrics")) {
             if ("TYPE0".equals(attributes.getValue("type"))) {
-                multiFont = new MultiByteFont();
-                returnFont = multiFont;
-                isCID = true;
+                this.multiFont = new MultiByteFont();
+                this.returnFont = this.multiFont;
+                this.isCID = true;
                 TTFReader.checkMetricsVersion(attributes);
             } else if ("TRUETYPE".equals(attributes.getValue("type"))) {
-                singleFont = new SingleByteFont();
-                singleFont.setFontType(FontType.TRUETYPE);
-                returnFont = singleFont;
-                isCID = false;
+                this.singleFont = new SingleByteFont();
+                this.singleFont.setFontType(FontType.TRUETYPE);
+                this.returnFont = this.singleFont;
+                this.isCID = false;
                 TTFReader.checkMetricsVersion(attributes);
             } else {
-                singleFont = new SingleByteFont();
-                singleFont.setFontType(FontType.TYPE1);
-                returnFont = singleFont;
-                isCID = false;
+                this.singleFont = new SingleByteFont();
+                this.singleFont.setFontType(FontType.TYPE1);
+                this.returnFont = this.singleFont;
+                this.isCID = false;
             }
         } else if ("embed".equals(localName)) {
-            returnFont.setEmbedFileName(attributes.getValue("file"));
-            returnFont.setEmbedResourceName(attributes.getValue("class"));
+            this.returnFont.setEmbedFileName(attributes.getValue("file"));
+            this.returnFont.setEmbedResourceName(attributes.getValue("class"));
         } else if ("cid-widths".equals(localName)) {
-            cidWidthIndex = getInt(attributes.getValue("start-index"));
-            cidWidths = new java.util.ArrayList();
+            this.cidWidthIndex = getInt(attributes.getValue("start-index"));
+            this.cidWidths = new java.util.ArrayList();
         } else if ("kerning".equals(localName)) {
-            currentKerning = new java.util.HashMap();
-            returnFont.putKerningEntry(new Integer(attributes.getValue("kpx1")),
-                                        currentKerning);
+            this.currentKerning = new java.util.HashMap();
+            this.returnFont.putKerningEntry(
+                    new Integer(attributes.getValue("kpx1")),
+                    this.currentKerning);
         } else if ("bfranges".equals(localName)) {
-            bfranges = new java.util.ArrayList();
+            this.bfranges = new java.util.ArrayList();
         } else if ("bf".equals(localName)) {
-            BFEntry entry = new BFEntry(getInt(attributes.getValue("us")),
-                                        getInt(attributes.getValue("ue")),
-                                        getInt(attributes.getValue("gi")));
-            bfranges.add(entry);
+            final BFEntry entry = new BFEntry(
+                    getInt(attributes.getValue("us")),
+                    getInt(attributes.getValue("ue")),
+                    getInt(attributes.getValue("gi")));
+            this.bfranges.add(entry);
         } else if ("wx".equals(localName)) {
-            cidWidths.add(new Integer(attributes.getValue("w")));
+            this.cidWidths.add(new Integer(attributes.getValue("w")));
         } else if ("widths".equals(localName)) {
-            //singleFont.width = new int[256];
+            // singleFont.width = new int[256];
         } else if ("char".equals(localName)) {
             try {
-                singleFont.setWidth(Integer.parseInt(attributes.getValue("idx")),
+                this.singleFont.setWidth(
+                        Integer.parseInt(attributes.getValue("idx")),
                         Integer.parseInt(attributes.getValue("wdt")));
-            } catch (NumberFormatException ne) {
+            } catch (final NumberFormatException ne) {
                 throw new SAXException("Malformed width in metric file: "
-                                   + ne.getMessage(), ne);
+                        + ne.getMessage(), ne);
             }
         } else if ("pair".equals(localName)) {
-            currentKerning.put(new Integer(attributes.getValue("kpx2")),
-                               new Integer(attributes.getValue("kern")));
+            this.currentKerning.put(new Integer(attributes.getValue("kpx2")),
+                    new Integer(attributes.getValue("kern")));
         }
     }
 
-    private int getInt(String str) throws SAXException {
+    private int getInt(final String str) throws SAXException {
         int ret = 0;
         try {
             ret = Integer.parseInt(str);
-        } catch (Exception e) {
-            throw new SAXException("Error while parsing integer value: " + str, e);
+        } catch (final Exception e) {
+            throw new SAXException("Error while parsing integer value: " + str,
+                    e);
         }
         return ret;
     }
@@ -224,85 +242,88 @@ public class FontReader extends DefaultHandler {
     /**
      * {@inheritDoc}
      */
-    public void endElement(String uri, String localName, String qName) throws SAXException {
-        String content = text.toString().trim();
+    @Override
+    public void endElement(final String uri, final String localName,
+            final String qName) throws SAXException {
+        final String content = this.text.toString().trim();
         if ("font-name".equals(localName)) {
-            returnFont.setFontName(content);
+            this.returnFont.setFontName(content);
         } else if ("full-name".equals(localName)) {
-            returnFont.setFullName(content);
+            this.returnFont.setFullName(content);
         } else if ("family-name".equals(localName)) {
-            Set s = new java.util.HashSet();
+            final Set s = new java.util.HashSet();
             s.add(content);
-            returnFont.setFamilyNames(s);
-        } else if ("ttc-name".equals(localName) && isCID) {
-            multiFont.setTTCName(content);
+            this.returnFont.setFamilyNames(s);
+        } else if ("ttc-name".equals(localName) && this.isCID) {
+            this.multiFont.setTTCName(content);
         } else if ("encoding".equals(localName)) {
-            if (singleFont != null && singleFont.getFontType() == FontType.TYPE1) {
-                singleFont.setEncoding(content);
+            if (this.singleFont != null
+                    && this.singleFont.getFontType() == FontType.TYPE1) {
+                this.singleFont.setEncoding(content);
             }
         } else if ("cap-height".equals(localName)) {
-            returnFont.setCapHeight(getInt(content));
+            this.returnFont.setCapHeight(getInt(content));
         } else if ("x-height".equals(localName)) {
-            returnFont.setXHeight(getInt(content));
+            this.returnFont.setXHeight(getInt(content));
         } else if ("ascender".equals(localName)) {
-            returnFont.setAscender(getInt(content));
+            this.returnFont.setAscender(getInt(content));
         } else if ("descender".equals(localName)) {
-            returnFont.setDescender(getInt(content));
+            this.returnFont.setDescender(getInt(content));
         } else if ("left".equals(localName)) {
-            int[] bbox = returnFont.getFontBBox();
+            final int[] bbox = this.returnFont.getFontBBox();
             bbox[0] = getInt(content);
-            returnFont.setFontBBox(bbox);
+            this.returnFont.setFontBBox(bbox);
         } else if ("bottom".equals(localName)) {
-            int[] bbox = returnFont.getFontBBox();
+            final int[] bbox = this.returnFont.getFontBBox();
             bbox[1] = getInt(content);
-            returnFont.setFontBBox(bbox);
+            this.returnFont.setFontBBox(bbox);
         } else if ("right".equals(localName)) {
-            int[] bbox = returnFont.getFontBBox();
+            final int[] bbox = this.returnFont.getFontBBox();
             bbox[2] = getInt(content);
-            returnFont.setFontBBox(bbox);
+            this.returnFont.setFontBBox(bbox);
         } else if ("top".equals(localName)) {
-            int[] bbox = returnFont.getFontBBox();
+            final int[] bbox = this.returnFont.getFontBBox();
             bbox[3] = getInt(content);
-            returnFont.setFontBBox(bbox);
+            this.returnFont.setFontBBox(bbox);
         } else if ("first-char".equals(localName)) {
-            returnFont.setFirstChar(getInt(content));
+            this.returnFont.setFirstChar(getInt(content));
         } else if ("last-char".equals(localName)) {
-            returnFont.setLastChar(getInt(content));
+            this.returnFont.setLastChar(getInt(content));
         } else if ("flags".equals(localName)) {
-            returnFont.setFlags(getInt(content));
+            this.returnFont.setFlags(getInt(content));
         } else if ("stemv".equals(localName)) {
-            returnFont.setStemV(getInt(content));
+            this.returnFont.setStemV(getInt(content));
         } else if ("italic-angle".equals(localName)) {
-            returnFont.setItalicAngle(getInt(content));
+            this.returnFont.setItalicAngle(getInt(content));
         } else if ("missing-width".equals(localName)) {
-            returnFont.setMissingWidth(getInt(content));
+            this.returnFont.setMissingWidth(getInt(content));
         } else if ("cid-type".equals(localName)) {
-            multiFont.setCIDType(CIDFontType.byName(content));
+            this.multiFont.setCIDType(CIDFontType.byName(content));
         } else if ("default-width".equals(localName)) {
-            multiFont.setDefaultWidth(getInt(content));
+            this.multiFont.setDefaultWidth(getInt(content));
         } else if ("cid-widths".equals(localName)) {
-            int[] wds = new int[cidWidths.size()];
+            final int[] wds = new int[this.cidWidths.size()];
             int j = 0;
-            for (int count = 0; count < cidWidths.size(); count++) {
-                Integer i = (Integer)cidWidths.get(count);
+            for (int count = 0; count < this.cidWidths.size(); count++) {
+                final Integer i = (Integer) this.cidWidths.get(count);
                 wds[j++] = i.intValue();
             }
 
-            //multiFont.addCIDWidthEntry(cidWidthIndex, wds);
-            multiFont.setWidthArray(wds);
+            // multiFont.addCIDWidthEntry(cidWidthIndex, wds);
+            this.multiFont.setWidthArray(wds);
 
         } else if ("bfranges".equals(localName)) {
-            multiFont.setBFEntries((BFEntry[])bfranges.toArray(new BFEntry[0]));
+            this.multiFont.setBFEntries((BFEntry[]) this.bfranges
+                    .toArray(new BFEntry[0]));
         }
-        text.setLength(0); //Reset text buffer (see characters())
+        this.text.setLength(0); // Reset text buffer (see characters())
     }
 
     /**
      * {@inheritDoc}
      */
-    public void characters(char[] ch, int start, int length) {
-        text.append(ch, start, length);
+    @Override
+    public void characters(final char[] ch, final int start, final int length) {
+        this.text.append(ch, start, length);
     }
 }
-
-

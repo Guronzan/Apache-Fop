@@ -34,36 +34,40 @@ public abstract class BorderPainter {
 
     /**
      * Draws borders.
-     * @param borderRect the border rectangle
-     * @param bpsBefore the border specification on the before side
-     * @param bpsAfter the border specification on the after side
-     * @param bpsStart the border specification on the start side
-     * @param bpsEnd the border specification on the end side
-     * @throws IOException if an I/O error occurs while creating the borders
+     * 
+     * @param borderRect
+     *            the border rectangle
+     * @param bpsBefore
+     *            the border specification on the before side
+     * @param bpsAfter
+     *            the border specification on the after side
+     * @param bpsStart
+     *            the border specification on the start side
+     * @param bpsEnd
+     *            the border specification on the end side
+     * @throws IOException
+     *             if an I/O error occurs while creating the borders
      */
-    public void drawBorders(Rectangle borderRect,
-            BorderProps bpsBefore, BorderProps bpsAfter,
-            BorderProps bpsStart, BorderProps bpsEnd) throws IOException {
+    public void drawBorders(final Rectangle borderRect,
+            final BorderProps bpsBefore, final BorderProps bpsAfter,
+            final BorderProps bpsStart, final BorderProps bpsEnd)
+            throws IOException {
         int startx = borderRect.x;
         int starty = borderRect.y;
         int width = borderRect.width;
         int height = borderRect.height;
-        boolean[] b = new boolean[] {
-            (bpsBefore != null), (bpsEnd != null),
-            (bpsAfter != null), (bpsStart != null)};
+        final boolean[] b = new boolean[] { bpsBefore != null, bpsEnd != null,
+                bpsAfter != null, bpsStart != null };
         if (!b[0] && !b[1] && !b[2] && !b[3]) {
             return;
         }
-        int[] bw = new int[] {
-            (b[0] ? bpsBefore.width : 0),
-            (b[1] ? bpsEnd.width : 0),
-            (b[2] ? bpsAfter.width : 0),
-            (b[3] ? bpsStart.width : 0)};
-        int[] clipw = new int[] {
-            BorderProps.getClippedWidth(bpsBefore),
-            BorderProps.getClippedWidth(bpsEnd),
-            BorderProps.getClippedWidth(bpsAfter),
-            BorderProps.getClippedWidth(bpsStart)};
+        final int[] bw = new int[] { b[0] ? bpsBefore.width : 0,
+                b[1] ? bpsEnd.width : 0, b[2] ? bpsAfter.width : 0,
+                b[3] ? bpsStart.width : 0 };
+        final int[] clipw = new int[] { BorderProps.getClippedWidth(bpsBefore),
+                BorderProps.getClippedWidth(bpsEnd),
+                BorderProps.getClippedWidth(bpsAfter),
+                BorderProps.getClippedWidth(bpsStart) };
         starty += clipw[0];
         height -= clipw[0];
         height -= clipw[2];
@@ -71,23 +75,24 @@ public abstract class BorderPainter {
         width -= clipw[3];
         width -= clipw[1];
 
-        boolean[] slant = new boolean[] {
-            (b[3] && b[0]), (b[0] && b[1]), (b[1] && b[2]), (b[2] && b[3])};
+        final boolean[] slant = new boolean[] { b[3] && b[0], b[0] && b[1],
+                b[1] && b[2], b[2] && b[3] };
         if (bpsBefore != null) {
-            int sx1 = startx;
-            int sx2 = (slant[0] ? sx1 + bw[3] - clipw[3] : sx1);
-            int ex1 = startx + width;
-            int ex2 = (slant[1] ? ex1 - bw[1] + clipw[1] : ex1);
-            int outery = starty - clipw[0];
-            int clipy = outery + clipw[0];
-            int innery = outery + bw[0];
+            final int sx1 = startx;
+            final int sx2 = slant[0] ? sx1 + bw[3] - clipw[3] : sx1;
+            final int ex1 = startx + width;
+            final int ex2 = slant[1] ? ex1 - bw[1] + clipw[1] : ex1;
+            final int outery = starty - clipw[0];
+            final int clipy = outery + clipw[0];
+            final int innery = outery + bw[0];
 
             saveGraphicsState();
             moveTo(sx1, clipy);
             int sx1a = sx1;
             int ex1a = ex1;
             if (bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
-                if (bpsStart != null && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsStart != null
+                        && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
                     sx1a -= clipw[3];
                 }
                 if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
@@ -106,23 +111,25 @@ public abstract class BorderPainter {
             restoreGraphicsState();
         }
         if (bpsEnd != null) {
-            int sy1 = starty;
-            int sy2 = (slant[1] ? sy1 + bw[0] - clipw[0] : sy1);
-            int ey1 = starty + height;
-            int ey2 = (slant[2] ? ey1 - bw[2] + clipw[2] : ey1);
-            int outerx = startx + width + clipw[1];
-            int clipx = outerx - clipw[1];
-            int innerx = outerx - bw[1];
+            final int sy1 = starty;
+            final int sy2 = slant[1] ? sy1 + bw[0] - clipw[0] : sy1;
+            final int ey1 = starty + height;
+            final int ey2 = slant[2] ? ey1 - bw[2] + clipw[2] : ey1;
+            final int outerx = startx + width + clipw[1];
+            final int clipx = outerx - clipw[1];
+            final int innerx = outerx - bw[1];
 
             saveGraphicsState();
             moveTo(clipx, sy1);
             int sy1a = sy1;
             int ey1a = ey1;
             if (bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
-                if (bpsBefore != null && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsBefore != null
+                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
                     sy1a -= clipw[0];
                 }
-                if (bpsAfter != null && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsAfter != null
+                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
                     ey1a += clipw[2];
                 }
                 lineTo(outerx, sy1a);
@@ -133,24 +140,26 @@ public abstract class BorderPainter {
             lineTo(innerx, sy2);
             closePath();
             clip();
-            drawBorderLine(innerx, sy1a, outerx, ey1a, false, false, bpsEnd.style, bpsEnd.color);
+            drawBorderLine(innerx, sy1a, outerx, ey1a, false, false,
+                    bpsEnd.style, bpsEnd.color);
             restoreGraphicsState();
         }
         if (bpsAfter != null) {
-            int sx1 = startx;
-            int sx2 = (slant[3] ? sx1 + bw[3] - clipw[3] : sx1);
-            int ex1 = startx + width;
-            int ex2 = (slant[2] ? ex1 - bw[1] + clipw[1] : ex1);
-            int outery = starty + height + clipw[2];
-            int clipy = outery - clipw[2];
-            int innery = outery - bw[2];
+            final int sx1 = startx;
+            final int sx2 = slant[3] ? sx1 + bw[3] - clipw[3] : sx1;
+            final int ex1 = startx + width;
+            final int ex2 = slant[2] ? ex1 - bw[1] + clipw[1] : ex1;
+            final int outery = starty + height + clipw[2];
+            final int clipy = outery - clipw[2];
+            final int innery = outery - bw[2];
 
             saveGraphicsState();
             moveTo(ex1, clipy);
             int sx1a = sx1;
             int ex1a = ex1;
             if (bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
-                if (bpsStart != null && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsStart != null
+                        && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
                     sx1a -= clipw[3];
                 }
                 if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
@@ -164,27 +173,30 @@ public abstract class BorderPainter {
             lineTo(ex2, innery);
             closePath();
             clip();
-            drawBorderLine(sx1a, innery, ex1a, outery, true, false, bpsAfter.style, bpsAfter.color);
+            drawBorderLine(sx1a, innery, ex1a, outery, true, false,
+                    bpsAfter.style, bpsAfter.color);
             restoreGraphicsState();
         }
         if (bpsStart != null) {
-            int sy1 = starty;
-            int sy2 = (slant[0] ? sy1 + bw[0] - clipw[0] : sy1);
-            int ey1 = sy1 + height;
-            int ey2 = (slant[3] ? ey1 - bw[2] + clipw[2] : ey1);
-            int outerx = startx - clipw[3];
-            int clipx = outerx + clipw[3];
-            int innerx = outerx + bw[3];
+            final int sy1 = starty;
+            final int sy2 = slant[0] ? sy1 + bw[0] - clipw[0] : sy1;
+            final int ey1 = sy1 + height;
+            final int ey2 = slant[3] ? ey1 - bw[2] + clipw[2] : ey1;
+            final int outerx = startx - clipw[3];
+            final int clipx = outerx + clipw[3];
+            final int innerx = outerx + bw[3];
 
             saveGraphicsState();
             moveTo(clipx, ey1);
             int sy1a = sy1;
             int ey1a = ey1;
             if (bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
-                if (bpsBefore != null && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsBefore != null
+                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
                     sy1a -= clipw[0];
                 }
-                if (bpsAfter != null && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsAfter != null
+                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
                     ey1a += clipw[2];
                 }
                 lineTo(outerx, ey1a);
@@ -195,80 +207,116 @@ public abstract class BorderPainter {
             lineTo(innerx, ey2);
             closePath();
             clip();
-            drawBorderLine(outerx, sy1a, innerx, ey1a, false, true, bpsStart.style, bpsStart.color);
+            drawBorderLine(outerx, sy1a, innerx, ey1a, false, true,
+                    bpsStart.style, bpsStart.color);
             restoreGraphicsState();
         }
     }
 
-
     /**
      * Draws a border line.
-     * @param x1 X coordinate of the upper left corner
-     *                  of the line's bounding rectangle (in millipoints)
-     * @param y1 start Y coordinate of the upper left corner
-     *                  of the line's bounding rectangle (in millipoints)
-     * @param x2 end X coordinate of the lower right corner
-     *                  of the line's bounding rectangle (in millipoints)
-     * @param y2 end y coordinate of the lower right corner
-     *                  of the line's bounding rectangle (in millipoints)
-     * @param horz true if it is a horizontal line
-     * @param startOrBefore true if the line is the start or end edge of a border box
-     * @param style the border style
-     * @param color the border color
-     * @throws IOException if an I/O error occurs
+     * 
+     * @param x1
+     *            X coordinate of the upper left corner of the line's bounding
+     *            rectangle (in millipoints)
+     * @param y1
+     *            start Y coordinate of the upper left corner of the line's
+     *            bounding rectangle (in millipoints)
+     * @param x2
+     *            end X coordinate of the lower right corner of the line's
+     *            bounding rectangle (in millipoints)
+     * @param y2
+     *            end y coordinate of the lower right corner of the line's
+     *            bounding rectangle (in millipoints)
+     * @param horz
+     *            true if it is a horizontal line
+     * @param startOrBefore
+     *            true if the line is the start or end edge of a border box
+     * @param style
+     *            the border style
+     * @param color
+     *            the border color
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    protected abstract void drawBorderLine(int x1, int y1, int x2, int y2,
-            boolean horz, boolean startOrBefore, int style, Color color) throws IOException;
+    protected abstract void drawBorderLine(final int x1, final int y1,
+            final int x2, final int y2, final boolean horz,
+            final boolean startOrBefore, final int style, final Color color)
+            throws IOException;
 
     /**
      * Draws a line/rule.
-     * @param start start point (coordinates in millipoints)
-     * @param end end point (coordinates in millipoints)
-     * @param width width of the line
-     * @param color the line color
-     * @param style the rule style
-     * @throws IOException if an I/O error occurs
+     * 
+     * @param start
+     *            start point (coordinates in millipoints)
+     * @param end
+     *            end point (coordinates in millipoints)
+     * @param width
+     *            width of the line
+     * @param color
+     *            the line color
+     * @param style
+     *            the rule style
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    public abstract void drawLine(Point start, Point end,
-            int width, Color color, RuleStyle style) throws IOException;
+    public abstract void drawLine(final Point start, final Point end,
+            final int width, final Color color, final RuleStyle style)
+            throws IOException;
 
     /**
      * Moves the cursor to the given coordinate.
-     * @param x the X coordinate (in millipoints)
-     * @param y the Y coordinate (in millipoints)
-     * @throws IOException if an I/O error occurs
+     * 
+     * @param x
+     *            the X coordinate (in millipoints)
+     * @param y
+     *            the Y coordinate (in millipoints)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    protected abstract void moveTo(int x, int y) throws IOException;
+    protected abstract void moveTo(final int x, final int y) throws IOException;
 
     /**
      * Draws a line from the current cursor position to the given coordinates.
-     * @param x the X coordinate (in millipoints)
-     * @param y the Y coordinate (in millipoints)
-     * @throws IOException if an I/O error occurs
+     * 
+     * @param x
+     *            the X coordinate (in millipoints)
+     * @param y
+     *            the Y coordinate (in millipoints)
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    protected abstract void lineTo(int x, int y) throws IOException;
+    protected abstract void lineTo(final int x, final int y) throws IOException;
 
     /**
      * Closes the current path.
-     * @throws IOException if an I/O error occurs
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
      */
     protected abstract void closePath() throws IOException;
 
     /**
      * Reduces the current clipping region to the current path.
-     * @throws IOException if an I/O error occurs
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
      */
     protected abstract void clip() throws IOException;
 
     /**
      * Save the graphics state on the stack.
-     * @throws IOException if an I/O error occurs
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
      */
     protected abstract void saveGraphicsState() throws IOException;
 
     /**
      * Restore the last graphics state from the stack.
-     * @throws IOException if an I/O error occurs
+     * 
+     * @throws IOException
+     *             if an I/O error occurs
      */
     protected abstract void restoreGraphicsState() throws IOException;
 

@@ -26,14 +26,22 @@ package org.apache.fop.render.rtf.rtflib.exceptions;
  * the FOP project.
  */
 
-/**  Base class for rtflib exceptions.
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Base class for rtflib exceptions.
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 public class RtfException extends java.io.IOException {
     /**
-     * @param reason Description of reason for Exception.
+     *
      */
-    public RtfException(String reason) {
+    private static final long serialVersionUID = 4141515853229058765L;
+
+    /**
+     * @param reason
+     *            Description of reason for Exception.
+     */
+    public RtfException(final String reason) {
         super(reason);
     }
 }

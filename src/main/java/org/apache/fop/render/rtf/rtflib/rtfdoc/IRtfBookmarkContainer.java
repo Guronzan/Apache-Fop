@@ -30,16 +30,19 @@ import java.io.IOException;
 
 /**
  * RTF Bookmark container interface.
+ * 
  * @author <a href="mailto:a.putz@skynamics.com">Andreas Putz</a>
  */
 public interface IRtfBookmarkContainer {
 
     /**
      * Create a new RTF bookmark.
-     * @param bookmark Name of the bookmark
+     * 
+     * @param bookmark
+     *            Name of the bookmark
      * @return RTF bookmark
-     * @throws IOException for I/O problems
+     * @throws IOException
+     *             for I/O problems
      */
-    RtfBookmark newBookmark (String bookmark) throws IOException;
+    RtfBookmark newBookmark(final String bookmark) throws IOException;
 }
-

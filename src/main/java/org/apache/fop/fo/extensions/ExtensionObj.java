@@ -27,7 +27,6 @@ import org.apache.fop.fo.PropertyList;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 
-
 /**
  * Base class for pdf bookmark extension objects.
  */
@@ -36,28 +35,29 @@ public abstract class ExtensionObj extends FObj {
     /**
      * Create a new extension object.
      *
-     * @param parent the parent formatting object
+     * @param parent
+     *            the parent formatting object
      */
-    public ExtensionObj(FONode parent) {
+    public ExtensionObj(final FONode parent) {
         super(parent);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void processNode(String elementName, Locator locator,
-                            Attributes attlist, PropertyList pList)
-        throws FOPException
-    {
+    @Override
+    public void processNode(final String elementName, final Locator locator,
+            final Attributes attlist, final PropertyList pList)
+            throws FOPException {
         // Empty
     }
 
     /**
      * Create a default property list for this element.
      */
-    protected PropertyList createPropertyList(PropertyList parent,
-                FOEventHandler foEventHandler) throws FOPException {
+    @Override
+    protected PropertyList createPropertyList(final PropertyList parent,
+            final FOEventHandler foEventHandler) throws FOPException {
         return null;
     }
 }
-

@@ -23,15 +23,16 @@ import org.apache.fop.fo.FOPropertyMapping;
 import org.apache.fop.fo.properties.Property;
 
 /**
- * Class modelling the from-nearest-specified-value function. See Sec. 5.10.4
- * of the XSL-FO standard.
+ * Class modelling the from-nearest-specified-value function. See Sec. 5.10.4 of
+ * the XSL-FO standard.
  */
 public class NearestSpecPropFunction extends FunctionBase {
 
     /**
      * @return 1 (maximum number of arguments for from-nearest-specified-value
-     * function)
+     *         function)
      */
+    @Override
     public int nbArgs() {
         return 1;
     }
@@ -39,31 +40,36 @@ public class NearestSpecPropFunction extends FunctionBase {
     /**
      * @return true (allow padding of arglist with property name)
      */
+    @Override
     public boolean padArgsWithPropertyName() {
         return true;
     }
 
     /**
      *
-     * @param args array of arguments for the function
-     * @param pInfo PropertyInfo for the function
+     * @param args
+     *            array of arguments for the function
+     * @param pInfo
+     *            PropertyInfo for the function
      * @return Property containing the nearest-specified-value
-     * @throws PropertyException for invalid arguments to the function
+     * @throws PropertyException
+     *             for invalid arguments to the function
      */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-        String propName = args[0].getString();
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        final String propName = args[0].getString();
         if (propName == null) {
             throw new PropertyException(
                     "Incorrect parameter to from-nearest-specified-value function");
         }
         // NOTE: special cases for shorthand property
         // Should return COMPUTED VALUE
-        int propId = FOPropertyMapping.getPropertyId(propName);
+        final int propId = FOPropertyMapping.getPropertyId(propName);
         if (propId < 0) {
             throw new PropertyException(
                     "Unknown property name used with inherited-property-value function: "
-                        + propName);
+                            + propName);
         }
         return pInfo.getPropertyList().getNearestSpecified(propId);
     }

@@ -25,9 +25,8 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * Store all common margin properties for inlines.
- * See Sec. 7.11 of the XSL-FO Standard.
- * Public "structure" allows direct member access.
+ * Store all common margin properties for inlines. See Sec. 7.11 of the XSL-FO
+ * Standard. Public "structure" allows direct member access.
  */
 public class CommonMarginInline {
 
@@ -63,15 +62,18 @@ public class CommonMarginInline {
 
     /**
      * Create a CommonMarginInline object.
-     * @param pList The PropertyList with propery values.
+     * 
+     * @param pList
+     *            The PropertyList with propery values.
      */
-    public CommonMarginInline(PropertyList pList) throws PropertyException {
-        marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
-        marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
-        marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
-        marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
+    public CommonMarginInline(final PropertyList pList)
+            throws PropertyException {
+        this.marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
+        this.marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
+        this.marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
+        this.marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
 
-        spaceStart = pList.get(Constants.PR_SPACE_START).getSpace();
-        spaceEnd = pList.get(Constants.PR_SPACE_END).getSpace();
+        this.spaceStart = pList.get(Constants.PR_SPACE_START).getSpace();
+        this.spaceEnd = pList.get(Constants.PR_SPACE_END).getSpace();
     }
 }

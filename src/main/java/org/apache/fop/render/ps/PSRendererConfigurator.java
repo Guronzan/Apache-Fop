@@ -20,69 +20,76 @@
 package org.apache.fop.render.ps;
 
 import org.apache.avalon.framework.configuration.Configuration;
-
-import org.apache.xmlgraphics.ps.PSGenerator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.PrintRendererConfigurator;
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
 import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
+import org.apache.xmlgraphics.ps.PSGenerator;
 
 /**
  * Postscript renderer config
  */
-public class PSRendererConfigurator extends PrintRendererConfigurator
-            implements IFDocumentHandlerConfigurator {
+public class PSRendererConfigurator extends PrintRendererConfigurator implements
+IFDocumentHandlerConfigurator {
 
     /**
      * Default constructor
-     * @param userAgent user agent
+     *
+     * @param userAgent
+     *            user agent
      */
-    public PSRendererConfigurator(FOUserAgent userAgent) {
+    public PSRendererConfigurator(final FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
      * Configure the PS renderer.
-     * @param renderer postscript renderer
-     * @throws FOPException fop exception
+     *
+     * @param renderer
+     *            postscript renderer
+     * @throws FOPException
+     *             fop exception
      */
-    public void configure(Renderer renderer) throws FOPException {
-        Configuration cfg = super.getRendererConfig(renderer);
+    @Override
+    public void configure(final Renderer renderer) throws FOPException {
+        final Configuration cfg = super.getRendererConfig(renderer);
         if (cfg != null) {
             super.configure(renderer);
 
-            PSRenderer psRenderer = (PSRenderer)renderer;
+            final PSRenderer psRenderer = (PSRenderer) renderer;
             configure(psRenderer.getPSUtil(), cfg);
         }
     }
 
-    private void configure(PSRenderingUtil psUtil, Configuration cfg) {
-        psUtil.setAutoRotateLandscape(
-            cfg.getChild("auto-rotate-landscape").getValueAsBoolean(false));
+    private void configure(final PSRenderingUtil psUtil, final Configuration cfg) {
+        psUtil.setAutoRotateLandscape(cfg.getChild("auto-rotate-landscape")
+                .getValueAsBoolean(false));
         Configuration child;
         child = cfg.getChild("language-level");
         if (child != null) {
-            psUtil.setLanguageLevel(child.getValueAsInteger(
-                    PSGenerator.DEFAULT_LANGUAGE_LEVEL));
+            psUtil.setLanguageLevel(child
+                    .getValueAsInteger(PSGenerator.DEFAULT_LANGUAGE_LEVEL));
         }
         child = cfg.getChild("optimize-resources");
         if (child != null) {
             psUtil.setOptimizeResources(child.getValueAsBoolean(false));
         }
-        psUtil.setSafeSetPageDevice(
-            cfg.getChild("safe-set-page-device").getValueAsBoolean(false));
-        psUtil.setDSCComplianceEnabled(
-            cfg.getChild("dsc-compliant").getValueAsBoolean(true));
+        psUtil.setSafeSetPageDevice(cfg.getChild("safe-set-page-device")
+                .getValueAsBoolean(false));
+        psUtil.setDSCComplianceEnabled(cfg.getChild("dsc-compliant")
+                .getValueAsBoolean(true));
     }
 
     /** {@inheritDoc} */
-    public void configure(IFDocumentHandler documentHandler) throws FOPException {
-        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
+    @Override
+    public void configure(final IFDocumentHandler documentHandler)
+            throws FOPException {
+        final Configuration cfg = super.getRendererConfig(documentHandler
+                .getMimeType());
         if (cfg != null) {
-            PSDocumentHandler psDocumentHandler = (PSDocumentHandler)documentHandler;
+            final PSDocumentHandler psDocumentHandler = (PSDocumentHandler) documentHandler;
             configure(psDocumentHandler.getPSUtil(), cfg);
         }
 

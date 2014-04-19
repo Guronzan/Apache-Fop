@@ -32,50 +32,65 @@ public interface AFPEventProducer extends EventProducer {
 
         /**
          * Returns an event producer.
-         * @param broadcaster the event broadcaster to use
+         * 
+         * @param broadcaster
+         *            the event broadcaster to use
          * @return the event producer
          */
-        public static AFPEventProducer get(EventBroadcaster broadcaster) {
-            return (AFPEventProducer)broadcaster.getEventProducerFor(
-                    AFPEventProducer.class);
+        public static AFPEventProducer get(final EventBroadcaster broadcaster) {
+            return (AFPEventProducer) broadcaster
+                    .getEventProducerFor(AFPEventProducer.class);
         }
     }
 
     /**
      * Warn about using default font setup.
      *
-     * @param source the event source
+     * @param source
+     *            the event source
      * @event.severity WARN
      */
-    void warnDefaultFontSetup(Object source);
+    void warnDefaultFontSetup(final Object source);
 
     /**
      * Warn about a missing default "any" font configuration.
      *
-     * @param source the event source
-     * @param style the font style
-     * @param weight the font weight
+     * @param source
+     *            the event source
+     * @param style
+     *            the font style
+     * @param weight
+     *            the font weight
      * @event.severity WARN
      */
-    void warnMissingDefaultFont(Object source, String style, int weight);
+    void warnMissingDefaultFont(final Object source, final String style,
+            final int weight);
 
     /**
      * A character set encoding error occurred.
      *
-     * @param source the event source
-     * @param charSetName the character set name
-     * @param encoding the encoding
+     * @param source
+     *            the event source
+     * @param charSetName
+     *            the character set name
+     * @param encoding
+     *            the encoding
      * @event.severity ERROR
      */
-    void characterSetEncodingError(Object source, String charSetName, String encoding);
+    void characterSetEncodingError(final Object source,
+            final String charSetName, final String encoding);
 
     /**
      * Triggered when an external resource fails to be embedded.
      *
-     * @param source the event source
-     * @param resourceName the name of the resource where the error occurred
-     * @param e the original exception
+     * @param source
+     *            the event source
+     * @param resourceName
+     *            the name of the resource where the error occurred
+     * @param e
+     *            the original exception
      * @event.severity ERROR
      */
-    void resourceEmbeddingError(Object source, String resourceName, Exception e);
+    void resourceEmbeddingError(final Object source, final String resourceName,
+            final Exception e);
 }

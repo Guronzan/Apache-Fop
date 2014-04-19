@@ -33,16 +33,22 @@ public class PDFFlowTextPainter extends PDFTextPainter {
 
     /**
      * Main constructor
-     * @param fontInfo the font directory
+     * 
+     * @param fontInfo
+     *            the font directory
      */
-    public PDFFlowTextPainter(FontInfo fontInfo) {
+    public PDFFlowTextPainter(final FontInfo fontInfo) {
         super(fontInfo);
     }
 
     /** {@inheritDoc} */
-    public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
-        //Text runs are delegated to the normal FlowTextPainter, we just paint the text.
-        FlowTextPainter delegate = (FlowTextPainter)FlowTextPainter.getInstance();
+    @Override
+    public List getTextRuns(final TextNode node,
+            final AttributedCharacterIterator aci) {
+        // Text runs are delegated to the normal FlowTextPainter, we just paint
+        // the text.
+        final FlowTextPainter delegate = (FlowTextPainter) FlowTextPainter
+                .getInstance();
         return delegate.getTextRuns(node, aci);
     }
 

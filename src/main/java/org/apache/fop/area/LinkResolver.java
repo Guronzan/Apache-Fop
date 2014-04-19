@@ -20,39 +20,41 @@
 package org.apache.fop.area;
 
 // Java
-import java.util.List;
 import java.io.Serializable;
-
+import java.util.List;
 // FOP
-import org.apache.fop.area.Trait;
-import org.apache.fop.area.Resolvable;
-import org.apache.fop.area.PageViewport;
-import org.apache.fop.area.Area;
 
 /**
  * Link resolving for resolving internal links.
  */
 public class LinkResolver implements Resolvable, Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = -7102134165192960718L;
     private boolean resolved = false;
-    private String idRef;
-    private Area area;
+    private final String idRef;
+    private final Area area;
 
     /**
      * Create a new link resolver.
      *
-     * @param id the id to resolve
-     * @param a the area that will have the link attribute
+     * @param id
+     *            the id to resolve
+     * @param a
+     *            the area that will have the link attribute
      */
-    public LinkResolver(String id, Area a) {
-        idRef = id;
-        area = a;
+    public LinkResolver(final String id, final Area a) {
+        this.idRef = id;
+        this.area = a;
     }
 
     /**
      * @return true if this link is resolved
      */
+    @Override
     public boolean isResolved() {
-        return resolved;
+        return this.resolved;
     }
 
     /**
@@ -60,8 +62,9 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * @return the String array of references.
      */
+    @Override
     public String[] getIDRefs() {
-        return new String[] {idRef};
+        return new String[] { this.idRef };
     }
 
     /**
@@ -69,21 +72,25 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * {@inheritDoc}
      */
-    public void resolveIDRef(String id, List pages) {
-        resolveIDRef(id, (PageViewport)pages.get(0));
+    @Override
+    public void resolveIDRef(final String id, final List pages) {
+        resolveIDRef(id, (PageViewport) pages.get(0));
     }
 
     /**
      * Resolve by adding an InternalLink trait to the area
      *
-     * @param id the target id (should be equal to the object's idRef)
-     * @param pv the PageViewport containing the first area with the given id
+     * @param id
+     *            the target id (should be equal to the object's idRef)
+     * @param pv
+     *            the PageViewport containing the first area with the given id
      */
-    public void resolveIDRef(String id, PageViewport pv) {
-        if (idRef.equals(id) && pv != null) {
-            resolved = true;
-            Trait.InternalLink iLink = new Trait.InternalLink(pv.getKey(), idRef);
-            area.addTrait(Trait.INTERNAL_LINK, iLink);
+    public void resolveIDRef(final String id, final PageViewport pv) {
+        if (this.idRef.equals(id) && pv != null) {
+            this.resolved = true;
+            final Trait.InternalLink iLink = new Trait.InternalLink(
+                    pv.getKey(), this.idRef);
+            this.area.addTrait(Trait.INTERNAL_LINK, iLink);
         }
     }
 }

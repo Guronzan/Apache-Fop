@@ -31,7 +31,13 @@ import org.xml.sax.SAXException;
 /**
  * This is the pass-through value object for the XMP metadata extension.
  */
-public class XMPMetadata implements ExtensionAttachment, Serializable, XMLizable {
+public class XMPMetadata implements ExtensionAttachment, Serializable,
+        XMLizable {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 591347206217931578L;
 
     /** The category URI for this extension attachment. */
     public static final String CATEGORY = XMPConstants.XMP_NAMESPACE;
@@ -43,14 +49,16 @@ public class XMPMetadata implements ExtensionAttachment, Serializable, XMLizable
      * No-argument contructor.
      */
     public XMPMetadata() {
-        //nop
+        // nop
     }
 
     /**
      * Default constructor.
-     * @param metadata the XMP metadata
+     * 
+     * @param metadata
+     *            the XMP metadata
      */
-    public XMPMetadata(Metadata metadata) {
+    public XMPMetadata(final Metadata metadata) {
         this.meta = metadata;
     }
 
@@ -61,32 +69,38 @@ public class XMPMetadata implements ExtensionAttachment, Serializable, XMLizable
 
     /**
      * Sets the XMP metadata.
-     * @param metadata the XMP metadata
+     * 
+     * @param metadata
+     *            the XMP metadata
      */
-    public void setMetadata(Metadata metadata) {
+    public void setMetadata(final Metadata metadata) {
         this.meta = metadata;
     }
 
     /** @return true if the XMP metadata is marked read-only. */
     public boolean isReadOnly() {
-        return readOnly;
+        return this.readOnly;
     }
 
     /**
      * Sets the flag that decides whether a metadata packet may be modified.
-     * @param readOnly true if the XMP metadata packet should be marked read-only.
+     * 
+     * @param readOnly
+     *            true if the XMP metadata packet should be marked read-only.
      */
-    public void setReadOnly(boolean readOnly) {
+    public void setReadOnly(final boolean readOnly) {
         this.readOnly = readOnly;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
 
     /** {@inheritDoc} */
-    public void toSAX(ContentHandler handler) throws SAXException {
+    @Override
+    public void toSAX(final ContentHandler handler) throws SAXException {
         getMetadata().toSAX(handler);
     }
 

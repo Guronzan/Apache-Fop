@@ -21,8 +21,6 @@ package org.apache.fop.fo.flow;
 
 import java.awt.Color;
 
-import org.xml.sax.Locator;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.Constants;
@@ -35,6 +33,7 @@ import org.apache.fop.fo.properties.CommonFont;
 import org.apache.fop.fo.properties.CommonTextDecoration;
 import org.apache.fop.fo.properties.SpaceProperty;
 import org.apache.fop.fo.properties.StructurePointerPropertySet;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_page-number">
@@ -55,20 +54,20 @@ public class PageNumber extends FObj implements StructurePointerPropertySet {
     private CommonTextDecoration textDecoration;
     // private ToBeImplementedProperty textShadow;
     // Unused but valid items, commented out for performance:
-    //     private CommonAccessibility commonAccessibility;
-    //     private CommonAural commonAural;
-    //     private CommonMarginInline commonMarginInline;
-    //     private CommonRelativePosition commonRelativePosition;
-    //     private KeepProperty keepWithNext;
-    //     private KeepProperty keepWithPrevious;
-    //     private int scoreSpaces;
-    //     private Length textAltitude;
-    //     private Length textDepth;
-    //     private int textTransform;
-    //     private int visibility;
-    //     private SpaceProperty wordSpacing;
-    //     private int wrapOption;
-    //  End of property values
+    // private CommonAccessibility commonAccessibility;
+    // private CommonAural commonAural;
+    // private CommonMarginInline commonMarginInline;
+    // private CommonRelativePosition commonRelativePosition;
+    // private KeepProperty keepWithNext;
+    // private KeepProperty keepWithPrevious;
+    // private int scoreSpaces;
+    // private Length textAltitude;
+    // private Length textDepth;
+    // private int textTransform;
+    // private int visibility;
+    // private SpaceProperty wordSpacing;
+    // private int wrapOption;
+    // End of property values
 
     // Properties which are not explicitely listed but are still applicable
     private Color color;
@@ -76,48 +75,54 @@ public class PageNumber extends FObj implements StructurePointerPropertySet {
     /**
      * Base constructor
      *
-     * @param parent {@link FONode} that is the parent of this object
+     * @param parent
+     *            {@link FONode} that is the parent of this object
      */
-    public PageNumber(FONode parent) {
+    public PageNumber(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
         super.bind(pList);
-        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
-        commonFont = pList.getFontProps();
-        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        this.commonBorderPaddingBackground = pList
+                .getBorderPaddingBackgroundProps();
+        this.commonFont = pList.getFontProps();
+        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
         // letterSpacing = pList.get(PR_LETTER_SPACING);
-        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        textDecoration = pList.getTextDecorationProps();
-        ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
+        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        this.textDecoration = pList.getTextDecorationProps();
+        this.ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
         // textShadow = pList.get(PR_TEXT_SHADOW);
 
         // implicit properties
-        color = pList.get(Constants.PR_COLOR).getColor(getUserAgent());
+        this.color = pList.get(Constants.PR_COLOR).getColor(getUserAgent());
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startPageNumber(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         getFOEventHandler().endPageNumber(this);
     }
 
     /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: empty
+     * {@inheritDoc} <br>
+     * XSL Content Model: empty
      */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-                throws ValidationException {
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
@@ -125,63 +130,67 @@ public class PageNumber extends FObj implements StructurePointerPropertySet {
 
     /** @return the Common Font Properties. */
     public CommonFont getCommonFont() {
-        return commonFont;
+        return this.commonFont;
     }
 
     /** @return the "color" property. */
     public Color getColor() {
-        return color;
+        return this.color;
     }
 
     /** @return the Common Border, Padding, and Background Properties. */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return commonBorderPaddingBackground;
+        return this.commonBorderPaddingBackground;
     }
 
     /** @return the "text-decoration" property. */
     public CommonTextDecoration getTextDecoration() {
-        return textDecoration;
+        return this.textDecoration;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        return alignmentAdjust;
+        return this.alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return alignmentBaseline;
+        return this.alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return baselineShift;
+        return this.baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return dominantBaseline;
+        return this.dominantBaseline;
     }
 
     /** @return the "line-height" property */
     public SpaceProperty getLineHeight() {
-        return lineHeight;
+        return this.lineHeight;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getPtr() {
-        return ptr;
+        return this.ptr;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "page-number";
     }
 
     /**
      * {@inheritDoc}
+     *
      * @return {@link org.apache.fop.fo.Constants#FO_PAGE_NUMBER}
      */
+    @Override
     public int getNameId() {
         return FO_PAGE_NUMBER;
     }

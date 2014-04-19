@@ -26,51 +26,63 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
+import java.io.IOException;
 import java.io.Writer;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
-import java.io.IOException;
+
 import org.apache.fop.render.rtf.rtflib.exceptions.RtfStructureException;
 
-/**  An RtfElement that can contain other elements.
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * An RtfElement that can contain other elements.
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public class RtfContainer extends RtfElement {
-    private LinkedList children;  // 'final' removed by Boris Poudérous on 07/22/2002
+    private LinkedList children; // 'final' removed by Boris Poudérous on
+                                 // 07/22/2002
     private RtfOptions options = new RtfOptions();
     private RtfElement lastChild;
 
     /** Create an RTF container as a child of given container */
-    RtfContainer(RtfContainer parent, Writer w) throws IOException {
+    RtfContainer(final RtfContainer parent, final Writer w) throws IOException {
         this(parent, w, null);
     }
 
-    /** Create an RTF container as a child of given container with given attributes */
-    RtfContainer(RtfContainer parent, Writer w, RtfAttributes attr) throws IOException {
+    /**
+     * Create an RTF container as a child of given container with given
+     * attributes
+     */
+    RtfContainer(final RtfContainer parent, final Writer w,
+            final RtfAttributes attr) throws IOException {
         super(parent, w, attr);
-        children = new LinkedList();
+        this.children = new LinkedList();
     }
 
     /**
      * set options
-     * @param opt options to set
+     * 
+     * @param opt
+     *            options to set
      */
-    public void setOptions(RtfOptions opt) {
-        options = opt;
+    public void setOptions(final RtfOptions opt) {
+        this.options = opt;
     }
 
     /**
      * add a child element to this
-     * @param e child element to add
-     * @throws RtfStructureException for trying to add an invalid child (??)
+     * 
+     * @param e
+     *            child element to add
+     * @throws RtfStructureException
+     *             for trying to add an invalid child (??)
      */
-    protected void addChild(RtfElement e)
-    throws RtfStructureException {
+    protected void addChild(final RtfElement e) throws RtfStructureException {
         if (isClosed()) {
             // No childs should be added to a container that has been closed
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             sb.append("addChild: container already closed (parent=");
             sb.append(this.getClass().getName());
             sb.append(" child=");
@@ -80,76 +92,79 @@ public class RtfContainer extends RtfElement {
 
             // warn of this problem
             final RtfFile rf = getRtfFile();
-//            if(rf.getLog() != null) {
-//               rf.getLog().logWarning(msg);
-//            }
+            // if(rf.getLog() != null) {
+            // rf.getLog().logWarning(msg);
+            // }
 
             // TODO this should be activated to help detect XSL-FO constructs
             // that we do not handle properly.
             /*
-            throw new RtfStructureException(msg);
+             * throw new RtfStructureException(msg);
              */
         }
 
-        children.add(e);
-        lastChild = e;
+        this.children.add(e);
+        this.lastChild = e;
     }
 
     /**
      * @return a copy of our children's list
      */
     public List getChildren() {
-        return (List)children.clone();
+        return (List) this.children.clone();
     }
 
     /**
      * @return the number of children
      */
     public int getChildCount() {
-        return children.size();
+        return this.children.size();
     }
 
     /**
-     * Add by Boris Poudérous on 07/22/2002
-     * Set the children list
-     * @param list list of child objects
+     * Add by Boris Poudérous on 07/22/2002 Set the children list
+     * 
+     * @param list
+     *            list of child objects
      * @return true if process succeeded
      */
-    public boolean setChildren (List list) {
-      if (list instanceof LinkedList) {
-          this.children = (LinkedList) list;
-          return true;
+    public boolean setChildren(final List list) {
+        if (list instanceof LinkedList) {
+            this.children = (LinkedList) list;
+            return true;
         }
 
-      return false;
+        return false;
     }
 
     /**
      * write RTF code of all our children
-     * @throws IOException for I/O problems
+     * 
+     * @throws IOException
+     *             for I/O problems
      */
-    protected void writeRtfContent()
-    throws IOException {
-        for (Iterator it = children.iterator(); it.hasNext();) {
-            final RtfElement e = (RtfElement)it.next();
+    @Override
+    protected void writeRtfContent() throws IOException {
+        for (final Iterator it = this.children.iterator(); it.hasNext();) {
+            final RtfElement e = (RtfElement) it.next();
             e.writeRtf();
         }
     }
 
     /** return our options */
     RtfOptions getOptions() {
-        return options;
+        return this.options;
     }
 
     /** true if this (recursively) contains at least one RtfText object */
     boolean containsText() {
         boolean result = false;
-        for (Iterator it = children.iterator(); it.hasNext();) {
-            final RtfElement e = (RtfElement)it.next();
+        for (final Iterator it = this.children.iterator(); it.hasNext();) {
+            final RtfElement e = (RtfElement) it.next();
             if (e instanceof RtfText) {
                 result = !e.isEmpty();
             } else if (e instanceof RtfContainer) {
-                if (((RtfContainer)e).containsText()) {
+                if (((RtfContainer) e).containsText()) {
                     result = true;
                 }
             }
@@ -161,19 +176,21 @@ public class RtfContainer extends RtfElement {
     }
 
     /** debugging to given Writer */
-    void dump(Writer w, int indent)
-    throws IOException {
+    @Override
+    void dump(final Writer w, final int indent) throws IOException {
         super.dump(w, indent);
-        for (Iterator it = children.iterator(); it.hasNext();) {
-            final RtfElement e = (RtfElement)it.next();
+        for (final Iterator it = this.children.iterator(); it.hasNext();) {
+            final RtfElement e = (RtfElement) it.next();
             e.dump(w, indent + 1);
         }
     }
 
     /**
      * minimal debugging display
+     * 
      * @return String representation of object contents
      */
+    @Override
     public String toString() {
         return super.toString() + " (" + getChildCount() + " children)";
     }
@@ -181,22 +198,25 @@ public class RtfContainer extends RtfElement {
     /**
      * @return false if empty or if our options block writing
      */
+    @Override
     protected boolean okToWriteRtf() {
         boolean result = super.okToWriteRtf() && !isEmpty();
-        if (result && !options.renderContainer(this)) {
+        if (result && !this.options.renderContainer(this)) {
             result = false;
         }
         return result;
     }
 
     /**
-     * @return true if this element would generate no "useful" RTF content,
-     * i.e. (for RtfContainer) true if it has no children where isEmpty() is false
+     * @return true if this element would generate no "useful" RTF content, i.e.
+     *         (for RtfContainer) true if it has no children where isEmpty() is
+     *         false
      */
+    @Override
     public boolean isEmpty() {
         boolean result = true;
-        for (Iterator it = children.iterator(); it.hasNext();) {
-            final RtfElement e = (RtfElement)it.next();
+        for (final Iterator it = this.children.iterator(); it.hasNext();) {
+            final RtfElement e = (RtfElement) it.next();
             if (!e.isEmpty()) {
                 result = false;
                 break;

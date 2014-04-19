@@ -36,17 +36,21 @@ public class PDFICCStream extends PDFStream {
      */
     public PDFICCStream() {
         super();
-        cp = null;
+        this.cp = null;
     }
 
     /**
      * Sets the color space to encode in PDF.
-     * @param icc the ICC profile
-     * @param alt the PDF color space
+     *
+     * @param icc
+     *            the ICC profile
+     * @param alt
+     *            the PDF color space
      */
-    public void setColorSpace(ICC_Profile icc, PDFDeviceColorSpace alt) {
+    public void setColorSpace(final ICC_Profile icc,
+            final PDFDeviceColorSpace alt) {
         this.cp = icc;
-        pdfColorSpace = alt;
+        this.pdfColorSpace = alt;
     }
 
     /** @return the ICC profile */
@@ -55,27 +59,30 @@ public class PDFICCStream extends PDFStream {
     }
 
     /**
-     * overload the base object method so we don't have to copy
-     * byte arrays around so much
-     * {@inheritDoc}
+     * overload the base object method so we don't have to copy byte arrays
+     * around so much {@inheritDoc}
      */
-    protected int output(java.io.OutputStream stream)
-                throws java.io.IOException {
-        int length = super.output(stream);
-        this.cp = null; //Free ICC stream when it's not used anymore
+    @Override
+    protected int output(final java.io.OutputStream stream)
+            throws java.io.IOException {
+        final int length = super.output(stream);
+        this.cp = null; // Free ICC stream when it's not used anymore
         return length;
     }
 
     /** {@inheritDoc} */
-    protected void outputRawStreamData(OutputStream out) throws IOException {
-        cp.write(out);
+    @Override
+    protected void outputRawStreamData(final OutputStream out)
+            throws IOException {
+        this.cp.write(out);
     }
 
     /** {@inheritDoc} */
-    protected void populateStreamDict(Object lengthEntry) {
-        put("N", cp.getNumComponents());
-        if (pdfColorSpace != null) {
-            put("Alternate", new PDFName(pdfColorSpace.getName()));
+    @Override
+    protected void populateStreamDict(final Object lengthEntry) {
+        put("N", this.cp.getNumComponents());
+        if (this.pdfColorSpace != null) {
+            put("Alternate", new PDFName(this.pdfColorSpace.getName()));
         }
         super.populateStreamDict(lengthEntry);
     }

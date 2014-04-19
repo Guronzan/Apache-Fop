@@ -19,8 +19,8 @@
 
 package org.apache.fop.fo.expr;
 
-import org.apache.fop.datatypes.PercentBaseContext;
 import org.apache.fop.datatypes.PercentBase;
+import org.apache.fop.datatypes.PercentBaseContext;
 import org.apache.fop.fo.properties.ColorProperty;
 import org.apache.fop.fo.properties.Property;
 
@@ -30,38 +30,42 @@ import org.apache.fop.fo.properties.Property;
 class RGBColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int nbArgs() {
         return 3;
     }
 
     /**
-     * @return an object which implements the PercentBase interface.
-     * Percents in arguments to this function are interpreted relative
-     * to 255.
+     * @return an object which implements the PercentBase interface. Percents in
+     *         arguments to this function are interpreted relative to 255.
      */
+    @Override
     public PercentBase getPercentBase() {
         return new RGBPercentBase();
     }
 
     /** {@inheritDoc} */
-    public Property eval(Property[] args,
-                         PropertyInfo pInfo) throws PropertyException {
-      return ColorProperty.getInstance(pInfo.getUserAgent(),
-                                       "rgb(" + args[0] + ","
-                                       + args[1] + "," + args[2] + ")");
+    @Override
+    public Property eval(final Property[] args, final PropertyInfo pInfo)
+            throws PropertyException {
+        return ColorProperty.getInstance(pInfo.getUserAgent(), "rgb(" + args[0]
+                + "," + args[1] + "," + args[2] + ")");
 
     }
 
     private static class RGBPercentBase implements PercentBase {
+        @Override
         public int getDimension() {
             return 0;
         }
 
+        @Override
         public double getBaseValue() {
             return 255f;
         }
 
-        public int getBaseLength(PercentBaseContext context) {
+        @Override
+        public int getBaseLength(final PercentBaseContext context) {
             return 0;
         }
 

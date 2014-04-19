@@ -18,6 +18,8 @@
 /* $Id: ImageRenderedAdapter.java 772943 2009-05-08 11:21:41Z vhennebert $ */
 
 package org.apache.fop.render.pdf;
+
+import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
@@ -27,13 +29,9 @@ import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.image.loader.impl.ImageRendered;
-import org.apache.xmlgraphics.ps.ImageEncodingHelper;
-
 import org.apache.fop.pdf.AlphaRasterImage;
 import org.apache.fop.pdf.PDFArray;
 import org.apache.fop.pdf.PDFColor;
@@ -44,65 +42,73 @@ import org.apache.fop.pdf.PDFFilter;
 import org.apache.fop.pdf.PDFFilterList;
 import org.apache.fop.pdf.PDFName;
 import org.apache.fop.pdf.PDFReference;
+import org.apache.xmlgraphics.image.loader.impl.ImageRendered;
+import org.apache.xmlgraphics.ps.ImageEncodingHelper;
 
 /**
  * PDFImage implementation for the PDF renderer which handles RenderedImages.
  */
+@Slf4j
 public class ImageRenderedAdapter extends AbstractImageAdapter {
 
-    /** logging instance */
-    private static Log log = LogFactory.getLog(ImageRenderedAdapter.class);
+    private final ImageEncodingHelper encodingHelper;
 
-    private ImageEncodingHelper encodingHelper;
-
-    private PDFFilter pdfFilter = null;
+    private final PDFFilter pdfFilter = null;
     private String maskRef;
     private PDFReference softMask;
 
     /**
      * Creates a new PDFImage from an Image instance.
-     * @param image the image
-     * @param key XObject key
+     *
+     * @param image
+     *            the image
+     * @param key
+     *            XObject key
      */
-    public ImageRenderedAdapter(ImageRendered image, String key) {
+    public ImageRenderedAdapter(final ImageRendered image, final String key) {
         super(image, key);
         this.encodingHelper = new ImageEncodingHelper(image.getRenderedImage());
     }
 
     /**
      * Returns the ImageRendered instance for this adapter.
+     *
      * @return the ImageRendered instance
      */
     public ImageRendered getImage() {
-        return ((ImageRendered)this.image);
+        return (ImageRendered) this.image;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getWidth() {
-        RenderedImage ri = getImage().getRenderedImage();
+        final RenderedImage ri = getImage().getRenderedImage();
         return ri.getWidth();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getHeight() {
-        RenderedImage ri = getImage().getRenderedImage();
+        final RenderedImage ri = getImage().getRenderedImage();
         return ri.getHeight();
     }
 
     private ColorModel getEffectiveColorModel() {
-        return encodingHelper.getEncodedColorModel();
+        return this.encodingHelper.getEncodedColorModel();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ColorSpace getImageColorSpace() {
         return getEffectiveColorModel().getColorSpace();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ICC_Profile getEffectiveICCProfile() {
-        ColorSpace cs = getImageColorSpace();
+        final ColorSpace cs = getImageColorSpace();
         if (cs instanceof ICC_ColorSpace) {
-            ICC_ColorSpace iccSpace = (ICC_ColorSpace)cs;
+            final ICC_ColorSpace iccSpace = (ICC_ColorSpace) cs;
             return iccSpace.getProfile();
         } else {
             return null;
@@ -110,34 +116,41 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
-    public void setup(PDFDocument doc) {
-        RenderedImage ri = getImage().getRenderedImage();
+    @Override
+    public void setup(final PDFDocument doc) {
+        final RenderedImage ri = getImage().getRenderedImage();
 
         super.setup(doc);
 
-        //Handle transparency mask if applicable
-        ColorModel orgcm = ri.getColorModel();
-        if (orgcm.hasAlpha() && orgcm.getTransparency() == ColorModel.TRANSLUCENT) {
-            doc.getProfile().verifyTransparencyAllowed(image.getInfo().getOriginalURI());
-            //TODO Implement code to combine image with background color if transparency is not
-            //allowed (need BufferedImage support for that)
+        // Handle transparency mask if applicable
+        final ColorModel orgcm = ri.getColorModel();
+        if (orgcm.hasAlpha()
+                && orgcm.getTransparency() == Transparency.TRANSLUCENT) {
+            doc.getProfile().verifyTransparencyAllowed(
+                    this.image.getInfo().getOriginalURI());
+            // TODO Implement code to combine image with background color if
+            // transparency is not
+            // allowed (need BufferedImage support for that)
 
-            AlphaRasterImage alphaImage = new AlphaRasterImage("Mask:" + getKey(), ri);
+            final AlphaRasterImage alphaImage = new AlphaRasterImage("Mask:"
+                    + getKey(), ri);
             this.softMask = doc.addImage(null, alphaImage).makeReference();
         }
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFDeviceColorSpace getColorSpace() {
         // DeviceGray, DeviceRGB, or DeviceCMYK
         return toPDFColorSpace(getEffectiveColorModel().getColorSpace());
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getBitsPerComponent() {
-        ColorModel cm = getEffectiveColorModel();
+        final ColorModel cm = getEffectiveColorModel();
         if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel)cm;
+            final IndexColorModel icm = (IndexColorModel) cm;
             return icm.getComponentSize(0);
         } else {
             return cm.getComponentSize(0);
@@ -145,32 +158,32 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isTransparent() {
-        ColorModel cm = getEffectiveColorModel();
+        final ColorModel cm = getEffectiveColorModel();
         if (cm instanceof IndexColorModel) {
-            if (cm.getTransparency() == IndexColorModel.TRANSLUCENT) {
+            if (cm.getTransparency() == Transparency.TRANSLUCENT) {
                 return true;
             }
         }
-        return (getImage().getTransparentColor() != null);
+        return getImage().getTransparentColor() != null;
     }
 
-    private static Integer getIndexOfFirstTransparentColorInPalette(RenderedImage image) {
-        ColorModel cm = image.getColorModel();
+    private static Integer getIndexOfFirstTransparentColorInPalette(
+            final RenderedImage image) {
+        final ColorModel cm = image.getColorModel();
         if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel)cm;
-            //Identify the transparent color in the palette
-            byte[] alphas = new byte[icm.getMapSize()];
-            byte[] reds = new byte[icm.getMapSize()];
-            byte[] greens = new byte[icm.getMapSize()];
-            byte[] blues = new byte[icm.getMapSize()];
+            final IndexColorModel icm = (IndexColorModel) cm;
+            // Identify the transparent color in the palette
+            final byte[] alphas = new byte[icm.getMapSize()];
+            final byte[] reds = new byte[icm.getMapSize()];
+            final byte[] greens = new byte[icm.getMapSize()];
+            final byte[] blues = new byte[icm.getMapSize()];
             icm.getAlphas(alphas);
             icm.getReds(reds);
             icm.getGreens(greens);
             icm.getBlues(blues);
-            for (int i = 0;
-                    i < ((IndexColorModel) cm).getMapSize();
-                    i++) {
+            for (int i = 0; i < ((IndexColorModel) cm).getMapSize(); i++) {
                 if ((alphas[i] & 0xFF) == 0) {
                     return new Integer(i);
                 }
@@ -180,71 +193,78 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFColor getTransparentColor() {
-        ColorModel cm = getEffectiveColorModel();
+        final ColorModel cm = getEffectiveColorModel();
         if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel)cm;
-            if (cm.getTransparency() == IndexColorModel.TRANSLUCENT) {
-                int transPixel = icm.getTransparentPixel();
-                return new PDFColor(
-                        icm.getRed(transPixel),
-                        icm.getGreen(transPixel),
-                        icm.getBlue(transPixel));
+            final IndexColorModel icm = (IndexColorModel) cm;
+            if (cm.getTransparency() == Transparency.TRANSLUCENT) {
+                final int transPixel = icm.getTransparentPixel();
+                return new PDFColor(icm.getRed(transPixel),
+                        icm.getGreen(transPixel), icm.getBlue(transPixel));
             }
         }
         return new PDFColor(getImage().getTransparentColor());
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMask() {
-        return maskRef;
+        return this.maskRef;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFReference getSoftMaskReference() {
-        return softMask;
+        return this.softMask;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFFilter getPDFFilter() {
-        return pdfFilter;
+        return this.pdfFilter;
     }
 
     /** {@inheritDoc} */
-    public void outputContents(OutputStream out) throws IOException {
-        encodingHelper.encode(out);
+    @Override
+    public void outputContents(final OutputStream out) throws IOException {
+        this.encodingHelper.encode(out);
     }
 
     private static final int MAX_HIVAL = 255;
 
     /** {@inheritDoc} */
-    public void populateXObjectDictionary(PDFDictionary dict) {
-        ColorModel cm = getEffectiveColorModel();
+    @Override
+    public void populateXObjectDictionary(final PDFDictionary dict) {
+        final ColorModel cm = getEffectiveColorModel();
         if (cm instanceof IndexColorModel) {
-            IndexColorModel icm = (IndexColorModel)cm;
-            PDFArray indexed = new PDFArray(dict);
+            final IndexColorModel icm = (IndexColorModel) cm;
+            final PDFArray indexed = new PDFArray(dict);
             indexed.add(new PDFName("Indexed"));
 
             if (icm.getColorSpace().getType() != ColorSpace.TYPE_RGB) {
                 log.warn("Indexed color space is not using RGB as base color space."
                         + " The image may not be handled correctly."
-                        + " Base color space: " + icm.getColorSpace()
-                        + " Image: " + image.getInfo());
+                        + " Base color space: "
+                        + icm.getColorSpace()
+                        + " Image: " + this.image.getInfo());
             }
-            indexed.add(new PDFName(toPDFColorSpace(icm.getColorSpace()).getName()));
-            int c = icm.getMapSize();
-            int hival = c - 1;
+            indexed.add(new PDFName(toPDFColorSpace(icm.getColorSpace())
+                    .getName()));
+            final int c = icm.getMapSize();
+            final int hival = c - 1;
             if (hival > MAX_HIVAL) {
-                throw new UnsupportedOperationException("hival must not go beyond " + MAX_HIVAL);
+                throw new UnsupportedOperationException(
+                        "hival must not go beyond " + MAX_HIVAL);
             }
             indexed.add(new Integer(hival));
-            int[] palette = new int[c];
+            final int[] palette = new int[c];
             icm.getRGBs(palette);
-            ByteArrayOutputStream baout = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baout = new ByteArrayOutputStream();
             for (int i = 0; i < c; i++) {
-                //TODO Probably doesn't work for non RGB based color spaces
-                //See log warning above
-                int entry = palette[i];
+                // TODO Probably doesn't work for non RGB based color spaces
+                // See log warning above
+                final int entry = palette[i];
                 baout.write((entry & 0xFF0000) >> 16);
                 baout.write((entry & 0xFF00) >> 8);
                 baout.write(entry & 0xFF);
@@ -254,9 +274,10 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
             dict.put("ColorSpace", indexed);
             dict.put("BitsPerComponent", icm.getPixelSize());
 
-            Integer index = getIndexOfFirstTransparentColorInPalette(getImage().getRenderedImage());
+            final Integer index = getIndexOfFirstTransparentColorInPalette(getImage()
+                    .getRenderedImage());
             if (index != null) {
-                PDFArray mask = new PDFArray(dict);
+                final PDFArray mask = new PDFArray(dict);
                 mask.add(index);
                 mask.add(index);
                 dict.put("Mask", mask);
@@ -265,9 +286,9 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFilterHint() {
         return PDFFilterList.IMAGE_FILTER;
     }
 
 }
-

@@ -19,22 +19,30 @@
 
 package org.apache.fop.area.inline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.fop.area.Area;
 
-import java.util.List;
-import java.util.ArrayList;
-
 /**
- * Inline parent area.
- * This is an inline area that can have other inlines as children.
+ * Inline parent area. This is an inline area that can have other inlines as
+ * children.
  */
 public class InlineParent extends InlineArea {
     /**
+     *
+     */
+    private static final long serialVersionUID = -3047168298770354813L;
+
+    /**
      * The list of inline areas added to this inline parent.
      */
-    protected List inlines = new ArrayList();
+    protected List<Area> inlines = new ArrayList<>();
 
-    /** Controls whether the IPD is automatically adjusted based on the area's children. */
+    /**
+     * Controls whether the IPD is automatically adjusted based on the area's
+     * children.
+     */
     protected transient boolean autoSize;
 
     /**
@@ -46,18 +54,20 @@ public class InlineParent extends InlineArea {
     /**
      * Override generic Area method.
      *
-     * @param childArea the child area to add
+     * @param childArea
+     *            the child area to add
      */
-    public void addChildArea(Area childArea) {
-        if (inlines.size() == 0) {
-            autoSize = (getIPD() == 0);
+    @Override
+    public void addChildArea(final Area childArea) {
+        if (this.inlines.size() == 0) {
+            this.autoSize = getIPD() == 0;
         }
         if (childArea instanceof InlineArea) {
-            InlineArea inlineChildArea = (InlineArea) childArea;
-            inlines.add(childArea);
+            final InlineArea inlineChildArea = (InlineArea) childArea;
+            this.inlines.add(childArea);
             // set the parent area for the child area
             inlineChildArea.setParentArea(this);
-            if (autoSize) {
+            if (this.autoSize) {
                 increaseIPD(inlineChildArea.getAllocIPD());
             }
         }
@@ -68,26 +78,31 @@ public class InlineParent extends InlineArea {
      *
      * @return the list of child areas
      */
-    public List getChildAreas() {
-        return inlines;
+    public List<Area> getChildAreas() {
+        return this.inlines;
     }
 
     /**
      * recursively apply the variation factor to all descendant areas
-     * @param variationFactor the variation factor that must be applied to adjustments
-     * @param lineStretch     the total stretch of the line
-     * @param lineShrink      the total shrink of the line
+     *
+     * @param variationFactor
+     *            the variation factor that must be applied to adjustments
+     * @param lineStretch
+     *            the total stretch of the line
+     * @param lineShrink
+     *            the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
      */
-    public boolean applyVariationFactor(double variationFactor,
-                                        int lineStretch, int lineShrink) {
+    @Override
+    public boolean applyVariationFactor(final double variationFactor,
+            final int lineStretch, final int lineShrink) {
         boolean bUnresolvedAreasPresent = false;
         // recursively apply variation factor to descendant areas
-        for (int i = 0, len = inlines.size(); i < len; i++) {
-            bUnresolvedAreasPresent |= ((InlineArea)inlines.get(i))
-                .applyVariationFactor(variationFactor, lineStretch, lineShrink);
+        for (int i = 0, len = this.inlines.size(); i < len; i++) {
+            bUnresolvedAreasPresent |= ((InlineArea) this.inlines.get(i))
+                    .applyVariationFactor(variationFactor, lineStretch,
+                            lineShrink);
         }
         return bUnresolvedAreasPresent;
     }
 }
-

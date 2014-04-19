@@ -25,19 +25,27 @@ package org.apache.fop.area.inline;
 public class TextArea extends AbstractTextArea {
 
     /**
+     *
+     */
+    private static final long serialVersionUID = 7315900267242540809L;
+
+    /**
      * Create a text inline area
      */
     public TextArea() {
     }
 
     /**
-     * Constructor with extra parameters:
-     * create a TextAdjustingInfo object
-     * @param stretch  the available stretch of the text
-     * @param shrink   the available shrink of the text
-     * @param adj      the current total adjustment
+     * Constructor with extra parameters: create a TextAdjustingInfo object
+     * 
+     * @param stretch
+     *            the available stretch of the text
+     * @param shrink
+     *            the available shrink of the text
+     * @param adj
+     *            the current total adjustment
      */
-    public TextArea(int stretch, int shrink, int adj) {
+    public TextArea(final int stretch, final int shrink, final int adj) {
         super(stretch, shrink, adj);
     }
 
@@ -45,28 +53,34 @@ public class TextArea extends AbstractTextArea {
      * Remove the old text
      */
     public void removeText() {
-        inlines.clear();
+        this.inlines.clear();
     }
 
     /**
      * Create and add a WordArea child to this TextArea.
      *
-     * @param word   the word string
-     * @param offset the offset for the next area
+     * @param word
+     *            the word string
+     * @param offset
+     *            the offset for the next area
      */
-    public void addWord(String word, int offset) {
+    public void addWord(final String word, final int offset) {
         addWord(word, offset, null);
     }
 
     /**
      * Create and add a WordArea child to this TextArea.
      *
-     * @param word   the word string
-     * @param offset the offset for the next area
-     * @param letterAdjust the letter adjustment array (may be null)
+     * @param word
+     *            the word string
+     * @param offset
+     *            the offset for the next area
+     * @param letterAdjust
+     *            the letter adjustment array (may be null)
      */
-    public void addWord(String word, int offset, int[] letterAdjust) {
-        WordArea wordArea = new WordArea(word, offset, letterAdjust);
+    public void addWord(final String word, final int offset,
+            final int[] letterAdjust) {
+        final WordArea wordArea = new WordArea(word, offset, letterAdjust);
         addChildArea(wordArea);
         wordArea.setParentArea(this);
     }
@@ -74,33 +88,35 @@ public class TextArea extends AbstractTextArea {
     /**
      * Create and add a SpaceArea child to this TextArea
      *
-     * @param space      the space character
-     * @param offset     the offset for the next area
-     * @param adjustable is this space adjustable?
+     * @param space
+     *            the space character
+     * @param offset
+     *            the offset for the next area
+     * @param adjustable
+     *            is this space adjustable?
      */
-    public void addSpace(char space, int offset, boolean adjustable) {
-        SpaceArea spaceArea = new SpaceArea(space, offset, adjustable);
+    public void addSpace(final char space, final int offset,
+            final boolean adjustable) {
+        final SpaceArea spaceArea = new SpaceArea(space, offset, adjustable);
         addChildArea(spaceArea);
         spaceArea.setParentArea(this);
     }
 
     /**
-     * Get the whole text string.
-     * Renderers whose space adjustment handling is not affected
-     * by multi-byte characters can use this method to render the
-     * whole TextArea at once; the other renderers (for example
-     * PDFRenderer) have to implement renderWord(WordArea) and
-     * renderSpace(SpaceArea) in order to correctly place each
-     * text fragment.
+     * Get the whole text string. Renderers whose space adjustment handling is
+     * not affected by multi-byte characters can use this method to render the
+     * whole TextArea at once; the other renderers (for example PDFRenderer)
+     * have to implement renderWord(WordArea) and renderSpace(SpaceArea) in
+     * order to correctly place each text fragment.
      *
      * @return the text string
      */
     public String getText() {
-        StringBuffer text = new StringBuffer();
+        final StringBuilder text = new StringBuilder();
         InlineArea child;
         // assemble the text
-        for (int i = 0; i < inlines.size(); i++) {
-            child = (InlineArea) inlines.get(i);
+        for (int i = 0; i < this.inlines.size(); i++) {
+            child = (InlineArea) this.inlines.get(i);
             if (child instanceof WordArea) {
                 text.append(((WordArea) child).getWord());
             } else {
@@ -111,8 +127,8 @@ public class TextArea extends AbstractTextArea {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "TextArea{text=" + getText() + "}";
     }
 }
-

@@ -26,11 +26,16 @@ import org.xml.sax.Locator;
  * Exception thrown during FO tree validation.
  */
 public class ValidationException extends FOPException {
-    public ValidationException(String message) {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1837390066992007730L;
+
+    public ValidationException(final String message) {
         super(message);
     }
 
-    public ValidationException(String message, Locator locator) {
+    public ValidationException(final String message, final Locator locator) {
         super(message, locator);
     }
 }

@@ -22,7 +22,8 @@ package org.apache.fop.render.ps;
 import org.apache.fop.render.RendererContextConstants;
 
 /**
- * Defines a number of standard constants (keys) for use by the RendererContext class.
+ * Defines a number of standard constants (keys) for use by the RendererContext
+ * class.
  */
 public interface PSRendererContextConstants extends RendererContextConstants {
 
@@ -31,6 +32,5 @@ public interface PSRendererContextConstants extends RendererContextConstants {
 
     /** The font information for the PostScript renderer. */
     public static final String PS_FONT_INFO = "psFontInfo";
-
 
 }

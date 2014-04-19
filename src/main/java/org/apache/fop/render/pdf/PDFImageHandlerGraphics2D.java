@@ -27,73 +27,74 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-import org.apache.xmlgraphics.image.loader.Image;
-import org.apache.xmlgraphics.image.loader.ImageFlavor;
-import org.apache.xmlgraphics.image.loader.impl.ImageGraphics2D;
-
 import org.apache.fop.pdf.PDFXObject;
 import org.apache.fop.render.AbstractImageHandlerGraphics2D;
 import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RenderingContext;
 import org.apache.fop.render.pdf.PDFLogicalStructureHandler.MarkedContentInfo;
 import org.apache.fop.svg.PDFGraphics2D;
+import org.apache.xmlgraphics.image.loader.Image;
+import org.apache.xmlgraphics.image.loader.ImageFlavor;
+import org.apache.xmlgraphics.image.loader.impl.ImageGraphics2D;
 
 /**
  * PDFImageHandler implementation which handles Graphics2D images.
  */
 public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
-                implements PDFImageHandler {
+        implements PDFImageHandler {
 
-    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.GRAPHICS2D,
-    };
+    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.GRAPHICS2D, };
 
     /** {@inheritDoc} */
-    public PDFXObject generateImage(RendererContext context, Image image,
-            Point origin, Rectangle pos)
-            throws IOException {
-        PDFRenderer renderer = (PDFRenderer)context.getRenderer();
+    @Override
+    public PDFXObject generateImage(final RendererContext context,
+            final Image image, final Point origin, final Rectangle pos)
+                    throws IOException {
+        final PDFRenderer renderer = (PDFRenderer) context.getRenderer();
         /*
-        ImageGraphics2D imageG2D = (ImageGraphics2D)image;
-        renderer.getGraphics2DAdapter().paintImage(imageG2D.getGraphics2DImagePainter(),
-                context, origin.x + pos.x, origin.y + pos.y, pos.width, pos.height);
-                */
-        PDFRenderingContext pdfContext = new PDFRenderingContext(
-                context.getUserAgent(),
-                renderer.getGenerator(),
-                renderer.currentPage,
-                renderer.getFontInfo());
-        Rectangle effPos = new Rectangle(origin.x + pos.x, origin.y + pos.y, pos.width, pos.height);
+         * ImageGraphics2D imageG2D = (ImageGraphics2D)image;
+         * renderer.getGraphics2DAdapter
+         * ().paintImage(imageG2D.getGraphics2DImagePainter(), context, origin.x
+         * + pos.x, origin.y + pos.y, pos.width, pos.height);
+         */
+        final PDFRenderingContext pdfContext = new PDFRenderingContext(
+                context.getUserAgent(), renderer.getGenerator(),
+                renderer.currentPage, renderer.getFontInfo());
+        final Rectangle effPos = new Rectangle(origin.x + pos.x, origin.y
+                + pos.y, pos.width, pos.height);
         if (context.getUserAgent().isAccessibilityEnabled()) {
-            pdfContext.setMarkedContentInfo(renderer.addCurrentImageToStructureTree());
+            pdfContext.setMarkedContentInfo(renderer
+                    .addCurrentImageToStructureTree());
         }
         handleImage(pdfContext, image, effPos);
         return null;
     }
 
     /** {@inheritDoc} */
-    public void handleImage(RenderingContext context, Image image, Rectangle pos)
-                throws IOException {
-        PDFRenderingContext pdfContext = (PDFRenderingContext)context;
-        PDFContentGenerator generator = pdfContext.getGenerator();
-        ImageGraphics2D imageG2D = (ImageGraphics2D)image;
-        float fwidth = pos.width / 1000f;
-        float fheight = pos.height / 1000f;
-        float fx = pos.x / 1000f;
-        float fy = pos.y / 1000f;
+    @Override
+    public void handleImage(final RenderingContext context, final Image image,
+            final Rectangle pos) throws IOException {
+        final PDFRenderingContext pdfContext = (PDFRenderingContext) context;
+        final PDFContentGenerator generator = pdfContext.getGenerator();
+        final ImageGraphics2D imageG2D = (ImageGraphics2D) image;
+        final float fwidth = pos.width / 1000f;
+        final float fheight = pos.height / 1000f;
+        final float fx = pos.x / 1000f;
+        final float fy = pos.y / 1000f;
 
         // get the 'width' and 'height' attributes of the SVG document
-        Dimension dim = image.getInfo().getSize().getDimensionMpt();
-        float imw = (float)dim.getWidth() / 1000f;
-        float imh = (float)dim.getHeight() / 1000f;
+        final Dimension dim = image.getInfo().getSize().getDimensionMpt();
+        final float imw = (float) dim.getWidth() / 1000f;
+        final float imh = (float) dim.getHeight() / 1000f;
 
-        float sx = fwidth / (float)imw;
-        float sy = fheight / (float)imh;
+        final float sx = fwidth / imw;
+        final float sy = fheight / imh;
 
         generator.comment("G2D start");
-        boolean accessibilityEnabled = context.getUserAgent().isAccessibilityEnabled();
+        final boolean accessibilityEnabled = context.getUserAgent()
+                .isAccessibilityEnabled();
         if (accessibilityEnabled) {
-            MarkedContentInfo mci = pdfContext.getMarkedContentInfo();
+            final MarkedContentInfo mci = pdfContext.getMarkedContentInfo();
             generator.saveGraphicsState(mci.tag, mci.mcid);
         } else {
             generator.saveGraphicsState();
@@ -101,7 +102,7 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
         generator.updateColor(Color.black, false, null);
         generator.updateColor(Color.black, true, null);
 
-        //TODO Clip to the image area.
+        // TODO Clip to the image area.
 
         // transform so that the coordinates (0,0) is from the top left
         // and positive is down and to the right. (0,0) is where the
@@ -109,19 +110,19 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
         generator.add(sx + " 0 0 " + sy + " " + fx + " " + fy + " cm\n");
 
         final boolean textAsShapes = false;
-        PDFGraphics2D graphics = new PDFGraphics2D(textAsShapes,
+        final PDFGraphics2D graphics = new PDFGraphics2D(textAsShapes,
                 pdfContext.getFontInfo(), generator.getDocument(),
-                generator.getResourceContext(), pdfContext.getPage().referencePDF(),
-                "", 0.0f);
+                generator.getResourceContext(), pdfContext.getPage()
+                        .referencePDF(), "", 0.0f);
         graphics.setGraphicContext(new org.apache.xmlgraphics.java2d.GraphicContext());
 
-        AffineTransform transform = new AffineTransform();
+        final AffineTransform transform = new AffineTransform();
         transform.translate(fx, fy);
         generator.getState().concatenate(transform);
         graphics.setPaintingState(generator.getState());
         graphics.setOutputStream(generator.getOutputStream());
 
-        Rectangle2D area = new Rectangle2D.Double(0.0, 0.0, imw, imh);
+        final Rectangle2D area = new Rectangle2D.Double(0.0, 0.0, imw, imh);
         imageG2D.getGraphics2DImagePainter().paint(graphics, area);
 
         generator.add(graphics.getString());
@@ -134,22 +135,27 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
-    public boolean isCompatible(RenderingContext targetContext, Image image) {
+    @Override
+    public boolean isCompatible(final RenderingContext targetContext,
+            final Image image) {
         return (image == null || image instanceof ImageGraphics2D)
                 && targetContext instanceof PDFRenderingContext;
     }

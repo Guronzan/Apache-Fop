@@ -28,24 +28,32 @@ import java.util.Set;
 public class HyphenationTreeCache {
 
     /** Contains the cached hyphenation trees */
-    private Hashtable hyphenTrees = new Hashtable();
-    /** Used to avoid multiple error messages for the same language if a pattern file is missing. */
+    private final Hashtable hyphenTrees = new Hashtable();
+    /**
+     * Used to avoid multiple error messages for the same language if a pattern
+     * file is missing.
+     */
     private Set missingHyphenationTrees;
 
     /**
-     * Looks in the cache if a hyphenation tree is available and returns it if it is found.
-     * @param lang the language
-     * @param country the country (may be null or "none")
+     * Looks in the cache if a hyphenation tree is available and returns it if
+     * it is found.
+     * 
+     * @param lang
+     *            the language
+     * @param country
+     *            the country (may be null or "none")
      * @return the HyhenationTree instance or null if it's not in the cache
      */
-    public HyphenationTree getHyphenationTree(String lang, String country) {
-        String key = constructKey(lang, country);
+    public HyphenationTree getHyphenationTree(final String lang,
+            final String country) {
+        final String key = constructKey(lang, country);
 
         // first try to find it in the cache
-        if (hyphenTrees.containsKey(key)) {
-            return (HyphenationTree)hyphenTrees.get(key);
-        } else if (hyphenTrees.containsKey(lang)) {
-            return (HyphenationTree)hyphenTrees.get(lang);
+        if (this.hyphenTrees.containsKey(key)) {
+            return (HyphenationTree) this.hyphenTrees.get(key);
+        } else if (this.hyphenTrees.containsKey(lang)) {
+            return (HyphenationTree) this.hyphenTrees.get(lang);
         } else {
             return null;
         }
@@ -53,11 +61,14 @@ public class HyphenationTreeCache {
 
     /**
      * Constructs the key for the hyphenation pattern file.
-     * @param lang the language
-     * @param country the country (may be null or "none")
+     * 
+     * @param lang
+     *            the language
+     * @param country
+     *            the country (may be null or "none")
      * @return the resulting key
      */
-    public static String constructKey(String lang, String country) {
+    public static String constructKey(final String lang, final String country) {
         String key = lang;
         // check whether the country code has been used
         if (country != null && !country.equals("none")) {
@@ -68,35 +79,42 @@ public class HyphenationTreeCache {
 
     /**
      * Cache a hyphenation tree under its key.
-     * @param key the key (ex. "de_CH" or "en")
-     * @param hTree the hyphenation tree
+     * 
+     * @param key
+     *            the key (ex. "de_CH" or "en")
+     * @param hTree
+     *            the hyphenation tree
      */
-    public void cache(String key, HyphenationTree hTree) {
-        hyphenTrees.put(key, hTree);
+    public void cache(final String key, final HyphenationTree hTree) {
+        this.hyphenTrees.put(key, hTree);
     }
 
     /**
-     * Notes a key to a hyphenation tree as missing.
-     * This is to avoid searching a second time for a hyphneation pattern file which is not
-     * available.
-     * @param key the key (ex. "de_CH" or "en")
+     * Notes a key to a hyphenation tree as missing. This is to avoid searching
+     * a second time for a hyphneation pattern file which is not available.
+     * 
+     * @param key
+     *            the key (ex. "de_CH" or "en")
      */
-    public void noteMissing(String key) {
-        if (missingHyphenationTrees == null) {
-            missingHyphenationTrees = new java.util.HashSet();
+    public void noteMissing(final String key) {
+        if (this.missingHyphenationTrees == null) {
+            this.missingHyphenationTrees = new java.util.HashSet();
         }
-        missingHyphenationTrees.add(key);
+        this.missingHyphenationTrees.add(key);
     }
 
     /**
-     * Indicates whether a hyphenation file has been requested before but it wasn't available.
-     * This is to avoid searching a second time for a hyphneation pattern file which is not
-     * available.
-     * @param key the key (ex. "de_CH" or "en")
+     * Indicates whether a hyphenation file has been requested before but it
+     * wasn't available. This is to avoid searching a second time for a
+     * hyphneation pattern file which is not available.
+     * 
+     * @param key
+     *            the key (ex. "de_CH" or "en")
      * @return true if the hyphenation tree is unavailable
      */
-    public boolean isMissing(String key) {
-        return (missingHyphenationTrees != null && missingHyphenationTrees.contains(key));
+    public boolean isMissing(final String key) {
+        return this.missingHyphenationTrees != null
+                && this.missingHyphenationTrees.contains(key);
     }
 
 }

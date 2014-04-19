@@ -24,33 +24,32 @@ import java.lang.reflect.Method;
 import java.security.Provider;
 import java.security.Security;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * This class acts as a factory for PDF encryption support. It enables the
  * feature to be optional to FOP depending on the availability of JCE.
  */
+@Slf4j
 public class PDFEncryptionManager {
-
-    /** logging instance */
-    protected static Log log = LogFactory.getLog(PDFEncryptionManager.class);
 
     /**
      * Indicates whether JCE is available.
+     *
      * @return boolean true if JCE is present
      */
     public static boolean isJCEAvailable() {
         try {
-            /*Class clazz =*/ Class.forName("javax.crypto.Cipher");
+            /* Class clazz = */Class.forName("javax.crypto.Cipher");
             return true;
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             return false;
         }
     }
 
     /**
      * Checks whether the necessary algorithms are available.
+     *
      * @return boolean True if all necessary algorithms are present
      */
     public static boolean checkAvailableAlgorithms() {
@@ -72,16 +71,18 @@ public class PDFEncryptionManager {
         }
     }
 
-
     /**
-     * Sets up PDF encryption if PDF encryption is requested by registering
-     * a <code>PDFEncryptionParams</code> object with the user agent and if
-     * the necessary cryptographic support is available.
-     * @param params the PDF encryption params or null to disable encryption
-     * @param pdf the PDF document to setup encryption for
+     * Sets up PDF encryption if PDF encryption is requested by registering a
+     * <code>PDFEncryptionParams</code> object with the user agent and if the
+     * necessary cryptographic support is available.
+     *
+     * @param params
+     *            the PDF encryption params or null to disable encryption
+     * @param pdf
+     *            the PDF document to setup encryption for
      */
-    public static void setupPDFEncryption(PDFEncryptionParams params,
-                                          PDFDocument pdf) {
+    public static void setupPDFEncryption(final PDFEncryptionParams params,
+            final PDFDocument pdf) {
         if (pdf == null) {
             throw new NullPointerException("PDF document must not be null");
         }
@@ -104,34 +105,39 @@ public class PDFEncryptionManager {
 
     /**
      * Creates a new PDFEncryption instance if PDF encryption is available.
-     * @param objnum PDF object number
-     * @param params PDF encryption parameters
+     *
+     * @param objnum
+     *            PDF object number
+     * @param params
+     *            PDF encryption parameters
      * @return PDFEncryption the newly created instance, null if PDF encryption
-     * is unavailable.
+     *         is unavailable.
      */
-    public static PDFEncryption newInstance(int objnum, PDFEncryptionParams params) {
+    public static PDFEncryption newInstance(final int objnum,
+            final PDFEncryptionParams params) {
         try {
-            Class clazz = Class.forName("org.apache.fop.pdf.PDFEncryptionJCE");
-            Method makeMethod = clazz.getMethod("make",
-                        new Class[] {int.class, PDFEncryptionParams.class});
-            Object obj = makeMethod.invoke(null,
-                        new Object[] {new Integer(objnum), params});
-            return (PDFEncryption)obj;
-        } catch (ClassNotFoundException e) {
+            final Class clazz = Class
+                    .forName("org.apache.fop.pdf.PDFEncryptionJCE");
+            final Method makeMethod = clazz.getMethod("make", new Class[] {
+                    int.class, PDFEncryptionParams.class });
+            final Object obj = makeMethod.invoke(null, new Object[] {
+                    new Integer(objnum), params });
+            return (PDFEncryption) obj;
+        } catch (final ClassNotFoundException e) {
             if (checkAvailableAlgorithms()) {
                 log.warn("JCE and algorithms available, but the "
-                    + "implementation class unavailable. Please do a full "
-                    + "rebuild.");
+                        + "implementation class unavailable. Please do a full "
+                        + "rebuild.");
             }
             return null;
-        } catch (NoSuchMethodException e) {
-            log.error(e);
+        } catch (final NoSuchMethodException e) {
+            log.error("NoSuchMethodException", e);
             return null;
-        } catch (IllegalAccessException e) {
-            log.error(e);
+        } catch (final IllegalAccessException e) {
+            log.error("IllegalAccessException", e);
             return null;
-        } catch (InvocationTargetException e) {
-            log.error(e);
+        } catch (final InvocationTargetException e) {
+            log.error("InvocationTargetException", e);
             return null;
         }
     }

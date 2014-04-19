@@ -28,13 +28,18 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 import java.io.IOException;
 
-/**  Interface for RtfElements that can contain RtfPageBreaks
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Interface for RtfElements that can contain RtfPageBreaks
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public interface IRtfPageBreakContainer {
-    /** add a page break
-     * @throws IOException for I/O problems
+    /**
+     * add a page break
+     * 
+     * @throws IOException
+     *             for I/O problems
      */
     void newPageBreak() throws IOException;
 }

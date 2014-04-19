@@ -38,9 +38,11 @@ public class PDFArray extends PDFObject {
 
     /**
      * Create a new, empty array object
-     * @param parent the array's parent if any
+     *
+     * @param parent
+     *            the array's parent if any
      */
-    public PDFArray(PDFObject parent) {
+    public PDFArray(final PDFObject parent) {
         /* generic creation of PDF object */
         super(parent);
     }
@@ -54,38 +56,47 @@ public class PDFArray extends PDFObject {
 
     /**
      * Create an array object.
-     * @param parent the array's parent if any
-     * @param values the actual array wrapped by this object
+     *
+     * @param parent
+     *            the array's parent if any
+     * @param values
+     *            the actual array wrapped by this object
      */
-    public PDFArray(PDFObject parent, int[] values) {
+    public PDFArray(final PDFObject parent, final int[] values) {
         /* generic creation of PDF object */
         super(parent);
 
-        for (int i = 0, c = values.length; i < c; i++) {
-            this.values.add(new Integer(values[i]));
+        for (final int value : values) {
+            this.values.add(new Integer(value));
         }
     }
 
     /**
      * Create an array object.
-     * @param parent the array's parent if any
-     * @param values the actual array wrapped by this object
+     *
+     * @param parent
+     *            the array's parent if any
+     * @param values
+     *            the actual array wrapped by this object
      */
-    public PDFArray(PDFObject parent, double[] values) {
+    public PDFArray(final PDFObject parent, final double[] values) {
         /* generic creation of PDF object */
         super(parent);
 
-        for (int i = 0, c = values.length; i < c; i++) {
-            this.values.add(new Double(values[i]));
+        for (final double value : values) {
+            this.values.add(new Double(value));
         }
     }
 
     /**
      * Create an array object.
-     * @param parent the array's parent if any
-     * @param values the actual values wrapped by this object
+     *
+     * @param parent
+     *            the array's parent if any
+     * @param values
+     *            the actual values wrapped by this object
      */
-    public PDFArray(PDFObject parent, Collection values) {
+    public PDFArray(final PDFObject parent, final Collection values) {
         /* generic creation of PDF object */
         super(parent);
 
@@ -94,29 +105,35 @@ public class PDFArray extends PDFObject {
 
     /**
      * Create the array object
-     * @param parent the array's parent if any
-     * @param values the actual array wrapped by this object
+     *
+     * @param parent
+     *            the array's parent if any
+     * @param values
+     *            the actual array wrapped by this object
      */
-    public PDFArray(PDFObject parent, Object[] values) {
+    public PDFArray(final PDFObject parent, final Object[] values) {
         /* generic creation of PDF object */
         super(parent);
 
-        for (int i = 0, c = values.length; i < c; i++) {
-            this.values.add(values[i]);
+        for (final Object value : values) {
+            this.values.add(value);
         }
     }
 
     /**
      * Indicates whether the given object exists in the array.
-     * @param obj the object to look for
+     *
+     * @param obj
+     *            the object to look for
      * @return true if obj is contained
      */
-    public boolean contains(Object obj) {
+    public boolean contains(final Object obj) {
         return this.values.contains(obj);
     }
 
     /**
      * Returns the length of the array
+     *
      * @return the length of the array
      */
     public int length() {
@@ -125,38 +142,48 @@ public class PDFArray extends PDFObject {
 
     /**
      * Sets an entry at a given location.
-     * @param index the index of the value to set
-     * @param obj the new value
+     *
+     * @param index
+     *            the index of the value to set
+     * @param obj
+     *            the new value
      */
-    public void set(int index, Object obj) {
+    public void set(final int index, final Object obj) {
         this.values.set(index, obj);
     }
 
     /**
      * Sets an entry at a given location.
-     * @param index the index of the value to set
-     * @param value the new value
+     *
+     * @param index
+     *            the index of the value to set
+     * @param value
+     *            the new value
      */
-    public void set(int index, double value) {
+    public void set(final int index, final double value) {
         this.values.set(index, new Double(value));
     }
 
     /**
      * Gets an entry at a given location.
-     * @param index the index of the value to set
+     *
+     * @param index
+     *            the index of the value to set
      * @return the requested value
      */
-    public Object get(int index) {
+    public Object get(final int index) {
         return this.values.get(index);
     }
 
     /**
      * Adds a new value to the array.
-     * @param obj the value
+     *
+     * @param obj
+     *            the value
      */
-    public void add(Object obj) {
+    public void add(final Object obj) {
         if (obj instanceof PDFObject) {
-            PDFObject pdfObj = (PDFObject)obj;
+            final PDFObject pdfObj = (PDFObject) obj;
             if (!pdfObj.hasObjectNumber()) {
                 pdfObj.setParent(this);
             }
@@ -166,26 +193,29 @@ public class PDFArray extends PDFObject {
 
     /**
      * Adds a new value to the array.
-     * @param value the value
+     *
+     * @param value
+     *            the value
      */
-    public void add(double value) {
+    public void add(final double value) {
         this.values.add(new Double(value));
     }
 
     /** {@inheritDoc} */
-    protected int output(OutputStream stream) throws IOException {
-        CountingOutputStream cout = new CountingOutputStream(stream);
-        Writer writer = PDFDocument.getWriterFor(cout);
+    @Override
+    protected int output(final OutputStream stream) throws IOException {
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final Writer writer = PDFDocument.getWriterFor(cout);
         if (hasObjectNumber()) {
             writer.write(getObjectID());
         }
 
         writer.write('[');
-        for (int i = 0; i < values.size(); i++) {
+        for (int i = 0; i < this.values.size(); i++) {
             if (i > 0) {
                 writer.write(' ');
             }
-            Object obj = this.values.get(i);
+            final Object obj = this.values.get(i);
             formatObject(obj, cout, writer);
         }
         writer.write(']');

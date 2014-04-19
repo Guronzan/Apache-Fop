@@ -26,9 +26,8 @@ package org.apache.fop.util;
 public class CharUtilities {
 
     /**
-     * Character code used to signal a character boundary in
-     * inline content, such as an inline with borders and padding
-     * or a nested block object.
+     * Character code used to signal a character boundary in inline content,
+     * such as an inline with borders and padding or a nested block object.
      */
     public static final char CODE_EOT = 0;
 
@@ -52,7 +51,6 @@ public class CharUtilities {
      * Character class: XML whitespace
      */
     public static final int XMLWHITESPACE = 4;
-
 
     /** null char */
     public static final char NULL_CHAR = '\u0000';
@@ -89,7 +87,6 @@ public class CharUtilities {
     /** Unicode value indicating the the character is "not a character". */
     public static final char NOT_A_CHARACTER = '\uFFFF';
 
-
     /**
      * Utility class: Constructor prevents instantiating when subclassed.
      */
@@ -98,144 +95,153 @@ public class CharUtilities {
     }
 
     /**
-     * Return the appropriate CharClass constant for the type
-     * of the passed character.
-     * @param c character to inspect
+     * Return the appropriate CharClass constant for the type of the passed
+     * character.
+     * 
+     * @param c
+     *            character to inspect
      * @return the determined character class
      */
-    public static int classOf(char c) {
+    public static int classOf(final char c) {
         switch (c) {
-            case CODE_EOT:
-                return EOT;
-            case LINEFEED_CHAR:
-                return LINEFEED;
-            case SPACE:
-            case CARRIAGE_RETURN:
-            case TAB:
-                return XMLWHITESPACE;
-            default:
-                return isAnySpace(c) ? UCWHITESPACE : NONWHITESPACE;
+        case CODE_EOT:
+            return EOT;
+        case LINEFEED_CHAR:
+            return LINEFEED;
+        case SPACE:
+        case CARRIAGE_RETURN:
+        case TAB:
+            return XMLWHITESPACE;
+        default:
+            return isAnySpace(c) ? UCWHITESPACE : NONWHITESPACE;
         }
     }
 
-
     /**
-     * Helper method to determine if the character is a
-     * space with normal behavior. Normal behavior means that
-     * it's not non-breaking.
-     * @param c character to inspect
+     * Helper method to determine if the character is a space with normal
+     * behavior. Normal behavior means that it's not non-breaking.
+     * 
+     * @param c
+     *            character to inspect
      * @return True if the character is a normal space
      */
-    public static boolean isBreakableSpace(char c) {
-        return (c == SPACE || isFixedWidthSpace(c));
+    public static boolean isBreakableSpace(final char c) {
+        return c == SPACE || isFixedWidthSpace(c);
     }
 
     /**
      * Method to determine if the character is a zero-width space.
-     * @param c the character to check
+     * 
+     * @param c
+     *            the character to check
      * @return true if the character is a zero-width space
      */
-    public static boolean isZeroWidthSpace(char c) {
-        return c == ZERO_WIDTH_SPACE           // 200Bh
-            || c == WORD_JOINER                // 2060h
-            || c == ZERO_WIDTH_NOBREAK_SPACE;  // FEFFh (also used as BOM)
+    public static boolean isZeroWidthSpace(final char c) {
+        return c == ZERO_WIDTH_SPACE // 200Bh
+                || c == WORD_JOINER // 2060h
+                || c == ZERO_WIDTH_NOBREAK_SPACE; // FEFFh (also used as BOM)
     }
 
     /**
      * Method to determine if the character is a (breakable) fixed-width space.
-     * @param c the character to check
+     * 
+     * @param c
+     *            the character to check
      * @return true if the character has a fixed-width
      */
-    public static boolean isFixedWidthSpace(char c) {
-        return (c >= '\u2000' && c <= '\u200B')
-                || c == '\u3000';
-//      c == '\u2000'                   // en quad
-//      c == '\u2001'                   // em quad
-//      c == '\u2002'                   // en space
-//      c == '\u2003'                   // em space
-//      c == '\u2004'                   // three-per-em space
-//      c == '\u2005'                   // four-per-em space
-//      c == '\u2006'                   // six-per-em space
-//      c == '\u2007'                   // figure space
-//      c == '\u2008'                   // punctuation space
-//      c == '\u2009'                   // thin space
-//      c == '\u200A'                   // hair space
-//      c == '\u200B'                   // zero width space
-//      c == '\u3000'                   // ideographic space
+    public static boolean isFixedWidthSpace(final char c) {
+        return c >= '\u2000' && c <= '\u200B' || c == '\u3000';
+        // c == '\u2000' // en quad
+        // c == '\u2001' // em quad
+        // c == '\u2002' // en space
+        // c == '\u2003' // em space
+        // c == '\u2004' // three-per-em space
+        // c == '\u2005' // four-per-em space
+        // c == '\u2006' // six-per-em space
+        // c == '\u2007' // figure space
+        // c == '\u2008' // punctuation space
+        // c == '\u2009' // thin space
+        // c == '\u200A' // hair space
+        // c == '\u200B' // zero width space
+        // c == '\u3000' // ideographic space
     }
 
     /**
-     * Method to determine if the character is a nonbreaking
-     * space.
-     * @param c character to check
+     * Method to determine if the character is a nonbreaking space.
+     * 
+     * @param c
+     *            character to check
      * @return True if the character is a nbsp
      */
-    public static boolean isNonBreakableSpace(char c) {
-        return
-            (c == NBSPACE       // no-break space
-            || c == '\u202F'    // narrow no-break space
-            || c == '\u3000'    // ideographic space
-            || c == WORD_JOINER // word joiner
-            || c == ZERO_WIDTH_NOBREAK_SPACE);  // zero width no-break space
+    public static boolean isNonBreakableSpace(final char c) {
+        return c == NBSPACE // no-break space
+                || c == '\u202F' // narrow no-break space
+                || c == '\u3000' // ideographic space
+                || c == WORD_JOINER // word joiner
+                || c == ZERO_WIDTH_NOBREAK_SPACE; // zero width no-break space
     }
 
     /**
-     * Method to determine if the character is an adjustable
-     * space.
-     * @param c character to check
+     * Method to determine if the character is an adjustable space.
+     * 
+     * @param c
+     *            character to check
      * @return True if the character is adjustable
      */
-    public static boolean isAdjustableSpace(char c) {
-        //TODO: are there other kinds of adjustable spaces?
-        return
-            (c == '\u0020'    // normal space
-            || c == NBSPACE); // no-break space
+    public static boolean isAdjustableSpace(final char c) {
+        // TODO: are there other kinds of adjustable spaces?
+        return c == '\u0020' // normal space
+                || c == NBSPACE; // no-break space
     }
 
     /**
      * Determines if the character represents any kind of space.
-     * @param c character to check
+     * 
+     * @param c
+     *            character to check
      * @return True if the character represents any kind of space
      */
-    public static boolean isAnySpace(char c) {
-        return (isBreakableSpace(c) || isNonBreakableSpace(c));
+    public static boolean isAnySpace(final char c) {
+        return isBreakableSpace(c) || isNonBreakableSpace(c);
     }
 
     /**
-     * Indicates whether a character is classified as "Alphabetic" by the Unicode standard.
-     * @param ch the character
+     * Indicates whether a character is classified as "Alphabetic" by the
+     * Unicode standard.
+     * 
+     * @param ch
+     *            the character
      * @return true if the character is "Alphabetic"
      */
-    public static boolean isAlphabetic(char ch) {
-        //http://www.unicode.org/Public/UNIDATA/UCD.html#Alphabetic
-        //Generated from: Other_Alphabetic + Lu + Ll + Lt + Lm + Lo + Nl
-        int generalCategory = Character.getType(ch);
+    public static boolean isAlphabetic(final char ch) {
+        // http://www.unicode.org/Public/UNIDATA/UCD.html#Alphabetic
+        // Generated from: Other_Alphabetic + Lu + Ll + Lt + Lm + Lo + Nl
+        final int generalCategory = Character.getType(ch);
         switch (generalCategory) {
-            case Character.UPPERCASE_LETTER: //Lu
-            case Character.LOWERCASE_LETTER: //Ll
-            case Character.TITLECASE_LETTER: //Lt
-            case Character.MODIFIER_LETTER: //Lm
-            case Character.OTHER_LETTER: //Lo
-            case Character.LETTER_NUMBER: //Nl
-                return true;
-            default:
-                //TODO if (ch in Other_Alphabetic) return true; (Probably need ICU4J for that)
-                //Other_Alphabetic contains mostly more exotic characters
-                return false;
+        case Character.UPPERCASE_LETTER: // Lu
+        case Character.LOWERCASE_LETTER: // Ll
+        case Character.TITLECASE_LETTER: // Lt
+        case Character.MODIFIER_LETTER: // Lm
+        case Character.OTHER_LETTER: // Lo
+        case Character.LETTER_NUMBER: // Nl
+            return true;
+        default:
+            // TODO if (ch in Other_Alphabetic) return true; (Probably need
+            // ICU4J for that)
+            // Other_Alphabetic contains mostly more exotic characters
+            return false;
         }
     }
 
     /**
      * Indicates whether the given character is an explicit break-character
-     * @param ch    the character to check
-     * @return  true if the character represents an explicit break
+     * 
+     * @param ch
+     *            the character to check
+     * @return true if the character represents an explicit break
      */
-    public static boolean isExplicitBreak(char ch) {
-        return (ch == LINEFEED_CHAR
-            || ch == CARRIAGE_RETURN
-            || ch == NEXT_LINE
-            || ch == LINE_SEPARATOR
-            || ch == PARAGRAPH_SEPARATOR);
+    public static boolean isExplicitBreak(final char ch) {
+        return ch == LINEFEED_CHAR || ch == CARRIAGE_RETURN || ch == NEXT_LINE
+                || ch == LINE_SEPARATOR || ch == PARAGRAPH_SEPARATOR;
     }
 }
-

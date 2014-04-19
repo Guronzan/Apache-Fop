@@ -33,9 +33,10 @@ public class PDFFileSpec extends PDFObject {
     /**
      * create a /FileSpec object.
      *
-     * @param filename the filename represented by this object
+     * @param filename
+     *            the filename represented by this object
      */
-    public PDFFileSpec(String filename) {
+    public PDFFileSpec(final String filename) {
 
         /* generic creation of object */
         super();
@@ -46,25 +47,19 @@ public class PDFFileSpec extends PDFObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toPDFString() {
-        return getObjectID()
-                + "<<\n/Type /FileSpec\n"
-                + "/F (" + this.filename + ")\n"
-                + ">>\nendobj\n";
+        return getObjectID() + "<<\n/Type /FileSpec\n" + "/F (" + this.filename
+                + ")\n" + ">>\nendobj\n";
     }
 
     /*
-     * example
-     * 29 0 obj
-     * <<
-     * /Type /FileSpec
-     * /F (table1.pdf)
-     * >>
-     * endobj
+     * example 29 0 obj << /Type /FileSpec /F (table1.pdf) >> endobj
      */
 
     /** {@inheritDoc} */
-    protected boolean contentEquals(PDFObject obj) {
+    @Override
+    protected boolean contentEquals(final PDFObject obj) {
         if (this == obj) {
             return true;
         }
@@ -73,13 +68,12 @@ public class PDFFileSpec extends PDFObject {
             return false;
         }
 
-        PDFFileSpec spec = (PDFFileSpec)obj;
+        final PDFFileSpec spec = (PDFFileSpec) obj;
 
-        if (!spec.filename.equals(filename)) {
+        if (!spec.filename.equals(this.filename)) {
             return false;
         }
 
         return true;
     }
 }
-

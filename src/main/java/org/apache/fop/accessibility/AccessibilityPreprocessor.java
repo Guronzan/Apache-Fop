@@ -31,14 +31,12 @@ import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.util.TransformerDefaultHandler;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
-
-import org.apache.commons.io.output.ByteArrayOutputStream;
-
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.util.TransformerDefaultHandler;
 
 /**
  * This class prepares an XSL-FO document for accessibility. It adds a unique
@@ -55,39 +53,47 @@ class AccessibilityPreprocessor extends TransformerDefaultHandler {
 
     private final DefaultHandler fopHandler;
 
-    public AccessibilityPreprocessor(TransformerHandler addPtr, Transformer reduceFOTree,
-            FOUserAgent userAgent, DefaultHandler fopHandler) {
+    public AccessibilityPreprocessor(final TransformerHandler addPtr,
+            final Transformer reduceFOTree, final FOUserAgent userAgent,
+            final DefaultHandler fopHandler) {
         super(addPtr);
         this.reduceFOTree = reduceFOTree;
         this.userAgent = userAgent;
         this.fopHandler = fopHandler;
-        getTransformerHandler().setResult(new StreamResult(enrichedFOBuffer));
+        getTransformerHandler().setResult(
+                new StreamResult(this.enrichedFOBuffer));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws SAXException {
         super.endDocument();
         // do the second transform to struct
         try {
-            //TODO this must be optimized, no buffering (ex. SAX-based tee-proxy)
-            byte[] enrichedFO = enrichedFOBuffer.toByteArray();
-            Source src = new StreamSource(new ByteArrayInputStream(enrichedFO));
-            DOMResult res = new DOMResult();
-            reduceFOTree.transform(src, res);
-            StructureTree structureTree = new StructureTree();
-            NodeList pageSequences = res.getNode().getFirstChild().getChildNodes();
+            // TODO this must be optimized, no buffering (ex. SAX-based
+            // tee-proxy)
+            final byte[] enrichedFO = this.enrichedFOBuffer.toByteArray();
+            final Source src = new StreamSource(new ByteArrayInputStream(
+                    enrichedFO));
+            final DOMResult res = new DOMResult();
+            this.reduceFOTree.transform(src, res);
+            final StructureTree structureTree = new StructureTree();
+            final NodeList pageSequences = res.getNode().getFirstChild()
+                    .getChildNodes();
             for (int i = 0; i < pageSequences.getLength(); i++) {
-                structureTree.addPageSequenceStructure(pageSequences.item(i).getChildNodes());
+                structureTree.addPageSequenceStructure(pageSequences.item(i)
+                        .getChildNodes());
             }
-            userAgent.setStructureTree(structureTree);
+            this.userAgent.setStructureTree(structureTree);
 
-            SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();
+            final SAXParserFactory saxParserFactory = SAXParserFactory
+                    .newInstance();
             saxParserFactory.setNamespaceAware(true);
             saxParserFactory.setValidating(false);
-            SAXParser saxParser = saxParserFactory.newSAXParser();
-            InputStream in = new ByteArrayInputStream(enrichedFO);
-            saxParser.parse(in, fopHandler);
-        } catch (Exception e) {
+            final SAXParser saxParser = saxParserFactory.newSAXParser();
+            final InputStream in = new ByteArrayInputStream(enrichedFO);
+            saxParser.parse(in, this.fopHandler);
+        } catch (final Exception e) {
             throw new SAXException(e);
         }
     }

@@ -20,13 +20,16 @@
 package org.apache.fop.fo.properties;
 
 /**
- * Defines property access methods for internal structure pointer extension properties.
+ * Defines property access methods for internal structure pointer extension
+ * properties.
  */
 public interface StructurePointerPropertySet {
 
     /**
-     * Returns the value of the "foi:ptr" property, the internal structure pointer used
-     * for tagged PDF and other formats that support a structure tree in addition to paged content.
+     * Returns the value of the "foi:ptr" property, the internal structure
+     * pointer used for tagged PDF and other formats that support a structure
+     * tree in addition to paged content.
+     * 
      * @return the "foi:ptr" property
      */
     String getPtr();

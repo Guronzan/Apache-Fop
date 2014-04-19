@@ -25,9 +25,8 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * Store all common margin properties for blocks.
- * See Sec. 7.10 of the XSL-FO Standard.
- * Public "structure" allows direct member access.
+ * Store all common margin properties for blocks. See Sec. 7.10 of the XSL-FO
+ * Standard. Public "structure" allows direct member access.
  */
 public class CommonMarginBlock {
     /**
@@ -72,31 +71,32 @@ public class CommonMarginBlock {
 
     /**
      * Create a CommonMarginBlock object.
-     * @param pList The PropertyList with propery values.
+     * 
+     * @param pList
+     *            The PropertyList with propery values.
      */
-    public CommonMarginBlock(PropertyList pList) throws PropertyException {
-        marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
-        marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
-        marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
-        marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
+    public CommonMarginBlock(final PropertyList pList) throws PropertyException {
+        this.marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
+        this.marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
+        this.marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
+        this.marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
 
-        spaceBefore = pList.get(Constants.PR_SPACE_BEFORE).getSpace();
-        spaceAfter = pList.get(Constants.PR_SPACE_AFTER).getSpace();
+        this.spaceBefore = pList.get(Constants.PR_SPACE_BEFORE).getSpace();
+        this.spaceAfter = pList.get(Constants.PR_SPACE_AFTER).getSpace();
 
-        startIndent = pList.get(Constants.PR_START_INDENT).getLength();
-        endIndent = pList.get(Constants.PR_END_INDENT).getLength();
+        this.startIndent = pList.get(Constants.PR_START_INDENT).getLength();
+        this.endIndent = pList.get(Constants.PR_END_INDENT).getLength();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
-        return "CommonMarginBlock:\n"
-            + "Margins (top, bottom, left, right): ("
-            + marginTop + ", " + marginBottom + ", "
-            + marginLeft + ", " + marginRight + ")\n"
-            + "Space (before, after): ("
-            + spaceBefore + ", " + spaceAfter + ")\n"
-            + "Indents (start, end): ("
-            + startIndent + ", " + endIndent + ")\n";
+        return "CommonMarginBlock:\n" + "Margins (top, bottom, left, right): ("
+                + this.marginTop + ", " + this.marginBottom + ", "
+                + this.marginLeft + ", " + this.marginRight + ")\n"
+                + "Space (before, after): (" + this.spaceBefore + ", "
+                + this.spaceAfter + ")\n" + "Indents (start, end): ("
+                + this.startIndent + ", " + this.endIndent + ")\n";
     }
 
 }

@@ -26,43 +26,54 @@ import java.util.List;
 import org.apache.fop.fonts.autodetect.FontInfoFinder;
 
 /**
- * Adds a list of fonts to a given font info list 
+ * Adds a list of fonts to a given font info list
  */
 public class FontAdder {
-    private FontEventListener listener;
-    private FontResolver resolver;
-    private FontManager manager;
+    private final FontEventListener listener;
+    private final FontResolver resolver;
+    private final FontManager manager;
 
     /**
      * Main constructor
-     * @param manager a font manager
-     * @param resolver a font resolver
-     * @param listener a font event handler
+     * 
+     * @param manager
+     *            a font manager
+     * @param resolver
+     *            a font resolver
+     * @param listener
+     *            a font event handler
      */
-    public FontAdder(FontManager manager, FontResolver resolver, FontEventListener listener) {
+    public FontAdder(final FontManager manager, final FontResolver resolver,
+            final FontEventListener listener) {
         this.manager = manager;
         this.resolver = resolver;
         this.listener = listener;
     }
-    
+
     /**
      * Iterates over font url list adding to font info list
-     * @param fontURLList font file list
-     * @param fontInfoList a configured font info list
+     * 
+     * @param fontURLList
+     *            font file list
+     * @param fontInfoList
+     *            a configured font info list
      */
-    public void add(List/*<URL>*/ fontURLList, List/*<EmbedFontInfo>*/ fontInfoList) {
-        FontCache cache = manager.getFontCache();
-        FontInfoFinder finder = new FontInfoFinder();
-        finder.setEventListener(listener);
+    public void add(final List/* <URL> */fontURLList, final List/*
+                                                                 * <EmbedFontInfo
+                                                                 * >
+                                                                 */fontInfoList) {
+        final FontCache cache = this.manager.getFontCache();
+        final FontInfoFinder finder = new FontInfoFinder();
+        finder.setEventListener(this.listener);
 
-        for (Iterator iter = fontURLList.iterator(); iter.hasNext();) {
-            URL fontUrl = (URL)iter.next();
-            EmbedFontInfo[] embedFontInfos = finder.find(fontUrl, resolver, cache);
+        for (final Iterator iter = fontURLList.iterator(); iter.hasNext();) {
+            final URL fontUrl = (URL) iter.next();
+            final EmbedFontInfo[] embedFontInfos = finder.find(fontUrl,
+                    this.resolver, cache);
             if (embedFontInfos == null) {
                 continue;
             }
-            for (int i = 0, c = embedFontInfos.length; i < c; i++) {
-                EmbedFontInfo fontInfo = embedFontInfos[i];
+            for (final EmbedFontInfo fontInfo : embedFontInfos) {
                 if (fontInfo != null) {
                     fontInfoList.add(fontInfo);
                 }

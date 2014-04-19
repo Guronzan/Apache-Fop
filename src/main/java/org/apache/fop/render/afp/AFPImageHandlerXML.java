@@ -35,41 +35,46 @@ import org.w3c.dom.Document;
  */
 public class AFPImageHandlerXML extends AFPImageHandler {
 
-    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.XML_DOM,
-    };
+    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.XML_DOM, };
 
     /** {@inheritDoc} */
-    public AFPDataObjectInfo generateDataObjectInfo(AFPRendererImageInfo rendererImageInfo)
-            throws IOException {
-        RendererContext rendererContext = rendererImageInfo.getRendererContext();
-        AFPRenderer renderer = (AFPRenderer)rendererContext.getRenderer();
-        ImageXMLDOM imgXML = (ImageXMLDOM)rendererImageInfo.getImage();
-        Document doc = imgXML.getDocument();
-        String ns = imgXML.getRootNamespace();
-        Map foreignAttributes = (Map)rendererContext.getProperty(
-                RendererContextConstants.FOREIGN_ATTRIBUTES);
-        Rectangle2D pos = rendererImageInfo.getPosition();
+    @Override
+    public AFPDataObjectInfo generateDataObjectInfo(
+            final AFPRendererImageInfo rendererImageInfo) throws IOException {
+        final RendererContext rendererContext = rendererImageInfo
+                .getRendererContext();
+        final AFPRenderer renderer = (AFPRenderer) rendererContext
+                .getRenderer();
+        final ImageXMLDOM imgXML = (ImageXMLDOM) rendererImageInfo.getImage();
+        final Document doc = imgXML.getDocument();
+        final String ns = imgXML.getRootNamespace();
+        final Map foreignAttributes = (Map) rendererContext
+                .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
+        final Rectangle2D pos = rendererImageInfo.getPosition();
         renderer.renderDocument(doc, ns, pos, foreignAttributes);
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 400;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageXMLDOM.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AFPDataObjectInfo createDataObjectInfo() {
         return null;
     }

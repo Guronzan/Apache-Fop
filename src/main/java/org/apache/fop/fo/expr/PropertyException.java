@@ -25,48 +25,62 @@ import org.apache.fop.apps.FOPException;
  * Class for managing exceptions that are raised in Property processing.
  */
 public class PropertyException extends FOPException {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 9015377575938967046L;
     private String propertyName;
 
     /**
      * Constructor
-     * @param detail string containing the detail message
+     * 
+     * @param detail
+     *            string containing the detail message
      */
-    public PropertyException(String detail) {
+    public PropertyException(final String detail) {
         super(detail);
     }
 
     /**
      * Constructor
-     * @param cause the Exception causing this PropertyException
+     * 
+     * @param cause
+     *            the Exception causing this PropertyException
      */
-    public PropertyException(Exception cause) {
+    public PropertyException(final Exception cause) {
         super(cause);
         if (cause instanceof PropertyException) {
-            this.propertyName = ((PropertyException)cause).propertyName;
+            this.propertyName = ((PropertyException) cause).propertyName;
         }
     }
 
     /**
      * Sets the property context information.
-     * @param propInfo the property info instance
+     * 
+     * @param propInfo
+     *            the property info instance
      */
-    public void setPropertyInfo(PropertyInfo propInfo) {
+    public void setPropertyInfo(final PropertyInfo propInfo) {
         setLocator(propInfo.getPropertyList().getFObj().getLocator());
-        propertyName = propInfo.getPropertyMaker().getName();
+        this.propertyName = propInfo.getPropertyMaker().getName();
     }
 
     /**
      * Sets the name of the property.
-     * @param propertyName the property name
+     * 
+     * @param propertyName
+     *            the property name
      */
-    public void setPropertyName(String propertyName) {
+    public void setPropertyName(final String propertyName) {
         this.propertyName = propertyName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMessage() {
-        if (propertyName != null) {
-            return super.getMessage() + "; property:'" + propertyName + "'";
+        if (this.propertyName != null) {
+            return super.getMessage() + "; property:'" + this.propertyName
+                    + "'";
         } else {
             return super.getMessage();
         }

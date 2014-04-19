@@ -24,19 +24,34 @@ package org.apache.fop.render.pdf;
  */
 public interface PDFConfigurationConstants {
 
-    /** PDF encryption parameter: all parameters as object, datatype: PDFEncryptionParams */
+    /**
+     * PDF encryption parameter: all parameters as object, datatype:
+     * PDFEncryptionParams
+     */
     String ENCRYPTION_PARAMS = "encryption-params";
     /** PDF encryption parameter: user password, datatype: String */
     String USER_PASSWORD = "user-password";
     /** PDF encryption parameter: owner password, datatype: String */
     String OWNER_PASSWORD = "owner-password";
-    /** PDF encryption parameter: Forbids printing, datatype: Boolean or "true"/"false" */
+    /**
+     * PDF encryption parameter: Forbids printing, datatype: Boolean or
+     * "true"/"false"
+     */
     String NO_PRINT = "noprint";
-    /** PDF encryption parameter: Forbids copying content, datatype: Boolean or "true"/"false" */
+    /**
+     * PDF encryption parameter: Forbids copying content, datatype: Boolean or
+     * "true"/"false"
+     */
     String NO_COPY_CONTENT = "nocopy";
-    /** PDF encryption parameter: Forbids editing content, datatype: Boolean or "true"/"false" */
+    /**
+     * PDF encryption parameter: Forbids editing content, datatype: Boolean or
+     * "true"/"false"
+     */
     String NO_EDIT_CONTENT = "noedit";
-    /** PDF encryption parameter: Forbids annotations, datatype: Boolean or "true"/"false" */
+    /**
+     * PDF encryption parameter: Forbids annotations, datatype: Boolean or
+     * "true"/"false"
+     */
     String NO_ANNOTATIONS = "noannotations";
     /** Rendering Options key for the PDF/A mode. */
     String PDF_A_MODE = "pdf-a-mode";
@@ -45,8 +60,8 @@ public interface PDFConfigurationConstants {
     /** Rendering Options key for the ICC profile for the output intent. */
     String KEY_OUTPUT_PROFILE = "output-profile";
     /**
-     * Rendering Options key for disabling the sRGB color space (only possible if no PDF/A or
-     * PDF/X profile is active).
+     * Rendering Options key for disabling the sRGB color space (only possible
+     * if no PDF/A or PDF/X profile is active).
      */
     String KEY_DISABLE_SRGB_COLORSPACE = "disable-srgb-colorspace";
 }

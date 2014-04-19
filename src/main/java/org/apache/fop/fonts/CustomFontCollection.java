@@ -27,51 +27,57 @@ import java.util.List;
 public class CustomFontCollection implements FontCollection {
 
     private FontResolver fontResolver;
-    private List/*<EmbedFontInfo>*/ embedFontInfoList;
+    private final List/* <EmbedFontInfo> */embedFontInfoList;
 
     /**
      * Main constructor.
-     * @param fontResolver a font resolver
-     * @param customFonts the list of custom fonts
+     * 
+     * @param fontResolver
+     *            a font resolver
+     * @param customFonts
+     *            the list of custom fonts
      */
-    public CustomFontCollection(FontResolver fontResolver,
-            List/*<EmbedFontInfo>*/ customFonts) {
+    public CustomFontCollection(final FontResolver fontResolver,
+            final List/* <EmbedFontInfo> */customFonts) {
         this.fontResolver = fontResolver;
         if (this.fontResolver == null) {
-            //Ensure that we have minimal font resolution capabilities
+            // Ensure that we have minimal font resolution capabilities
             this.fontResolver = FontManager.createMinimalFontResolver();
         }
         this.embedFontInfoList = customFonts;
     }
 
     /** {@inheritDoc} */
-    public int setup(int num, FontInfo fontInfo) {
-        if (embedFontInfoList == null) {
-            return num; //No fonts to process
+    @Override
+    public int setup(int num, final FontInfo fontInfo) {
+        if (this.embedFontInfoList == null) {
+            return num; // No fonts to process
         }
 
         String internalName = null;
-        //FontReader reader = null;
+        // FontReader reader = null;
 
-        for (int i = 0; i < embedFontInfoList.size(); i++) {
-            EmbedFontInfo embedFontInfo = (EmbedFontInfo)embedFontInfoList.get(i);
+        for (int i = 0; i < this.embedFontInfoList.size(); i++) {
+            final EmbedFontInfo embedFontInfo = (EmbedFontInfo) this.embedFontInfoList
+                    .get(i);
 
-            //String metricsFile = configFontInfo.getMetricsFile();
+            // String metricsFile = configFontInfo.getMetricsFile();
             internalName = "F" + num;
             num++;
             /*
-            reader = new FontReader(metricsFile);
-            reader.useKerning(configFontInfo.getKerning());
-            reader.setFontEmbedPath(configFontInfo.getEmbedFile());
-            fontInfo.addMetrics(internalName, reader.getFont());
-            */
+             * reader = new FontReader(metricsFile);
+             * reader.useKerning(configFontInfo.getKerning());
+             * reader.setFontEmbedPath(configFontInfo.getEmbedFile());
+             * fontInfo.addMetrics(internalName, reader.getFont());
+             */
 
-            LazyFont font = new LazyFont(embedFontInfo, this.fontResolver);
+            final LazyFont font = new LazyFont(embedFontInfo, this.fontResolver);
             fontInfo.addMetrics(internalName, font);
 
-            List triplets = embedFontInfo.getFontTriplets();
+            final List triplets = embedFontInfo.getFontTriplets();
             for (int tripletIndex = 0; tripletIndex < triplets.size(); tripletIndex++) {
-                FontTriplet triplet = (FontTriplet) triplets.get(tripletIndex);
+                final FontTriplet triplet = (FontTriplet) triplets
+                        .get(tripletIndex);
                 fontInfo.addFontProperties(internalName, triplet);
             }
         }

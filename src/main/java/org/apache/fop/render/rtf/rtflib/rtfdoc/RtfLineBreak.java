@@ -26,28 +26,38 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-import java.io.Writer;
 import java.io.IOException;
+import java.io.Writer;
 
-/**  "Model" of an RTF line break
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * "Model" of an RTF line break
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public class RtfLineBreak extends RtfElement {
-    /** Create an RTF paragraph as a child of given container with default attributes */
-    RtfLineBreak(IRtfTextContainer parent, Writer w) throws IOException {
-        super((RtfContainer)parent, w);
+    /**
+     * Create an RTF paragraph as a child of given container with default
+     * attributes
+     */
+    RtfLineBreak(final IRtfTextContainer parent, final Writer w)
+            throws IOException {
+        super((RtfContainer) parent, w);
     }
 
     /**
      * Overridden to write our attributes before our content
-     * @throws IOException for I/O problems
+     * 
+     * @throws IOException
+     *             for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         writeControlWord("line");
     }
 
     /** @return true if this element would generate no "useful" RTF content */
+    @Override
     public boolean isEmpty() {
         return false;
     }

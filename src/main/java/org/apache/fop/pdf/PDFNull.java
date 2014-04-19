@@ -33,18 +33,23 @@ public final class PDFNull implements PDFWritable {
 
     /**
      * Creates a new PDF name object.
-     * @param name the name value
+     *
+     * @param name
+     *            the name value
      */
     private PDFNull() {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "null";
     }
 
     /** {@inheritDoc} */
-    public void outputInline(OutputStream out, Writer writer) throws IOException {
+    @Override
+    public void outputInline(final OutputStream out, final Writer writer)
+            throws IOException {
         writer.write(toString());
     }
 

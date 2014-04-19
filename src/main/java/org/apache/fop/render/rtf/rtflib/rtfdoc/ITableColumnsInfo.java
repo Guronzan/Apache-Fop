@@ -26,22 +26,29 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  * the FOP project.
  */
 
-/**  Used to get information about tables, for example when handling nested tables
- *  @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+/**
+ * Used to get information about tables, for example when handling nested tables
+ * 
+ * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  */
 
 public interface ITableColumnsInfo {
     /** value for invalid column width */
     float INVALID_COLUMN_WIDTH = 200f;
 
-    /** reset the column iteration index, meant to be called when creating a new row */
+    /**
+     * reset the column iteration index, meant to be called when creating a new
+     * row
+     */
     void selectFirstColumn();
 
     /** increment the column iteration index */
     void selectNextColumn();
 
-    /** get current column width according to column iteration index
-     *  @return INVALID_COLUMN_WIDTH if we cannot find the value
+    /**
+     * get current column width according to column iteration index
+     * 
+     * @return INVALID_COLUMN_WIDTH if we cannot find the value
      */
     float getColumnWidth();
 

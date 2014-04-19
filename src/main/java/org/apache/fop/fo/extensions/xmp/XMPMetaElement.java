@@ -29,23 +29,28 @@ public class XMPMetaElement extends AbstractMetadataElement {
 
     /**
      * Main constructor.
-     * @param parent the parent formatting object
+     * 
+     * @param parent
+     *            the parent formatting object
      */
-    public XMPMetaElement(FONode parent) {
+    public XMPMetaElement(final FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "xmpmeta";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "x";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return XMPConstants.XMP_NAMESPACE;
     }

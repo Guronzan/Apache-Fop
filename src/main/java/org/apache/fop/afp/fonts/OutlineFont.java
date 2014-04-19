@@ -25,7 +25,7 @@ package org.apache.fop.afp.fonts;
 public class OutlineFont extends AbstractOutlineFont {
 
     /** {@inheritDoc} */
-    public OutlineFont(String name, CharacterSet charSet) {
+    public OutlineFont(final String name, final CharacterSet charSet) {
         super(name, charSet);
     }
 
