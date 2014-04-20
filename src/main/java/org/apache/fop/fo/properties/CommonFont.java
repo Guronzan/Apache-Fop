@@ -143,17 +143,17 @@ public final class CommonFont {
 
     /** @return an array with the font-family names */
     private String[] getFontFamily() {
-        final List lst = this.fontFamily.getList();
+        final List<Property> lst = this.fontFamily.getList();
         final String[] fontFamily = new String[lst.size()];
-        for (int i = 0, c = lst.size(); i < c; i++) {
-            fontFamily[i] = ((Property) lst.get(i)).getString();
+        for (int i = 0, c = lst.size(); i < c; ++i) {
+            fontFamily[i] = lst.get(i).getString();
         }
         return fontFamily;
     }
 
     /** @return the first font-family name in the list */
     public String getFirstFontFamily() {
-        return ((Property) this.fontFamily.list.get(0)).getString();
+        return this.fontFamily.list.get(0).getString();
     }
 
     /** @return the "font-selection-strategy" property */

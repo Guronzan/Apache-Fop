@@ -19,8 +19,6 @@
 
 package org.apache.fop.fo.properties;
 
-import java.util.Iterator;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.fo.FObj;
@@ -155,7 +153,7 @@ public final class FontFamilyProperty extends ListProperty {
     @Override
     public String getString() {
         if (this.list.size() > 0) {
-            final Property first = (Property) this.list.get(0);
+            final Property first = this.list.get(0);
             return first.getString();
         } else {
             return super.getString();
@@ -181,8 +179,7 @@ public final class FontFamilyProperty extends ListProperty {
     public int hashCode() {
         if (this.hash == 0) {
             int hash = 17;
-            for (final Iterator i = this.list.iterator(); i.hasNext();) {
-                final Property p = (Property) i.next();
+            for (final Property p : this.list) {
                 hash = 37 * hash + (p == null ? 0 : p.hashCode());
             }
             this.hash = hash;

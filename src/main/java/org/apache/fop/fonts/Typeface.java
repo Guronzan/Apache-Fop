@@ -19,6 +19,7 @@
 
 package org.apache.fop.fonts;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -50,7 +51,7 @@ public abstract class Typeface implements FontMetrics {
      */
     protected FontEventListener eventListener;
 
-    private Set warnedChars;
+    private Set<Character> warnedChars;
 
     /**
      * Get the encoding of the font.
@@ -132,7 +133,7 @@ public abstract class Typeface implements FontMetrics {
         // Give up, character is not available
         final Character ch = new Character(c);
         if (this.warnedChars == null) {
-            this.warnedChars = new java.util.HashSet();
+            this.warnedChars = new HashSet<>();
         }
         if (this.warnedChars.size() < 8 && !this.warnedChars.contains(ch)) {
             this.warnedChars.add(ch);

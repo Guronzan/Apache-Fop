@@ -88,7 +88,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
 
     /**
      * Creates a new AWTRenderer instance.
-     * 
+     *
      * @param previewAsMainWindow
      *            true if the preview dialog created by the renderer should be
      *            the main window of the application.
@@ -111,7 +111,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
      * A Renderable instance can be set so the Preview Dialog can enable the
      * "Reload" button which causes the current document to be reprocessed and
      * redisplayed.
-     * 
+     *
      * @param renderable
      *            the Renderable instance.
      */
@@ -122,7 +122,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     /**
      * Sets whether the preview dialog should be created and displayed when the
      * rendering is finished.
-     * 
+     *
      * @param show
      *            If false, preview dialog is not shown. True by default
      */
@@ -142,13 +142,17 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
         super.stopRenderer();
         if (this.statusListener != null) {
             this.statusListener.notifyRendererStopped(); // Refreshes view of
-                                                         // page
+            // page
         }
     }
 
@@ -170,7 +174,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
                 * (25.4 / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION)
                 / this.userAgent.getTargetPixelUnitToMillimeter();
         if (getPageViewport(pageNum).getForeignAttributes() != null) {
-            final String scale = (String) getPageViewport(pageNum)
+            final String scale = getPageViewport(pageNum)
                     .getForeignAttributes().get(PageScale.EXT_PAGE_SCALE);
             final Point2D scales = PageScale.getScale(scale);
             if (scales != null) {
@@ -289,7 +293,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
 
     /**
      * Sets a StatusListener this renderer uses to notify about events.
-     * 
+     *
      * @param statusListener
      *            The StatusListener to set.
      */

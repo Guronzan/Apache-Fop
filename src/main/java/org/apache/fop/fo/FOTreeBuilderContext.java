@@ -31,7 +31,7 @@ public class FOTreeBuilderContext {
      * The current set of id's in the FO tree. This is used so we know if the FO
      * tree contains duplicates.
      */
-    private final Set idReferences = new HashSet();
+    private final Set<String> idReferences = new HashSet<>();
 
     /**
      * The property list maker.
@@ -50,10 +50,10 @@ public class FOTreeBuilderContext {
 
     /**
      * Returns the set of ID references.
-     * 
+     *
      * @return the ID references
      */
-    public Set getIDReferences() {
+    public Set<String> getIDReferences() {
         return this.idReferences;
     }
 
@@ -78,7 +78,7 @@ public class FOTreeBuilderContext {
 
     /**
      * Return the XMLWhiteSpaceHandler
-     * 
+     *
      * @return the whiteSpaceHandler
      */
     public XMLWhiteSpaceHandler getXMLWhiteSpaceHandler() {

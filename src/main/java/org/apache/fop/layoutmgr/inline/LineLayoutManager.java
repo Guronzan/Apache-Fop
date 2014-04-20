@@ -47,6 +47,7 @@ import org.apache.fop.layoutmgr.BlockLevelLayoutManager;
 import org.apache.fop.layoutmgr.BreakElement;
 import org.apache.fop.layoutmgr.BreakingAlgorithm;
 import org.apache.fop.layoutmgr.ElementListObserver;
+import org.apache.fop.layoutmgr.FootnoteBodyLayoutManager;
 import org.apache.fop.layoutmgr.InlineKnuthSequence;
 import org.apache.fop.layoutmgr.Keep;
 import org.apache.fop.layoutmgr.KnuthBlockBox;
@@ -170,7 +171,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
     private final int follow;
     private AlignmentContext alignmentContext;
 
-    private List knuthParagraphs;
+    private List<KnuthSequence> knuthParagraphs;
 
     private LineLayoutPossibilities lineLayouts;
     private LineLayoutPossibilities[] lineLayoutsList;
@@ -306,7 +307,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
          * @return true if the sequence contains a box
          */
         public boolean containsBox() {
-            for (int i = 0; i < size(); i++) {
+            for (int i = 0; i < size(); ++i) {
                 final KnuthElement el = (KnuthElement) get(i);
                 if (el.isBox()) {
                     return true;
@@ -447,11 +448,11 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
             // if line-stacking-strategy is "font-height", the line height
             // is not affected by its content
             if (LineLayoutManager.this.fobj.getLineStackingStrategy() != EN_FONT_HEIGHT) {
-                final ListIterator inlineIterator = par
+                final ListIterator<ListElement> inlineIterator = par
                         .listIterator(firstElementIndex);
                 AlignmentContext lastAC = null;
                 int maxIgnoredHeight = 0; // See spec 7.13
-                for (int j = firstElementIndex; j <= lastElementIndex; j++) {
+                for (int j = firstElementIndex; j <= lastElementIndex; ++j) {
                     final KnuthElement element = (KnuthElement) inlineIterator
                             .next();
                     if (element instanceof KnuthInlineBox) {
@@ -521,7 +522,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                 // leave all active nodes and find the optimum line number
                 // log.debug("LBA.filterActiveNodes> " + activeNodeCount +
                 // " layouts");
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         // log.debug("                       + lines = " +
                         // node.line + " demerits = " + node.totalDemerits);
@@ -531,7 +532,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
 
                 // scan the node set once again and remove some nodes
                 // log.debug("LBA.filterActiveList> layout selection");
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         // if (Math.abs(node.line - bestActiveNode.line) >
                         // maxDiff) {
@@ -549,7 +550,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                 }
             } else {
                 // leave only the active node with fewest total demerits
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         bestActiveNode = compareNodes(bestActiveNode, node);
                         if (node != bestActiveNode) {
@@ -607,7 +608,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         // PHASE 1: Create Knuth elements
         if (this.knuthParagraphs == null) {
             // it's the first time this method is called
-            this.knuthParagraphs = new ArrayList();
+            this.knuthParagraphs = new ArrayList<>();
 
             // here starts Knuth's algorithm
             collectInlineKnuthElements(context);
@@ -626,17 +627,17 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         return createLineBreaks(context.getBPAlignment(), context);
     }
 
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment, final LeafPosition restartPosition) {
         log.trace("Restarting line breaking from index "
                 + restartPosition.getIndex());
         final int parIndex = restartPosition.getLeafPos();
         final Paragraph paragraph = (Paragraph) this.knuthParagraphs
                 .get(parIndex);
-        for (int i = 0; i <= restartPosition.getIndex(); i++) {
+        for (int i = 0; i <= restartPosition.getIndex(); ++i) {
             paragraph.remove(0);
         }
-        final Iterator iter = paragraph.iterator();
+        final Iterator<ListElement> iter = paragraph.iterator();
         while (iter.hasNext() && !((KnuthElement) iter.next()).isBox()) {
             iter.remove();
         }
@@ -675,8 +676,8 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
 
         InlineLevelLayoutManager curLM;
         while ((curLM = (InlineLevelLayoutManager) getChildLM()) != null) {
-            final List inlineElements = curLM.getNextKnuthElements(inlineLC,
-                    this.effectiveAlignment);
+            final List<KnuthSequence> inlineElements = curLM
+                    .getNextKnuthElements(inlineLC, this.effectiveAlignment);
             if (inlineElements == null || inlineElements.size() == 0) {
                 /*
                  * curLM.getNextKnuthElements() returned null or an empty list;
@@ -687,8 +688,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
             }
 
             if (lastPar != null) {
-                final KnuthSequence firstSeq = (KnuthSequence) inlineElements
-                        .get(0);
+                final KnuthSequence firstSeq = inlineElements.get(0);
 
                 // finish last paragraph before a new block sequence
                 if (!firstSeq.isInlineSequence()) {
@@ -715,9 +715,10 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
 
             // loop over the KnuthSequences (and single KnuthElements) in
             // returnedList
-            final ListIterator iter = inlineElements.listIterator();
+            final ListIterator<KnuthSequence> iter = inlineElements
+                    .listIterator();
             while (iter.hasNext()) {
-                final KnuthSequence sequence = (KnuthSequence) iter.next();
+                final KnuthSequence sequence = iter.next();
                 // the sequence contains inline Knuth elements
                 if (sequence.isInlineSequence()) {
                     // look at the last element
@@ -799,15 +800,16 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
      *            the layout context
      * @return a list of Knuth elements representing broken lines
      */
-    private List createLineBreaks(final int alignment,
+    private List<ListElement> createLineBreaks(final int alignment,
             final LayoutContext context) {
         // find the optimal line breaking points for each paragraph
-        final Iterator paragraphsIterator = this.knuthParagraphs.iterator();
+        final Iterator<KnuthSequence> paragraphsIterator = this.knuthParagraphs
+                .iterator();
         this.lineLayoutsList = new LineLayoutPossibilities[this.knuthParagraphs
                 .size()];
         LineLayoutPossibilities llPoss;
-        for (int i = 0; paragraphsIterator.hasNext(); i++) {
-            final KnuthSequence seq = (KnuthSequence) paragraphsIterator.next();
+        for (int i = 0; paragraphsIterator.hasNext(); ++i) {
+            final KnuthSequence seq = paragraphsIterator.next();
             if (!seq.isInlineSequence()) {
                 // This set of line layout possibilities does not matter;
                 // we only need an entry in lineLayoutsList.
@@ -962,10 +964,10 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
      *            the layout context
      * @return the newly built element list
      */
-    private List postProcessLineBreaks(final int alignment,
+    private List<ListElement> postProcessLineBreaks(final int alignment,
             final LayoutContext context) {
 
-        final List returnList = new LinkedList();
+        final List<ListElement> returnList = new LinkedList<>();
 
         int endIndex = -1;
         for (int p = 0; p < this.knuthParagraphs.size(); p++) {
@@ -977,15 +979,13 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
             }
 
             final LineLayoutPossibilities llPoss = this.lineLayoutsList[p];
-            final KnuthSequence seq = (KnuthSequence) this.knuthParagraphs
-                    .get(p);
+            final KnuthSequence seq = this.knuthParagraphs.get(p);
 
             if (!seq.isInlineSequence()) {
-                final List targetList = new LinkedList();
-                final ListIterator listIter = seq.listIterator();
+                final List<ListElement> targetList = new LinkedList<>();
+                final ListIterator<ListElement> listIter = seq.listIterator();
                 while (listIter.hasNext()) {
-                    ListElement tempElement;
-                    tempElement = (ListElement) listIter.next();
+                    final ListElement tempElement = listIter.next();
                     if (tempElement.getLayoutManager() != this) {
                         tempElement.setPosition(notifyPos(new NonLeafPosition(
                                 this, tempElement.getPosition())));
@@ -1007,7 +1007,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                  * represent effective lines, and contain LineBreakPositions
                  */
                 int startIndex = 0;
-                for (int i = 0; i < llPoss.getChosenLineCount(); i++) {
+                for (int i = 0; i < llPoss.getChosenLineCount(); ++i) {
                     if (returnList.size() > 0
                             && i > 0 // if i==0 break generated above already
                             && i >= this.fobj.getOrphans()
@@ -1023,8 +1023,8 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                             .getLeafPos();
                     // create a list of the FootnoteBodyLM handling footnotes
                     // whose citations are in this line
-                    final List footnoteList = new LinkedList();
-                    final ListIterator elementIterator = seq
+                    final List<FootnoteBodyLayoutManager> footnoteList = new LinkedList<>();
+                    final ListIterator<ListElement> elementIterator = seq
                             .listIterator(startIndex);
                     while (elementIterator.nextIndex() <= endIndex) {
                         final KnuthElement element = (KnuthElement) elementIterator
@@ -1060,7 +1060,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         return returnList;
     }
 
-    private void createElements(final List list,
+    private void createElements(final List<ListElement> list,
             final LineLayoutPossibilities llPoss, final Position elementPosition) {
         /* number of normal, inner lines */
         int innerLines = 0;
@@ -1086,7 +1086,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
          * sub-sequence used to separate the elements representing different
          * lines
          */
-        final List breaker = new LinkedList();
+        final List<ListElement> breaker = new LinkedList<>();
 
         /* comment out the next lines in order to test particular situations */
         if (this.fobj.getOrphans() + this.fobj.getWidows() <= llPoss
@@ -1169,7 +1169,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         }
 
         // optional lines
-        for (int i = 0; i < optionalLines; i++) {
+        for (int i = 0; i < optionalLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(0, elementPosition, false));
             list.add(new KnuthPenalty(0, KnuthElement.INFINITE, false,
@@ -1180,7 +1180,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         }
 
         // eliminable lines
-        for (int i = 0; i < eliminableLines; i++) {
+        for (int i = 0; i < eliminableLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(this.constantLineHeight, elementPosition,
                     false));
@@ -1192,7 +1192,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         }
 
         // inner lines
-        for (int i = 0; i < innerLines; i++) {
+        for (int i = 0; i < innerLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(this.constantLineHeight, elementPosition,
                     false));
@@ -1292,13 +1292,14 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
 
     /** {@inheritDoc} */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
-        final List returnList = new LinkedList();
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
+        final List<ListElement> returnList = new LinkedList<>();
         for (int p = 0; p < this.knuthParagraphs.size(); p++) {
             final LineLayoutPossibilities llPoss = this.lineLayoutsList[p];
             // log.debug("demerits of the chosen layout: " +
             // llPoss.getChosenDemerits());
-            for (int i = 0; i < llPoss.getChosenLineCount(); i++) {
+            for (int i = 0; i < llPoss.getChosenLineCount(); ++i) {
                 if (!((BlockLevelLayoutManager) this.parentLayoutManager)
                         .mustKeepTogether()
                         && i >= this.fobj.getOrphans()
@@ -1350,10 +1351,10 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
      */
     private void findHyphenationPoints(final Paragraph currPar) {
         // hyphenate every word
-        final ListIterator currParIterator = currPar
+        final ListIterator<ListElement> currParIterator = currPar
                 .listIterator(currPar.ignoreAtStart);
         // list of TLM involved in hyphenation
-        final List updateList = new LinkedList();
+        final List<Update> updateList = new LinkedList<>();
         KnuthElement firstElement, nextElement;
         // current InlineLevelLayoutManager
         InlineLevelLayoutManager currLM = null;
@@ -1430,10 +1431,10 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                 // ask each LM to hyphenate its word fragment
                 if (hc != null) {
                     KnuthElement element = null;
-                    for (int i = 0; i < boxCount + auxCount; i++) {
+                    for (int i = 0; i < boxCount + auxCount; ++i) {
                         currParIterator.previous();
                     }
-                    for (int i = 0; i < boxCount + auxCount; i++) {
+                    for (int i = 0; i < boxCount + auxCount; ++i) {
                         element = (KnuthElement) currParIterator.next();
                         if (element.isBox() && !element.isAuxiliary()) {
                             ((InlineLevelLayoutManager) element
@@ -1450,20 +1451,22 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         processUpdates(currPar, updateList);
     }
 
-    private void processUpdates(final Paragraph par, final List updateList) {
+    private void processUpdates(final Paragraph par,
+            final List<Update> updateList) {
         // create iterator for the updateList
-        final ListIterator updateListIterator = updateList.listIterator();
+        final ListIterator<Update> updateListIterator = updateList
+                .listIterator();
         Update currUpdate;
         int elementsAdded = 0;
 
         while (updateListIterator.hasNext()) {
             // ask the LMs to apply the changes and return
             // the new KnuthElements to replace the old ones
-            currUpdate = (Update) updateListIterator.next();
+            currUpdate = updateListIterator.next();
             final int fromIndex = currUpdate.firstIndex;
             int toIndex;
             if (updateListIterator.hasNext()) {
-                final Update nextUpdate = (Update) updateListIterator.next();
+                final Update nextUpdate = updateListIterator.next();
                 toIndex = nextUpdate.firstIndex;
                 updateListIterator.previous();
             } else {
@@ -1476,7 +1479,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
             if (currUpdate.inlineLM.applyChanges(par.subList(fromIndex
                     + elementsAdded, toIndex + elementsAdded))) {
                 // insert the new KnuthElements
-                final List newElements = currUpdate.inlineLM
+                final List<ListElement> newElements = currUpdate.inlineLM
                         .getChangedKnuthElements(
                                 par.subList(fromIndex + elementsAdded, toIndex
                                         + elementsAdded),
@@ -1598,8 +1601,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
         // the TLM which created the last KnuthElement in this line
         LayoutManager lastLM = null;
 
-        final KnuthSequence seq = (KnuthSequence) this.knuthParagraphs
-                .get(lbp.parIndex);
+        final KnuthSequence seq = this.knuthParagraphs.get(lbp.parIndex);
         int startElementIndex = lbp.startIndex;
         int endElementIndex = lbp.getLeafPos();
 
@@ -1608,12 +1610,12 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                         : this.textAlignmentLast, lbp.difference,
                 lbp.availableStretch, lbp.availableShrink);
         if (lbp.startIndent != 0) {
-            lineArea.addTrait(Trait.START_INDENT, new Integer(lbp.startIndent));
+            lineArea.addTrait(Trait.START_INDENT, lbp.startIndent);
         }
         lineArea.setBPD(lbp.lineHeight);
         lineArea.setIPD(lbp.lineWidth);
-        lineArea.addTrait(Trait.SPACE_BEFORE, new Integer(lbp.spaceBefore));
-        lineArea.addTrait(Trait.SPACE_AFTER, new Integer(lbp.spaceAfter));
+        lineArea.addTrait(Trait.SPACE_BEFORE, lbp.spaceBefore);
+        lineArea.addTrait(Trait.SPACE_AFTER, lbp.spaceAfter);
         this.alignmentContext.resizeLine(lbp.lineHeight, lbp.baseline);
 
         if (seq instanceof Paragraph) {
@@ -1637,11 +1639,12 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                 || this.whiteSpaceTreament == EN_IGNORE
                 || this.whiteSpaceTreament == EN_IGNORE_IF_BEFORE_LINEFEED) {
             // ignore the last element in the line if it is a KnuthGlue object
-            final ListIterator seqIterator = seq.listIterator(endElementIndex);
+            final ListIterator<ListElement> seqIterator = seq
+                    .listIterator(endElementIndex);
             final KnuthElement lastElement = (KnuthElement) seqIterator.next();
             lastLM = lastElement.getLayoutManager();
             if (lastElement.isGlue()) {
-                endElementIndex--;
+                --endElementIndex;
                 // this returns the same KnuthElement
                 seqIterator.previous();
                 if (seqIterator.hasPrevious()) {
@@ -1657,7 +1660,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
                 || this.whiteSpaceTreament == EN_IGNORE_IF_AFTER_LINEFEED) {
             // ignore KnuthGlue and KnuthPenalty objects
             // at the beginning of the line
-            final ListIterator seqIterator = seq
+            final ListIterator<ListElement> seqIterator = seq
                     .listIterator(startElementIndex);
             while (seqIterator.hasNext()
                     && !((KnuthElement) seqIterator.next()).isBox()) {
@@ -1700,12 +1703,12 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
             // re-compute indent
             final int updatedIndent = lbp.startIndent
                     + (context.getRefIPD() - lbp.lineWidth) / 2;
-            lineArea.addTrait(Trait.START_INDENT, new Integer(updatedIndent));
+            lineArea.addTrait(Trait.START_INDENT, updatedIndent);
         } else if (false && this.textAlignment == EN_END) {
             // re-compute indent
             final int updatedIndent = lbp.startIndent + context.getRefIPD()
                     - lbp.lineWidth;
-            lineArea.addTrait(Trait.START_INDENT, new Integer(updatedIndent));
+            lineArea.addTrait(Trait.START_INDENT, updatedIndent);
         }
 
         setCurrentArea(lineArea);
@@ -1745,7 +1748,7 @@ public class LineLayoutManager extends InlineStackingLayoutManager implements
          * must contain one area-generating position, which creates one line
          * area.
          */
-        final List positionList = new ArrayList(1);
+        final List<Position> positionList = new ArrayList<>(1);
         final Position innerPosition = pos.getPosition();
         positionList.add(innerPosition);
 

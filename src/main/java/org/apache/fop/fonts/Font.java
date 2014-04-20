@@ -19,6 +19,7 @@
 
 package org.apache.fop.fonts;
 
+import java.util.Collections;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -171,11 +172,11 @@ public class Font {
      *
      * @return the kerning table
      */
-    public Map getKerning() {
+    public Map<String, Map<String, Integer>> getKerning() {
         if (this.metric.hasKerningInfo()) {
             return this.metric.getKerningInfo();
         } else {
-            return java.util.Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -192,9 +193,9 @@ public class Font {
      * @return the distance to adjust for kerning, 0 if there's no kerning
      */
     public int getKernValue(final char ch1, final char ch2) {
-        final Map kernPair = (Map) getKerning().get(new Integer(ch1));
+        final Map<String, Integer> kernPair = getKerning().get(ch1);
         if (kernPair != null) {
-            final Integer width = (Integer) kernPair.get(new Integer(ch2));
+            final Integer width = kernPair.get(ch2);
             if (width != null) {
                 return width.intValue() * getFontSize() / 1000;
             }
@@ -365,7 +366,7 @@ public class Font {
         int width = 0;
         final char[] characters = new char[wordLength];
         word.getChars(0, wordLength, characters, 0);
-        for (int i = 0; i < wordLength; i++) {
+        for (int i = 0; i < wordLength; ++i) {
             width += getCharWidth(characters[i]);
         }
         return width;

@@ -248,7 +248,7 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
                 // tree
                 final NodeList nodes = structureTree
                         .getPageSequence(this.pageSequenceIndex++);
-                for (int i = 0, n = nodes.getLength(); i < n; i++) {
+                for (int i = 0, n = nodes.getLength(); i < n; ++i) {
                     final Node node = nodes.item(i);
                     new DOM2SAX(this.handler).writeFragment(node);
                 }

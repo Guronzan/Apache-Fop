@@ -64,6 +64,6 @@ public class LogUtil {
             }
             throw new FOPException(e);
         }
-        log.error(e.getMessage());
+        log.error(e.getMessage(), e);
     }
 }

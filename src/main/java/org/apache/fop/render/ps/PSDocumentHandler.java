@@ -180,7 +180,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
                 new String[] { getUserAgent().getProducer() });
         this.gen.writeDSCComment(DSCConstants.CREATION_DATE,
                 new Object[] { new java.util.Date() });
-        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL, new Integer(
+        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL, (
                 this.gen.getPSLevel()));
         this.gen.writeDSCComment(DSCConstants.PAGES,
                 new Object[] { DSCConstants.ATEND });
@@ -238,7 +238,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             // Write trailer
             this.gen.writeDSCComment(DSCConstants.TRAILER);
             writeExtensions(COMMENT_DOCUMENT_TRAILER);
-            this.gen.writeDSCComment(DSCConstants.PAGES, new Integer(
+            this.gen.writeDSCComment(DSCConstants.PAGES, (
                     this.currentPageNumber));
             new DSCCommentBoundingBox(this.documentBoundingBox)
             .generate(this.gen);
@@ -326,7 +326,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             this.gen.getResourceTracker().notifyResourceUsageOnPage(
                     PSProcSets.STD_PROCSET);
             this.gen.writeDSCComment(DSCConstants.PAGE, new Object[] { name,
-                    new Integer(this.currentPageNumber) });
+                    (this.currentPageNumber) });
 
             final double pageWidth = size.width / 1000.0;
             final double pageHeight = size.height / 1000.0;
@@ -368,7 +368,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
              * } } } }
              */
 
-            final Integer zero = new Integer(0);
+            final Integer zero = (0);
             final Rectangle2D pageBoundingBox = new Rectangle2D.Double();
             if (rotate) {
                 pageBoundingBox.setRect(0, 0, pageHeight, pageWidth);

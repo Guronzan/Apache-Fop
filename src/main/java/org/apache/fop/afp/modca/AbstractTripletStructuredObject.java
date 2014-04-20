@@ -22,7 +22,6 @@ package org.apache.fop.afp.modca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,7 @@ import org.apache.fop.afp.modca.triplets.Triplet;
 public class AbstractTripletStructuredObject extends AbstractStructuredObject {
 
     /** list of object triplets */
-    protected List/* <Triplet> */triplets = new java.util.ArrayList/* <Triplet> */();
+    protected List<Triplet> triplets = new java.util.ArrayList<>();
 
     /**
      * Returns the triplet data length
@@ -51,9 +50,7 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
     protected int getTripletDataLength() {
         int dataLength = 0;
         if (hasTriplets()) {
-            final Iterator it = this.triplets.iterator();
-            while (it.hasNext()) {
-                final AbstractTriplet triplet = (AbstractTriplet) it.next();
+            for (final Triplet triplet : this.triplets) {
                 dataLength += triplet.getDataLength();
             }
         }
@@ -91,11 +88,9 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
      * @param tripletId
      *            the triplet identifier
      */
-    private AbstractTriplet getTriplet(final byte tripletId) {
-        final Iterator it = getTriplets().iterator();
-        while (it.hasNext()) {
-            final AbstractTriplet triplet = (AbstractTriplet) it.next();
-            if (triplet.getId() == tripletId) {
+    private Triplet getTriplet(final byte tripletId) {
+        for (final Triplet triplet : this.triplets) {
+            if (((AbstractTriplet) triplet).getId() == tripletId) {
                 return triplet;
             }
         }
@@ -130,14 +125,14 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
      * @param tripletCollection
      *            a collection of triplets
      */
-    public void addTriplets(final Collection/* <Triplet> */tripletCollection) {
+    public void addTriplets(final Collection<Triplet> tripletCollection) {
         if (tripletCollection != null) {
             this.triplets.addAll(tripletCollection);
         }
     }
 
     /** @return the triplet list pertaining to this resource */
-    protected List/* <Triplet> */getTriplets() {
+    protected List<Triplet> getTriplets() {
         return this.triplets;
     }
 

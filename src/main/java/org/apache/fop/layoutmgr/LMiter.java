@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-public class LMiter implements ListIterator {
+public class LMiter implements ListIterator<LayoutManager> {
 
-    protected List listLMs;
+    protected List<LayoutManager> listLMs;
     protected int curPos = 0;
     /** The LayoutManager to which this LMiter is attached **/
     private final LayoutManager lp;
@@ -47,7 +47,7 @@ public class LMiter implements ListIterator {
     }
 
     @Override
-    public Object previous() throws NoSuchElementException {
+    public LayoutManager previous() throws NoSuchElementException {
         if (this.curPos > 0) {
             return this.listLMs.get(--this.curPos);
         } else {
@@ -56,7 +56,7 @@ public class LMiter implements ListIterator {
     }
 
     @Override
-    public Object next() throws NoSuchElementException {
+    public LayoutManager next() throws NoSuchElementException {
         if (this.curPos < this.listLMs.size()) {
             return this.listLMs.get(this.curPos++);
         } else {
@@ -75,12 +75,12 @@ public class LMiter implements ListIterator {
     }
 
     @Override
-    public void add(final Object o) throws UnsupportedOperationException {
+    public void add(final LayoutManager o) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support add");
     }
 
     @Override
-    public void set(final Object o) throws UnsupportedOperationException {
+    public void set(final LayoutManager o) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support set");
     }
 

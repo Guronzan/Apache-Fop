@@ -139,7 +139,7 @@ public class XMLHandlerRegistry {
     private XMLHandler getXMLHandler(final Renderer renderer, final List lst) {
         XMLHandler handler;
         if (lst != null) {
-            for (int i = 0, c = lst.size(); i < c; i++) {
+            for (int i = 0, c = lst.size(); i < c; ++i) {
                 // TODO Maybe add priorities later
                 handler = (XMLHandler) lst.get(i);
                 if (handler.supportsRenderer(renderer)) {

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -82,7 +83,7 @@ public class FontInfoConfigurator {
      * @throws FOPException
      *             if an exception occurs while processing the configuration
      */
-    public void configure(final List/* <EmbedFontInfo> */fontInfoList)
+    public void configure(final List<EmbedFontInfo> fontInfoList)
             throws FOPException {
         final Configuration fonts = this.cfg.getChild("fonts", false);
         if (fonts != null) {
@@ -129,15 +130,15 @@ public class FontInfoConfigurator {
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("Finished font configuration in "
-                        + (System.currentTimeMillis() - start) + "ms");
+                log.debug("Finished font configuration in {} ms",
+                        System.currentTimeMillis() - start);
             }
         }
     }
 
     private void addDirectories(final Configuration fontsCfg,
-            final FontAdder fontAdder, final List/* <URL> */fontInfoList)
-                    throws FOPException {
+            final FontAdder fontAdder, final List<EmbedFontInfo> fontInfoList)
+            throws FOPException {
         // directory (multiple font) configuration
         final Configuration[] directories = fontsCfg.getChildren("directory");
         for (final Configuration directorie : directories) {
@@ -159,7 +160,7 @@ public class FontInfoConfigurator {
             // add fonts found in directory
             final FontFileFinder fontFileFinder = new FontFileFinder(
                     recursive ? -1 : 1);
-            List/* <URL> */fontURLList;
+            List<File> fontURLList;
             try {
                 fontURLList = fontFileFinder.find(directory);
                 fontAdder.add(fontURLList, fontInfoList);
@@ -182,8 +183,8 @@ public class FontInfoConfigurator {
      *             if an exception occurs while processing the configuration
      */
     protected void addFonts(final Configuration fontsCfg,
-            final FontCache fontCache,
-            final List/* <EmbedFontInfo> */fontInfoList) throws FOPException {
+            final FontCache fontCache, final List<EmbedFontInfo> fontInfoList)
+                    throws FOPException {
         // font file (singular) configuration
         final Configuration[] font = fontsCfg.getChildren("font");
         for (final Configuration element : font) {
@@ -268,23 +269,15 @@ public class FontInfoConfigurator {
                 log.debug("Malformed Url: " + e.getMessage());
                 return null;
             }
-            if (fontFile != null) {
-                final FontInfoFinder finder = new FontInfoFinder();
-                finder.setEventListener(this.listener);
-                final EmbedFontInfo[] infos = finder.find(fontUrl,
-                        this.fontResolver, fontCache);
-                return infos[0]; // When subFont is set, only one font is
-                // returned
-            } else {
-                return null;
-            }
+            final FontInfoFinder finder = new FontInfoFinder();
+            finder.setEventListener(this.listener);
+            final EmbedFontInfo[] infos = finder.find(fontUrl,
+                    this.fontResolver, fontCache);
+            return infos[0]; // When subFont is set, only one font is
+            // returned
         }
 
-        final List/* <FontTriplet> */tripletList = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+        final List<FontTriplet> tripletList = new ArrayList<>();
         for (final Configuration element : tripletCfg) {
             final FontTriplet fontTriplet = getFontTriplet(element);
             tripletList.add(fontTriplet);
@@ -309,7 +302,7 @@ public class FontInfoConfigurator {
                     + (embedFile != null ? embedFile + ", " : "")
                     + "metric file " + embedFontInfo.getMetricsFile());
             for (int j = 0; j < tripletList.size(); ++j) {
-                final FontTriplet triplet = (FontTriplet) tripletList.get(j);
+                final FontTriplet triplet = tripletList.get(j);
                 log.debug("  Font triplet " + triplet.getName() + ", "
                         + triplet.getStyle() + ", " + triplet.getWeight());
             }

@@ -133,10 +133,8 @@ public class TTFFile {
         UnicodeMapping(final int glyphIndex, final int unicodeIndex) {
             this.unicodeIndex = unicodeIndex;
             this.glyphIndex = glyphIndex;
-            TTFFile.this.glyphToUnicodeMap.put(new Integer(glyphIndex),
-                    new Integer(unicodeIndex));
-            TTFFile.this.unicodeToGlyphMap.put(new Integer(unicodeIndex),
-                    new Integer(glyphIndex));
+            TTFFile.this.glyphToUnicodeMap.put(glyphIndex, unicodeIndex);
+            TTFFile.this.unicodeToGlyphMap.put(unicodeIndex, glyphIndex);
         }
 
         /**
@@ -217,7 +215,7 @@ public class TTFFile {
 
         // Read offset for all tables. We are only interested in the unicode
         // table
-        for (int i = 0; i < numCMap; i++) {
+        for (int i = 0; i < numCMap; ++i) {
             final int cmapPID = in.readTTFUShort();
             final int cmapEID = in.readTTFUShort();
             final long cmapOffset = in.readTTFULong();
@@ -278,23 +276,23 @@ public class TTFFile {
             final int[] cmapDeltas = new int[cmapSegCountX2 / 2];
             final int[] cmapRangeOffsets = new int[cmapSegCountX2 / 2];
 
-            for (int i = 0; i < cmapSegCountX2 / 2; i++) {
+            for (int i = 0; i < cmapSegCountX2 / 2; ++i) {
                 cmapEndCounts[i] = in.readTTFUShort();
             }
 
             in.skip(2); // Skip reservedPad
 
-            for (int i = 0; i < cmapSegCountX2 / 2; i++) {
+            for (int i = 0; i < cmapSegCountX2 / 2; ++i) {
                 cmapStartCounts[i] = in.readTTFUShort();
             }
 
-            for (int i = 0; i < cmapSegCountX2 / 2; i++) {
+            for (int i = 0; i < cmapSegCountX2 / 2; ++i) {
                 cmapDeltas[i] = in.readTTFShort();
             }
 
             // int startRangeOffset = in.getCurrentPos();
 
-            for (int i = 0; i < cmapSegCountX2 / 2; i++) {
+            for (int i = 0; i < cmapSegCountX2 / 2; ++i) {
                 cmapRangeOffsets[i] = in.readTTFUShort();
             }
 
@@ -305,7 +303,7 @@ public class TTFFile {
             // Insert the unicode id for the glyphs in mtxTab
             // and fill in the cmaps ArrayList
 
-            for (int i = 0; i < cmapStartCounts.length; i++) {
+            for (int i = 0; i < cmapStartCounts.length; ++i) {
 
                 if (log.isTraceEnabled()) {
                     log.trace(i + ": " + cmapStartCounts[i] + " - "
@@ -345,8 +343,7 @@ public class TTFFile {
 
                             this.unicodeMapping.add(new UnicodeMapping(
                                     glyphIdx, j));
-                            this.mtxTab[glyphIdx].getUnicodeIndex().add(
-                                    new Integer(j));
+                            this.mtxTab[glyphIdx].getUnicodeIndex().add(j);
 
                             if (encodingID == 0 && j >= 0xF020 && j <= 0xF0FF) {
                                 // Experimental: Mapping 0xF020-0xF0FF to
@@ -361,13 +358,12 @@ public class TTFFile {
                                     this.unicodeMapping.add(new UnicodeMapping(
                                             glyphIdx, mapped));
                                     this.mtxTab[glyphIdx].getUnicodeIndex()
-                                    .add(new Integer(mapped));
+                                    .add(mapped);
                                 }
                             }
 
                             // Also add winAnsiWidth
-                            final List<Integer> v = this.ansiIndex
-                                    .get(new Integer(j));
+                            final List<Integer> v = this.ansiIndex.get(j);
                             if (v != null) {
                                 final Iterator<Integer> e = v.listIterator();
                                 while (e.hasNext()) {
@@ -394,8 +390,7 @@ public class TTFFile {
                             glyphIdx = j + cmapDeltas[i] & 0xffff;
 
                             if (glyphIdx < this.mtxTab.length) {
-                                this.mtxTab[glyphIdx].getUnicodeIndex().add(
-                                        new Integer(j));
+                                this.mtxTab[glyphIdx].getUnicodeIndex().add(j);
                             } else {
                                 log.debug("Glyph " + glyphIdx
                                         + " out of range: "
@@ -405,8 +400,7 @@ public class TTFFile {
                             this.unicodeMapping.add(new UnicodeMapping(
                                     glyphIdx, j));
                             if (glyphIdx < this.mtxTab.length) {
-                                this.mtxTab[glyphIdx].getUnicodeIndex().add(
-                                        new Integer(j));
+                                this.mtxTab[glyphIdx].getUnicodeIndex().add(j);
                             } else {
                                 log.debug("Glyph " + glyphIdx
                                         + " out of range: "
@@ -414,8 +408,7 @@ public class TTFFile {
                             }
 
                             // Also add winAnsiWidth
-                            final List<Integer> v = this.ansiIndex
-                                    .get(new Integer(j));
+                            final List<Integer> v = this.ansiIndex.get(j);
                             if (v != null) {
                                 for (final Integer aIdx : v) {
                                     this.ansiWidth[aIdx.intValue()] = this.mtxTab[glyphIdx]
@@ -464,7 +457,7 @@ public class TTFFile {
      */
     private void initAnsiWidths() {
         this.ansiWidth = new int[256];
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; ++i) {
             this.ansiWidth[i] = this.mtxTab[0].getWx();
         }
 
@@ -472,8 +465,8 @@ public class TTFFile {
         // Can't just index the winAnsiEncoding when inserting widths
         // same char (eg bullet) is repeated more than one place
         this.ansiIndex = new java.util.HashMap<>();
-        for (int i = 32; i < Glyphs.WINANSI_ENCODING.length; i++) {
-            final Integer ansi = new Integer(i);
+        for (int i = 32; i < Glyphs.WINANSI_ENCODING.length; ++i) {
+            final Integer ansi = i;
             final Integer uni = new Integer(Glyphs.WINANSI_ENCODING[i]);
 
             List<Integer> v = this.ansiIndex.get(uni);
@@ -762,7 +755,7 @@ public class TTFFile {
      */
     public int[] getWidths() {
         final int[] wx = new int[this.mtxTab.length];
-        for (int i = 0; i < wx.length; i++) {
+        for (int i = 0; i < wx.length; ++i) {
             wx[i] = convertTTFUnit2PDFUnit(this.mtxTab[i].getWx());
         }
 
@@ -854,7 +847,7 @@ public class TTFFile {
         this.dirTabs = new java.util.HashMap<>();
         final TTFDirTabEntry[] pd = new TTFDirTabEntry[ntabs];
         log.debug("Reading " + ntabs + " dir tables");
-        for (int i = 0; i < ntabs; i++) {
+        for (int i = 0; i < ntabs; ++i) {
             pd[i] = new TTFDirTabEntry();
             this.dirTabs.put(pd[i].read(in), pd[i]);
         }
@@ -958,10 +951,10 @@ public class TTFFile {
         if (TRACE_ENABLED) {
             log.debug("*** Widths array: \n");
         }
-        for (int i = 0; i < mtxSize; i++) {
+        for (int i = 0; i < mtxSize; ++i) {
             this.mtxTab[i] = new TTFMtxEntry();
         }
-        for (int i = 0; i < this.nhmtx; i++) {
+        for (int i = 0; i < this.nhmtx; ++i) {
             this.mtxTab[i].setWx(in.readTTFUShort());
             this.mtxTab[i].setLsb(in.readTTFUShort());
 
@@ -977,7 +970,7 @@ public class TTFFile {
         if (this.nhmtx < mtxSize) {
             // Fill in the missing widths
             final int lastWidth = this.mtxTab[this.nhmtx - 1].getWx();
-            for (int i = this.nhmtx; i < mtxSize; i++) {
+            for (int i = this.nhmtx; i < mtxSize; ++i) {
                 this.mtxTab[i].setWx(lastWidth);
                 this.mtxTab[i].setLsb(in.readTTFUShort());
             }
@@ -1004,7 +997,7 @@ public class TTFFile {
         switch (this.postFormat) {
         case 0x00010000:
             log.debug("PostScript format 1");
-            for (int i = 0; i < Glyphs.TEX8R_GLYPH_NAMES.length; i++) {
+            for (int i = 0; i < Glyphs.TEX8R_GLYPH_NAMES.length; ++i) {
                 this.mtxTab[i].setName(Glyphs.TEX8R_GLYPH_NAMES[i]);
             }
             break;
@@ -1016,7 +1009,7 @@ public class TTFFile {
             final int l = in.readTTFUShort();
 
             // Read indexes
-            for (int i = 0; i < l; i++) {
+            for (int i = 0; i < l; ++i) {
                 this.mtxTab[i].setIndex(in.readTTFUShort());
 
                 if (this.mtxTab[i].getIndex() > 257) {
@@ -1037,12 +1030,12 @@ public class TTFFile {
                         + " glyphnames, that are not in the standard Macintosh"
                         + " set. Total number of glyphs=" + l);
             }
-            for (int i = 0; i < psGlyphsBuffer.length; i++) {
+            for (int i = 0; i < psGlyphsBuffer.length; ++i) {
                 psGlyphsBuffer[i] = in.readTTFString(in.readTTFUByte());
             }
 
             // Set glyph names
-            for (int i = 0; i < l; i++) {
+            for (int i = 0; i < l; ++i) {
                 if (this.mtxTab[i].getIndex() < NMACGLYPHS) {
                     this.mtxTab[i]
                             .setName(Glyphs.TEX8R_GLYPH_NAMES[this.mtxTab[i]
@@ -1158,7 +1151,7 @@ public class TTFFile {
                     "'loca' table not found, happens when the font file doesn't"
                             + " contain TrueType outlines (trying to read an OpenType CFF font maybe?)");
         }
-        for (int i = 0; i < this.numberOfGlyphs; i++) {
+        for (int i = 0; i < this.numberOfGlyphs; ++i) {
             this.mtxTab[i].setOffset(this.locaFormat == 1 ? in.readTTFULong()
                     : in.readTTFUShort() << 1);
         }
@@ -1179,7 +1172,7 @@ public class TTFFile {
         if (dirTab == null) {
             throw new IOException("glyf table not found, cannot continue");
         }
-        for (int i = 0; i < this.numberOfGlyphs - 1; i++) {
+        for (int i = 0; i < this.numberOfGlyphs - 1; ++i) {
             if (this.mtxTab[i].getOffset() != this.mtxTab[i + 1].getOffset()) {
                 in.seekSet(dirTab.getOffset() + this.mtxTab[i].getOffset());
                 in.skip(2);
@@ -1192,7 +1185,7 @@ public class TTFFile {
         }
 
         final long n = this.dirTabs.get("glyf").getOffset();
-        for (int i = 0; i < this.numberOfGlyphs; i++) {
+        for (int i = 0; i < this.numberOfGlyphs; ++i) {
             if (i + 1 >= this.mtxTab.length
                     || this.mtxTab[i].getOffset() != this.mtxTab[i + 1]
                             .getOffset()) {
@@ -1496,8 +1489,7 @@ public class TTFFile {
                             if (adjTab == null) {
                                 adjTab = new java.util.HashMap<>();
                             }
-                            adjTab.put(u2, new Integer(
-                                    convertTTFUnit2PDFUnit(kpx)));
+                            adjTab.put(u2, convertTTFUnit2PDFUnit(kpx));
                             this.kerningTab.put(iObj, adjTab);
                         }
                     }
@@ -1584,7 +1576,7 @@ public class TTFFile {
             final int numDirectories = (int) in.readTTFULong();
             // int numDirectories=in.readTTFUShort();
             final long[] dirOffsets = new long[numDirectories];
-            for (int i = 0; i < numDirectories; i++) {
+            for (int i = 0; i < numDirectories; ++i) {
                 dirOffsets[i] = in.readTTFULong();
             }
 
@@ -1598,7 +1590,7 @@ public class TTFFile {
             // Iterate through all name tables even if font
             // Is found, just to show all the names
             long dirTabOffset = 0;
-            for (int i = 0; i < numDirectories; i++) {
+            for (int i = 0; i < numDirectories; ++i) {
                 in.seekSet(dirOffsets[i]);
                 readDirTabs(in);
 
@@ -1650,7 +1642,7 @@ public class TTFFile {
             // Read directory offsets
             final int numDirectories = (int) in.readTTFULong();
             final long[] dirOffsets = new long[numDirectories];
-            for (int i = 0; i < numDirectories; i++) {
+            for (int i = 0; i < numDirectories; ++i) {
                 dirOffsets[i] = in.readTTFULong();
             }
 
@@ -1660,7 +1652,7 @@ public class TTFFile {
                 log.debug("Containing the following fonts: ");
             }
 
-            for (int i = 0; i < numDirectories; i++) {
+            for (int i = 0; i < numDirectories; ++i) {
                 in.seekSet(dirOffsets[i]);
                 readDirTabs(in);
 
@@ -1691,9 +1683,9 @@ public class TTFFile {
      */
     private Integer[] unicodeToWinAnsi(final int unicode) {
         final List<Integer> ret = new java.util.ArrayList<>();
-        for (int i = 32; i < Glyphs.WINANSI_ENCODING.length; i++) {
+        for (int i = 32; i < Glyphs.WINANSI_ENCODING.length; ++i) {
             if (unicode == Glyphs.WINANSI_ENCODING[i]) {
-                ret.add(new Integer(i));
+                ret.add(i);
             }
         }
         return ret.toArray(new Integer[0]);
@@ -1703,32 +1695,27 @@ public class TTFFile {
      * Dumps a few informational values to System.out.
      */
     public void printStuff() {
-        System.out.println("Font name:   " + this.postScriptName);
-        System.out.println("Full name:   " + this.fullName);
-        System.out.println("Family name: " + this.familyNames);
-        System.out.println("Subfamily name: " + this.subFamilyName);
-        System.out.println("Notice:      " + this.notice);
-        System.out.println("xHeight:     "
-                + convertTTFUnit2PDFUnit(this.xHeight));
-        System.out.println("capheight:   "
-                + convertTTFUnit2PDFUnit(this.capHeight));
+        log.info("Font name:   " + this.postScriptName);
+        log.info("Full name:   " + this.fullName);
+        log.info("Family name: " + this.familyNames);
+        log.info("Subfamily name: " + this.subFamilyName);
+        log.info("Notice:      " + this.notice);
+        log.info("xHeight:     " + convertTTFUnit2PDFUnit(this.xHeight));
+        log.info("capheight:   " + convertTTFUnit2PDFUnit(this.capHeight));
 
         final int italic = (int) (this.italicAngle >> 16);
-        System.out.println("Italic:      " + italic);
+        log.info("Italic:      " + italic);
         System.out
         .print("ItalicAngle: " + (short) (this.italicAngle / 0x10000));
         if (this.italicAngle % 0x10000 > 0) {
             System.out.print("." + (short) (this.italicAngle % 0x10000 * 1000)
                     / 0x10000);
         }
-        System.out.println();
-        System.out.println("Ascender:    "
-                + convertTTFUnit2PDFUnit(this.ascender));
-        System.out.println("Descender:   "
-                + convertTTFUnit2PDFUnit(this.descender));
-        System.out.println("FontBBox:    ["
-                + convertTTFUnit2PDFUnit(this.fontBBox1) + " "
-                + convertTTFUnit2PDFUnit(this.fontBBox2) + " "
+        log.info("");
+        log.info("Ascender:    " + convertTTFUnit2PDFUnit(this.ascender));
+        log.info("Descender:   " + convertTTFUnit2PDFUnit(this.descender));
+        log.info("FontBBox:    [" + convertTTFUnit2PDFUnit(this.fontBBox1)
+                + " " + convertTTFUnit2PDFUnit(this.fontBBox2) + " "
                 + convertTTFUnit2PDFUnit(this.fontBBox3) + " "
                 + convertTTFUnit2PDFUnit(this.fontBBox4) + "]");
     }
@@ -1745,7 +1732,7 @@ public class TTFFile {
      * @return unicode code point
      */
     private Integer glyphToUnicode(final int glyphIndex) {
-        return this.glyphToUnicodeMap.get(new Integer(glyphIndex));
+        return this.glyphToUnicodeMap.get(glyphIndex);
     }
 
     /**
@@ -1758,8 +1745,7 @@ public class TTFFile {
      *             if unicodeIndex not found
      */
     private Integer unicodeToGlyph(final int unicodeIndex) throws IOException {
-        final Integer result = this.unicodeToGlyphMap.get(new Integer(
-                unicodeIndex));
+        final Integer result = this.unicodeToGlyphMap.get(unicodeIndex);
         if (result == null) {
             throw new IOException("Glyph index not found for unicode value "
                     + unicodeIndex);

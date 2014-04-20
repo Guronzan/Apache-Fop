@@ -20,8 +20,10 @@
 package org.apache.fop.fonts.apps;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -58,41 +60,30 @@ public class TTFReader extends AbstractFontReader {
     }
 
     private static void displayUsage() {
-        System.out.println("java " + TTFReader.class.getName()
+        log.info("java " + TTFReader.class.getName()
                 + " [options] fontfile.ttf xmlfile.xml");
-        System.out.println();
-        System.out.println("where options can be:");
-        System.out.println("-d  Debug mode");
-        System.out.println("-q  Quiet mode");
-        System.out.println("-enc ansi");
-        System.out
-        .println("    With this option you create a WinAnsi encoded font.");
-        System.out.println("    The default is to create a CID keyed font.");
-        System.out
-        .println("    If you're not going to use characters outside the");
-        System.out
-        .println("    pdfencoding range (almost the same as iso-8889-1)");
-        System.out.println("    you can add this option.");
-        System.out.println("-ttcname <fontname>");
-        System.out
-        .println("    If you're reading data from a TrueType Collection");
-        System.out
-        .println("    (.ttc file) you must specify which font from the");
-        System.out
-        .println("    collection you will read metrics from. If you read");
-        System.out
-        .println("    from a .ttc file without this option, the fontnames");
-        System.out.println("    will be listed for you.");
-        System.out.println(" -fn <fontname>");
-        System.out
-        .println("    default is to use the fontname in the .ttf file, but");
-        System.out
-        .println("    you can override that name to make sure that the");
-        System.out
-        .println("    embedded font is used (if you're embedding fonts)");
-        System.out
-        .println("    instead of installed fonts when viewing documents ");
-        System.out.println("    with Acrobat Reader.");
+        log.info("");
+        log.info("where options can be:");
+        log.info("-d  Debug mode");
+        log.info("-q  Quiet mode");
+        log.info("-enc ansi");
+        log.info("    With this option you create a WinAnsi encoded font.");
+        log.info("    The default is to create a CID keyed font.");
+        log.info("    If you're not going to use characters outside the");
+        log.info("    pdfencoding range (almost the same as iso-8889-1)");
+        log.info("    you can add this option.");
+        log.info("-ttcname <fontname>");
+        log.info("    If you're reading data from a TrueType Collection");
+        log.info("    (.ttc file) you must specify which font from the");
+        log.info("    collection you will read metrics from. If you read");
+        log.info("    from a .ttc file without this option, the fontnames");
+        log.info("    will be listed for you.");
+        log.info(" -fn <fontname>");
+        log.info("    default is to use the fontname in the .ttf file, but");
+        log.info("    you can override that name to make sure that the");
+        log.info("    embedded font is used (if you're embedding fonts)");
+        log.info("    instead of installed fonts when viewing documents ");
+        log.info("    with Acrobat Reader.");
     }
 
     /**
@@ -121,7 +112,7 @@ public class TTFReader extends AbstractFontReader {
         String ttcName = null;
         boolean isCid = true;
 
-        final Map options = new java.util.HashMap();
+        final Map<String, String> options = new HashMap<>();
         final String[] arguments = parseArguments(options, args);
 
         final TTFReader app = new TTFReader();
@@ -129,30 +120,30 @@ public class TTFReader extends AbstractFontReader {
         log.info("TTF Reader for Apache FOP " + Version.getVersion() + "\n");
 
         if (options.get("-enc") != null) {
-            final String enc = (String) options.get("-enc");
+            final String enc = options.get("-enc");
             if ("ansi".equals(enc)) {
                 isCid = false;
             }
         }
 
         if (options.get("-ttcname") != null) {
-            ttcName = (String) options.get("-ttcname");
+            ttcName = options.get("-ttcname");
         }
 
         if (options.get("-ef") != null) {
-            embFile = (String) options.get("-ef");
+            embFile = options.get("-ef");
         }
 
         if (options.get("-er") != null) {
-            embResource = (String) options.get("-er");
+            embResource = options.get("-er");
         }
 
         if (options.get("-fn") != null) {
-            fontName = (String) options.get("-fn");
+            fontName = options.get("-fn");
         }
 
         if (options.get("-cn") != null) {
-            className = (String) options.get("-cn");
+            className = options.get("-cn");
         }
 
         if (arguments.length != 2 || options.get("-h") != null
@@ -286,9 +277,9 @@ public class TTFReader extends AbstractFontReader {
             root.appendChild(el);
             el.appendChild(doc.createTextNode(ttf.getFullName()));
         }
-        final Set familyNames = ttf.getFamilyNames();
+        final Set<String> familyNames = ttf.getFamilyNames();
         if (familyNames.size() > 0) {
-            final String familyName = (String) familyNames.iterator().next();
+            final String familyName = familyNames.iterator().next();
             el = doc.createElement("family-name");
             root.appendChild(el);
             el.appendChild(doc.createTextNode(familyName));
@@ -325,7 +316,7 @@ public class TTFReader extends AbstractFontReader {
         root.appendChild(bbox);
         final int[] bb = ttf.getFontBBox();
         final String[] names = { "left", "bottom", "right", "top" };
-        for (int i = 0; i < names.length; i++) {
+        for (int i = 0; i < names.length; ++i) {
             el = doc.createElement(names[i]);
             bbox.appendChild(el);
             el.appendChild(doc.createTextNode(String.valueOf(bb[i])));
@@ -387,9 +378,10 @@ public class TTFReader extends AbstractFontReader {
 
         el = doc.createElement("bfranges");
         mel.appendChild(el);
-        final Iterator iter = ttf.getCMaps().listIterator();
+
+        final Iterator<TTFCmapEntry> iter = ttf.getCMaps().listIterator();
         while (iter.hasNext()) {
-            final TTFCmapEntry ce = (TTFCmapEntry) iter.next();
+            final TTFCmapEntry ce = iter.next();
             final Element el2 = doc.createElement("bf");
             el.appendChild(el2);
             el2.setAttribute("us", String.valueOf(ce.getUnicodeStart()));
@@ -432,7 +424,7 @@ public class TTFReader extends AbstractFontReader {
         final Element widths = doc.createElement("widths");
         sel.appendChild(widths);
 
-        for (short i = ttf.getFirstChar(); i <= ttf.getLastChar(); i++) {
+        for (short i = ttf.getFirstChar(); i <= ttf.getLastChar(); ++i) {
             el = doc.createElement("char");
             widths.appendChild(el);
             el.setAttribute("idx", String.valueOf(i));
@@ -446,7 +438,7 @@ public class TTFReader extends AbstractFontReader {
         final Document doc = parent.getOwnerDocument();
 
         // Get kerning
-        Iterator iter;
+        Iterator<Integer> iter;
         if (isCid) {
             iter = ttf.getKerning().keySet().iterator();
         } else {
@@ -454,27 +446,26 @@ public class TTFReader extends AbstractFontReader {
         }
 
         while (iter.hasNext()) {
-            final Integer kpx1 = (Integer) iter.next();
+            final Integer kpx1 = iter.next();
 
             el = doc.createElement("kerning");
             el.setAttribute("kpx1", kpx1.toString());
             parent.appendChild(el);
             Element el2 = null;
 
-            Map h2;
+            Map<Integer, Integer> h2;
             if (isCid) {
                 h2 = ttf.getKerning().get(kpx1);
             } else {
                 h2 = ttf.getAnsiKerning().get(kpx1);
             }
 
-            final Iterator iter2 = h2.keySet().iterator();
-            while (iter2.hasNext()) {
-                final Integer kpx2 = (Integer) iter2.next();
+            for (final Entry<Integer, Integer> entry : h2.entrySet()) {
+                final Integer kpx2 = entry.getKey();
                 if (isCid || kpx2.intValue() < 256) {
                     el2 = doc.createElement("pair");
                     el2.setAttribute("kpx2", kpx2.toString());
-                    final Integer val = (Integer) h2.get(kpx2);
+                    final Integer val = entry.getValue();
                     el2.setAttribute("kern", val.toString());
                     el.appendChild(el2);
                 }

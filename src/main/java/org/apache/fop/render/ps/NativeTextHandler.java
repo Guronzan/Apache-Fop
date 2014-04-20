@@ -158,7 +158,7 @@ public class NativeTextHandler implements PSTextHandler {
 
     private void escapeText(final String text, final StringBuilder target) {
         final int l = text.length();
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char ch = text.charAt(i);
             final char mch = this.font.mapChar(ch);
             PSGenerator.escapeChar(mch, target);

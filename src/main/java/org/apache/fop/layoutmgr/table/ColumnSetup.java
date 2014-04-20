@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr.table;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -40,8 +41,8 @@ import org.apache.fop.fo.properties.TableColLength;
 public class ColumnSetup {
 
     private final Table table;
-    private final List columns = new java.util.ArrayList();
-    private final List colWidths = new java.util.ArrayList();
+    private final List<TableColumn> columns = new ArrayList<>();
+    private final List<Object> colWidths = new ArrayList<>();
 
     private int maxColIndexReferenced = 0;
 
@@ -58,17 +59,17 @@ public class ColumnSetup {
     }
 
     private void prepareColumns() {
-        final List rawCols = this.table.getColumns();
+        final List<TableColumn> rawCols = this.table.getColumns();
         if (rawCols != null) {
             int colnum = 1;
-            final ListIterator iter = rawCols.listIterator();
+            final ListIterator<TableColumn> iter = rawCols.listIterator();
             while (iter.hasNext()) {
-                final TableColumn col = (TableColumn) iter.next();
+                final TableColumn col = iter.next();
                 if (col == null) {
                     continue;
                 }
                 colnum = col.getColumnNumber();
-                for (int i = 0; i < col.getNumberColumnsRepeated(); i++) {
+                for (int i = 0; i < col.getNumberColumnsRepeated(); ++i) {
                     while (colnum > this.columns.size()) {
                         this.columns.add(null);
                     }
@@ -79,16 +80,17 @@ public class ColumnSetup {
             // Post-processing the list (looking for gaps)
             // TODO The following block could possibly be removed
             int pos = 1;
-            final ListIterator ppIter = this.columns.listIterator();
+            final ListIterator<TableColumn> ppIter = this.columns
+                    .listIterator();
             while (ppIter.hasNext()) {
-                final TableColumn col = (TableColumn) ppIter.next();
+                final TableColumn col = ppIter.next();
                 if (col == null) {
                     assert false; // Gaps are filled earlier by
                     // fo.flow.table.Table.finalizeColumns()
                     // log.error("Found a gap in the table-columns at position "
                     // + pos);
                 }
-                pos++;
+                ++pos;
             }
         }
     }
@@ -127,9 +129,9 @@ public class ColumnSetup {
                     }
                 }
             }
-            return (TableColumn) this.columns.get(size - 1);
+            return this.columns.get(size - 1);
         } else {
-            return (TableColumn) this.columns.get(index - 1);
+            return this.columns.get(index - 1);
         }
     }
 
@@ -149,18 +151,9 @@ public class ColumnSetup {
     }
 
     /** @return an Iterator over all columns */
-    public Iterator iterator() {
+    public Iterator<TableColumn> iterator() {
         return this.columns.iterator();
     }
-
-    /*
-     * private void createColumnsFromFirstRow() { //TODO Create oldColumns from
-     * first row here //--> rule 2 in "fixed table layout", see CSS2, 17.5.2
-     * //Alternative: extend oldColumns on-the-fly, but in this case we need the
-     * //new property evaluation context so proportional-column-width() works
-     * //correctly. if (columns.size() == 0) {
-     * this.columns.add(table.getDefaultColumn()); } }
-     */
 
     /**
      * Initializes the column's widths
@@ -173,7 +166,7 @@ public class ColumnSetup {
 
         for (int i = this.columns.size(); --i >= 0;) {
             if (this.columns.get(i) != null) {
-                col = (TableColumn) this.columns.get(i);
+                col = this.columns.get(i);
                 colWidth = col.getColumnWidth();
                 this.colWidths.add(0, colWidth);
             }
@@ -215,8 +208,8 @@ public class ColumnSetup {
          * out the total number of factors to use to distribute the remaining
          * space (if any)
          */
-        for (final Iterator i = this.colWidths.iterator(); i.hasNext();) {
-            final Length colWidth = (Length) i.next();
+        for (final Object object : this.colWidths) {
+            final Length colWidth = (Length) object;
             if (colWidth != null) {
                 sumCols += colWidth.getValue(percentBaseContext);
                 if (colWidth instanceof RelativeNumericProperty) {
@@ -275,7 +268,7 @@ public class ColumnSetup {
      */
     public int getSumOfColumnWidths(final PercentBaseContext context) {
         int sum = 0;
-        for (int i = 1, c = getColumnCount(); i <= c; i++) {
+        for (int i = 1, c = getColumnCount(); i <= c; ++i) {
             int effIndex = i;
             if (i >= this.colWidths.size()) {
                 effIndex = this.colWidths.size() - 1;

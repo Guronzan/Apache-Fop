@@ -139,7 +139,7 @@ SubSequenceSpecifier {
             this.numberConsumed++;
         }
 
-        for (int i = 0; i < this.conditionalPageMasterRefs.size(); i++) {
+        for (int i = 0; i < this.conditionalPageMasterRefs.size(); ++i) {
             final ConditionalPageMasterReference cpmr = (ConditionalPageMasterReference) this.conditionalPageMasterRefs
                     .get(i);
             if (cpmr.isValid(isOddPage, isFirstPage, isLastPage, isBlankPage)) {

@@ -70,7 +70,7 @@ public class SimpleSingleByteEncoding implements SingleByteEncoding {
     public String[] getCharNameMap() {
         final String[] map = new String[getSize()];
         Arrays.fill(map, Glyphs.NOTDEF);
-        for (int i = getFirstChar(); i <= getLastChar(); i++) {
+        for (int i = getFirstChar(); i <= getLastChar(); ++i) {
             final NamedCharacter ch = (NamedCharacter) this.mapping.get(i - 1);
             map[i] = ch.getName();
         }
@@ -160,10 +160,10 @@ public class SimpleSingleByteEncoding implements SingleByteEncoding {
     @Override
     public char[] getUnicodeCharMap() {
         final char[] map = new char[getLastChar() + 1];
-        for (int i = 0; i < getFirstChar(); i++) {
+        for (int i = 0; i < getFirstChar(); ++i) {
             map[i] = CharUtilities.NOT_A_CHARACTER;
         }
-        for (int i = getFirstChar(); i <= getLastChar(); i++) {
+        for (int i = getFirstChar(); i <= getLastChar(); ++i) {
             map[i] = getCharacterForIndex(i).getSingleUnicodeValue();
         }
         return map;

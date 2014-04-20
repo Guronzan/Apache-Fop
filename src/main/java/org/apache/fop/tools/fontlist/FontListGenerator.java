@@ -19,12 +19,16 @@
 
 package org.apache.fop.tools.fontlist;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -45,7 +49,7 @@ public class FontListGenerator {
      * List all fonts configured for a particular output format (identified by
      * MIME type). The sorted map returned looks like this:
      * <code>SortedMap&lt;String/font-family, List&lt;{@link FontSpec}&gt;&gt;</code>
-     * 
+     *
      * @param fopFactory
      *            the FOP factory (already configured)
      * @param mime
@@ -57,11 +61,11 @@ public class FontListGenerator {
      * @throws FOPException
      *             if an error occurs setting up the fonts
      */
-    public SortedMap listFonts(final FopFactory fopFactory, final String mime,
+    public SortedMap<String, List<FontSpec>> listFonts(
+            final FopFactory fopFactory, final String mime,
             final FontEventListener listener) throws FOPException {
         final FontInfo fontInfo = setupFonts(fopFactory, mime, listener);
-        final SortedMap fontFamilies = buildFamilyMap(fontInfo);
-        return fontFamilies;
+        return buildFamilyMap(fontInfo);
     }
 
     private FontInfo setupFonts(final FopFactory fopFactory, final String mime,
@@ -80,40 +84,39 @@ public class FontListGenerator {
         return fontInfo;
     }
 
-    private SortedMap buildFamilyMap(final FontInfo fontInfo) {
-        final Map fonts = fontInfo.getFonts();
-        final Set keyBag = new java.util.HashSet(fonts.keySet());
+    private SortedMap<String, List<FontSpec>> buildFamilyMap(
+            final FontInfo fontInfo) {
+        final Map<String, FontMetrics> fonts = fontInfo.getFonts();
+        final Set<String> keyBag = new HashSet<>(fonts.keySet());
 
-        final Map keys = new java.util.HashMap();
-        final SortedMap fontFamilies = new java.util.TreeMap();
-        // SortedMap<String/font-family, List<FontSpec>>
+        final Map<String, FontSpec> keys = new HashMap<>();
+        final SortedMap<String, List<FontSpec>> fontFamilies = new TreeMap<>();
 
-        final Iterator iter = fontInfo.getFontTriplets().entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final FontTriplet triplet = (FontTriplet) entry.getKey();
-            final String key = (String) entry.getValue();
+        for (final Entry<FontTriplet, String> entry : fontInfo
+                .getFontTriplets().entrySet()) {
+            final FontTriplet triplet = entry.getKey();
+            final String key = entry.getValue();
             FontSpec container;
             if (keyBag.contains(key)) {
                 keyBag.remove(key);
 
-                final FontMetrics metrics = (FontMetrics) fonts.get(key);
+                final FontMetrics metrics = fonts.get(key);
 
                 container = new FontSpec(key, metrics);
                 container.addFamilyNames(metrics.getFamilyNames());
                 keys.put(key, container);
                 final String firstFamilyName = (String) container
                         .getFamilyNames().first();
-                List containers = (List) fontFamilies.get(firstFamilyName);
+                List<FontSpec> containers = fontFamilies.get(firstFamilyName);
                 if (containers == null) {
-                    containers = new java.util.ArrayList();
+                    containers = new ArrayList<>();
                     fontFamilies.put(firstFamilyName, containers);
                 }
                 containers.add(container);
                 Collections.sort(containers);
 
             } else {
-                container = (FontSpec) keys.get(key);
+                container = keys.get(key);
             }
             container.addTriplet(triplet);
         }

@@ -224,7 +224,7 @@ IRtfListContainer, IRtfParagraphContainer {
         getRtfListStyle().writeListPrefix(this);
 
         writeGroupMark(false);
-        writeOneAttribute(RtfListTable.LIST_NUMBER, new Integer(this.number));
+        writeOneAttribute(RtfListTable.LIST_NUMBER, (this.number));
     }
 
     /**

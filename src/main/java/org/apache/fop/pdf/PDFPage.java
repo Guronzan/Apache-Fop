@@ -159,7 +159,7 @@ public class PDFPage extends PDFResourceContext {
      *            the transition dictionary
      */
     public void setTransition(final int dur, final TransitionDictionary tr) {
-        put("Dur", new Integer(dur));
+        put("Dur", (dur));
         put("Trans", tr);
     }
 

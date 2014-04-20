@@ -30,6 +30,7 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.fo.expr.PropertyException;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.apache.fop.fo.flow.Marker;
 import org.apache.fop.fo.properties.PropertyMaker;
@@ -136,7 +137,7 @@ public abstract class FObj extends FONode implements Constants {
      */
     @Override
     protected PropertyList createPropertyList(final PropertyList parent,
-            final FOEventHandler foEventHandler) throws FOPException {
+            final FOEventHandler foEventHandler) {
         return getBuilderContext().getPropertyListMaker().make(this, parent);
     }
 
@@ -146,11 +147,12 @@ public abstract class FObj extends FONode implements Constants {
      *
      * @param pList
      *            the PropertyList where the properties can be found.
+     * @throws PropertyException
      * @throws FOPException
-     *             if there is a problem binding the values
      */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) throws PropertyException,
+            FOPException {
         this.id = pList.get(PR_ID).getString();
     }
 
@@ -199,7 +201,11 @@ public abstract class FObj extends FONode implements Constants {
         return this.isOutOfLineFODescendant;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws FOPException
+     */
     @Override
     protected void addChildNode(final FONode child) throws FOPException {
         if (child.getNameId() == FO_MARKER) {
@@ -358,8 +364,8 @@ public abstract class FObj extends FONode implements Constants {
         final String mcname = marker.getMarkerClassName();
         if (this.firstChild != null) {
             // check for empty childNodes
-            for (final Iterator iter = getChildNodes(); iter.hasNext();) {
-                final FONode node = (FONode) iter.next();
+            for (final Iterator<FONode> iter = getChildNodes(); iter.hasNext();) {
+                final FONode node = iter.next();
                 if (node instanceof FObj || node instanceof FOText
                         && ((FOText) node).willCreateArea()) {
                     getFOValidationEventProducer().markerNotInitialChild(this,
@@ -430,13 +436,13 @@ public abstract class FObj extends FONode implements Constants {
         if (getLocator() != null) {
             return super.gatherContextInfo();
         } else {
-            final ListIterator iter = getChildNodes();
+            final ListIterator<FONode> iter = getChildNodes();
             if (iter == null) {
                 return null;
             }
             final StringBuilder sb = new StringBuilder();
             while (iter.hasNext()) {
-                final FONode node = (FONode) iter.next();
+                final FONode node = iter.next();
                 final String s = node.gatherContextInfo();
                 if (s != null) {
                     if (sb.length() > 0) {
@@ -689,7 +695,7 @@ public abstract class FObj extends FONode implements Constants {
 
         /** {@inheritDoc} */
         @Override
-        public Object next() {
+        public FONode next() {
             if (this.currentNode != null) {
                 if (this.currentIndex != 0) {
                     if (this.currentNode.siblings != null
@@ -709,7 +715,7 @@ public abstract class FObj extends FONode implements Constants {
 
         /** {@inheritDoc} */
         @Override
-        public Object previous() {
+        public FONode previous() {
             if (this.currentNode.siblings != null
                     && this.currentNode.siblings[0] != null) {
                 this.currentIndex--;
@@ -723,9 +729,9 @@ public abstract class FObj extends FONode implements Constants {
 
         /** {@inheritDoc} */
         @Override
-        public void set(final Object o) {
+        public void set(final FONode o) {
             if ((this.flags & F_SET_ALLOWED) == F_SET_ALLOWED) {
-                final FONode newNode = (FONode) o;
+                final FONode newNode = o;
                 if (this.currentNode == this.parentNode.firstChild) {
                     this.parentNode.firstChild = newNode;
                 } else {
@@ -742,8 +748,8 @@ public abstract class FObj extends FONode implements Constants {
 
         /** {@inheritDoc} */
         @Override
-        public void add(final Object o) {
-            final FONode newNode = (FONode) o;
+        public void add(final FONode o) {
+            final FONode newNode = o;
             if (this.currentIndex == -1) {
                 if (this.currentNode != null) {
                     FONode.attachSiblings(newNode, this.currentNode);
@@ -754,10 +760,9 @@ public abstract class FObj extends FONode implements Constants {
             } else {
                 if (this.currentNode.siblings != null
                         && this.currentNode.siblings[1] != null) {
-                    FONode.attachSiblings((FONode) o,
-                            this.currentNode.siblings[1]);
+                    FONode.attachSiblings(o, this.currentNode.siblings[1]);
                 }
-                FONode.attachSiblings(this.currentNode, (FONode) o);
+                FONode.attachSiblings(this.currentNode, o);
             }
             this.flags &= F_NONE_ALLOWED;
         }
@@ -833,13 +838,13 @@ public abstract class FObj extends FONode implements Constants {
         /** {@inheritDoc} */
         @Override
         public FONode nextNode() {
-            return (FONode) next();
+            return next();
         }
 
         /** {@inheritDoc} */
         @Override
         public FONode previousNode() {
-            return (FONode) previous();
+            return previous();
         }
     }
 }

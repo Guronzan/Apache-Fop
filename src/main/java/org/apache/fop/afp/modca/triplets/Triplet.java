@@ -19,10 +19,9 @@
 
 package org.apache.fop.afp.modca.triplets;
 
-import org.apache.fop.afp.Streamable;
 import org.apache.fop.afp.StructuredData;
 
-public interface Triplet extends Streamable, StructuredData {
+public interface Triplet extends StructuredData {
     int MAX_LENGTH = 254;
 
     byte CODED_GRAPHIC_CHARACTER_SET_GLOBAL_IDENTIFIER = 0x01;

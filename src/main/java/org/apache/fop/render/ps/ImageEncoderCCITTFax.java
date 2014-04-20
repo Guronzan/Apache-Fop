@@ -54,17 +54,17 @@ public class ImageEncoderCCITTFax implements ImageEncoder {
     @Override
     public String getImplicitFilter() {
         final PSDictionary dict = new PSDictionary();
-        dict.put("/Columns", new Integer(this.ccitt.getSize().getWidthPx()));
+        dict.put("/Columns", (this.ccitt.getSize().getWidthPx()));
         final int compression = this.ccitt.getCompression();
         switch (compression) {
         case TIFFImage.COMP_FAX_G3_1D:
-            dict.put("/K", new Integer(0));
+            dict.put("/K", (0));
             break;
         case TIFFImage.COMP_FAX_G3_2D:
-            dict.put("/K", new Integer(1));
+            dict.put("/K", (1));
             break;
         case TIFFImage.COMP_FAX_G4_2D:
-            dict.put("/K", new Integer(-1));
+            dict.put("/K", (-1));
             break;
         default:
             throw new IllegalStateException("Invalid compression scheme: "

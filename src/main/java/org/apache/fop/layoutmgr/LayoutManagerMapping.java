@@ -180,7 +180,7 @@ public class LayoutManagerMapping implements LayoutManagerMaker {
      */
     @Override
     public LayoutManager makeLayoutManager(final FONode node) {
-        final List<LayoutManager> lms = new ArrayList<LayoutManager>();
+        final List<LayoutManager> lms = new ArrayList<>();
         makeLayoutManagers(node, lms);
         if (lms.size() == 0) {
             throw new IllegalStateException("LayoutManager for class "
@@ -255,24 +255,18 @@ public class LayoutManagerMapping implements LayoutManagerMaker {
         // public static class BidiOverrideLayoutManagerMaker extends
         // FObjMixedLayoutManagerMaker {
         public void make(final BidiOverride node, final List<LayoutManager> lms) {
-            if (false) {
-                // this is broken; it does nothing
-                // it should make something like an InlineStackingLM
-                super.make(node, lms);
-            } else {
-                final ArrayList<LayoutManager> childList = new ArrayList<LayoutManager>();
-                // this is broken; it does nothing
-                // it should make something like an InlineStackingLM
-                super.make(node, childList);
-                for (int count = childList.size() - 1; count >= 0; count--) {
-                    final LayoutManager lm = childList.get(count);
-                    if (lm instanceof InlineLevelLayoutManager) {
-                        final LayoutManager blm = new BidiLayoutManager(node,
-                                (InlineLayoutManager) lm);
-                        lms.add(blm);
-                    } else {
-                        lms.add(lm);
-                    }
+            final List<LayoutManager> childList = new ArrayList<>();
+            // this is broken; it does nothing
+            // it should make something like an InlineStackingLM
+            super.make(node, childList);
+            for (int count = childList.size() - 1; count >= 0; count--) {
+                final LayoutManager lm = childList.get(count);
+                if (lm instanceof InlineLevelLayoutManager) {
+                    final LayoutManager blm = new BidiLayoutManager(node,
+                            (InlineLayoutManager) lm);
+                    lms.add(blm);
+                } else {
+                    lms.add(lm);
                 }
             }
         }
@@ -295,7 +289,7 @@ public class LayoutManagerMapping implements LayoutManagerMaker {
     public static class InlineContainerLayoutManagerMaker extends Maker {
         @Override
         public void make(final FONode node, final List<LayoutManager> lms) {
-            final ArrayList childList = new ArrayList();
+            final List<LayoutManager> childList = new ArrayList<>();
             super.make(node, childList);
             lms.add(new ICLayoutManager((InlineContainer) node, childList));
         }
@@ -405,13 +399,12 @@ public class LayoutManagerMapping implements LayoutManagerMaker {
     public class RetrieveMarkerLayoutManagerMaker extends Maker {
         @Override
         public void make(final FONode node, final List<LayoutManager> lms) {
-            Iterator baseIter;
-            baseIter = node.getChildNodes();
+            final Iterator<FONode> baseIter = node.getChildNodes();
             if (baseIter == null) {
                 return;
             }
             while (baseIter.hasNext()) {
-                final FONode child = (FONode) baseIter.next();
+                final FONode child = baseIter.next();
                 makeLayoutManagers(child, lms);
             }
         }
@@ -423,13 +416,12 @@ public class LayoutManagerMapping implements LayoutManagerMaker {
             // We insert the wrapper LM before it's children so an ID
             // on the node can be registered on a page.
             lms.add(new WrapperLayoutManager((Wrapper) node));
-            Iterator baseIter;
-            baseIter = node.getChildNodes();
+            final Iterator<FONode> baseIter = node.getChildNodes();
             if (baseIter == null) {
                 return;
             }
             while (baseIter.hasNext()) {
-                final FONode child = (FONode) baseIter.next();
+                final FONode child = baseIter.next();
                 makeLayoutManagers(child, lms);
             }
         }

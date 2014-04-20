@@ -121,7 +121,7 @@ public class PDFEncryptionManager {
             final Method makeMethod = clazz.getMethod("make", new Class[] {
                     int.class, PDFEncryptionParams.class });
             final Object obj = makeMethod.invoke(null, new Object[] {
-                    new Integer(objnum), params });
+                    (objnum), params });
             return (PDFEncryption) obj;
         } catch (final ClassNotFoundException e) {
             if (checkAvailableAlgorithms()) {

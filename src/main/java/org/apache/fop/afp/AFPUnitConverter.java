@@ -121,7 +121,7 @@ public class AFPUnitConverter {
         final AffineTransform at = this.paintingState.getData().getTransform();
         at.transform(srcPts, 0, dstPts, 0, srcPts.length / 2);
         final int[] coords = new int[srcPts.length];
-        for (int i = 0; i < srcPts.length; i++) {
+        for (int i = 0; i < srcPts.length; ++i) {
             if (!milli) {
                 dstPts[i] *= 1000;
             }

@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * This interface is used to set the values of a font during configuration time.
  */
-public interface MutableFont {
+public interface MutableFont<T, U> {
 
     /**
      * Sets the "PostScript" font name (Example: "Helvetica-BoldOblique").
@@ -172,6 +172,6 @@ public interface MutableFont {
      * @param value
      *            Kerning value
      */
-    void putKerningEntry(final Integer key, final Map value);
+    void putKerningEntry(final U key, final Map<T, U> value);
 
 }

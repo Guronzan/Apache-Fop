@@ -99,10 +99,10 @@ public abstract class AbstractAFPObject implements Streamable {
      * @throws java.io.IOException
      *             an I/O exception of some sort has occurred.
      */
-    protected void writeObjects(final Collection/* <Streamable> */objects,
+    protected void writeObjects(final Collection<? extends Streamable> objects,
             final OutputStream os) throws IOException {
-        if (objects != null && objects.size() > 0) {
-            final Iterator it = objects.iterator();
+        if (objects != null && !objects.isEmpty()) {
+            final Iterator<? extends Streamable> it = objects.iterator();
             while (it.hasNext()) {
                 final Object object = it.next();
                 if (object instanceof Streamable) {
@@ -186,7 +186,7 @@ public abstract class AbstractAFPObject implements Streamable {
             len = BinaryUtils.convert(headerLen + maxChunkLength, 2);
             dataHeader[lengthOffset] = len[0]; // Length byte 1
             dataHeader[lengthOffset + 1] = len[1]; // Length byte 2
-            for (int i = 0; i < numFullChunks; i++, off += maxChunkLength) {
+            for (int i = 0; i < numFullChunks; ++i, off += maxChunkLength) {
                 os.write(dataHeader);
                 os.write(data, off, maxChunkLength);
             }

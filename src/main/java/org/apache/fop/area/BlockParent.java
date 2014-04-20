@@ -53,7 +53,7 @@ public class BlockParent extends Area {
     /**
      * The children of this block parent area.
      */
-    protected List children = null;
+    protected List<Area> children = null;
 
     // orientation if reference area
     // private int orientation = ORIENT_0;
@@ -62,7 +62,7 @@ public class BlockParent extends Area {
     @Override
     public void addChildArea(final Area childArea) {
         if (this.children == null) {
-            this.children = new ArrayList();
+            this.children = new ArrayList<>();
         }
         this.children.add(childArea);
     }
@@ -82,7 +82,7 @@ public class BlockParent extends Area {
      *
      * @return the list of child areas
      */
-    public List getChildAreas() {
+    public List<Area> getChildAreas() {
         return this.children;
     }
 

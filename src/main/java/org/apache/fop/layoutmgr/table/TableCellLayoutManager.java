@@ -48,6 +48,7 @@ import org.apache.fop.layoutmgr.KnuthGlue;
 import org.apache.fop.layoutmgr.KnuthPenalty;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
 import org.apache.fop.layoutmgr.SpaceResolver;
@@ -62,7 +63,7 @@ import org.apache.fop.util.ListUtil;
  */
 @Slf4j
 public class TableCellLayoutManager extends BlockStackingLayoutManager
-implements BlockLevelLayoutManager {
+        implements BlockLevelLayoutManager {
 
     private final PrimaryGridUnit primaryGridUnit;
 
@@ -132,7 +133,7 @@ implements BlockLevelLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public List<KnuthElement> getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         final MinOptMax stackLimit = context.getStackLimitBP();
 
@@ -141,8 +142,8 @@ implements BlockLevelLayoutManager {
         this.cellIPD -= getIPIndents();
 
         List<KnuthElement> returnedList;
-        final List<KnuthElement> contentList = new LinkedList<>();
-        final List<KnuthElement> returnList = new LinkedList<>();
+        final List<ListElement> contentList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
 
         LayoutManager curLM; // currently active LM
         LayoutManager prevLM = null; // previously active LM
@@ -196,7 +197,7 @@ implements BlockLevelLayoutManager {
             // account later
             // Copied from BlockStackingLM
             returnList
-            .add(new KnuthBox(0, notifyPos(new Position(this)), true));
+                    .add(new KnuthBox(0, notifyPos(new Position(this)), true));
         }
         // Space resolution
         SpaceResolver.resolveElementList(returnList);
@@ -364,18 +365,18 @@ implements BlockLevelLayoutManager {
                 final boolean[] outer = new boolean[] { firstOnPage,
                         lastOnPage, inFirstColumn, inLastColumn };
                 TraitSetter
-                .addCollapsingBorders(this.curBlockArea,
-                        this.primaryGridUnit
-                        .getBorderBefore(borderBeforeWhich),
-                        this.primaryGridUnit
-                        .getBorderAfter(borderAfterWhich),
-                        this.primaryGridUnit.getBorderStart(),
-                        this.primaryGridUnit.getBorderEnd(), outer);
+                        .addCollapsingBorders(this.curBlockArea,
+                                this.primaryGridUnit
+                                        .getBorderBefore(borderBeforeWhich),
+                                this.primaryGridUnit
+                                        .getBorderAfter(borderAfterWhich),
+                                this.primaryGridUnit.getBorderStart(),
+                                this.primaryGridUnit.getBorderEnd(), outer);
             } else {
                 adjustYOffset(this.curBlockArea, borderBeforeWidth);
                 final Block[][] blocks = new Block[getTableCell()
-                                                   .getNumberRowsSpanned()][getTableCell()
-                        .getNumberColumnsSpanned()];
+                        .getNumberRowsSpanned()][getTableCell()
+                                                                            .getNumberColumnsSpanned()];
                 GridUnit[] gridUnits = (GridUnit[]) this.primaryGridUnit
                         .getRows().get(startRow);
                 for (int x = 0; x < getTableCell().getNumberColumnsSpanned(); x++) {
@@ -430,7 +431,7 @@ implements BlockLevelLayoutManager {
                         final int ipd = getTable()
                                 .getColumn(
                                         this.primaryGridUnit.getColIndex() + x)
-                                .getColumnWidth().getValue(getParent());
+                                        .getColumnWidth().getValue(getParent());
                         if (blocks[y][x] != null) {
                             final Block block = blocks[y][x];
                             adjustYOffset(block, dy);
@@ -493,8 +494,8 @@ implements BlockLevelLayoutManager {
             final Block colBackgroundArea = getBackgroundArea(paddingRectBPD,
                     borderBeforeWidth);
             ((TableLayoutManager) this.parentLayoutManager)
-            .registerColumnBackgroundArea(column, colBackgroundArea,
-                    -this.startIndent);
+                    .registerColumnBackgroundArea(column, colBackgroundArea,
+                            -this.startIndent);
         }
 
         final TablePart body = this.primaryGridUnit.getTablePart();
@@ -509,7 +510,7 @@ implements BlockLevelLayoutManager {
             final Block rowBackgroundArea = getBackgroundArea(paddingRectBPD,
                     borderBeforeWidth);
             ((TableLayoutManager) this.parentLayoutManager)
-            .addBackgroundArea(rowBackgroundArea);
+                    .addBackgroundArea(rowBackgroundArea);
             TraitSetter.addBackground(rowBackgroundArea,
                     row.getCommonBorderPaddingBackground(),
                     this.parentLayoutManager, -this.xoffset - this.startIndent,
@@ -583,14 +584,14 @@ implements BlockLevelLayoutManager {
             this.curBlockArea = new Block();
             this.curBlockArea.addTrait(Trait.IS_REFERENCE_AREA, Boolean.TRUE);
             TraitSetter
-            .setProducerID(this.curBlockArea, getTableCell().getId());
+                    .setProducerID(this.curBlockArea, getTableCell().getId());
             this.curBlockArea.setPositioning(Block.ABSOLUTE);
             this.curBlockArea.setXOffset(this.xoffset + this.startIndent);
             this.curBlockArea.setYOffset(this.yoffset);
             this.curBlockArea.setIPD(this.cellIPD);
 
             /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.curBlockArea);
+                    .getParentArea(this.curBlockArea);
             // Get reference IPD from parentArea
             setCurrentArea(this.curBlockArea); // ??? for generic operations
         }

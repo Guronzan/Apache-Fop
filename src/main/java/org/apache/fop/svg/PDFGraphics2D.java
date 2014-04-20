@@ -50,6 +50,8 @@ import java.awt.image.renderable.RenderableImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -772,7 +774,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             // used for black/magenta
             final float[] cComps = c.getColorComponents(new float[1]);
             final double[] blackMagenta = new double[1];
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 1; ++i) {
                 blackMagenta[i] = cComps[i];
             }
             // PDFColor currentColour = new PDFColor(blackMagenta[0],
@@ -840,7 +842,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(gp.getTransform());
 
-            final List theMatrix = new java.util.ArrayList();
+            final List theMatrix = new ArrayList();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -849,29 +851,29 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
             final Point2D p1 = gp.getStartPoint();
             final Point2D p2 = gp.getEndPoint();
-            final List theCoords = new java.util.ArrayList();
+            final List theCoords = new ArrayList();
             theCoords.add(new Double(p1.getX()));
             theCoords.add(new Double(p1.getY()));
             theCoords.add(new Double(p2.getX()));
             theCoords.add(new Double(p2.getY()));
 
-            final List theExtend = new java.util.ArrayList();
+            final List theExtend = new ArrayList();
             theExtend.add(new Boolean(true));
             theExtend.add(new Boolean(true));
 
-            final List theDomain = new java.util.ArrayList();
+            final List theDomain = new ArrayList();
             theDomain.add(new Double(0));
             theDomain.add(new Double(1));
 
-            final List theEncode = new java.util.ArrayList();
+            final List theEncode = new ArrayList();
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
 
-            final List theBounds = new java.util.ArrayList();
+            final List theBounds = new ArrayList();
 
-            final List someColors = new java.util.ArrayList();
+            final List someColors = new ArrayList();
 
             for (int count = 0; count < cols.length; count++) {
                 final Color c1 = cols[count];
@@ -918,7 +920,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(rgp.getTransform());
 
-            final List theMatrix = new java.util.ArrayList();
+            final List theMatrix = new ArrayList();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -929,7 +931,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             final Point2D ac = rgp.getCenterPoint();
             final Point2D af = rgp.getFocusPoint();
 
-            final List theCoords = new java.util.ArrayList();
+            final List theCoords = new ArrayList();
             double dx = af.getX() - ac.getX();
             double dy = af.getY() - ac.getY();
             final double d = Math.sqrt(dx * dx + dy * dy);
@@ -949,7 +951,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             theCoords.add(new Double(ar));
 
             final Color[] cols = rgp.getColors();
-            final List someColors = new java.util.ArrayList();
+            final List someColors = new ArrayList();
             for (final Color cc : cols) {
                 if (cc.getAlpha() != 255) {
                     return false; // PDF can't do alpha
@@ -960,7 +962,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             }
 
             final float[] fractions = rgp.getFractions();
-            final List theBounds = new java.util.ArrayList();
+            final List theBounds = new ArrayList();
             for (int count = 1; count < fractions.length - 1; count++) {
                 final float offset = fractions[count];
                 theBounds.add(new Double(offset));
@@ -1036,7 +1038,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         // }
         // }
 
-        final List bbox = new java.util.ArrayList();
+        final List bbox = new ArrayList();
         bbox.add(new Double(rect.getX()));
         bbox.add(new Double(rect.getHeight() + rect.getY()));
         bbox.add(new Double(rect.getWidth() + rect.getX()));
@@ -1047,7 +1049,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         transform.concatenate(getTransform());
         transform.concatenate(pp.getPatternTransform());
 
-        final List theMatrix = new java.util.ArrayList();
+        final List theMatrix = new ArrayList();
         final double[] mat = new double[6];
         transform.getMatrix(mat);
         for (final double element : mat) {
@@ -1358,7 +1360,8 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         applyPaint(getPaint(), true);
         applyAlpha(c.getAlpha(), OPAQUE);
 
-        final Map kerning = fontState.getKerning();
+        final Map<String, Map<String, Integer>> kerning = fontState
+                .getKerning();
         final boolean kerningAvailable = kerning != null && !kerning.isEmpty();
 
         final boolean useMultiByte = isMultiByteFont(this.currentFontName);
@@ -1394,7 +1397,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
         final int l = s.length();
 
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char ch = fontState.mapChar(s.charAt(i));
 
             if (!useMultiByte) {
@@ -1417,8 +1420,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             }
 
             if (kerningAvailable && i + 1 < l) {
-                addKerning(this.currentStream, new Integer(ch), new Integer(
-                        fontState.mapChar(s.charAt(i + 1))), kerning,
+                addKerning(ch, fontState.mapChar(s.charAt(i + 1)), kerning,
                         startText, endText);
             }
 
@@ -1441,7 +1443,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     protected void applyAlpha(final int fillAlpha, final int strokeAlpha) {
         if (fillAlpha != OPAQUE || strokeAlpha != OPAQUE) {
             checkTransparencyAllowed();
-            final Map vals = new java.util.HashMap();
+            final Map vals = new HashMap<>();
             if (fillAlpha != OPAQUE) {
                 vals.put(PDFGState.GSTATE_ALPHA_NONSTROKE, new Float(
                         fillAlpha / 255f));
@@ -1503,14 +1505,14 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         return f.isMultiByte();
     }
 
-    private void addKerning(final StringWriter buf, final Integer ch1,
-            final Integer ch2, final Map kerning, final String startText,
-            final String endText) {
+    private void addKerning(final char ch1, final char ch2,
+            final Map<String, Map<String, Integer>> kerning,
+            final String startText, final String endText) {
         preparePainting();
-        final Map kernPair = (Map) kerning.get(ch1);
+        final Map<String, Integer> kernPair = kerning.get(ch1);
 
         if (kernPair != null) {
-            final Integer width = (Integer) kernPair.get(ch2);
+            final Integer width = kernPair.get(ch2);
             if (width != null) {
                 this.currentStream.write(endText + -width.intValue() + " "
                         + startText);

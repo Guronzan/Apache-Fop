@@ -139,12 +139,12 @@ public class TableStepper {
             final PrimaryGridUnit pgu = activeCell.getPrimaryGridUnit();
             for (int i = this.activeRowIndex + 1; i < pgu.getRowIndex()
                     - this.rowGroup[0].getIndex()
-                    + pgu.getCell().getNumberRowsSpanned(); i++) {
+                    + pgu.getCell().getNumberRowsSpanned(); ++i) {
                 remain -= this.rowGroup[i].getHeight().getOpt();
             }
             maxW = Math.max(maxW, remain);
         }
-        for (int i = this.activeRowIndex + 1; i < this.rowGroup.length; i++) {
+        for (int i = this.activeRowIndex + 1; i < this.rowGroup.length; ++i) {
             maxW += this.rowGroup[i].getHeight().getOpt();
         }
         return maxW;
@@ -162,7 +162,7 @@ public class TableStepper {
     private void activateCells(final List<ActiveCell> activeCellList,
             final int rowIndex) {
         final EffRow row = this.rowGroup[rowIndex];
-        for (int i = 0; i < this.columnCount; i++) {
+        for (int i = 0; i < this.columnCount; ++i) {
             final GridUnit gu = row.getGridUnit(i);
             if (!gu.isEmpty() && gu.isPrimary()) {
                 activeCellList.add(new ActiveCell((PrimaryGridUnit) gu, row,

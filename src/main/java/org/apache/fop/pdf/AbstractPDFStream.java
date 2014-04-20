@@ -181,7 +181,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
         final OutputStream filteredOutput = getFilterList().applyFilters(cout);
         outputRawStreamData(filteredOutput);
         filteredOutput.close();
-        refLength.setNumber(new Integer(cout.getCount()));
+        refLength.setNumber((cout.getCount()));
         bytesWritten += cout.getCount();
 
         // Stream trailer
@@ -214,7 +214,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
             lengthEntry = refLength;
         } else {
             encodedStream = encodeStream();
-            lengthEntry = new Integer(encodedStream.getSize() + 1);
+            lengthEntry = (encodedStream.getSize() + 1);
         }
 
         populateStreamDict(lengthEntry);

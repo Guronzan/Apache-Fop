@@ -33,6 +33,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -352,7 +353,7 @@ public class PSTextPainter extends NativeTextPainter {
     private class PSTextRun {
 
         private AffineTransform textTransform;
-        private final List relativePositions = new java.util.LinkedList();
+        private final List relativePositions = new LinkedList<>();
         private final StringBuilder currentChars = new StringBuilder();
         private int horizChanges = 0;
         private int vertChanges = 0;
@@ -448,7 +449,7 @@ public class PSTextPainter extends NativeTextPainter {
 
             final StringBuilder sb = new StringBuilder();
             sb.append('(');
-            for (int i = 0, c = this.currentChars.length(); i < c; i++) {
+            for (int i = 0, c = this.currentChars.length(); i < c; ++i) {
                 final char ch = this.currentChars.charAt(i);
                 mapped = f.mapChar(ch);
                 PSGenerator.escapeChar(mapped, sb);
@@ -521,7 +522,7 @@ public class PSTextPainter extends NativeTextPainter {
             iter.next();
             final Point2D pos = new Point2D.Double(0, 0);
             gen.writeln("0 0 M");
-            for (int i = 0, c = this.currentChars.length(); i < c; i++) {
+            for (int i = 0, c = this.currentChars.length(); i < c; ++i) {
                 final char ch = this.currentChars.charAt(0);
                 if (i == 0) {
                     // Font only has to be setup up before the first character

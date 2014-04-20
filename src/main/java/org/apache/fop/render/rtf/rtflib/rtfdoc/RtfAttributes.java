@@ -39,7 +39,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 
 public class RtfAttributes implements java.lang.Cloneable {
-    private HashMap values = new HashMap();
+    private HashMap<String, Object> values = new HashMap<>();
 
     /**
      * Set attributes from another attributes object
@@ -51,9 +51,9 @@ public class RtfAttributes implements java.lang.Cloneable {
      */
     public RtfAttributes set(final RtfAttributes attrs) {
         if (attrs != null) {
-            final Iterator it = attrs.nameIterator();
+            final Iterator<String> it = attrs.nameIterator();
             while (it.hasNext()) {
-                final String name = (String) it.next();
+                final String name = it.next();
                 if (attrs.getValue(name) instanceof Integer) {
                     final Integer value = (Integer) attrs.getValue(name);
                     if (value == null) {
@@ -118,10 +118,11 @@ public class RtfAttributes implements java.lang.Cloneable {
      *
      * @return cloned Object
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Object clone() {
         final RtfAttributes result = new RtfAttributes();
-        result.values = (HashMap) this.values.clone();
+        result.values = (HashMap<String, Object>) this.values.clone();
 
         // Added by Normand Masse
         // indicate the XSL attributes used to build the Rtf attributes
@@ -143,7 +144,7 @@ public class RtfAttributes implements java.lang.Cloneable {
      * @return this (which now contains the new entry), for chaining calls
      */
     public RtfAttributes set(final String name, final int value) {
-        this.values.put(name, new Integer(value));
+        this.values.put(name, value);
         return this;
     }
 
@@ -205,7 +206,7 @@ public class RtfAttributes implements java.lang.Cloneable {
     }
 
     /** @return an Iterator on all names that are set */
-    public Iterator nameIterator() {
+    public Iterator<String> nameIterator() {
         return this.values.keySet().iterator();
     }
 
@@ -232,7 +233,7 @@ public class RtfAttributes implements java.lang.Cloneable {
         }
         // copy/replace the xsl attributes into the current attributes
         if (this.xslAttributes != null) {
-            for (int i = 0; i < pAttribs.getLength(); i++) {
+            for (int i = 0; i < pAttribs.getLength(); ++i) {
                 final String wKey = pAttribs.getQName(i);
                 final int wPos = this.xslAttributes.getIndex(wKey);
                 if (wPos == -1) {

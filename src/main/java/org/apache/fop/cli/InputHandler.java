@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Vector;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -41,6 +41,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.fop.ResourceEventProducer;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -62,7 +63,7 @@ public class InputHandler implements ErrorListener, Renderable {
     /** original source file */
     protected File sourcefile;
     private File stylesheet; // for XML/XSLT usage
-    private Vector xsltParams; // for XML/XSLT usage
+    private List<String> xsltParams; // for XML/XSLT usage
     private EntityResolver entityResolver = null;
     private URIResolver uriResolver = null;
 
@@ -74,11 +75,11 @@ public class InputHandler implements ErrorListener, Renderable {
      * @param xsltfile
      *            XSLT file
      * @param params
-     *            Vector of command-line parameters (name, value, name, value,
+     *            List of command-line parameters (name, value, name, value,
      *            ...) for XSL stylesheet, null if none
      */
     public InputHandler(final File xmlfile, final File xsltfile,
-            final Vector params) {
+            final List<String> params) {
         this.sourcefile = xmlfile;
         this.stylesheet = xsltfile;
         this.xsltParams = params;
@@ -167,42 +168,46 @@ public class InputHandler implements ErrorListener, Renderable {
      */
     protected Source createMainSource() {
         Source source;
-        InputStream in;
+        InputStream in = null;
         String uri;
-        if (this.sourcefile != null) {
-            try {
-                in = new java.io.FileInputStream(this.sourcefile);
-                uri = this.sourcefile.toURI().toASCIIString();
-            } catch (final FileNotFoundException e) {
-                // handled elsewhere
-                return new StreamSource(this.sourcefile);
-            }
-        } else {
-            in = System.in;
-            uri = null;
-        }
         try {
-            final InputSource is = new InputSource(in);
-            is.setSystemId(uri);
-            final XMLReader xr = getXMLReader();
-            if (this.entityResolver != null) {
-                xr.setEntityResolver(this.entityResolver);
-            }
-            source = new SAXSource(xr, is);
-        } catch (final SAXException e) {
             if (this.sourcefile != null) {
-                source = new StreamSource(this.sourcefile);
+                try {
+                    in = new java.io.FileInputStream(this.sourcefile);
+                    uri = this.sourcefile.toURI().toASCIIString();
+                } catch (final FileNotFoundException e) {
+                    // handled elsewhere
+                    return new StreamSource(this.sourcefile);
+                }
             } else {
-                source = new StreamSource(in, uri);
+                in = System.in;
+                uri = null;
             }
-        } catch (final ParserConfigurationException e) {
-            if (this.sourcefile != null) {
-                source = new StreamSource(this.sourcefile);
-            } else {
-                source = new StreamSource(in, uri);
+            try {
+                final InputSource is = new InputSource(in);
+                is.setSystemId(uri);
+                final XMLReader xr = getXMLReader();
+                if (this.entityResolver != null) {
+                    xr.setEntityResolver(this.entityResolver);
+                }
+                source = new SAXSource(xr, is);
+            } catch (final SAXException e) {
+                if (this.sourcefile != null) {
+                    source = new StreamSource(this.sourcefile);
+                } else {
+                    source = new StreamSource(in, uri);
+                }
+            } catch (final ParserConfigurationException e) {
+                if (this.sourcefile != null) {
+                    source = new StreamSource(this.sourcefile);
+                } else {
+                    source = new StreamSource(in, uri);
+                }
             }
+            return source;
+        } finally {
+            IOUtils.closeQuietly(in);
         }
-        return source;
     }
 
     /**
@@ -303,9 +308,8 @@ public class InputHandler implements ErrorListener, Renderable {
                 // Set the value of parameters, if any, defined for stylesheet
                 if (this.xsltParams != null) {
                     for (int i = 0; i < this.xsltParams.size(); i += 2) {
-                        transformer.setParameter(
-                                (String) this.xsltParams.elementAt(i),
-                                (String) this.xsltParams.elementAt(i + 1));
+                        transformer.setParameter(this.xsltParams.get(i),
+                                this.xsltParams.get(i + 1));
                     }
                 }
                 if (this.uriResolver != null) {

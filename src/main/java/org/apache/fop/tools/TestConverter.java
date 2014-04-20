@@ -71,7 +71,7 @@ public class TestConverter {
      */
     public static void main(final String[] args) {
         if (args == null || args.length == 0) {
-            System.out.println("test suite file name required");
+            log.info("test suite file name required");
         }
         final TestConverter tc = new TestConverter();
 
@@ -95,7 +95,7 @@ public class TestConverter {
             }
         }
         if (testFile == null) {
-            System.out.println("test suite file name required");
+            log.info("test suite file name required");
         }
 
         tc.runTests(testFile, results, null);

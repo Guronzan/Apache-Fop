@@ -859,8 +859,8 @@ public class PDFFactory {
                 nextColor.setColorSpace(getDocument().getColorSpace());
             }
 
-            theCzero = currentColor.getVector();
-            theCone = nextColor.getVector();
+            theCzero = currentColor.getList();
+            theCone = nextColor.getList();
 
             myfunc = makeFunction(2, null, null, theCzero, theCone,
                     interpolation);
@@ -1505,7 +1505,7 @@ public class PDFFactory {
                 // encoding)
                 if (singleByteFont.hasAdditionalEncodings()) {
                     for (int i = 0, c = singleByteFont
-                            .getAdditionalEncodingCount(); i < c; i++) {
+                            .getAdditionalEncodingCount(); i < c; ++i) {
                         final SimpleSingleByteEncoding addEncoding = singleByteFont
                                 .getAdditionalEncoding(i);
                         final String name = fontname + "_" + (i + 1);
@@ -1564,7 +1564,7 @@ public class PDFFactory {
         int start = -1;
         final String[] baseNames = baseEncoding.getCharNameMap();
         final String[] charNameMap = encoding.getCharNameMap();
-        for (int i = 0, ci = charNameMap.length; i < ci; i++) {
+        for (int i = 0, ci = charNameMap.length; i < ci; ++i) {
             final String basec = baseNames[i];
             final String c = charNameMap[i];
             if (!basec.equals(c)) {
@@ -1599,7 +1599,7 @@ public class PDFFactory {
         final CIDSubset subset = cidFont.getCIDSubset();
         final int[] tmpWidth = new int[subset.getSubsetSize()];
 
-        for (int i = 0, c = subset.getSubsetSize(); i < c; i++) {
+        for (int i = 0, c = subset.getSubsetSize(); i < c; ++i) {
             final int nwx = Math.max(0, subset.getGlyphIndexForSubsetIndex(i));
             tmpWidth[i] = widths[nwx];
         }
@@ -1655,7 +1655,7 @@ public class PDFFactory {
         final ByteArrayOutputStream baout = new ByteArrayOutputStream(
                 cidSubset.length() / 8 + 1);
         int value = 0;
-        for (int i = 0, c = cidSubset.length(); i < c; i++) {
+        for (int i = 0, c = cidSubset.length(); i < c; ++i) {
             final int shift = i % 8;
             final boolean b = cidSubset.get(i);
             if (b) {

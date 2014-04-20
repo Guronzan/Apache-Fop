@@ -20,9 +20,8 @@
 package org.apache.fop.tools.fontlist;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.regex.Pattern;
 
@@ -53,7 +52,7 @@ public class FontListSerializer {
 
     /**
      * Generates SAX events from the font damily map.
-     * 
+     *
      * @param fontFamilies
      *            the font families
      * @param handler
@@ -61,14 +60,15 @@ public class FontListSerializer {
      * @throws SAXException
      *             if an XML-related exception occurs
      */
-    public void generateSAX(final SortedMap fontFamilies,
+    public void generateSAX(
+            final SortedMap<String, List<FontSpec>> fontFamilies,
             final GenerationHelperContentHandler handler) throws SAXException {
         generateSAX(fontFamilies, null, handler);
     }
 
     /**
      * Generates SAX events from the font damily map.
-     * 
+     *
      * @param fontFamilies
      *            the font families
      * @param singleFamily
@@ -79,17 +79,17 @@ public class FontListSerializer {
      * @throws SAXException
      *             if an XML-related exception occurs
      */
-    public void generateSAX(final SortedMap fontFamilies,
+    public void generateSAX(
+            final SortedMap<String, List<FontSpec>> fontFamilies,
             final String singleFamily,
             final GenerationHelperContentHandler handler) throws SAXException {
         handler.startDocument();
         final AttributesImpl atts = new AttributesImpl();
         handler.startElement(FONTS, atts);
 
-        final Iterator iter = fontFamilies.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final String familyName = (String) entry.getKey();
+        for (final Entry<String, List<FontSpec>> entry : fontFamilies
+                .entrySet()) {
+            final String familyName = entry.getKey();
             if (singleFamily != null && familyName != singleFamily) {
                 continue;
             }
@@ -99,7 +99,7 @@ public class FontListSerializer {
                     stripQuotes(familyName));
             handler.startElement(FAMILY, atts);
 
-            final List containers = (List) entry.getValue();
+            final List<FontSpec> containers = entry.getValue();
             generateXMLForFontContainers(handler, containers);
             handler.endElement(FAMILY);
         }
@@ -115,12 +115,10 @@ public class FontListSerializer {
     }
 
     private void generateXMLForFontContainers(
-            final GenerationHelperContentHandler handler, final List containers)
-            throws SAXException {
+            final GenerationHelperContentHandler handler,
+            final List<FontSpec> containers) throws SAXException {
         final AttributesImpl atts = new AttributesImpl();
-        final Iterator fontIter = containers.iterator();
-        while (fontIter.hasNext()) {
-            final FontSpec cont = (FontSpec) fontIter.next();
+        for (final FontSpec cont : containers) {
             atts.clear();
             atts.addAttribute(null, KEY, KEY, CDATA, cont.getKey());
             atts.addAttribute(null, TYPE, TYPE, CDATA, cont.getFontMetrics()
@@ -133,13 +131,11 @@ public class FontListSerializer {
 
     private void generateXMLForTriplets(
             final GenerationHelperContentHandler handler,
-            final Collection triplets) throws SAXException {
+            final Collection<FontTriplet> triplets) throws SAXException {
         final AttributesImpl atts = new AttributesImpl();
         atts.clear();
         handler.startElement(TRIPLETS, atts);
-        final Iterator iter = triplets.iterator();
-        while (iter.hasNext()) {
-            final FontTriplet triplet = (FontTriplet) iter.next();
+        for (final FontTriplet triplet : triplets) {
             atts.clear();
             atts.addAttribute(null, NAME, NAME, CDATA, triplet.getName());
             atts.addAttribute(null, STYLE, STYLE, CDATA, triplet.getStyle());

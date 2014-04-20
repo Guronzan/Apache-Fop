@@ -21,6 +21,7 @@ package org.apache.fop.fo.pagination.bookmarks;
 
 // Java
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
@@ -34,7 +35,7 @@ import org.xml.sax.Locator;
  * <code>fo:bookmark-tree</code></a> object, first introduced in the XSL 1.1 WD.
  */
 public class BookmarkTree extends FObj {
-    private final ArrayList bookmarks = new ArrayList();
+    private final List<Bookmark> bookmarks = new ArrayList<>();
 
     /**
      * Create a new BookmarkTree object that is a child of the given
@@ -51,7 +52,7 @@ public class BookmarkTree extends FObj {
     @Override
     protected void addChildNode(final FONode obj) {
         if (obj instanceof Bookmark) {
-            this.bookmarks.add(obj);
+            this.bookmarks.add((Bookmark) obj);
         }
     }
 
@@ -84,7 +85,7 @@ public class BookmarkTree extends FObj {
      * @return an <code>ArrayList</code> containing the {@link Bookmark}
      *         objects.
      */
-    public ArrayList getBookmarks() {
+    public List<Bookmark> getBookmarks() {
         return this.bookmarks;
     }
 

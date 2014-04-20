@@ -52,7 +52,7 @@ import org.w3c.dom.Document;
  * operations follow similar patterns which makes it possible to share some
  * code.
  */
-public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
+public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
 
     /**
      * Handle block traits. The block could be any sort of block with any
@@ -91,7 +91,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     /**
      * Handle the traits for a region This is used to draw the traits for the
      * given page region. (See Sect. 6.4.1.2 of XSL-FO spec.)
-     * 
+     *
      * @param region
      *            the RegionViewport whose region is to be drawn
      */
@@ -306,7 +306,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Draws borders.
-     * 
+     *
      * @param borderRect
      *            the border rectangle
      * @param bpsBefore
@@ -504,7 +504,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     /**
      * Common method to render the background and borders for any inline area.
      * The all borders and padding are drawn outside the specified area.
-     * 
+     *
      * @param area
      *            the inline area for which the background, border and padding
      *            is to be rendered
@@ -695,7 +695,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
         this.currentBPPosition = 0;
         handleBlockTraits(block);
 
-        final List children = block.getChildAreas();
+        final List<Area> children = block.getChildAreas();
         if (children != null) {
             renderBlocks(block, children);
         }
@@ -740,7 +740,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     /**
      * Concatenates the current transformation matrix with the given one,
      * therefore establishing a new coordinate system.
-     * 
+     *
      * @param at
      *            the transformation matrix to process (coordinates in points)
      */
@@ -750,7 +750,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     /**
      * Render an inline viewport. This renders an inline viewport by clipping if
      * necessary.
-     * 
+     *
      * @param viewport
      *            the viewport to handle
      */
@@ -788,19 +788,19 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Restores the state stack after a break out.
-     * 
+     *
      * @param breakOutList
      *            the state stack to restore.
      */
     protected abstract void restoreStateStackAfterBreakOut(
-            final List breakOutList);
+            final List<T> breakOutList);
 
     /**
      * Breaks out of the state stack to handle fixed block-containers.
-     * 
+     *
      * @return the saved state stack to recreate later
      */
-    protected abstract List breakOutOfStateStack();
+    protected abstract List<T> breakOutOfStateStack();
 
     /** Saves the graphics state of the rendering engine. */
     protected abstract void saveGraphicsState();
@@ -816,7 +816,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Paints the text decoration marks.
-     * 
+     *
      * @param fm
      *            Current typeface
      * @param fontsize
@@ -869,7 +869,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Clip using a rectangular area.
-     * 
+     *
      * @param x
      *            the x coordinate (in points)
      * @param y
@@ -884,7 +884,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Moves the current point to (x, y), omitting any connecting line segment.
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -895,7 +895,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     /**
      * Appends a straight line segment from the current point to (x, y). The new
      * current point is (x, y).
-     * 
+     *
      * @param x
      *            x coordinate
      * @param y
@@ -911,7 +911,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Fill a rectangular area.
-     * 
+     *
      * @param x
      *            the x coordinate
      * @param y
@@ -926,7 +926,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Establishes a new foreground or fill color.
-     * 
+     *
      * @param col
      *            the color to apply (null skips this operation)
      * @param fill
@@ -936,7 +936,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Draw an image at the indicated location.
-     * 
+     *
      * @param url
      *            the URI/URL of the image
      * @param pos
@@ -949,7 +949,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Draw an image at the indicated location.
-     * 
+     *
      * @param url
      *            the URI/URL of the image
      * @param pos
@@ -961,7 +961,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Draw a border segment of an XSL-FO style border.
-     * 
+     *
      * @param x1
      *            starting x coordinate
      * @param y1
@@ -999,7 +999,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
      * Establishes a new coordinate system with the given transformation matrix.
      * The current graphics state is saved and the new coordinate system is
      * concatenated.
-     * 
+     *
      * @param block
      *
      * @param at

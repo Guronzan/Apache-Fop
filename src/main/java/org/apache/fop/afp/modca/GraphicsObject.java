@@ -22,12 +22,10 @@ package org.apache.fop.afp.modca;
 import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.fop.afp.AFPDataObjectInfo;
 import org.apache.fop.afp.AFPObjectAreaInfo;
-import org.apache.fop.afp.Completable;
 import org.apache.fop.afp.Factory;
 import org.apache.fop.afp.StructuredData;
 import org.apache.fop.afp.goca.GraphicsAreaBegin;
@@ -60,11 +58,7 @@ public class GraphicsObject extends AbstractDataObject {
     private GraphicsData currentData = null;
 
     /** list of objects contained within this container */
-    protected List/* <GraphicsData> */objects = new java.util.ArrayList/*
-     * <
-     * GraphicsData
-     * >
-     */();
+    protected List<GraphicsData> objects = new java.util.ArrayList<>();
 
     /** the graphics state */
     private final GraphicsState graphicsState = new GraphicsState();
@@ -396,9 +390,7 @@ public class GraphicsObject extends AbstractDataObject {
     /** {@inheritDoc} */
     @Override
     public void setComplete(final boolean complete) {
-        final Iterator it = this.objects.iterator();
-        while (it.hasNext()) {
-            final Completable completedObject = (Completable) it.next();
+        for (final GraphicsData completedObject : this.objects) {
             completedObject.setComplete(true);
         }
         super.setComplete(complete);

@@ -21,8 +21,8 @@ package org.apache.fop.fonts.autodetect;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -76,10 +76,9 @@ public class FontInfoFinder {
     private void generateTripletsFromFont(final CustomFont customFont,
             final Collection<FontTriplet> triplets) {
         if (log.isTraceEnabled()) {
-            log.trace("Font: " + customFont.getFullName() + ", family: "
-                    + customFont.getFamilyNames() + ", PS: "
-                    + customFont.getFontName() + ", EmbedName: "
-                    + customFont.getEmbedFontName());
+            log.trace("Font: {}, family: {}, PS: {} , EmbedName: {}",
+                    customFont.getFullName(), customFont.getFamilyNames(),
+                    customFont.getFontName(), customFont.getEmbedFontName());
         }
 
         // default style and weight triplet vales (fallback)
@@ -107,10 +106,9 @@ public class FontInfoFinder {
             triplets.add(new FontTriplet(strippedName, Font.STYLE_NORMAL,
                     Font.WEIGHT_NORMAL));
         }
-        final Set familyNames = customFont.getFamilyNames();
-        final Iterator iter = familyNames.iterator();
-        while (iter.hasNext()) {
-            final String familyName = stripQuotes((String) iter.next());
+        final Set<String> familyNames = customFont.getFamilyNames();
+        for (final String name : familyNames) {
+            final String familyName = stripQuotes(name);
             if (!fullName.equals(familyName)) {
                 /*
                  * Heuristic: The more similar the family name to the full font
@@ -155,7 +153,7 @@ public class FontInfoFinder {
      */
     private EmbedFontInfo getFontInfoFromCustomFont(final URL fontUrl,
             final CustomFont customFont, final FontCache fontCache) {
-        final List fontTripletList = new java.util.ArrayList();
+        final List<FontTriplet> fontTripletList = new ArrayList<>();
         generateTripletsFromFont(customFont, fontTripletList);
         String embedUrl;
         embedUrl = fontUrl.toExternalForm();
@@ -216,7 +214,7 @@ public class FontInfoFinder {
         CustomFont customFont = null;
         if (fontUrl.toExternalForm().endsWith(".ttc")) {
             // Get a list of the TTC Font names
-            List ttcNames = null; // List<String>
+            List<String> ttcNames = null;
             final String fontFileURI = fontUrl.toExternalForm().trim();
             InputStream in = null;
             try {
@@ -234,21 +232,10 @@ public class FontInfoFinder {
                 IOUtils.closeQuietly(in);
             }
 
-            final List/* <EmbedFontInfo> */embedFontInfoList = new java.util.ArrayList/*
-                                                                                       * <
-                                                                                       * EmbedFontInfo
-                                                                                       * >
-                                                                                       */();
+            final List<EmbedFontInfo> embedFontInfoList = new ArrayList<>();
 
-            // For each font name ...
-            // for (String fontName : ttcNames) {
-            final Iterator ttcNamesIterator = ttcNames.iterator();
-            while (ttcNamesIterator.hasNext()) {
-                final String fontName = (String) ttcNamesIterator.next();
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Loading " + fontName);
-                }
+            for (final String fontName : ttcNames) {
+                log.debug("Loading {}", fontName);
                 try {
                     final TTFFontLoader ttfLoader = new TTFFontLoader(
                             fontFileURI, fontName, true, EncodingMode.AUTO,
@@ -274,7 +261,7 @@ public class FontInfoFinder {
                     embedFontInfoList.add(fi);
                 }
             }
-            return (EmbedFontInfo[]) embedFontInfoList
+            return embedFontInfoList
                     .toArray(new EmbedFontInfo[embedFontInfoList.size()]);
         } else {
             // The normal case

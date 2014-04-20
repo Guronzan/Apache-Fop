@@ -122,7 +122,7 @@ class RowGroupLayoutManager {
                     final Iterator colIter = this.tableLM.getTable()
                             .getColumns().listIterator(primary.getColIndex());
                     for (int i = 0, c = primary.getCell()
-                            .getNumberColumnsSpanned(); i < c; i++) {
+                            .getNumberColumnsSpanned(); i < c; ++i) {
                         spanWidth += ((TableColumn) colIter.next())
                                 .getColumnWidth().getValue(this.tableLM);
                     }

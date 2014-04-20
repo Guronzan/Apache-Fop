@@ -22,7 +22,6 @@ package org.apache.fop.afp.goca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.fop.afp.Completable;
@@ -34,15 +33,11 @@ import org.apache.fop.afp.modca.AbstractNamedAFPObject;
  * A base container of prepared structured AFP objects
  */
 public abstract class AbstractGraphicsDrawingOrderContainer extends
-        AbstractNamedAFPObject implements StructuredData, Completable,
-        Startable {
+AbstractNamedAFPObject implements StructuredData, Completable,
+Startable {
 
     /** list of objects contained within this container */
-    protected List/* <StructuredDataObject> */objects = new java.util.ArrayList/*
-                                                                                * <
-                                                                                * StructuredDataObject
-                                                                                * >
-                                                                                */();
+    protected List<StructuredData> objects = new java.util.ArrayList<>();
 
     /** object is complete */
     private boolean complete = false;
@@ -68,7 +63,7 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
 
     /** {@inheritDoc} */
     @Override
-    protected void writeStart(final OutputStream os) throws IOException {
+    protected void writeStart(final OutputStream os) {
         setStarted(true);
     }
 
@@ -96,7 +91,7 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
      */
     public void addAll(
             final AbstractGraphicsDrawingOrderContainer graphicsContainer) {
-        final Collection/* <StructuredDataObject> */objects = graphicsContainer
+        final Collection<StructuredData> objects = graphicsContainer
                 .getObjects();
         objects.addAll(objects);
     }
@@ -106,7 +101,7 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
      *
      * @return all the objects in this container
      */
-    private Collection getObjects() {
+    private Collection<StructuredData> getObjects() {
         return this.objects;
     }
 
@@ -119,7 +114,7 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
         final int lastIndex = this.objects.size() - 1;
         StructuredData object = null;
         if (lastIndex > -1) {
-            object = (StructuredData) this.objects.get(lastIndex);
+            object = this.objects.get(lastIndex);
             this.objects.remove(lastIndex);
         }
         return object;
@@ -134,9 +129,8 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
     @Override
     public int getDataLength() {
         int dataLen = 0;
-        final Iterator it = this.objects.iterator();
-        while (it.hasNext()) {
-            dataLen += ((StructuredData) it.next()).getDataLength();
+        for (final StructuredData data : this.objects) {
+            dataLen += data.getDataLength();
         }
         return dataLen;
     }
@@ -144,11 +138,9 @@ public abstract class AbstractGraphicsDrawingOrderContainer extends
     /** {@inheritDoc} */
     @Override
     public void setComplete(final boolean complete) {
-        final Iterator it = this.objects.iterator();
-        while (it.hasNext()) {
-            final Object object = it.next();
-            if (object instanceof Completable) {
-                ((Completable) object).setComplete(true);
+        for (final StructuredData data : this.objects) {
+            if (data instanceof Completable) {
+                ((Completable) data).setComplete(true);
             }
         }
         this.complete = true;

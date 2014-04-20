@@ -19,13 +19,15 @@
 
 package org.apache.fop.render.ps;
 
-import java.awt.geom.Dimension2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +44,6 @@ import org.apache.xmlgraphics.image.loader.ImageManager;
 import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
 import org.apache.xmlgraphics.ps.DSCConstants;
-import org.apache.xmlgraphics.ps.FormGenerator;
 import org.apache.xmlgraphics.ps.PSGenerator;
 import org.apache.xmlgraphics.ps.PSResource;
 import org.apache.xmlgraphics.ps.dsc.DSCException;
@@ -83,9 +84,9 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
     private final ResourceTracker resTracker;
 
     // key: URI, values PSImageFormResource
-    private final Map globalFormResources = new java.util.HashMap();
+    private final Map<String, PSResource> globalFormResources = new HashMap<>();
     // key: PSResource, values PSImageFormResource
-    private final Map inlineFormResources = new java.util.HashMap();
+    private final Map<PSResource, PSResource> inlineFormResources = new HashMap<>();
 
     /**
      * Main constructor.
@@ -102,7 +103,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
      */
     public ResourceHandler(final FOUserAgent userAgent,
             final FontInfo fontInfo, final ResourceTracker resTracker,
-            final Map formResources) {
+            final Map<String, PSResource> formResources) {
         this.userAgent = userAgent;
         this.fontInfo = fontInfo;
         this.resTracker = resTracker;
@@ -118,14 +119,13 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
      * @param formResources
      *            the original form resources map
      */
-    private void determineInlineForms(final Map formResources) {
+    private void determineInlineForms(
+            final Map<String, PSResource> formResources) {
         if (formResources == null) {
             return;
         }
-        final Iterator iter = formResources.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final PSResource res = (PSResource) entry.getValue();
+        for (final Entry<String, PSResource> entry : formResources.entrySet()) {
+            final PSResource res = entry.getValue();
             final long count = this.resTracker.getUsageCount(res);
             if (count > 1) {
                 // Make global form
@@ -159,7 +159,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
      */
     public void process(final InputStream in, final OutputStream out,
             final int pageCount, final Rectangle2D documentBoundingBox)
-                    throws DSCException, IOException {
+            throws DSCException, IOException {
         final DSCParser parser = new DSCParser(in);
 
         final PSGenerator gen = new PSGenerator(out);
@@ -172,7 +172,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
         header.generate(gen);
 
         parser.setFilter(new DSCFilter() {
-            private final Set filtered = new java.util.HashSet();
+            private final Set<String> filtered = new HashSet<>();
             {
                 // We rewrite those as part of the processing
                 this.filtered.add(DSCConstants.PAGES);
@@ -206,7 +206,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
                 pages.generate(gen);
                 new DSCCommentBoundingBox(documentBoundingBox).generate(gen);
                 new DSCCommentHiResBoundingBox(documentBoundingBox)
-                .generate(gen);
+                        .generate(gen);
 
                 PSFontUtils.determineSuppliedFonts(this.resTracker,
                         this.fontInfo, this.fontInfo.getUsedFonts());
@@ -281,23 +281,21 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
     }
 
     private static void registerSuppliedForms(final ResourceTracker resTracker,
-            final Map formResources) throws IOException {
+            final Map<String, PSResource> formResources) {
         if (formResources == null) {
             return;
         }
-        final Iterator iter = formResources.values().iterator();
-        while (iter.hasNext()) {
-            final PSImageFormResource form = (PSImageFormResource) iter.next();
+        for (final PSResource form : formResources.values()) {
             resTracker.registerSuppliedResource(form);
         }
     }
 
-    private void generateForms(final Map formResources, final PSGenerator gen)
-            throws IOException {
+    private void generateForms(final Map<String, PSResource> formResources,
+            final PSGenerator gen) throws IOException {
         if (formResources == null) {
             return;
         }
-        final Iterator iter = formResources.values().iterator();
+        final Iterator<PSResource> iter = formResources.values().iterator();
         while (iter.hasNext()) {
             final PSImageFormResource form = (PSImageFormResource) iter.next();
             generateFormForImage(gen, form);
@@ -325,7 +323,8 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
                     .getFactory().getImageHandlerRegistry();
             flavors = imageHandlerRegistry.getSupportedFlavors(formContext);
 
-            final Map hints = ImageUtil.getDefaultHints(sessionContext);
+            final Map<String, Object> hints = ImageUtil
+                    .getDefaultHints(sessionContext);
             final org.apache.xmlgraphics.image.loader.Image img = manager
                     .getImage(info, flavors, hints, sessionContext);
 
@@ -334,7 +333,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
             if (basicHandler == null) {
                 throw new UnsupportedOperationException(
                         "No ImageHandler available for image: " + img.getInfo()
-                        + " (" + img.getClass().getName() + ")");
+                                + " (" + img.getClass().getName() + ")");
             }
 
             if (!(basicHandler instanceof PSImageHandler)) {
@@ -355,34 +354,6 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
             eventProducer.imageError(this.resTracker,
                     info != null ? info.toString() : uri, ie, null);
         }
-    }
-
-    private static FormGenerator createMissingForm(final String formName,
-            final Dimension2D dimensions) {
-        final FormGenerator formGen = new FormGenerator(formName, null,
-                dimensions) {
-
-            @Override
-            protected void generatePaintProc(final PSGenerator gen)
-                    throws IOException {
-                gen.writeln("0 setgray");
-                gen.writeln("0 setlinewidth");
-                final String w = gen.formatDouble(dimensions.getWidth());
-                final String h = gen.formatDouble(dimensions.getHeight());
-                gen.writeln(w + " " + h + " scale");
-                gen.writeln("0 0 1 1 rectstroke");
-                gen.writeln("newpath");
-                gen.writeln("0 0 moveto");
-                gen.writeln("1 1 lineto");
-                gen.writeln("stroke");
-                gen.writeln("newpath");
-                gen.writeln("0 1 moveto");
-                gen.writeln("1 0 lineto");
-                gen.writeln("stroke");
-            }
-
-        };
-        return formGen;
     }
 
     private class IncludeResourceListener implements DSCListener {

@@ -19,8 +19,11 @@
 
 package org.apache.fop.render;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -39,30 +42,18 @@ import org.apache.xmlgraphics.util.Service;
 @Slf4j
 public abstract class AbstractImageHandlerRegistry {
 
-    private static final Comparator HANDLER_COMPARATOR = new Comparator() {
+    private static final Comparator<ImageHandlerBase> HANDLER_COMPARATOR = new Comparator<ImageHandlerBase>() {
         @Override
-        public int compare(final Object o1, final Object o2) {
-            final ImageHandlerBase h1 = (ImageHandlerBase) o1;
-            final ImageHandlerBase h2 = (ImageHandlerBase) o2;
+        public int compare(final ImageHandlerBase h1, final ImageHandlerBase h2) {
             return h1.getPriority() - h2.getPriority();
         }
     };
 
     /** Map containing image handlers for various MIME types */
-    private final Map/* <Class, ImageHandler> */handlers = new java.util.HashMap/*
-     * <
-     * Class
-     * ,
-     * ImageHandler
-     * >
-     */();
+    private final Map<Class, ImageHandlerBase> handlers = new HashMap<>();
 
     /** List containing the same handlers as above but ordered by priority */
-    private final List/* <ImageHandler> */handlerList = new java.util.LinkedList/*
-     * <
-     * ImageHandler
-     * >
-     */();
+    private final List<ImageHandlerBase> handlerList = new LinkedList<>();
 
     /** Sorted Set of registered handlers */
     private ImageFlavor[] supportedFlavors = new ImageFlavor[0];
@@ -113,9 +104,10 @@ public abstract class AbstractImageHandlerRegistry {
         this.handlers.put(handler.getSupportedImageClass(), handler);
 
         // Sorted insert
-        final ListIterator iter = this.handlerList.listIterator();
+        final ListIterator<ImageHandlerBase> iter = this.handlerList
+                .listIterator();
         while (iter.hasNext()) {
-            final ImageHandlerBase h = (ImageHandlerBase) iter.next();
+            final ImageHandlerBase h = iter.next();
             if (getHandlerComparator().compare(handler, h) < 0) {
                 iter.previous();
                 break;
@@ -151,7 +143,7 @@ public abstract class AbstractImageHandlerRegistry {
         ImageHandlerBase handler = null;
         Class cl = imageClass;
         while (cl != null) {
-            handler = (ImageHandlerBase) this.handlers.get(cl);
+            handler = this.handlers.get(cl);
             if (handler != null) {
                 break;
             }
@@ -168,8 +160,8 @@ public abstract class AbstractImageHandlerRegistry {
     public synchronized ImageFlavor[] getSupportedFlavors() {
         if (this.lastSync != this.handlerRegistrations) {
             // Extract all ImageFlavors into a single array
-            final List flavors = new java.util.ArrayList();
-            final Iterator iter = this.handlerList.iterator();
+            final List<ImageFlavor> flavors = new ArrayList<>();
+            final Iterator<ImageHandlerBase> iter = this.handlerList.iterator();
             while (iter.hasNext()) {
                 final ImageFlavor[] f = ((ImageHandlerBase) iter.next())
                         .getSupportedImageFlavors();
@@ -177,8 +169,8 @@ public abstract class AbstractImageHandlerRegistry {
                     flavors.add(element);
                 }
             }
-            this.supportedFlavors = (ImageFlavor[]) flavors
-                    .toArray(new ImageFlavor[flavors.size()]);
+            this.supportedFlavors = flavors.toArray(new ImageFlavor[flavors
+                    .size()]);
             this.lastSync = this.handlerRegistrations;
         }
         return this.supportedFlavors;
@@ -190,17 +182,15 @@ public abstract class AbstractImageHandlerRegistry {
      */
     private void discoverHandlers() {
         // add mappings from available services
-        final Class imageHandlerClass = getHandlerClass();
-        final Iterator providers = Service.providers(imageHandlerClass);
+        final Class<? extends ImageHandlerBase> imageHandlerClass = getHandlerClass();
+        final Iterator<ImageHandlerBase> providers = Service
+                .providers(imageHandlerClass);
         if (providers != null) {
             while (providers.hasNext()) {
-                final ImageHandlerBase handler = (ImageHandlerBase) providers
-                        .next();
+                final ImageHandlerBase handler = providers.next();
                 try {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Dynamically adding ImageHandler: "
-                                + handler.getClass().getName());
-                    }
+                    log.debug("Dynamically adding ImageHandler: {}", handler
+                            .getClass().getName());
                     addHandler(handler);
                 } catch (final IllegalArgumentException e) {
                     log.error("Error while adding ImageHandler", e);
@@ -215,7 +205,7 @@ public abstract class AbstractImageHandlerRegistry {
      *
      * @return the ImageHandler comparator
      */
-    public Comparator getHandlerComparator() {
+    public Comparator<ImageHandlerBase> getHandlerComparator() {
         return HANDLER_COMPARATOR;
     }
 
@@ -224,5 +214,5 @@ public abstract class AbstractImageHandlerRegistry {
      *
      * @return the ImageHandler implementing class
      */
-    public abstract Class getHandlerClass();
+    public abstract Class<? extends ImageHandlerBase> getHandlerClass();
 }

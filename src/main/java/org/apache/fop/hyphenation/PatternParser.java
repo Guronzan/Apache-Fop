@@ -29,8 +29,11 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.SAXParserFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -45,13 +48,14 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author Carlos Villegas <cav@uniscope.co.jp>
  */
+@Slf4j
 public class PatternParser extends DefaultHandler implements PatternConsumer {
 
     private XMLReader parser;
     private int currElement;
     private PatternConsumer consumer;
     private final StringBuilder token;
-    private ArrayList exception;
+    private ArrayList<Object> exception;
     private char hyphenChar;
     private String errMsg;
     private boolean hasClasses = false;
@@ -61,7 +65,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     static final int ELEM_PATTERNS = 3;
     static final int ELEM_HYPHEN = 4;
 
-    public PatternParser() throws HyphenationException {
+    public PatternParser() {
         this.consumer = this;
         this.token = new StringBuilder();
         this.parser = createParser();
@@ -70,8 +74,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         this.hyphenChar = '-'; // default
     }
 
-    public PatternParser(final PatternConsumer consumer)
-            throws HyphenationException {
+    public PatternParser(final PatternConsumer consumer) {
         this();
         this.consumer = consumer;
     }
@@ -148,7 +151,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         String word;
         boolean space = false;
         int i;
-        for (i = 0; i < chars.length(); i++) {
+        for (i = 0; i < chars.length(); ++i) {
             if (Character.isWhitespace(chars.charAt(i))) {
                 space = true;
             } else {
@@ -168,7 +171,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
             }
         }
         space = false;
-        for (i = 0; i < chars.length(); i++) {
+        for (i = 0; i < chars.length(); ++i) {
             if (Character.isWhitespace(chars.charAt(i))) {
                 space = true;
                 break;
@@ -192,7 +195,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     protected static String getPattern(final String word) {
         final StringBuilder pat = new StringBuilder();
         final int len = word.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             if (!Character.isDigit(word.charAt(i))) {
                 pat.append(word.charAt(i));
             }
@@ -200,9 +203,9 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         return pat.toString();
     }
 
-    protected ArrayList normalizeException(final ArrayList ex) {
-        final ArrayList res = new ArrayList();
-        for (int i = 0; i < ex.size(); i++) {
+    protected ArrayList<Object> normalizeException(final ArrayList<Object> ex) {
+        final ArrayList<Object> res = new ArrayList<>();
+        for (int i = 0; i < ex.size(); ++i) {
             final Object item = ex.get(i);
             if (item instanceof String) {
                 final String str = (String) item;
@@ -231,10 +234,9 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         return res;
     }
 
-    protected String getExceptionWord(final ArrayList ex) {
+    protected String getExceptionWord(final ArrayList<Object> ex) {
         final StringBuilder res = new StringBuilder();
-        for (int i = 0; i < ex.size(); i++) {
-            final Object item = ex.get(i);
+        for (final Object item : ex) {
             if (item instanceof String) {
                 res.append((String) item);
             } else {
@@ -250,11 +252,11 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         final StringBuilder il = new StringBuilder();
         final String word = pat + "a"; // add dummy letter to serve as sentinel
         final int len = word.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             final char c = word.charAt(i);
             if (Character.isDigit(c)) {
                 il.append(c);
-                i++;
+                ++i;
             } else {
                 il.append('0');
             }
@@ -267,10 +269,9 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         this.parser = createParser();
         this.parser.setContentHandler(this);
         this.parser.setErrorHandler(this);
-        final InputStream stream = this.getClass().getResourceAsStream(
-                "classes.xml");
-        final InputSource source = new InputSource(stream);
-        try {
+        try (final InputStream stream = this.getClass().getResourceAsStream(
+                "classes.xml")) {
+            final InputSource source = new InputSource(stream);
             this.parser.parse(source);
         } catch (final IOException ioe) {
             throw new SAXException(ioe.getMessage());
@@ -308,7 +309,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
                 getExternalClasses();
             }
             this.currElement = ELEM_EXCEPTIONS;
-            this.exception = new ArrayList();
+            this.exception = new ArrayList<>();
         } else if (local.equals("hyphen")) {
             if (this.token.length() > 0) {
                 this.exception.add(this.token.toString());
@@ -323,6 +324,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void endElement(final String uri, final String local,
             final String raw) {
@@ -337,7 +339,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
                 this.exception.add(word);
                 this.exception = normalizeException(this.exception);
                 this.consumer.addException(getExceptionWord(this.exception),
-                        (ArrayList) this.exception.clone());
+                        (ArrayList<Object>) this.exception.clone());
                 break;
             case ELEM_PATTERNS:
                 this.consumer.addPattern(getPattern(word),
@@ -365,13 +367,14 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void characters(final char ch[], final int start, final int length) {
         final StringBuilder chars = new StringBuilder(length);
         chars.append(ch, start, length);
         String word = readToken(chars);
         while (word != null) {
-            // System.out.println("\"" + word + "\"");
+            // log.info("\"" + word + "\"");
             switch (this.currElement) {
             case ELEM_CLASSES:
                 this.consumer.addClass(word);
@@ -380,7 +383,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
                 this.exception.add(word);
                 this.exception = normalizeException(this.exception);
                 this.consumer.addException(getExceptionWord(this.exception),
-                        (ArrayList) this.exception.clone());
+                        (ArrayList<Object>) this.exception.clone());
                 this.exception.clear();
                 break;
             case ELEM_PATTERNS:
@@ -455,8 +458,8 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     }
 
     @Override
-    public void addException(final String w, final ArrayList e) {
-        this.testOut.println("exception: " + w + " : " + e.toString());
+    public void addException(final String w, final List<Object> e) {
+        log.error("exception: " + w + " : " + e.toString());
     }
 
     @Override
@@ -489,9 +492,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
                 pp.setTestOut(p);
             }
             pp.parse(args[0]);
-            if (pp != null) {
-                pp.closeTestOut();
-            }
+            pp.closeTestOut();
         }
     }
 

@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -75,46 +77,36 @@ public class CharacterSetBuilder {
 
     /** Codepage MO:DCA structured field. */
     private static final byte[] CODEPAGE_SF = new byte[] { (byte) 0xD3,
-        (byte) 0xA8, (byte) 0x87 };
+            (byte) 0xA8, (byte) 0x87 };
 
     /** Character table MO:DCA structured field. */
     private static final byte[] CHARACTER_TABLE_SF = new byte[] { (byte) 0xD3,
-        (byte) 0x8C, (byte) 0x87 };
+            (byte) 0x8C, (byte) 0x87 };
 
     /** Font descriptor MO:DCA structured field. */
     private static final byte[] FONT_DESCRIPTOR_SF = new byte[] { (byte) 0xD3,
-        (byte) 0xA6, (byte) 0x89 };
+            (byte) 0xA6, (byte) 0x89 };
 
     /** Font control MO:DCA structured field. */
     private static final byte[] FONT_CONTROL_SF = new byte[] { (byte) 0xD3,
-        (byte) 0xA7, (byte) 0x89 };
+            (byte) 0xA7, (byte) 0x89 };
 
     /** Font orientation MO:DCA structured field. */
     private static final byte[] FONT_ORIENTATION_SF = new byte[] { (byte) 0xD3,
-        (byte) 0xAE, (byte) 0x89 };
+            (byte) 0xAE, (byte) 0x89 };
 
     /** Font position MO:DCA structured field. */
     private static final byte[] FONT_POSITION_SF = new byte[] { (byte) 0xD3,
-        (byte) 0xAC, (byte) 0x89 };
+            (byte) 0xAC, (byte) 0x89 };
 
     /** Font index MO:DCA structured field. */
     private static final byte[] FONT_INDEX_SF = new byte[] { (byte) 0xD3,
-        (byte) 0x8C, (byte) 0x89 };
+            (byte) 0x8C, (byte) 0x89 };
 
     /**
      * The collection of code pages
      */
-    private final Map/* <String, Map<String, String>> */codePagesCache = new WeakHashMap/*
-     * <
-     * String
-     * ,
-     * Map
-     * <
-     * String
-     * ,
-     * String
-     * >>
-     */();
+    private final Map<String, Map<String, String>> codePagesCache = new WeakHashMap<>();
 
     /**
      * Cache of charactersets
@@ -227,25 +219,21 @@ public class CharacterSetBuilder {
         characterSet = new CharacterSet(codePageName, encoding,
                 characterSetName, accessor);
 
-        InputStream inputStream = null;
+        /**
+         * Get the code page which contains the character mapping information to
+         * map the unicode character id to the graphic chracter global
+         * identifier.
+         */
 
-        try {
+        Map<String, String> codePage = this.codePagesCache.get(codePageName);
 
-            /**
-             * Get the code page which contains the character mapping
-             * information to map the unicode character id to the graphic
-             * chracter global identifier.
-             */
+        if (codePage == null) {
+            codePage = loadCodePage(codePageName, encoding, accessor);
+            this.codePagesCache.put(codePageName, codePage);
+        }
 
-            Map/* <String,String> */codePage = (Map/* <String,String> */) this.codePagesCache
-                    .get(codePageName);
-
-            if (codePage == null) {
-                codePage = loadCodePage(codePageName, encoding, accessor);
-                this.codePagesCache.put(codePageName, codePage);
-            }
-
-            inputStream = openInputStream(accessor, characterSetName);
+        try (InputStream inputStream = openInputStream(accessor,
+                characterSetName)) {
 
             final StructuredFieldReader structuredFieldReader = new StructuredFieldReader(
                     inputStream);
@@ -282,15 +270,12 @@ public class CharacterSetBuilder {
                             characterSetOrientation, codePage,
                             metricNormalizationFactor);
                     characterSet
-                    .addCharacterSetOrientation(characterSetOrientation);
+                            .addCharacterSetOrientation(characterSetOrientation);
                 }
             } else {
                 throw new IOException(
                         "Missing D3AE89 Font Control structured field.");
             }
-
-        } finally {
-            closeInputStream(inputStream);
         }
         this.characterSetsCache.put(descriptor, characterSet);
         return characterSet;
@@ -333,16 +318,13 @@ public class CharacterSetBuilder {
      * @throws IOException
      *             if an I/O exception of some sort has occurred.
      */
-    protected Map/* <String,String> */loadCodePage(final String codePage,
+    protected Map<String, String> loadCodePage(final String codePage,
             final String encoding, final ResourceAccessor accessor)
-                    throws IOException {
+            throws IOException {
 
         // Create the HashMap to store code page information
-        final Map/* <String,String> */codePages = new java.util.HashMap/*
-         * <String
-         * ,
-         * String
-         * >
+        final Map<String, String> codePages = new HashMap/*
+         * <String , String >
          */();
 
         InputStream inputStream = null;
@@ -402,7 +384,7 @@ public class CharacterSetBuilder {
      */
     protected static FontDescriptor processFontDescriptor(
             final StructuredFieldReader structuredFieldReader)
-                    throws IOException {
+            throws IOException {
 
         final byte[] fndData = structuredFieldReader
                 .getNext(FONT_DESCRIPTOR_SF);
@@ -420,7 +402,7 @@ public class CharacterSetBuilder {
      */
     protected FontControl processFontControl(
             final StructuredFieldReader structuredFieldReader)
-                    throws IOException {
+            throws IOException {
 
         final byte[] fncData = structuredFieldReader.getNext(FONT_CONTROL_SF);
 
@@ -454,14 +436,14 @@ public class CharacterSetBuilder {
      */
     protected CharacterSetOrientation[] processFontOrientation(
             final StructuredFieldReader structuredFieldReader)
-                    throws IOException {
+            throws IOException {
 
         final byte[] data = structuredFieldReader.getNext(FONT_ORIENTATION_SF);
 
         int position = 0;
         final byte[] fnoData = new byte[26];
 
-        final List orientations = new java.util.ArrayList();
+        final List<CharacterSetOrientation> orientations = new ArrayList<>();
 
         // Read data, ignoring bytes 0 - 2
         for (int index = 3; index < data.length; index++) {
@@ -490,8 +472,7 @@ public class CharacterSetBuilder {
             }
         }
 
-        return (CharacterSetOrientation[]) orientations
-                .toArray(EMPTY_CSO_ARRAY);
+        return orientations.toArray(EMPTY_CSO_ARRAY);
     }
 
     /**
@@ -573,7 +554,7 @@ public class CharacterSetBuilder {
     protected void processFontIndex(
             final StructuredFieldReader structuredFieldReader,
             final CharacterSetOrientation cso,
-            final Map/* <String,String> */codepage,
+            final Map<String, String> codepage,
             final double metricNormalizationFactor) throws IOException {
 
         final byte[] data = structuredFieldReader.getNext(FONT_INDEX_SF);
@@ -604,7 +585,7 @@ public class CharacterSetBuilder {
                 final String gcgiString = new String(gcgid,
                         AFPConstants.EBCIDIC_ENCODING);
 
-                final String idx = (String) codepage.get(gcgiString);
+                final String idx = codepage.get(gcgiString);
 
                 if (idx != null) {
 
@@ -724,18 +705,12 @@ public class CharacterSetBuilder {
     private static class DoubleByteLoader extends CharacterSetBuilder {
 
         @Override
-        protected Map/* <String,String> */loadCodePage(final String codePage,
+        protected Map<String, String> loadCodePage(final String codePage,
                 final String encoding, final ResourceAccessor accessor)
-                        throws IOException {
+                throws IOException {
 
             // Create the HashMap to store code page information
-            final Map/* <String,String> */codePages = new java.util.HashMap/*
-             * <
-             * String
-             * ,
-             * String
-             * >
-             */();
+            final Map<String, String> codePages = new HashMap<>();
 
             InputStream inputStream = null;
             try {
@@ -801,7 +776,7 @@ public class CharacterSetBuilder {
             break;
         case (byte) 0x87:
             degrees = 270;
-            break;
+        break;
         default:
             throw new IllegalStateException("Invalid orientation: "
                     + orientation);

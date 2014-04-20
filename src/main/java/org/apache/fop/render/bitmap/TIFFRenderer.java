@@ -118,7 +118,7 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
         log.debug("Starting TIFF encoding ...");
 
         // Creates lazy iterator over generated page images
-        final Iterator pageImagesItr = new LazyPageImagesIterator(
+        final Iterator<RenderedImage> pageImagesItr = new LazyPageImagesIterator(
                 getNumberOfPages());
 
         // Creates writer
@@ -135,16 +135,15 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
             try {
                 // Write all pages/images
                 while (pageImagesItr.hasNext()) {
-                    final RenderedImage img = (RenderedImage) pageImagesItr
-                            .next();
+                    final RenderedImage img = pageImagesItr.next();
                     multiWriter.writeImage(img, this.writerParams);
                 }
             } finally {
                 multiWriter.close();
             }
         } else {
-            writer.writeImage((RenderedImage) pageImagesItr.next(),
-                    this.outputStream, this.writerParams);
+            writer.writeImage(pageImagesItr.next(), this.outputStream,
+                    this.writerParams);
             if (pageImagesItr.hasNext()) {
                 final BitmapRendererEventProducer eventProducer = BitmapRendererEventProducer.Provider
                         .get(getUserAgent().getEventBroadcaster());
@@ -167,7 +166,7 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
     }
 
     /** Private inner class to lazy page rendering. */
-    private class LazyPageImagesIterator implements Iterator {
+    private class LazyPageImagesIterator implements Iterator<RenderedImage> {
 
         private final int count;
 
@@ -192,10 +191,8 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
         }
 
         @Override
-        public Object next() {
-            if (log.isDebugEnabled()) {
-                log.debug("[" + (this.current + 1) + "]");
-            }
+        public RenderedImage next() {
+            log.debug("[{}]", this.current + 1);
 
             // Renders current page as image
             BufferedImage pageImage = null;
@@ -224,7 +221,7 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
                 final int[] off = new int[bands];
                 final int w = pageImage.getWidth();
                 final int h = pageImage.getHeight();
-                for (int i = 0; i < bands; i++) {
+                for (int i = 0; i < bands; ++i) {
                     off[i] = i;
                 }
                 final SampleModel sm = new PixelInterleavedSampleModel(

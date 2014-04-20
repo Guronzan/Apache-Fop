@@ -104,7 +104,7 @@ public class AdvancedMessageFormat {
                     parent.addChild(new TextPart(sb.toString()));
                     sb.setLength(0);
                 }
-                i++;
+                ++i;
                 int nesting = 1;
                 while (i < len) {
                     ch = pattern.charAt(i);
@@ -113,25 +113,25 @@ public class AdvancedMessageFormat {
                     } else if (ch == '}') {
                         nesting--;
                         if (nesting == 0) {
-                            i++;
+                            ++i;
                             break;
                         }
                     }
                     sb.append(ch);
-                    i++;
+                    ++i;
                 }
                 parent.addChild(parseField(sb.toString()));
                 sb.setLength(0);
                 break;
             case ']':
-                i++;
+                ++i;
                 break loop; // Current composite is finished
             case '[':
                 if (sb.length() > 0) {
                     parent.addChild(new TextPart(sb.toString()));
                     sb.setLength(0);
                 }
-                i++;
+                ++i;
                 final CompositePart composite = new CompositePart(true);
                 parent.addChild(composite);
                 i += parseInnerPattern(pattern, composite, sb, i);
@@ -142,17 +142,17 @@ public class AdvancedMessageFormat {
                     sb.setLength(0);
                 }
                 parent.newSection();
-                i++;
+                ++i;
                 break;
             case '\\':
                 if (i < len - 1) {
-                    i++;
+                    ++i;
                     ch = pattern.charAt(i);
                 }
                 // no break here! Must be right before "default" section
             default:
                 sb.append(ch);
-                i++;
+                ++i;
             }
         }
         if (sb.length() > 0) {

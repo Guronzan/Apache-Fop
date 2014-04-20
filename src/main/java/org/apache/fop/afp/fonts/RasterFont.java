@@ -69,7 +69,7 @@ public class RasterFont extends AFPFont {
      */
     public void addCharacterSet(final int size, final CharacterSet characterSet) {
         // TODO: replace with Integer.valueOf() once we switch to Java 5
-        this.charSets.put(new Integer(size), characterSet);
+        this.charSets.put((size), characterSet);
         this.charSet = characterSet;
     }
 
@@ -84,7 +84,7 @@ public class RasterFont extends AFPFont {
     public CharacterSet getCharacterSet(final int size) {
 
         // TODO: replace with Integer.valueOf() once we switch to Java 5
-        final Integer requestedSize = new Integer(size);
+        final Integer requestedSize = (size);
         CharacterSet csm = (CharacterSet) this.charSets.get(requestedSize);
 
         if (csm != null) {
@@ -110,9 +110,9 @@ public class RasterFont extends AFPFont {
             Integer fontSize;
             if (!smallerSizes.isEmpty()
                     && size - smallerSize <= largerSize - size) {
-                fontSize = new Integer(smallerSize);
+                fontSize = (smallerSize);
             } else {
-                fontSize = new Integer(largerSize);
+                fontSize = (largerSize);
             }
             csm = (CharacterSet) this.charSets.get(fontSize);
 
@@ -273,7 +273,7 @@ public class RasterFont extends AFPFont {
     public int[] getWidths(final int size) {
         final CharacterSet cs = getCharacterSet(size);
         final int[] widths = cs.getWidths();
-        for (int i = 0, c = widths.length; i < c; i++) {
+        for (int i = 0, c = widths.length; i < c; ++i) {
             widths[i] = metricsToAbsoluteSize(cs, widths[i], size);
         }
         return widths;

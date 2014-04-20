@@ -33,7 +33,7 @@ public class PDFAnnotList extends PDFObject {
     /**
      * the /Annot objects
      */
-    private final List links = new java.util.Vector();
+    private final List<PDFObject> links = new java.util.ArrayList<>();
 
     /**
      * add an /Annot object of /Subtype /Link.
@@ -62,8 +62,8 @@ public class PDFAnnotList extends PDFObject {
         final StringBuilder p = new StringBuilder(128);
         p.append(getObjectID());
         p.append("[\n");
-        for (int i = 0; i < getCount(); i++) {
-            p.append(((PDFObject) this.links.get(i)).referencePDF());
+        for (int i = 0; i < getCount(); ++i) {
+            p.append(this.links.get(i).referencePDF());
             p.append("\n");
         }
         p.append("]\nendobj\n");

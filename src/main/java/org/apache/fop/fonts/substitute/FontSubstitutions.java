@@ -19,7 +19,6 @@
 
 package org.apache.fop.fonts.substitute;
 
-import java.util.Iterator;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +30,7 @@ import org.apache.fop.fonts.FontTriplet;
  * Font substitutions
  */
 @Slf4j
-public class FontSubstitutions extends java.util.ArrayList/* <Substitutions> */{
+public class FontSubstitutions extends java.util.ArrayList<FontSubstitution> {
 
     private static final long serialVersionUID = -9173104935431899722L;
 
@@ -42,11 +41,7 @@ public class FontSubstitutions extends java.util.ArrayList/* <Substitutions> */{
      *            font info
      */
     public void adjustFontInfo(final FontInfo fontInfo) {
-        for (final Iterator/* <FontSubstitution> */subsIt = super.iterator(); subsIt
-                .hasNext();) {
-            final FontSubstitution substitution = (FontSubstitution) subsIt
-                    .next();
-
+        for (final FontSubstitution substitution : this) {
             // find the best matching font triplet
             final FontQualifier toQualifier = substitution.getToQualifier();
             final FontTriplet fontTriplet = toQualifier.bestMatch(fontInfo);
@@ -59,11 +54,8 @@ public class FontSubstitutions extends java.util.ArrayList/* <Substitutions> */{
                     .getInternalFontKey(fontTriplet);
 
             final FontQualifier fromQualifier = substitution.getFromQualifier();
-            final List/* <FontTriplet> */tripletList = fromQualifier
-                    .getTriplets();
-            for (final Iterator tripletit = tripletList.iterator(); tripletit
-                    .hasNext();) {
-                final FontTriplet triplet = (FontTriplet) tripletit.next();
+            final List<FontTriplet> tripletList = fromQualifier.getTriplets();
+            for (final FontTriplet triplet : tripletList) {
                 fontInfo.addFontProperties(internalFontKey, triplet);
             }
         }

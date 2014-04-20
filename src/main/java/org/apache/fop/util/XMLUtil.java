@@ -34,7 +34,7 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a boolean value.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -55,7 +55,7 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a int value.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -76,7 +76,7 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a int value.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -97,7 +97,7 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Returns an attribute value as a Integer value.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -111,14 +111,14 @@ public class XMLUtil implements XMLConstants {
         if (s == null) {
             return null;
         } else {
-            return new Integer(s);
+            return Integer.parseInt(s);
         }
     }
 
     /**
      * Returns an attribute value as a Rectangle2D value. The string value is
      * expected as 4 double-precision numbers separated by whitespace.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -140,7 +140,7 @@ public class XMLUtil implements XMLConstants {
     /**
      * Returns an attribute value as a Rectangle value. The string value is
      * expected as 4 integer numbers separated by whitespace.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -164,7 +164,7 @@ public class XMLUtil implements XMLConstants {
     /**
      * Returns an attribute value as a integer array. The string value is
      * expected as 4 integer numbers separated by whitespace.
-     * 
+     *
      * @param attributes
      *            the Attributes object
      * @param name
@@ -183,7 +183,7 @@ public class XMLUtil implements XMLConstants {
 
     /**
      * Adds an attribute to a given {@link AttributesImpl} instance.
-     * 
+     *
      * @param atts
      *            the attributes collection
      * @param attribute
@@ -202,7 +202,7 @@ public class XMLUtil implements XMLConstants {
     /**
      * Adds an attribute to a given {@link AttributesImpl} instance. The
      * attribute will be added in the default namespace.
-     * 
+     *
      * @param atts
      *            the attributes collection
      * @param localName
@@ -218,7 +218,7 @@ public class XMLUtil implements XMLConstants {
     /**
      * Converts a {@link Locale} instance to an RFC 3066 compliant language
      * identifier.
-     * 
+     *
      * @param language
      *            the language
      * @return the formatted language identifier
@@ -239,7 +239,7 @@ public class XMLUtil implements XMLConstants {
     /**
      * Converts an RFC 3066 compliant language identifier to a {@link Locale}
      * instance.
-     * 
+     *
      * @param lang
      *            the language string
      * @return the converted locale instance

@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr.inline;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,12 @@ public class LineLayoutPossibilities {
     private class Possibility {
         private final int lineCount;
         private final double demerits;
-        private final List breakPositions;
+        private final List<Position> breakPositions;
 
         private Possibility(final int lc, final double dem) {
             this.lineCount = lc;
             this.demerits = dem;
-            this.breakPositions = new java.util.ArrayList(lc);
+            this.breakPositions = new ArrayList<>(lc);
         }
 
         private int getLineCount() {
@@ -55,12 +56,12 @@ public class LineLayoutPossibilities {
         }
 
         private Position getBreakPosition(final int i) {
-            return (Position) this.breakPositions.get(i);
+            return this.breakPositions.get(i);
         }
     }
 
-    private List possibilitiesList;
-    private List savedPossibilities;
+    private List<Possibility> possibilitiesList;
+    private List<Possibility> savedPossibilities;
     private int minimumIndex;
     private int optimumIndex;
     private int maximumIndex;
@@ -68,8 +69,8 @@ public class LineLayoutPossibilities {
     private int savedOptLineCount;
 
     public LineLayoutPossibilities() {
-        this.possibilitiesList = new java.util.ArrayList();
-        this.savedPossibilities = new java.util.ArrayList();
+        this.possibilitiesList = new ArrayList<>();
+        this.savedPossibilities = new ArrayList<>();
         this.optimumIndex = -1;
     }
 
@@ -82,17 +83,17 @@ public class LineLayoutPossibilities {
             this.maximumIndex = 0;
             this.chosenIndex = 0;
         } else {
-            if (dem < ((Possibility) this.possibilitiesList
-                    .get(this.optimumIndex)).getDemerits()) {
+            if (dem < this.possibilitiesList.get(this.optimumIndex)
+                    .getDemerits()) {
                 this.optimumIndex = this.possibilitiesList.size() - 1;
                 this.chosenIndex = this.optimumIndex;
             }
-            if (ln < ((Possibility) this.possibilitiesList
-                    .get(this.minimumIndex)).getLineCount()) {
+            if (ln < this.possibilitiesList.get(this.minimumIndex)
+                    .getLineCount()) {
                 this.minimumIndex = this.possibilitiesList.size() - 1;
             }
-            if (ln > ((Possibility) this.possibilitiesList
-                    .get(this.maximumIndex)).getLineCount()) {
+            if (ln > this.possibilitiesList.get(this.maximumIndex)
+                    .getLineCount()) {
                 this.maximumIndex = this.possibilitiesList.size() - 1;
             }
         }
@@ -109,7 +110,7 @@ public class LineLayoutPossibilities {
             this.savedOptLineCount = 0;
         }
         this.savedPossibilities = this.possibilitiesList;
-        this.possibilitiesList = new java.util.ArrayList();
+        this.possibilitiesList = new ArrayList<>();
     }
 
     /*
@@ -119,7 +120,7 @@ public class LineLayoutPossibilities {
     public void restorePossibilities() {
         int index = 0;
         while (this.savedPossibilities.size() > 0) {
-            final Possibility restoredPossibility = (Possibility) this.savedPossibilities
+            final Possibility restoredPossibility = this.savedPossibilities
                     .remove(0);
             if (restoredPossibility.getLineCount() < getMinLineCount()) {
                 // if the line number of restoredPossibility is less than the
@@ -145,7 +146,7 @@ public class LineLayoutPossibilities {
                 // find the index of the Possibility that will be replaced
                 while (index < this.maximumIndex
                         && getLineCount(index) < restoredPossibility
-                        .getLineCount()) {
+                                .getLineCount()) {
                     index++;
                 }
                 if (getLineCount(index) == restoredPossibility.getLineCount()) {
@@ -162,7 +163,7 @@ public class LineLayoutPossibilities {
             // update optimumIndex and chosenIndex
             if (this.savedOptLineCount == 0
                     && getDemerits(this.optimumIndex) > restoredPossibility
-                    .getDemerits()
+                            .getDemerits()
                     || this.savedOptLineCount != 0
                     && restoredPossibility.getLineCount() == this.savedOptLineCount) {
                 this.optimumIndex = index;
@@ -175,7 +176,7 @@ public class LineLayoutPossibilities {
     }
 
     public void addBreakPosition(final Position pos, final int i) {
-        ((Possibility) this.possibilitiesList.get(i)).addBreakPosition(pos);
+        this.possibilitiesList.get(i).addBreakPosition(pos);
     }
 
     public boolean canUseMoreLines() {
@@ -203,7 +204,7 @@ public class LineLayoutPossibilities {
     }
 
     public int getLineCount(final int i) {
-        return ((Possibility) this.possibilitiesList.get(i)).getLineCount();
+        return this.possibilitiesList.get(i).getLineCount();
     }
 
     public double getChosenDemerits() {
@@ -211,7 +212,7 @@ public class LineLayoutPossibilities {
     }
 
     public double getDemerits(final int i) {
-        return ((Possibility) this.possibilitiesList.get(i)).getDemerits();
+        return this.possibilitiesList.get(i).getDemerits();
     }
 
     public int getPossibilitiesNumber() {
@@ -219,15 +220,14 @@ public class LineLayoutPossibilities {
     }
 
     public Position getChosenPosition(final int i) {
-        return ((Possibility) this.possibilitiesList.get(this.chosenIndex))
-                .getBreakPosition(i);
+        return this.possibilitiesList.get(this.chosenIndex).getBreakPosition(i);
     }
 
     public int applyLineCountAdjustment(final int adj) {
         if (adj >= getMinLineCount() - getChosenLineCount()
                 && adj <= getMaxLineCount() - getChosenLineCount()
                 && getLineCount(this.chosenIndex + adj) == getChosenLineCount()
-                + adj) {
+                        + adj) {
             this.chosenIndex += adj;
             log.debug("chosenLineCount= " + (getChosenLineCount() - adj)
                     + " adjustment= " + adj + " => chosenLineCount= "
@@ -241,17 +241,16 @@ public class LineLayoutPossibilities {
     }
 
     public void printAll() {
-        System.out.println("++++++++++");
-        System.out.println(" " + this.possibilitiesList.size()
+        log.info("++++++++++");
+        log.info(" " + this.possibilitiesList.size()
                 + " possibility':");
-        for (int i = 0; i < this.possibilitiesList.size(); i++) {
-            System.out.println("   "
-                    + ((Possibility) this.possibilitiesList.get(i))
-                    .getLineCount()
+        for (int i = 0; i < this.possibilitiesList.size(); ++i) {
+            log.info("   "
+                    + this.possibilitiesList.get(i).getLineCount()
                     + (i == this.optimumIndex ? " *" : "")
                     + (i == this.minimumIndex ? " -" : "")
                     + (i == this.maximumIndex ? " +" : ""));
         }
-        System.out.println("++++++++++");
+        log.info("++++++++++");
     }
 }

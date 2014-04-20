@@ -39,7 +39,7 @@ public class Container extends Area {
     /**
      * The list of block areas stacked inside this container
      */
-    protected List blocks = new ArrayList();
+    protected List<Block> blocks = new ArrayList<>();
 
     /**
      * The width of this container
@@ -67,7 +67,7 @@ public class Container extends Area {
      *
      * @return the list of block areas
      */
-    public List getBlocks() {
+    public List<Block> getBlocks() {
         return this.blocks;
     }
 

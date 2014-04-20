@@ -79,7 +79,7 @@ public class PDFLink extends PDFObject {
      *            key in the structure parent tree
      */
     public void setStructParent(final int structParent) {
-        this.structParent = new Integer(structParent);
+        this.structParent = (structParent);
     }
 
     /**

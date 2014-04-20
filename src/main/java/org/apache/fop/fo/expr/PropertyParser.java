@@ -44,7 +44,7 @@ public final class PropertyParser extends PropertyTokenizer {
     private final PropertyInfo propInfo; // Maker and propertyList related info
 
     private static final String RELUNIT = "em";
-    private static final HashMap FUNCTION_TABLE = new HashMap();
+    private static final HashMap<String, FunctionBase> FUNCTION_TABLE = new HashMap<>();
 
     static {
         // Initialize the HashMap of XSL-defined functions
@@ -78,7 +78,7 @@ public final class PropertyParser extends PropertyTokenizer {
 
     /**
      * Public entrypoint to the Property expression parser.
-     * 
+     *
      * @param expr
      *            The specified value (attribute on the xml element).
      * @param propInfo
@@ -100,7 +100,7 @@ public final class PropertyParser extends PropertyTokenizer {
 
     /**
      * Private constructor. Called by the static parse() method.
-     * 
+     *
      * @param propExpr
      *            The specified value (attribute on the xml element).
      * @param pInfo
@@ -116,7 +116,7 @@ public final class PropertyParser extends PropertyTokenizer {
      * Parse the property expression described in the instance variables. Note:
      * If the property expression String is empty, a StringProperty object
      * holding an empty String is returned.
-     * 
+     *
      * @return A Property object holding the parsed result.
      * @throws PropertyException
      *             If the "expr" cannot be parsed as a Property.
@@ -157,21 +157,21 @@ public final class PropertyParser extends PropertyTokenizer {
         // Evaluate and put result on the operand stack
         Property prop = parseMultiplicativeExpr();
         loop: while (true) {
-                switch (this.currentToken) {
-                case TOK_PLUS:
-                    next();
-                    prop = evalAddition(prop.getNumeric(),
+            switch (this.currentToken) {
+            case TOK_PLUS:
+                next();
+                prop = evalAddition(prop.getNumeric(),
                         parseMultiplicativeExpr().getNumeric());
-                    break;
-                case TOK_MINUS:
-                    next();
-                    prop = evalSubtraction(prop.getNumeric(),
+                break;
+            case TOK_MINUS:
+                next();
+                prop = evalSubtraction(prop.getNumeric(),
                         parseMultiplicativeExpr().getNumeric());
-                    break;
-                default:
-                    break loop;
-                }
+                break;
+            default:
+                break loop;
             }
+        }
         return prop;
     }
 
@@ -182,26 +182,26 @@ public final class PropertyParser extends PropertyTokenizer {
     private Property parseMultiplicativeExpr() throws PropertyException {
         Property prop = parseUnaryExpr();
         loop: while (true) {
-                switch (this.currentToken) {
-                case TOK_DIV:
-                    next();
-                    prop = evalDivide(prop.getNumeric(), parseUnaryExpr()
+            switch (this.currentToken) {
+            case TOK_DIV:
+                next();
+                prop = evalDivide(prop.getNumeric(), parseUnaryExpr()
                         .getNumeric());
-                    break;
-                case TOK_MOD:
-                    next();
-                    prop = evalModulo(prop.getNumber(), parseUnaryExpr()
+                break;
+            case TOK_MOD:
+                next();
+                prop = evalModulo(prop.getNumber(), parseUnaryExpr()
                         .getNumber());
-                    break;
-                case TOK_MULTIPLY:
-                    next();
-                    prop = evalMultiply(prop.getNumeric(), parseUnaryExpr()
+                break;
+            case TOK_MULTIPLY:
+                next();
+                prop = evalMultiply(prop.getNumeric(), parseUnaryExpr()
                         .getNumeric());
-                    break;
-                default:
-                    break loop;
-                }
+                break;
+            default:
+                break loop;
             }
+        }
         return prop;
     }
 
@@ -256,13 +256,13 @@ public final class PropertyParser extends PropertyTokenizer {
             break;
 
         case TOK_FLOAT:
-            prop = NumberProperty
-                    .getInstance(new Double(this.currentTokenValue));
+            prop = NumberProperty.getInstance(Double
+                    .parseDouble(this.currentTokenValue));
             break;
 
         case TOK_INTEGER:
-            prop = NumberProperty.getInstance(new Integer(
-                    this.currentTokenValue));
+            prop = NumberProperty.getInstance(Double
+                    .parseDouble(this.currentTokenValue));
             break;
 
         case TOK_PERCENT:
@@ -309,7 +309,7 @@ public final class PropertyParser extends PropertyTokenizer {
         case TOK_NUMERIC:
             // A number plus a valid unit name.
             final int numLen = this.currentTokenValue.length()
-                    - this.currentUnitLength;
+            - this.currentUnitLength;
             final String unitPart = this.currentTokenValue.substring(numLen);
             final double numPart = Double.parseDouble(this.currentTokenValue
                     .substring(0, numLen));
@@ -338,8 +338,8 @@ public final class PropertyParser extends PropertyTokenizer {
             break;
 
         case TOK_FUNCTION_LPAR:
-            final Function function = (Function) FUNCTION_TABLE
-                    .get(this.currentTokenValue);
+            final Function function = FUNCTION_TABLE
+            .get(this.currentTokenValue);
             if (function == null) {
                 throw new PropertyException("no such function: "
                         + this.currentTokenValue);
@@ -369,7 +369,7 @@ public final class PropertyParser extends PropertyTokenizer {
      * Parse a comma separated list of function arguments. Each argument may
      * itself be an expression. This method consumes the closing right
      * parenthesis of the argument list.
-     * 
+     *
      * @param function
      *            The function object for which the arguments are collected.
      * @return An array of Property objects representing the arguments found.
@@ -434,7 +434,7 @@ public final class PropertyParser extends PropertyTokenizer {
         // returned as a
         // negative integer from the nbArgs method
         final int nbArgs = -function.nbArgs();
-        final List args = new LinkedList();
+        final List<Property> args = new LinkedList<>();
         Property prop;
         if (this.currentToken == TOK_RPAR) {
             // No args: func()
@@ -463,7 +463,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate an addition operation. If either of the arguments is null, this
      * means that it wasn't convertible to a Numeric value.
-     * 
+     *
      * @param op1
      *            A Numeric object (Number or Length-type object)
      * @param op2
@@ -484,7 +484,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a subtraction operation. If either of the arguments is null,
      * this means that it wasn't convertible to a Numeric value.
-     * 
+     *
      * @param op1
      *            A Numeric object (Number or Length-type object)
      * @param op2
@@ -505,7 +505,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a unary minus operation. If the argument is null, this means
      * that it wasn't convertible to a Numeric value.
-     * 
+     *
      * @param op
      *            A Numeric object (Number or Length-type object)
      * @return A new NumericProperty object holding an object which represents
@@ -523,7 +523,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a multiplication operation. If either of the arguments is null,
      * this means that it wasn't convertible to a Numeric value.
-     * 
+     *
      * @param op1
      *            A Numeric object (Number or Length-type object)
      * @param op2
@@ -544,7 +544,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a division operation. If either of the arguments is null, this
      * means that it wasn't convertible to a Numeric value.
-     * 
+     *
      * @param op1
      *            A Numeric object (Number or Length-type object)
      * @param op2
@@ -565,7 +565,7 @@ public final class PropertyParser extends PropertyTokenizer {
     /**
      * Evaluate a modulo operation. If either of the arguments is null, this
      * means that it wasn't convertible to a Number value.
-     * 
+     *
      * @param op1
      *            A Number object
      * @param op2

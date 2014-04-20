@@ -94,7 +94,7 @@ public class PercentContext implements PercentBaseContext {
             this.baseWidthSet = true;
         }
         // width in mpt
-        this.lengthMap.put(fobj, new Integer(width));
+        this.lengthMap.put(fobj, width);
     }
 
     /**
@@ -106,7 +106,7 @@ public class PercentContext implements PercentBaseContext {
      *            the table unit value (in millipoints)
      */
     public void setTableUnit(final Table table, final int tableUnit) {
-        this.tableUnitMap.put(table, new Integer(tableUnit));
+        this.tableUnitMap.put(table, tableUnit);
     }
 
     /**
@@ -115,13 +115,13 @@ public class PercentContext implements PercentBaseContext {
     private Integer findParent(final FONode fobj) {
         if (fobj.getRoot() != fobj) {
             if (this.lengthMap.containsKey(fobj)) {
-                return new Integer(this.lengthMap.get(fobj).toString());
+                return this.lengthMap.get(fobj);
             } else {
                 return findParent(fobj.getParent());
             }
         } else {
             log.error("Base Value for element " + fobj.getName() + " not found");
-            return new Integer(-1);
+            return -1;
         }
     }
 

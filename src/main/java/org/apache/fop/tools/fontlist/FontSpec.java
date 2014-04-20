@@ -22,6 +22,7 @@ package org.apache.fop.tools.fontlist;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.FontTriplet;
@@ -29,12 +30,12 @@ import org.apache.fop.fonts.FontTriplet;
 /**
  * Represents a font with information on how it can be used from XSL-FO.
  */
-public class FontSpec implements Comparable {
+public class FontSpec implements Comparable<FontSpec> {
 
     private final String key;
     private final FontMetrics metrics;
-    private final SortedSet familyNames = new java.util.TreeSet();
-    private final Collection triplets = new java.util.TreeSet();
+    private final SortedSet<String> familyNames = new TreeSet<>();
+    private final Collection<FontTriplet> triplets = new TreeSet<>();
 
     /**
      * Creates a new font spec.
@@ -55,7 +56,7 @@ public class FontSpec implements Comparable {
      * @param names
      *            the names
      */
-    public void addFamilyNames(final Collection names) {
+    public void addFamilyNames(final Collection<String> names) {
         this.familyNames.addAll(names);
     }
 
@@ -74,7 +75,7 @@ public class FontSpec implements Comparable {
      *
      * @return the font family names
      */
-    public SortedSet getFamilyNames() {
+    public SortedSet<String> getFamilyNames() {
         return Collections.unmodifiableSortedSet(this.familyNames);
     }
 
@@ -83,7 +84,7 @@ public class FontSpec implements Comparable {
      *
      * @return the font triplets
      */
-    public Collection getTriplets() {
+    public Collection<FontTriplet> getTriplets() {
         return Collections.unmodifiableCollection(this.triplets);
     }
 
@@ -107,8 +108,7 @@ public class FontSpec implements Comparable {
 
     /** {@inheritDoc} */
     @Override
-    public int compareTo(final Object o) {
-        final FontSpec other = (FontSpec) o;
+    public int compareTo(final FontSpec other) {
         return this.metrics.getFullName()
                 .compareTo(other.metrics.getFullName());
     }

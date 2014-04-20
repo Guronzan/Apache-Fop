@@ -399,7 +399,7 @@ public class PSPainter extends AbstractIFPainter {
                 // sub-fonts/encodings
                 int start = 0;
                 int currentEncoding = -1;
-                for (int i = 0; i < textLen; i++) {
+                for (int i = 0; i < textLen; ++i) {
                     final char c = text.charAt(i);
                     final char mapped = tf.mapChar(c);
                     final int encoding = mapped / 256;
@@ -446,7 +446,7 @@ public class PSPainter extends AbstractIFPainter {
         final StringBuilder accText = new StringBuilder(initialSize);
         final StringBuilder sb = new StringBuilder(initialSize);
         final int dxl = dx != null ? dx.length : 0;
-        for (int i = start; i < end; i++) {
+        for (int i = start; i < end; ++i) {
             final char orgChar = text.charAt(i);
             char ch;
             int cw;

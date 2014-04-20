@@ -277,7 +277,7 @@ public class RtfTextrun extends RtfContainer {
             // add paragraph break and restore all deleted close group marks
             setChildren(children);
             new RtfParagraphBreak(this, this.writer);
-            for (int i = 0; i < deletedCloseGroupCount; i++) {
+            for (int i = 0; i < deletedCloseGroupCount; ++i) {
                 addCloseGroupMark();
             }
         }

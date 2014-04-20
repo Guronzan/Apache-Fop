@@ -21,6 +21,7 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +34,10 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class AbstractEnvironmentGroup extends AbstractNamedAFPObject {
 
     /** the collection of MapDataResource objects */
-    protected final List mapDataResources = null;
+    protected final List<MapDataResource> mapDataResources = null;
 
     /** the collection of MapPageOverlay objects */
-    protected List mapPageOverlays = null;
+    protected List<MapPageOverlay> mapPageOverlays = null;
 
     /**
      * Main constructor
@@ -48,9 +49,9 @@ public abstract class AbstractEnvironmentGroup extends AbstractNamedAFPObject {
         super(name);
     }
 
-    private List getMapPageOverlays() {
+    private List<MapPageOverlay> getMapPageOverlays() {
         if (this.mapPageOverlays == null) {
-            this.mapPageOverlays = new java.util.ArrayList();
+            this.mapPageOverlays = new ArrayList<>();
         }
         return this.mapPageOverlays;
     }
@@ -78,7 +79,9 @@ public abstract class AbstractEnvironmentGroup extends AbstractNamedAFPObject {
                 mpo.addOverlay(name);
             } catch (final MaximumSizeExceededException ex) {
                 // Should never happen (but log just in case)
-                log.error("createOverlay():: resulted in a MaximumSizeExceededException");
+                log.error(
+                        "createOverlay():: resulted in a MaximumSizeExceededException",
+                        ex);
             }
         }
     }
@@ -90,11 +93,11 @@ public abstract class AbstractEnvironmentGroup extends AbstractNamedAFPObject {
      * @return the most recent Map Coded Font
      */
     private MapPageOverlay getCurrentMapPageOverlay() {
-        return (MapPageOverlay) getLastElement(this.mapPageOverlays);
+        return getLastElement(this.mapPageOverlays);
     }
 
-    protected Object getLastElement(final List list) {
-        if (list != null && list.size() > 0) {
+    protected <T> T getLastElement(final List<T> list) {
+        if (list != null && !list.isEmpty()) {
             return list.get(list.size() - 1);
         } else {
             return null;

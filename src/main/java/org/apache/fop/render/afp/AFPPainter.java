@@ -449,7 +449,7 @@ public class AFPPainter extends AbstractIFPainter {
 
                         boolean fixedSpaceMode = false;
 
-                        for (int i = 0; i < l; i++) {
+                        for (int i = 0; i < l; ++i) {
                             final char orgChar = text.charAt(i);
                             float glyphAdjust = 0;
                             if (CharUtilities.isFixedWidthSpace(orgChar)) {
@@ -489,7 +489,7 @@ public class AFPPainter extends AbstractIFPainter {
                             }
                         }
                     } else {
-                        for (int i = 0; i < l; i++) {
+                        for (int i = 0; i < l; ++i) {
                             final char orgChar = text.charAt(i);
                             float glyphAdjust = 0;
                             if (CharUtilities.isFixedWidthSpace(orgChar)) {

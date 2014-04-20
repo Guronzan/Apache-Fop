@@ -98,7 +98,7 @@ public class InlineParent extends InlineArea {
             final int lineStretch, final int lineShrink) {
         boolean bUnresolvedAreasPresent = false;
         // recursively apply variation factor to descendant areas
-        for (int i = 0, len = this.inlines.size(); i < len; i++) {
+        for (int i = 0, len = this.inlines.size(); i < len; ++i) {
             bUnresolvedAreasPresent |= ((InlineArea) this.inlines.get(i))
                     .applyVariationFactor(variationFactor, lineStretch,
                             lineShrink);

@@ -39,11 +39,11 @@ public class Event extends EventObject {
     private String eventKey;
 
     private EventSeverity severity;
-    private final Map params;
+    private final Map<String, Object> params;
 
     /**
      * Creates a new Event.
-     * 
+     *
      * @param source
      *            the object that creates the event
      * @param eventID
@@ -54,7 +54,7 @@ public class Event extends EventObject {
      *            the event parameters (a map of name/value pairs)
      */
     public Event(final Object source, final String eventID,
-            final EventSeverity severity, final Map params) {
+            final EventSeverity severity, final Map<String, Object> params) {
         super(source);
         final int pos = eventID.lastIndexOf('.');
         if (pos < 0 || pos == eventID.length() - 1) {
@@ -69,7 +69,7 @@ public class Event extends EventObject {
 
     /**
      * Returns the event identifier.
-     * 
+     *
      * @return the event identifier
      */
     public String getEventID() {
@@ -82,7 +82,7 @@ public class Event extends EventObject {
 
     /**
      * Returns the event group identifier.
-     * 
+     *
      * @return the event group identifier (or null if there is no group
      *         identifier)
      */
@@ -92,7 +92,7 @@ public class Event extends EventObject {
 
     /**
      * Returns the event key.
-     * 
+     *
      * @return the event key
      */
     public String getEventKey() {
@@ -101,7 +101,7 @@ public class Event extends EventObject {
 
     /**
      * Returns the severity level.
-     * 
+     *
      * @return the severity level
      */
     public EventSeverity getSeverity() {
@@ -111,7 +111,7 @@ public class Event extends EventObject {
     /**
      * Sets the event's severity level. This method can be used to increase or
      * decrease the severity level in a listener.
-     * 
+     *
      * @param severity
      *            the new event severity
      */
@@ -121,7 +121,7 @@ public class Event extends EventObject {
 
     /**
      * Returns a parameter.
-     * 
+     *
      * @param key
      *            the key to the parameter
      * @return the parameter value or null if no value with this key is found
@@ -136,17 +136,17 @@ public class Event extends EventObject {
 
     /**
      * Returns an unmodifiable {@link java.util.Map} with all event parameters.
-     * 
+     *
      * @return the parameter map
      */
-    public Map getParams() {
+    public Map<String, Object> getParams() {
         return Collections.unmodifiableMap(this.params);
     }
 
     /**
      * Creates and returns a fluent builder object for building up the parameter
      * map.
-     * 
+     *
      * @return the parameter builder
      */
     public static ParamsBuilder paramsBuilder() {
@@ -157,11 +157,11 @@ public class Event extends EventObject {
      * This class is a fluent builder class for building up the parameter map.
      */
     public static class ParamsBuilder {
-        private Map params;
+        private Map<String, Object> params;
 
         /**
          * Adds a new parameter (a name/value pair).
-         * 
+         *
          * @param name
          *            the name of the parameter
          * @param value
@@ -170,7 +170,7 @@ public class Event extends EventObject {
          */
         public ParamsBuilder param(final String name, final Object value) {
             if (this.params == null) {
-                this.params = new java.util.HashMap();
+                this.params = new java.util.HashMap<>();
             }
             this.params.put(name, value);
             return this;
@@ -178,10 +178,10 @@ public class Event extends EventObject {
 
         /**
          * Returns the accumulated parameter map.
-         * 
+         *
          * @return the accumulated parameter map
          */
-        public Map build() {
+        public Map<String, Object> build() {
             return this.params;
         }
     }

@@ -62,7 +62,7 @@ public class SVGDOMContentHandlerFactory implements ContentHandlerFactory {
     }
 
     private static class Handler extends DelegatingContentHandler implements
-    ContentHandlerFactory.ObjectSource {
+            ContentHandlerFactory.ObjectSource {
 
         private Document doc;
         private ObjectBuiltListener obListener;

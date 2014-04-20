@@ -433,7 +433,7 @@ public abstract class BreakingAlgorithm {
 
         /** Reset when a new breakpoint is being considered. */
         public void reset() {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; ++i) {
                 this.bestDemerits[i] = INFINITE_DEMERITS;
                 // there is no need to reset the other arrays
             }
@@ -594,7 +594,7 @@ public abstract class BreakingAlgorithm {
         final int line = filterActiveNodes();
 
         // for each active node, create a set of breaking points
-        for (int i = this.startLine; i < this.endLine; i++) {
+        for (int i = this.startLine; i < this.endLine; ++i) {
             for (KnuthNode node = getNode(i); node != null; node = node.next) {
                 updateData1(node.line, node.totalDemerits);
                 calculateBreakPoints(node, par, node.line);
@@ -1038,7 +1038,7 @@ public abstract class BreakingAlgorithm {
         // the values stored in the node; these would be as if the break
         // was just before the next box element, thus ignoring glues and
         // penalties between the "real" break and the following box
-        for (int i = elementIdx; i < this.par.size(); i++) {
+        for (int i = elementIdx; i < this.par.size(); ++i) {
             final KnuthElement tempElement = getElement(i);
             if (tempElement.isBox()) {
                 break;
@@ -1161,7 +1161,7 @@ public abstract class BreakingAlgorithm {
         // the values stored in the node; these would be as if the break
         // was just before the next box element, thus ignoring glues and
         // penalties between the "real" break and the following box
-        for (int i = elementIdx; i < this.par.size(); i++) {
+        for (int i = elementIdx; i < this.par.size(); ++i) {
             final KnuthElement tempElement = getElement(i);
             if (tempElement.isBox()) {
                 break;
@@ -1177,7 +1177,7 @@ public abstract class BreakingAlgorithm {
         // add nodes to the active nodes list
         final double minimumDemerits = this.best.getMinDemerits()
                 + this.incompatibleFitnessDemerit;
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= 3; ++i) {
             if (this.best.notInfiniteDemerits(i)
                     && this.best.getDemerits(i) <= minimumDemerits) {
                 // the nodes in activeList must be ordered
@@ -1484,7 +1484,7 @@ public abstract class BreakingAlgorithm {
     public String toString(final String prepend) {
         final StringBuilder sb = new StringBuilder();
         sb.append("[\n");
-        for (int i = this.startLine; i < this.endLine; i++) {
+        for (int i = this.startLine; i < this.endLine; ++i) {
             for (KnuthNode node = getNode(i); node != null; node = node.next) {
                 sb.append(prepend).append('\t').append(node).append(",\n");
             }

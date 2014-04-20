@@ -212,7 +212,7 @@ public class Type1FontLoader extends FontLoader {
         final SingleByteEncoding encoding = this.singleFont.getEncoding();
         final Set glyphNames = toGlyphSet(encoding.getCharNameMap());
         final List charMetrics = afm.getCharMetrics();
-        for (int i = 0, c = afm.getCharCount(); i < c; i++) {
+        for (int i = 0, c = afm.getCharCount(); i < c; ++i) {
             final AFMCharMetrics metrics = (AFMCharMetrics) charMetrics.get(i);
             final String charName = metrics.getCharName();
             if (charName != null && !glyphNames.contains(charName)) {
@@ -232,7 +232,7 @@ public class Type1FontLoader extends FontLoader {
      */
     private void addUnencodedBasedOnAFM(final AFMFile afm) {
         final List charMetrics = afm.getCharMetrics();
-        for (int i = 0, c = afm.getCharCount(); i < c; i++) {
+        for (int i = 0, c = afm.getCharCount(); i < c; ++i) {
             final AFMCharMetrics metrics = (AFMCharMetrics) charMetrics.get(i);
             if (!metrics.hasCharCode() && metrics.getCharacter() != null) {
                 this.singleFont.addUnencodedCharacter(metrics.getCharacter(),
@@ -402,7 +402,7 @@ public class Type1FontLoader extends FontLoader {
             this.returnFont.setFlags(pfm.getFlags());
             this.returnFont.setFirstChar(pfm.getFirstChar());
             this.returnFont.setLastChar(pfm.getLastChar());
-            for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); i++) {
+            for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); ++i) {
                 this.singleFont.setWidth(i, pfm.getCharWidth(i));
             }
             if (this.useKerning) {

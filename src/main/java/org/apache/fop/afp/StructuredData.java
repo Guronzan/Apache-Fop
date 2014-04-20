@@ -23,7 +23,7 @@ package org.apache.fop.afp;
  * An AFP object which is able to know its own data length prior to
  * writeToStream()
  */
-public interface StructuredData {
+public interface StructuredData extends Streamable {
 
     /**
      * Returns the data length of this structured field

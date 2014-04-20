@@ -19,6 +19,8 @@
 
 package org.apache.fop.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -45,7 +47,7 @@ public class DOM2SAX {
     private final ContentHandler contentHandler;
     private LexicalHandler lexicalHandler;
 
-    private final Map prefixes = new java.util.HashMap();
+    private final Map<String, Stack<String>> prefixes = new HashMap<>();
 
     /**
      * Main constructor
@@ -103,14 +105,14 @@ public class DOM2SAX {
     private boolean startPrefixMapping(final String prefix, final String uri)
             throws SAXException {
         boolean pushed = true;
-        Stack uriStack = (Stack) this.prefixes.get(prefix);
+        Stack<String> uriStack = this.prefixes.get(prefix);
 
         if (uriStack != null) {
             if (uriStack.isEmpty()) {
                 this.contentHandler.startPrefixMapping(prefix, uri);
                 uriStack.push(uri);
             } else {
-                final String lastUri = (String) uriStack.peek();
+                final String lastUri = uriStack.peek();
                 if (!lastUri.equals(uri)) {
                     this.contentHandler.startPrefixMapping(prefix, uri);
                     uriStack.push(uri);
@@ -120,7 +122,7 @@ public class DOM2SAX {
             }
         } else {
             this.contentHandler.startPrefixMapping(prefix, uri);
-            uriStack = new Stack();
+            uriStack = new Stack<>();
             this.prefixes.put(prefix, uriStack);
             uriStack.push(uri);
         }
@@ -132,7 +134,7 @@ public class DOM2SAX {
      * the event to the SAX Handler.
      */
     private void endPrefixMapping(final String prefix) throws SAXException {
-        final Stack uriStack = (Stack) this.prefixes.get(prefix);
+        final Stack<String> uriStack = this.prefixes.get(prefix);
 
         if (uriStack != null) {
             this.contentHandler.endPrefixMapping(prefix);
@@ -212,13 +214,13 @@ public class DOM2SAX {
 
         case Node.ELEMENT_NODE:
             String prefix;
-            final List pushedPrefixes = new java.util.ArrayList();
+            final List<String> pushedPrefixes = new ArrayList<>();
             final AttributesImpl attrs = new AttributesImpl();
             final NamedNodeMap map = node.getAttributes();
             final int length = map.getLength();
 
             // Process all namespace declarations
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length; ++i) {
                 final Node attr = map.item(i);
                 final String qnameAttr = attr.getNodeName();
 
@@ -235,7 +237,7 @@ public class DOM2SAX {
             }
 
             // Process all other attributes
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length; ++i) {
                 final Node attr = map.item(i);
                 final String qnameAttr = attr.getNodeName();
 
@@ -289,8 +291,8 @@ public class DOM2SAX {
 
             // Generate endPrefixMapping() for all pushed prefixes
             final int nPushedPrefixes = pushedPrefixes.size();
-            for (int i = 0; i < nPushedPrefixes; i++) {
-                endPrefixMapping((String) pushedPrefixes.get(i));
+            for (int i = 0; i < nPushedPrefixes; ++i) {
+                endPrefixMapping(pushedPrefixes.get(i));
             }
             break;
 

@@ -93,10 +93,10 @@ public class PDFImageXObject extends PDFXObject {
 
     private void populateDictionaryFromImage() {
         put("Subtype", new PDFName("Image"));
-        put("Width", new Integer(this.pdfimage.getWidth()));
-        put("Height", new Integer(this.pdfimage.getHeight()));
+        put("Width", (this.pdfimage.getWidth()));
+        put("Height", (this.pdfimage.getHeight()));
         put("BitsPerComponent",
-                new Integer(this.pdfimage.getBitsPerComponent()));
+                (this.pdfimage.getBitsPerComponent()));
 
         final PDFICCStream pdfICCStream = this.pdfimage.getICCStream();
         if (pdfICCStream != null) {
@@ -116,7 +116,7 @@ public class PDFImageXObject extends PDFXObject {
             final Float one = new Float(1.0f);
             final PDFArray decode = new PDFArray(this);
             for (int i = 0, c = this.pdfimage.getColorSpace()
-                    .getNumComponents(); i < c; i++) {
+                    .getNumComponents(); i < c; ++i) {
                 decode.add(one);
                 decode.add(zero);
             }
@@ -127,15 +127,15 @@ public class PDFImageXObject extends PDFXObject {
             final PDFColor transp = this.pdfimage.getTransparentColor();
             final PDFArray mask = new PDFArray(this);
             if (this.pdfimage.getColorSpace().isGrayColorSpace()) {
-                mask.add(new Integer(transp.red255()));
-                mask.add(new Integer(transp.red255()));
+                mask.add((transp.red255()));
+                mask.add((transp.red255()));
             } else {
-                mask.add(new Integer(transp.red255()));
-                mask.add(new Integer(transp.red255()));
-                mask.add(new Integer(transp.green255()));
-                mask.add(new Integer(transp.green255()));
-                mask.add(new Integer(transp.blue255()));
-                mask.add(new Integer(transp.blue255()));
+                mask.add((transp.red255()));
+                mask.add((transp.red255()));
+                mask.add((transp.green255()));
+                mask.add((transp.green255()));
+                mask.add((transp.blue255()));
+                mask.add((transp.blue255()));
             }
             put("Mask", mask);
         }

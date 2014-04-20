@@ -20,9 +20,9 @@
 package org.apache.fop.area.inline;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
+
+import org.apache.fop.area.Area;
 
 /**
  * Filled area. This inline area contains some inline areas. When the renderer
@@ -41,32 +41,6 @@ public class FilledArea extends InlineParent {
      * Create a new filled area.
      */
     public FilledArea() {
-    }
-
-    /**
-     * Set the offset of the descendant TextAreas, instead of the offset of the
-     * FilledArea itself.
-     *
-     * @param v
-     *            the offset
-     */
-    /*
-     * public void setOffset(int v) { setChildOffset(inlines.listIterator(), v);
-     * }
-     */
-
-    private void setChildOffset(final ListIterator childrenIterator, final int v) {
-        while (childrenIterator.hasNext()) {
-            final InlineArea child = (InlineArea) childrenIterator.next();
-            if (child instanceof InlineParent) {
-                setChildOffset(((InlineParent) child).getChildAreas()
-                        .listIterator(), v);
-            } else if (child instanceof org.apache.fop.area.inline.Viewport) {
-                // nothing
-            } else {
-                child.setOffset(v);
-            }
-        }
     }
 
     /**
@@ -94,9 +68,8 @@ public class FilledArea extends InlineParent {
     @Override
     public int getBPD() {
         int bpd = 0;
-        for (final Iterator childAreaIt = getChildAreas().iterator(); childAreaIt
-                .hasNext();) {
-            final InlineArea area = (InlineArea) childAreaIt.next();
+        for (final Area element : getChildAreas()) {
+            final InlineArea area = (InlineArea) element;
             if (bpd < area.getBPD()) {
                 bpd = area.getBPD();
             }
@@ -112,10 +85,10 @@ public class FilledArea extends InlineParent {
      * @return the list of child areas copied to fill the width
      */
     @Override
-    public List getChildAreas() {
+    public List<Area> getChildAreas() {
         final int units = getIPD() / this.unitWidth;
-        final List newList = new ArrayList();
-        for (int count = 0; count < units; count++) {
+        final List<Area> newList = new ArrayList<>();
+        for (int count = 0; count < units; ++count) {
             newList.addAll(this.inlines);
         }
         return newList;

@@ -72,7 +72,7 @@ public class TextDecorationProperty extends ListProperty {
         private ListProperty checkEnums(final ListProperty lst)
                 throws PropertyException {
             final List l = lst.getList();
-            for (int i = 0; i < l.size(); i++) {
+            for (int i = 0; i < l.size(); ++i) {
                 final Property prop = (Property) l.get(i);
                 if (prop instanceof EnumProperty) {
                     // skip

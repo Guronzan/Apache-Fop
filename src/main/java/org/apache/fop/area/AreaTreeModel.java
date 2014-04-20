@@ -22,8 +22,6 @@ package org.apache.fop.area;
 // Java
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.xml.sax.SAXException;
 
 /**
@@ -32,20 +30,17 @@ import org.xml.sax.SAXException;
  * the page viewports can only assume the PageViewport is valid as it remains
  * for the life of the area tree model.
  */
-@Slf4j
 public class AreaTreeModel {
-    private List/* <PageSequence> */pageSequenceList = null;
+    private List<PageSequence> pageSequenceList = null;
     private int currentPageSequenceIndex = -1;
     /** the current page sequence */
     protected PageSequence currentPageSequence;
-
-    // private List offDocumentItems = new java.util.ArrayList();
 
     /**
      * Create a new store pages model
      */
     public AreaTreeModel() {
-        this.pageSequenceList = new java.util.ArrayList/* <PageSequence> */();
+        this.pageSequenceList = new java.util.ArrayList<>();
     }
 
     /**
@@ -72,9 +67,8 @@ public class AreaTreeModel {
     public void addPage(final PageViewport page) {
         this.currentPageSequence.addPage(page);
         int pageIndex = 0;
-        for (int i = 0; i < this.currentPageSequenceIndex; i++) {
-            pageIndex += ((PageSequence) this.pageSequenceList.get(i))
-                    .getPageCount();
+        for (int i = 0; i < this.currentPageSequenceIndex; ++i) {
+            pageIndex += this.pageSequenceList.get(i).getPageCount();
         }
         pageIndex += this.currentPageSequence.getPageCount() - 1;
         page.setPageIndex(pageIndex);
@@ -92,10 +86,10 @@ public class AreaTreeModel {
 
     /**
      * Signal the end of the document for any processing.
-     *
+     * 
      * @throws SAXException
-     *             if a problem was encountered.
      */
+    @SuppressWarnings("unused")
     public void endDocument() throws SAXException {
     };
 
@@ -125,8 +119,7 @@ public class AreaTreeModel {
      * @return returns the number of pages in a page sequence
      */
     public int getPageCount(final int seq) {
-        final PageSequence sequence = (PageSequence) this.pageSequenceList
-                .get(seq - 1);
+        final PageSequence sequence = this.pageSequenceList.get(seq - 1);
         return sequence.getPageCount();
     }
 
@@ -140,8 +133,7 @@ public class AreaTreeModel {
      * @return the PageViewport for the particular page
      */
     public PageViewport getPage(final int seq, final int count) {
-        final PageSequence sequence = (PageSequence) this.pageSequenceList
-                .get(seq - 1);
+        final PageSequence sequence = this.pageSequenceList.get(seq - 1);
         return sequence.getPage(count);
     }
 }

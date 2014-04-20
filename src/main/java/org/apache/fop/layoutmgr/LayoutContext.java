@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -101,13 +102,13 @@ public class LayoutContext {
      * A list of pending marks (border and padding) on the after edge when a
      * page break occurs. May be null.
      */
-    private List pendingAfterMarks;
+    private List<UnresolvedListElementWithLength> pendingAfterMarks;
 
     /**
      * A list of pending marks (border and padding) on the before edge when a
      * page break occurs. May be null.
      */
-    private List pendingBeforeMarks;
+    private List<UnresolvedListElementWithLength> pendingBeforeMarks;
 
     /** Current hyphenation context. May be null. */
     private HyphContext hyphContext = null;
@@ -143,7 +144,7 @@ public class LayoutContext {
 
     /**
      * Copy constructor for creating child layout contexts.
-     * 
+     *
      * @param parentLC
      *            the parent layout context to copy from
      */
@@ -170,7 +171,7 @@ public class LayoutContext {
 
     /**
      * Main constructor.
-     * 
+     *
      * @param flags
      *            the initial flags
      */
@@ -184,12 +185,10 @@ public class LayoutContext {
 
     public void copyPendingMarksFrom(final LayoutContext source) {
         if (source.pendingAfterMarks != null) {
-            this.pendingAfterMarks = new java.util.ArrayList(
-                    source.pendingAfterMarks);
+            this.pendingAfterMarks = new ArrayList<>(source.pendingAfterMarks);
         }
         if (source.pendingBeforeMarks != null) {
-            this.pendingBeforeMarks = new java.util.ArrayList(
-                    source.pendingBeforeMarks);
+            this.pendingBeforeMarks = new ArrayList<>(source.pendingBeforeMarks);
         }
     }
 
@@ -231,7 +230,7 @@ public class LayoutContext {
 
     /**
      * Returns the strength of a keep-with-next currently pending.
-     * 
+     *
      * @return the keep-with-next strength
      */
     public Keep getKeepWithNextPending() {
@@ -240,7 +239,7 @@ public class LayoutContext {
 
     /**
      * Returns the strength of a keep-with-previous currently pending.
-     * 
+     *
      * @return the keep-with-previous strength
      */
     public Keep getKeepWithPreviousPending() {
@@ -271,7 +270,7 @@ public class LayoutContext {
 
     /**
      * Updates the currently pending keep-with-next strength.
-     * 
+     *
      * @param keep
      *            the new strength to consider
      */
@@ -281,7 +280,7 @@ public class LayoutContext {
 
     /**
      * Updates the currently pending keep-with-previous strength.
-     * 
+     *
      * @param keep
      *            the new strength to consider
      */
@@ -292,7 +291,7 @@ public class LayoutContext {
 
     /**
      * Indicates whether a keep-with-next constraint is pending.
-     * 
+     *
      * @return true if a keep-with-next constraint is pending
      */
     public boolean isKeepWithNextPending() {
@@ -301,7 +300,7 @@ public class LayoutContext {
 
     /**
      * Indicates whether a keep-with-previous constraint is pending.
-     * 
+     *
      * @return true if a keep-with-previous constraint is pending
      */
     public boolean isKeepWithPreviousPending() {
@@ -332,14 +331,14 @@ public class LayoutContext {
      * Adds a border or padding element to the pending list which will be used
      * to generate the right element list for break possibilities.
      * Conditionality resolution will be done elsewhere.
-     * 
+     *
      * @param element
      *            the border, padding or space element
      */
     public void addPendingAfterMark(
             final UnresolvedListElementWithLength element) {
         if (this.pendingAfterMarks == null) {
-            this.pendingAfterMarks = new java.util.ArrayList();
+            this.pendingAfterMarks = new ArrayList<>();
         }
         this.pendingAfterMarks.add(element);
     }
@@ -348,7 +347,7 @@ public class LayoutContext {
      * @return the pending border and padding elements at the after edge
      * @see #addPendingAfterMark(UnresolvedListElementWithLength)
      */
-    public List getPendingAfterMarks() {
+    public List<UnresolvedListElementWithLength> getPendingAfterMarks() {
         if (this.pendingAfterMarks != null) {
             return Collections.unmodifiableList(this.pendingAfterMarks);
         } else {
@@ -368,14 +367,14 @@ public class LayoutContext {
      * Adds a border or padding element to the pending list which will be used
      * to generate the right element list for break possibilities.
      * Conditionality resolution will be done elsewhere.
-     * 
+     *
      * @param element
      *            the border, padding or space element
      */
     public void addPendingBeforeMark(
             final UnresolvedListElementWithLength element) {
         if (this.pendingBeforeMarks == null) {
-            this.pendingBeforeMarks = new java.util.ArrayList();
+            this.pendingBeforeMarks = new ArrayList<>();
         }
         this.pendingBeforeMarks.add(element);
     }
@@ -384,7 +383,7 @@ public class LayoutContext {
      * @return the pending border and padding elements at the before edge
      * @see #addPendingBeforeMark(UnresolvedListElementWithLength)
      */
-    public List getPendingBeforeMarks() {
+    public List<UnresolvedListElementWithLength> getPendingBeforeMarks() {
         if (this.pendingBeforeMarks != null) {
             return Collections.unmodifiableList(this.pendingBeforeMarks);
         } else {
@@ -394,7 +393,7 @@ public class LayoutContext {
 
     /**
      * Sets the stack limit in block-progression-dimension.
-     * 
+     *
      * @param limit
      *            the stack limit
      */
@@ -404,7 +403,7 @@ public class LayoutContext {
 
     /**
      * Returns the stack limit in block-progression-dimension.
-     * 
+     *
      * @return the stack limit
      */
     public MinOptMax getStackLimitBP() {
@@ -444,7 +443,7 @@ public class LayoutContext {
 
     /**
      * Sets the currently applicable alignment in BP direction.
-     * 
+     *
      * @param alignment
      *            one of EN_START, EN_JUSTIFY etc.
      */
@@ -494,7 +493,7 @@ public class LayoutContext {
     /**
      * Get the width to be reserved for border and padding at the start of the
      * line.
-     * 
+     *
      * @return the width to be reserved
      */
     public int getLineStartBorderAndPaddingWidth() {
@@ -504,7 +503,7 @@ public class LayoutContext {
     /**
      * Set the width to be reserved for border and padding at the start of the
      * line.
-     * 
+     *
      * @param lineStartBorderAndPaddingWidth
      *            the width to be reserved
      */
@@ -516,7 +515,7 @@ public class LayoutContext {
     /**
      * Get the width to be reserved for border and padding at the end of the
      * line.
-     * 
+     *
      * @return the width to be reserved
      */
     public int getLineEndBorderAndPaddingWidth() {
@@ -526,7 +525,7 @@ public class LayoutContext {
     /**
      * Set the width to be reserved for border and padding at the end of the
      * line.
-     * 
+     *
      * @param lineEndBorderAndPaddingWidth
      *            the width to be reserved
      */
@@ -555,7 +554,7 @@ public class LayoutContext {
     /**
      * Used to signal the PSLM that the element list ends early because of a
      * span change in multi-column layout.
-     * 
+     *
      * @param span
      *            the new span value (legal values: NOT_SET, EN_NONE, EN_ALL)
      */
@@ -576,7 +575,7 @@ public class LayoutContext {
 
     /**
      * Get the writing mode of the relevant reference area.
-     * 
+     *
      * @return the applicable writing mode
      */
     public int getWritingMode() {
@@ -585,7 +584,7 @@ public class LayoutContext {
 
     /**
      * Set the writing mode.
-     * 
+     *
      * @param writingMode
      *            the writing mode
      */
@@ -595,7 +594,7 @@ public class LayoutContext {
 
     /**
      * Get the current amount of space before / start
-     * 
+     *
      * @return the space before / start amount
      */
     public int getSpaceBefore() {
@@ -604,7 +603,7 @@ public class LayoutContext {
 
     /**
      * Set the amount of space before / start
-     * 
+     *
      * @param spaceBefore
      *            the amount of space before / start
      */
@@ -614,7 +613,7 @@ public class LayoutContext {
 
     /**
      * Get the current amount of space after / end
-     * 
+     *
      * @return the space after / end amount
      */
     public int getSpaceAfter() {
@@ -623,7 +622,7 @@ public class LayoutContext {
 
     /**
      * Set the amount of space after / end
-     * 
+     *
      * @param spaceAfter
      *            the amount of space after / end
      */
@@ -685,26 +684,26 @@ public class LayoutContext {
         return "Layout Context:" + "\nStack Limit BPD: \t"
                 + (getStackLimitBP() == null ? "null" : getStackLimitBP()
                         .toString())
-                + "\nTrailing Space: \t"
-                + (getTrailingSpace() == null ? "null" : getTrailingSpace()
-                        .toString())
-                + "\nLeading Space: \t"
-                + (getLeadingSpace() == null ? "null" : getLeadingSpace()
-                        .toString()) + "\nReference IPD: \t" + getRefIPD()
-                + "\nSpace Adjust: \t" + getSpaceAdjust() + "\nIPD Adjust: \t"
-                + getIPDAdjust() + "\nResolve Leading Space: \t"
-                + resolveLeadingSpace() + "\nSuppress Break Before: \t"
-                + suppressBreakBefore() + "\nIs First Area: \t" + isFirstArea()
-                + "\nStarts New Area: \t" + startsNewArea()
-                + "\nIs Last Area: \t" + isLastArea() + "\nTry Hyphenate: \t"
-                + tryHyphenate() + "\nKeeps: \t[keep-with-next="
-                + getKeepWithNextPending() + "][keep-with-previous="
-                + getKeepWithPreviousPending() + "] pending"
-                + "\nBreaks: \tforced ["
-                + (this.breakBefore != Constants.EN_AUTO ? "break-before" : "")
-                + "]["
-                + (this.breakAfter != Constants.EN_AUTO ? "break-after" : "")
-                + "]";
+                        + "\nTrailing Space: \t"
+                        + (getTrailingSpace() == null ? "null" : getTrailingSpace()
+                                .toString())
+                                + "\nLeading Space: \t"
+                                + (getLeadingSpace() == null ? "null" : getLeadingSpace()
+                                        .toString()) + "\nReference IPD: \t" + getRefIPD()
+                                        + "\nSpace Adjust: \t" + getSpaceAdjust() + "\nIPD Adjust: \t"
+                                        + getIPDAdjust() + "\nResolve Leading Space: \t"
+                                        + resolveLeadingSpace() + "\nSuppress Break Before: \t"
+                                        + suppressBreakBefore() + "\nIs First Area: \t" + isFirstArea()
+                                        + "\nStarts New Area: \t" + startsNewArea()
+                                        + "\nIs Last Area: \t" + isLastArea() + "\nTry Hyphenate: \t"
+                                        + tryHyphenate() + "\nKeeps: \t[keep-with-next="
+                                        + getKeepWithNextPending() + "][keep-with-previous="
+                                        + getKeepWithPreviousPending() + "] pending"
+                                        + "\nBreaks: \tforced ["
+                                        + (this.breakBefore != Constants.EN_AUTO ? "break-before" : "")
+                                        + "]["
+                                        + (this.breakAfter != Constants.EN_AUTO ? "break-after" : "")
+                                        + "]";
     }
 
     /**

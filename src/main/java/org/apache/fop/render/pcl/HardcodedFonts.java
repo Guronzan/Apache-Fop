@@ -48,7 +48,7 @@ class HardcodedFonts {
     public static boolean setFont(final PCLGenerator gen, final String name,
             final int size, final String text) throws IOException {
         final byte[] encoded = text.getBytes("ISO-8859-1");
-        for (int i = 0, c = encoded.length; i < c; i++) {
+        for (int i = 0, c = encoded.length; i < c; ++i) {
             if (encoded[i] == 0x3F && text.charAt(i) != '?') {
                 return false;
             }

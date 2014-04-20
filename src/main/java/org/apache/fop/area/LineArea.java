@@ -69,7 +69,7 @@ public class LineArea extends Area {
     // this class can contain the dominant char styling info
     // this means that many renderers can optimise a bit
 
-    private final List inlineAreas = new ArrayList();
+    private final List<InlineArea> inlineAreas = new ArrayList<>();
 
     /**
      * default constructor: nothing to do
@@ -126,7 +126,7 @@ public class LineArea extends Area {
      *
      * @return the list of inline areas
      */
-    public List getInlineAreas() {
+    public List<InlineArea> getInlineAreas() {
         return this.inlineAreas;
     }
 
@@ -150,10 +150,9 @@ public class LineArea extends Area {
     public void updateExtentsFromChildren() {
         int ipd = 0;
         int bpd = 0;
-        for (int i = 0, len = this.inlineAreas.size(); i < len; i++) {
-            ipd = Math.max(ipd,
-                    ((InlineArea) this.inlineAreas.get(i)).getAllocIPD());
-            bpd += ((InlineArea) this.inlineAreas.get(i)).getAllocBPD();
+        for (int i = 0, len = this.inlineAreas.size(); i < len; ++i) {
+            ipd = Math.max(ipd, this.inlineAreas.get(i).getAllocIPD());
+            bpd += this.inlineAreas.get(i).getAllocBPD();
         }
         setIPD(ipd);
         setBPD(bpd);
@@ -182,13 +181,11 @@ public class LineArea extends Area {
             break;
         case Constants.EN_CENTER:
             // re-compute indent
-            addTrait(Trait.START_INDENT, new Integer(getStartIndent()
-                    - ipdVariation / 2));
+            addTrait(Trait.START_INDENT, getStartIndent() - ipdVariation / 2);
             break;
         case Constants.EN_END:
             // re-compute indent
-            addTrait(Trait.START_INDENT, new Integer(getStartIndent()
-                    - ipdVariation));
+            addTrait(Trait.START_INDENT, getStartIndent() - ipdVariation);
             break;
         case Constants.EN_JUSTIFY:
             // compute variation factor
@@ -215,12 +212,11 @@ public class LineArea extends Area {
             // justified line: apply the variation factor
             boolean bUnresolvedAreasPresent = false;
             // recursively apply variation factor to descendant areas
-            for (int i = 0, len = this.inlineAreas.size(); i < len; i++) {
-                bUnresolvedAreasPresent |= ((InlineArea) this.inlineAreas
-                        .get(i)).applyVariationFactor(
-                                this.adjustingInfo.variationFactor,
-                                this.adjustingInfo.availableStretch,
-                                this.adjustingInfo.availableShrink);
+            for (final InlineArea inlineArea : this.inlineAreas) {
+                bUnresolvedAreasPresent |= inlineArea.applyVariationFactor(
+                        this.adjustingInfo.variationFactor,
+                        this.adjustingInfo.availableStretch,
+                        this.adjustingInfo.availableShrink);
             }
             if (!bUnresolvedAreasPresent) {
                 // there are no more UnresolvedAreas:

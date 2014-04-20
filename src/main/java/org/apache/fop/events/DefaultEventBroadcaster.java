@@ -23,7 +23,8 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -37,6 +38,7 @@ import org.apache.fop.events.model.EventModel;
 import org.apache.fop.events.model.EventModelParser;
 import org.apache.fop.events.model.EventProducerModel;
 import org.apache.fop.events.model.EventSeverity;
+import org.apache.fop.events.model.Parameter;
 
 /**
  * Default implementation of the EventBroadcaster interface. It holds a list of
@@ -72,8 +74,8 @@ public class DefaultEventBroadcaster implements EventBroadcaster {
         this.listeners.processEvent(event);
     }
 
-    private static List/* <EventModel> */eventModels = new java.util.ArrayList();
-    private final Map proxies = new java.util.HashMap();
+    private static List<EventModel> eventModels = new ArrayList<>();
+    private final Map<Class, EventProducer> proxies = new HashMap<>();
 
     /**
      * Loads an event model and returns its instance.
@@ -113,8 +115,8 @@ public class DefaultEventBroadcaster implements EventBroadcaster {
 
     private static synchronized EventProducerModel getEventProducerModel(
             final Class clazz) {
-        for (int i = 0, c = eventModels.size(); i < c; i++) {
-            final EventModel eventModel = (EventModel) eventModels.get(i);
+        for (int i = 0, c = eventModels.size(); i < c; ++i) {
+            final EventModel eventModel = eventModels.get(i);
             final EventProducerModel producerModel = eventModel
                     .getProducer(clazz);
             if (producerModel != null) {
@@ -134,8 +136,7 @@ public class DefaultEventBroadcaster implements EventBroadcaster {
                     "Class must be an implementation of the EventProducer interface: "
                             + clazz.getName());
         }
-        EventProducer producer;
-        producer = (EventProducer) this.proxies.get(clazz);
+        EventProducer producer = this.proxies.get(clazz);
         if (producer == null) {
             producer = createProxyFor(clazz);
             this.proxies.put(clazz, producer);
@@ -161,42 +162,39 @@ public class DefaultEventBroadcaster implements EventBroadcaster {
         }
         return (EventProducer) Proxy.newProxyInstance(clazz.getClassLoader(),
                 new Class[] { clazz }, new InvocationHandler() {
-                    @Override
-                    public Object invoke(final Object proxy,
-                    final Method method, final Object[] args)
+            @Override
+            public Object invoke(final Object proxy,
+                            final Method method, final Object[] args)
                             throws Throwable {
-                        final String methodName = method.getName();
-                        final EventMethodModel methodModel = producerModel
-                        .getMethod(methodName);
-                        final String eventID = producerModel.getInterfaceName()
-                        + "." + methodName;
-                        if (methodModel == null) {
-                            throw new IllegalStateException(
-                                    "Event model isn't consistent"
-                                    + " with the EventProducer interface. Please rebuild FOP!"
-                                    + " Affected method: " + eventID);
-                        }
-                        final Map params = new java.util.HashMap();
-                        int i = 1;
-                        final Iterator iter = methodModel.getParameters()
-                        .iterator();
-                        while (iter.hasNext()) {
-                            final EventMethodModel.Parameter param = (EventMethodModel.Parameter) iter
-                            .next();
-                            params.put(param.getName(), args[i]);
-                            i++;
-                        }
-                        final Event ev = new Event(args[0], eventID,
-                        methodModel.getSeverity(), params);
-                        broadcastEvent(ev);
+                final String methodName = method.getName();
+                final EventMethodModel methodModel = producerModel
+                                .getMethod(methodName);
+                final String eventID = producerModel.getInterfaceName()
+                                + "." + methodName;
+                if (methodModel == null) {
+                    throw new IllegalStateException(
+                            "Event model isn't consistent"
+                                            + " with the EventProducer interface. Please rebuild FOP!"
+                                            + " Affected method: " + eventID);
+                }
+                final Map<String, Object> params = new HashMap<>();
+                int i = 1;
+                for (final Parameter param : methodModel
+                                .getParameters()) {
+                    params.put(param.getName(), args[i]);
+                    ++i;
+                }
+                final Event ev = new Event(args[0], eventID,
+                                methodModel.getSeverity(), params);
+                broadcastEvent(ev);
 
-                        if (ev.getSeverity() == EventSeverity.FATAL) {
-                            EventExceptionManager.throwException(ev,
-                                    methodModel.getExceptionClass());
-                        }
-                        return null;
-                    }
-                });
+                if (ev.getSeverity() == EventSeverity.FATAL) {
+                    EventExceptionManager.throwException(ev,
+                            methodModel.getExceptionClass());
+                }
+                return null;
+            }
+        });
     }
 
 }

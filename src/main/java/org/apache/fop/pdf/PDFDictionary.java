@@ -94,7 +94,7 @@ public class PDFDictionary extends PDFObject {
         if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
-        this.entries.put(name, new Integer(value));
+        this.entries.put(name, (value));
     }
 
     /**

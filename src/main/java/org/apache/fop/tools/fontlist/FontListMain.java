@@ -25,9 +25,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 
 import javax.xml.transform.Transformer;
@@ -38,6 +37,8 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -56,6 +57,7 @@ import org.xml.sax.SAXException;
  * Command-line application to list available fonts and to optionally produce
  * sample pages with those fonts.
  */
+@Slf4j
 public final class FontListMain {
 
     private static final int GENERATE_CONSOLE = 0;
@@ -72,7 +74,7 @@ public final class FontListMain {
     private int mode = GENERATE_CONSOLE;
     private String singleFamilyFilter;
 
-    private FontListMain() throws SAXException, IOException {
+    private FontListMain() {
     }
 
     private void prepare() throws SAXException, IOException {
@@ -87,8 +89,9 @@ public final class FontListMain {
         return fop.getDefaultHandler();
     }
 
-    private void generateXML(final SortedMap fontFamilies, final File outFile,
-            final String singleFamily)
+    private void generateXML(
+            final SortedMap<String, List<FontSpec>> fontFamilies,
+            final File outFile, final String singleFamily)
             throws TransformerConfigurationException, SAXException, IOException {
         final SAXTransformerFactory tFactory = (SAXTransformerFactory) TransformerFactory
                 .newInstance();
@@ -154,8 +157,8 @@ public final class FontListMain {
         };
 
         final FontListGenerator listGenerator = new FontListGenerator();
-        final SortedMap fontFamilies = listGenerator.listFonts(this.fopFactory,
-                this.configMime, listener);
+        final SortedMap<String, List<FontSpec>> fontFamilies = listGenerator
+                .listFonts(this.fopFactory, this.configMime, listener);
 
         if (this.mode == GENERATE_CONSOLE) {
             writeToConsole(fontFamilies);
@@ -164,38 +167,32 @@ public final class FontListMain {
         }
     }
 
-    private void writeToConsole(final SortedMap fontFamilies)
-            throws TransformerConfigurationException, SAXException, IOException {
-        final Iterator iter = fontFamilies.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final String firstFamilyName = (String) entry.getKey();
-            System.out.println(firstFamilyName + ":");
-            final List list = (List) entry.getValue();
-            final Iterator fonts = list.iterator();
-            while (fonts.hasNext()) {
-                final FontSpec f = (FontSpec) fonts.next();
+    private void writeToConsole(
+            final SortedMap<String, List<FontSpec>> fontFamilies) {
+        for (final Entry<String, List<FontSpec>> entry : fontFamilies
+                .entrySet()) {
+            final String firstFamilyName = entry.getKey();
+            log.info(firstFamilyName + ":");
+            final List<FontSpec> list = entry.getValue();
+            for (final FontSpec f : list) {
                 System.out
-                        .println("  " + f.getKey() + " " + f.getFamilyNames());
-                final Iterator triplets = f.getTriplets().iterator();
-                while (triplets.hasNext()) {
-                    final FontTriplet triplet = (FontTriplet) triplets.next();
-                    System.out.println("    " + triplet.toString());
+                .println("  " + f.getKey() + " " + f.getFamilyNames());
+                for (final FontTriplet triplet : f.getTriplets()) {
+                    log.info("    " + triplet.toString());
                 }
             }
         }
     }
 
-    private void writeOutput(final SortedMap fontFamilies)
-            throws TransformerConfigurationException, SAXException, IOException {
+    private void writeOutput(
+            final SortedMap<String, List<FontSpec>> fontFamilies)
+                    throws TransformerConfigurationException, SAXException, IOException {
         if (this.outputFile.isDirectory()) {
-            System.out.println("Creating one file for each family...");
-            final Iterator iter = fontFamilies.entrySet().iterator();
-            while (iter.hasNext()) {
-                final Map.Entry entry = (Map.Entry) iter.next();
-                final String familyName = (String) entry.getKey();
-                System.out.println("Creating output file for " + familyName
-                        + "...");
+            log.info("Creating one file for each family...");
+            for (final Entry<String, List<FontSpec>> entry : fontFamilies
+                    .entrySet()) {
+                final String familyName = entry.getKey();
+                log.info("Creating output file for " + familyName + "...");
                 String filename;
                 switch (this.mode) {
                 case GENERATE_RENDERED:
@@ -214,14 +211,14 @@ public final class FontListMain {
                 generateXML(fontFamilies, outFile, familyName);
             }
         } else {
-            System.out.println("Creating output file...");
+            log.info("Creating output file...");
             generateXML(fontFamilies, this.outputFile, this.singleFamilyFilter);
         }
-        System.out.println(this.outputFile + " written.");
+        log.info(this.outputFile + " written.");
     }
 
     private static void printVersion() {
-        System.out.println("Apache FOP " + Version.getVersion()
+        log.info("Apache FOP " + Version.getVersion()
                 + " - http://xmlgraphics.apache.org/fop/\n");
     }
 
@@ -297,13 +294,13 @@ public final class FontListMain {
                 this.singleFamilyFilter = args[idx];
             }
         } else {
-            System.out.println("use --help or -? for usage information.");
+            log.info("use --help or -? for usage information.");
         }
     }
 
     /**
      * The command-line interface.
-     * 
+     *
      * @param args
      *            the command-line arguments
      */

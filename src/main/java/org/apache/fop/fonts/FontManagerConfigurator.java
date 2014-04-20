@@ -20,6 +20,7 @@
 package org.apache.fop.fonts;
 
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -121,7 +122,7 @@ public class FontManagerConfigurator {
      */
     public static FontTriplet.Matcher createFontsMatcher(
             final Configuration cfg, final boolean strict) throws FOPException {
-        final List matcherList = new java.util.ArrayList();
+        final List<FontFamilyRegExFontTripletMatcher> matcherList = new ArrayList<>();
         final Configuration[] matches = cfg.getChildren("match");
         for (final Configuration matche : matches) {
             try {
@@ -133,8 +134,7 @@ public class FontManagerConfigurator {
             }
         }
         final FontTriplet.Matcher orMatcher = new OrFontTripletMatcher(
-                (FontTriplet.Matcher[]) matcherList
-                .toArray(new FontTriplet.Matcher[matcherList.size()]));
+                matcherList.toArray(new FontTriplet.Matcher[matcherList.size()]));
         return orMatcher;
     }
 
@@ -160,7 +160,7 @@ public class FontManagerConfigurator {
     }
 
     private static class FontFamilyRegExFontTripletMatcher implements
-    FontTriplet.Matcher {
+            FontTriplet.Matcher {
 
         private final Pattern regex;
 

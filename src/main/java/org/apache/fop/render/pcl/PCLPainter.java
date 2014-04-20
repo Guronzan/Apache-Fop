@@ -396,7 +396,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
             sb.append("\u001B&a+")
             .append(this.gen.formatDouble2(dx[0] / 100.0)).append('H');
         }
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char orgChar = text.charAt(i);
             char ch;
             float glyphAdjust = 0;
@@ -458,7 +458,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
                     boundingRect.y);
         }
         float width = 0.0f;
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char orgChar = text.charAt(i);
             float glyphAdjust = 0;
             final int cw = font.getCharWidth(orgChar);

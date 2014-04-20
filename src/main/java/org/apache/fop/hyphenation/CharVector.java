@@ -80,7 +80,7 @@ public class CharVector implements Cloneable, Serializable {
     }
 
     /**
-     * Reset Vector but don't resize or clear elements
+     * Reset List but don't resize or clear elements
      */
     public void clear() {
         this.n = 0;

@@ -394,7 +394,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                     || this.lengthList.isEmpty() ? 0 : ((Integer) ListUtil
                             .getLast(this.lengthList)).intValue();
             // TODO: replace with Integer.valueOf() once we switch to Java 5
-            this.lengthList.add(new Integer(prevLength + noteLength));
+            this.lengthList.add((prevLength + noteLength));
             this.totalFootnotesLength += noteLength;
         }
     }
@@ -421,7 +421,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
     }
 
     private void resetFootnotes(final List elementLists) {
-        for (int i = 0; i < elementLists.size(); i++) {
+        for (int i = 0; i < elementLists.size(); ++i) {
             /* LinkedList removedList = (LinkedList) */ListUtil
             .removeLast(this.footnotesList);
             ListUtil.removeLast(this.lengthList);
@@ -929,7 +929,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
 
     @Override
     protected void finish() {
-        for (int i = this.startLine; i < this.endLine; i++) {
+        for (int i = this.startLine; i < this.endLine; ++i) {
             for (KnuthPageNode node = (KnuthPageNode) getNode(i); node != null; node = (KnuthPageNode) node.next) {
                 if (node.totalFootnotes < this.totalFootnotesLength) {
                     // layout remaining footnote bodies
@@ -1111,7 +1111,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
     protected int filterActiveNodes() {
         // leave only the active node with fewest total demerits
         KnuthNode bestActiveNode = null;
-        for (int i = this.startLine; i < this.endLine; i++) {
+        for (int i = this.startLine; i < this.endLine; ++i) {
             for (KnuthNode node = getNode(i); node != null; node = node.next) {
                 if (this.favorSinglePart
                         && node.line > 1

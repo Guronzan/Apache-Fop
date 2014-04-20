@@ -19,7 +19,7 @@
 
 package org.apache.fop.fo.flow.table;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.Constants;
@@ -39,7 +39,7 @@ public class EffRow {
     /** Indicates that the row is the last in a table-body */
     public static final int LAST_IN_PART = GridUnit.LAST_IN_PART;
 
-    private List gridUnits = new java.util.ArrayList();
+    private List<GridUnit> gridUnits = new ArrayList<>();
     private final int index;
     /** One of HEADER, FOOTER, BODY */
     private final int bodyType;
@@ -48,7 +48,7 @@ public class EffRow {
 
     /**
      * Creates a new effective row instance.
-     * 
+     *
      * @param index
      *            index of the row
      * @param bodyType
@@ -57,14 +57,14 @@ public class EffRow {
      * @param gridUnits
      *            the grid units this row is made of
      */
-    public EffRow(final int index, final int bodyType, final List gridUnits) {
+    public EffRow(final int index, final int bodyType,
+            final List<GridUnit> gridUnits) {
         this.index = index;
         this.bodyType = bodyType;
         this.gridUnits = gridUnits;
         // TODO this is ugly, but we may eventually be able to do without that
         // index
-        for (final Iterator guIter = gridUnits.iterator(); guIter.hasNext();) {
-            final Object gu = guIter.next();
+        for (final GridUnit gu : gridUnits) {
             if (gu instanceof PrimaryGridUnit) {
                 ((PrimaryGridUnit) gu).setRowIndex(index);
             }
@@ -124,7 +124,7 @@ public class EffRow {
     /**
      * Sets the height for this row that resulted from the explicit height
      * properties specified by the user.
-     * 
+     *
      * @param mom
      *            the height
      */
@@ -133,19 +133,19 @@ public class EffRow {
     }
 
     /** @return the list of GridUnits for this EffRow */
-    public List getGridUnits() {
+    public List<GridUnit> getGridUnits() {
         return this.gridUnits;
     }
 
     /**
      * Returns the grid unit at a given position.
-     * 
+     *
      * @param column
      *            index of the grid unit in the row (zero based)
      * @return the requested grid unit.
      */
     public GridUnit getGridUnit(final int column) {
-        return (GridUnit) this.gridUnits.get(column);
+        return this.gridUnits.get(column);
     }
 
     /**
@@ -153,7 +153,7 @@ public class EffRow {
      * this method returns null if there's no grid unit at the given position.
      * The number of grid units for row x can be smaller than the number of grid
      * units for row x-1.
-     * 
+     *
      * @param column
      *            index of the grid unit in the row (zero based)
      * @return the requested grid unit or null if there's no grid unit at this
@@ -161,7 +161,7 @@ public class EffRow {
      */
     public GridUnit safelyGetGridUnit(final int column) {
         if (column < this.gridUnits.size()) {
-            return (GridUnit) this.gridUnits.get(column);
+            return this.gridUnits.get(column);
         } else {
             return null;
         }
@@ -171,7 +171,7 @@ public class EffRow {
      * Returns a flag for this effective row. Only a subset of the flags on
      * GridUnit is supported. The flag is determined by inspecting flags on the
      * EffRow's GridUnits.
-     * 
+     *
      * @param which
      *            the requested flag (one of {@link EffRow#FIRST_IN_PART} or
      *            {@link EffRow#LAST_IN_PART})
@@ -200,8 +200,8 @@ public class EffRow {
         if (row != null) {
             keep = Keep.getKeep(row.getKeepWithPrevious());
         }
-        for (final Iterator iter = this.gridUnits.iterator(); iter.hasNext();) {
-            final GridUnit gu = (GridUnit) iter.next();
+        for (final Object element : this.gridUnits) {
+            final GridUnit gu = (GridUnit) element;
             if (gu.isPrimary()) {
                 keep = keep.compare(gu.getPrimary().getKeepWithPrevious());
             }
@@ -222,8 +222,8 @@ public class EffRow {
         if (row != null) {
             keep = Keep.getKeep(row.getKeepWithNext());
         }
-        for (final Iterator iter = this.gridUnits.iterator(); iter.hasNext();) {
-            final GridUnit gu = (GridUnit) iter.next();
+        for (final Object element : this.gridUnits) {
+            final GridUnit gu = (GridUnit) element;
             if (!gu.isEmpty() && gu.getColSpanIndex() == 0
                     && gu.isLastGridUnitRowSpan()) {
                 keep = keep.compare(gu.getPrimary().getKeepWithNext());
@@ -235,7 +235,7 @@ public class EffRow {
     /**
      * Returns the keep-together strength for this element. Note: The keep
      * strength returned does not take the parent table's keeps into account!
-     * 
+     *
      * @return the keep-together strength
      */
     public Keep getKeepTogether() {
@@ -265,8 +265,8 @@ public class EffRow {
      */
     public int getBreakBefore() {
         int breakBefore = Constants.EN_AUTO;
-        for (final Iterator iter = this.gridUnits.iterator(); iter.hasNext();) {
-            final GridUnit gu = (GridUnit) iter.next();
+        for (final Object element : this.gridUnits) {
+            final GridUnit gu = (GridUnit) element;
             if (gu.isPrimary()) {
                 breakBefore = BreakUtil.compareBreakClasses(breakBefore, gu
                         .getPrimary().getBreakBefore());
@@ -293,8 +293,8 @@ public class EffRow {
      */
     public int getBreakAfter() {
         int breakAfter = Constants.EN_AUTO;
-        for (final Iterator iter = this.gridUnits.iterator(); iter.hasNext();) {
-            final GridUnit gu = (GridUnit) iter.next();
+        for (final Object element : this.gridUnits) {
+            final GridUnit gu = (GridUnit) element;
             if (!gu.isEmpty() && gu.getColSpanIndex() == 0
                     && gu.isLastGridUnitRowSpan()) {
                 breakAfter = BreakUtil.compareBreakClasses(breakAfter, gu

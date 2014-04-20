@@ -48,7 +48,7 @@ public final class StructureTree {
     }
 
     private static boolean flowOrStaticContentNodes(final NodeList nodes) {
-        for (int i = 0; i < nodes.getLength(); i++) {
+        for (int i = 0; i < nodes.getLength(); ++i) {
             final Node node = nodes.item(i);
             if (node.getNodeType() != Node.ELEMENT_NODE) {
                 return false;
@@ -96,7 +96,7 @@ public final class StructureTree {
             for (final Iterator iter = this.pageSequenceStructures.iterator(); iter
                     .hasNext();) {
                 final NodeList nodes = (NodeList) iter.next();
-                for (int i = 0, c = nodes.getLength(); i < c; i++) {
+                for (int i = 0, c = nodes.getLength(); i < c; ++i) {
                     t.transform(new DOMSource(nodes.item(i)), new StreamResult(
                             str));
                 }

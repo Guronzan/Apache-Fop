@@ -21,13 +21,15 @@ package org.apache.fop.afp.fonts;
 
 import java.util.List;
 
+import org.apache.fop.fonts.FontTriplet;
+
 /**
  * FontInfo contains meta information on fonts
  */
 public class AFPFontInfo {
 
     private final AFPFont font;
-    private final List/* <FontTriplet> */tripletList;
+    private final List<FontTriplet> tripletList;
 
     /**
      * Main constructor
@@ -38,7 +40,7 @@ public class AFPFontInfo {
      *            List of font triplets to associate with this font
      */
     public AFPFontInfo(final AFPFont afpFont,
-            final List/* <FontTriplet> */tripletList) {
+            final List<FontTriplet> tripletList) {
         this.font = afpFont;
         this.tripletList = tripletList;
     }
@@ -57,7 +59,7 @@ public class AFPFontInfo {
      *
      * @return List of font triplets
      */
-    public List/* <FontTriplet> */getFontTriplets() {
+    public List<FontTriplet> getFontTriplets() {
         return this.tripletList;
     }
 

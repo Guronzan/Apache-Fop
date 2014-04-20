@@ -506,7 +506,7 @@ public class PageBreaker extends AbstractBreaker {
         if (pbp.footnoteFirstListIndex < pbp.footnoteLastListIndex
                 || pbp.footnoteFirstElementIndex <= pbp.footnoteLastElementIndex) {
             // call addAreas() for each FootnoteBodyLM
-            for (int i = pbp.footnoteFirstListIndex; i <= pbp.footnoteLastListIndex; i++) {
+            for (int i = pbp.footnoteFirstListIndex; i <= pbp.footnoteLastListIndex; ++i) {
                 final List elementList = alg.getFootnoteList(i);
                 final int firstIndex = i == pbp.footnoteFirstListIndex ? pbp.footnoteFirstElementIndex
                         : 0;

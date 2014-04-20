@@ -71,7 +71,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
         buildFromTable(table);
         if (charNameMap != null) {
             this.charNameMap = new String[256];
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < 256; ++i) {
                 final String charName = charNameMap[i];
                 if (charName == null) {
                     this.charNameMap[i] = Glyphs.NOTDEF;
@@ -233,7 +233,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
         if (names == null) {
             names = getCharNameMap();
         }
-        for (short i = 0, c = (short) names.length; i < c; i++) {
+        for (short i = 0, c = (short) names.length; i < c; ++i) {
             if (names[i].equals(charName)) {
                 return i;
             }
@@ -253,7 +253,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
             // Note: this is suboptimal but will probably never be used.
             final String[] derived = new String[256];
             Arrays.fill(derived, Glyphs.NOTDEF);
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < 256; ++i) {
                 final char c = getUnicodeForIndex(i);
                 if (c != CharUtilities.NOT_A_CHARACTER) {
                     final String charName = Glyphs.charToGlyphName(c);

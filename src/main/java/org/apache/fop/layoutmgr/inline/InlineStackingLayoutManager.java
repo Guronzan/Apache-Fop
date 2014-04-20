@@ -32,6 +32,7 @@ import org.apache.fop.layoutmgr.AbstractLayoutManager;
 import org.apache.fop.layoutmgr.KnuthElement;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.NonLeafPosition;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
@@ -230,33 +231,34 @@ implements InlineLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List addALetterSpaceTo(List oldList) {
+    public List<ListElement> addALetterSpaceTo(List<ListElement> oldList) {
         // old list contains only a box, or the sequence: box penalty glue box
 
-        ListIterator oldListIterator = oldList.listIterator();
-        KnuthElement element = null;
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
+        ListElement element = null;
         // "unwrap" the Position stored in each element of oldList
         while (oldListIterator.hasNext()) {
-            element = (KnuthElement) oldListIterator.next();
+            element = oldListIterator.next();
             element.setPosition(element.getPosition().getPosition());
         }
 
         // The last element may not have a layout manager (its position ==
         // null);
         // this may happen if it is a padding box; see bug 39571.
-        final InlineLevelLayoutManager LM = (InlineLevelLayoutManager) element
-                .getLayoutManager();
-        if (LM != null) {
-            oldList = LM.addALetterSpaceTo(oldList);
+        if (element != null) {
+            final InlineLevelLayoutManager LM = (InlineLevelLayoutManager) element
+                    .getLayoutManager();
+            if (LM != null) {
+                oldList = LM.addALetterSpaceTo(oldList);
+            }
+            // "wrap" again the Position stored in each element of oldList
+            oldListIterator = oldList.listIterator();
+            while (oldListIterator.hasNext()) {
+                element = oldListIterator.next();
+                element.setPosition(notifyPos(new NonLeafPosition(this, element
+                        .getPosition())));
+            }
         }
-        // "wrap" again the Position stored in each element of oldList
-        oldListIterator = oldList.listIterator();
-        while (oldListIterator.hasNext()) {
-            element = (KnuthElement) oldListIterator.next();
-            element.setPosition(notifyPos(new NonLeafPosition(this, element
-                    .getPosition())));
-        }
-
         return oldList;
     }
 
@@ -268,17 +270,20 @@ implements InlineLevelLayoutManager {
      *            the elements representing the word space
      */
     @Override
-    public void removeWordSpace(final List oldList) {
-        final ListIterator oldListIterator = oldList.listIterator();
-        KnuthElement element = null;
+    public void removeWordSpace(final List<ListElement> oldList) {
+        final ListIterator<ListElement> oldListIterator = oldList
+                .listIterator();
+        ListElement element = null;
         // "unwrap" the Position stored in each element of oldList
         while (oldListIterator.hasNext()) {
-            element = (KnuthElement) oldListIterator.next();
+            element = oldListIterator.next();
             element.setPosition(element.getPosition().getPosition());
         }
 
-        ((InlineLevelLayoutManager) element.getLayoutManager())
-        .removeWordSpace(oldList);
+        if (element != null) {
+            ((InlineLevelLayoutManager) element.getLayoutManager())
+            .removeWordSpace(oldList);
+        }
 
     }
 
@@ -298,9 +303,9 @@ implements InlineLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public boolean applyChanges(final List oldList) {
+    public boolean applyChanges(final List<ListElement> oldList) {
         // "unwrap" the Positions stored in the elements
-        ListIterator oldListIterator = oldList.listIterator();
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
         KnuthElement oldElement;
         while (oldListIterator.hasNext()) {
             oldElement = (KnuthElement) oldListIterator.next();
@@ -363,9 +368,10 @@ implements InlineLevelLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         // "unwrap" the Positions stored in the elements
-        ListIterator oldListIterator = oldList.listIterator();
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
         KnuthElement oldElement;
         while (oldListIterator.hasNext()) {
             oldElement = (KnuthElement) oldListIterator.next();
@@ -375,8 +381,8 @@ implements InlineLevelLayoutManager {
         oldListIterator = oldList.listIterator();
 
         KnuthElement returnedElement;
-        final LinkedList returnedList = new LinkedList();
-        final LinkedList returnList = new LinkedList();
+        final LinkedList<ListElement> returnedList = new LinkedList<>();
+        final LinkedList<ListElement> returnList = new LinkedList<>();
         InlineLevelLayoutManager prevLM = null;
         InlineLevelLayoutManager currLM;
         int fromIndex = 0;
@@ -390,34 +396,35 @@ implements InlineLevelLayoutManager {
 
             if (currLM != prevLM || !oldListIterator.hasNext()) {
                 if (oldListIterator.hasNext()) {
-                    returnedList.addAll(prevLM.getChangedKnuthElements(
-                            oldList.subList(fromIndex,
-                                    oldListIterator.previousIndex()),
-                                    /* flaggedPenalty, */alignment));
+                    returnedList
+                            .addAll(prevLM.getChangedKnuthElements(
+                                    oldList.subList(fromIndex,
+                                            oldListIterator.previousIndex()),
+                                    alignment));
                     prevLM = currLM;
                     fromIndex = oldListIterator.previousIndex();
                 } else if (currLM == prevLM) {
                     returnedList.addAll(prevLM.getChangedKnuthElements(
                             oldList.subList(fromIndex, oldList.size()),
-                            /* flaggedPenalty, */alignment));
+                            alignment));
                 } else {
-                    returnedList.addAll(prevLM.getChangedKnuthElements(
-                            oldList.subList(fromIndex,
-                                    oldListIterator.previousIndex()),
-                                    /* flaggedPenalty, */alignment));
+                    returnedList
+                            .addAll(prevLM.getChangedKnuthElements(
+                                    oldList.subList(fromIndex,
+                                            oldListIterator.previousIndex()),
+                                    alignment));
                     if (currLM != null) {
                         returnedList.addAll(currLM.getChangedKnuthElements(
                                 oldList.subList(
                                         oldListIterator.previousIndex(),
-                                        oldList.size()),
-                                        /* flaggedPenalty, */alignment));
+                                        oldList.size()), alignment));
                     }
                 }
             }
         }
 
         // "wrap" the Position stored in each element of returnedList
-        final ListIterator listIter = returnedList.listIterator();
+        final ListIterator<ListElement> listIter = returnedList.listIterator();
         while (listIter.hasNext()) {
             returnedElement = (KnuthElement) listIter.next();
             returnedElement.setPosition(notifyPos(new NonLeafPosition(this,

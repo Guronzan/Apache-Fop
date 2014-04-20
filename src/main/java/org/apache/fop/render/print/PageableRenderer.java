@@ -121,7 +121,7 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
     /**
      * Converts an object into a positive integer value if possible. The method
      * throws an {@link IllegalArgumentException} if the value is invalid.
-     * 
+     *
      * @param o
      *            the object to be converted
      * @return the positive integer
@@ -142,7 +142,11 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
         super.stopRenderer();

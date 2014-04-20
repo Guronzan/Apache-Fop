@@ -125,7 +125,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      */
     public PDFDocumentGraphics2D(final boolean textAsShapes,
             final OutputStream stream, final int width, final int height)
-            throws IOException {
+                    throws IOException {
         this(textAsShapes);
         setupDocument(stream, width, height);
     }
@@ -142,7 +142,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Setup the document.
-     * 
+     *
      * @param stream
      *            the output stream to write the document
      * @param width
@@ -177,7 +177,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
     /**
      * Set the device resolution for rendering. Will take effect at the start of
      * the next page.
-     * 
+     *
      * @param deviceDPI
      *            the device resolution (in dpi)
      */
@@ -194,7 +194,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Sets the font info for this PDF document.
-     * 
+     *
      * @param fontInfo
      *            the font info object with all the fonts
      */
@@ -204,7 +204,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Get the font info for this pdf document.
-     * 
+     *
      * @return the font information
      */
     public FontInfo getFontInfo() {
@@ -213,7 +213,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Get the pdf document created by this class.
-     * 
+     *
      * @return the pdf document
      */
     public PDFDocument getPDFDocument() {
@@ -222,7 +222,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Return the PDFContext for this instance.
-     * 
+     *
      * @return the PDFContext
      */
     public PDFContext getPDFContext() {
@@ -234,7 +234,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      * if the dimensions of the svg document are different from the pdf document
      * that is to be created. The result is scaled so that the svg fits
      * correctly inside the pdf document.
-     * 
+     *
      * @param w
      *            the width of the page
      * @param h
@@ -249,7 +249,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      * Set the background of the pdf document. This is used to set the
      * background for the pdf document Rather than leaving it as the default
      * white.
-     * 
+     *
      * @param col
      *            the background colour to fill
      */
@@ -319,7 +319,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * Called to prepare a new page
-     * 
+     *
      * @throws IOException
      *             if starting the new page fails due to I/O errors.
      */
@@ -382,7 +382,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      * The rendering process has finished. This should be called after the
      * rendering has completed as there is no other indication it is complete.
      * This will then write the results to the output stream.
-     * 
+     *
      * @throws IOException
      *             an io exception if there is a problem writing to the output
      *             stream
@@ -402,7 +402,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
 
     /**
      * This constructor supports the create method
-     * 
+     *
      * @param g
      *            the pdf document graphics to make a copy of
      */
@@ -418,7 +418,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
     /**
      * Creates a new <code>Graphics</code> object that is a copy of this
      * <code>Graphics</code> object.
-     * 
+     *
      * @return a new graphics context that is a copy of this graphics context.
      */
     @Override
@@ -430,7 +430,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      * Draw a string to the pdf document. This either draws the string directly
      * or if drawing text as shapes it converts the string into shapes and draws
      * that.
-     * 
+     *
      * @param s
      *            the string to draw
      * @param x

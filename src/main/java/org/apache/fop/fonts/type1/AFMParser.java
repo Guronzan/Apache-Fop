@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
@@ -81,10 +82,7 @@ public class AFMParser {
     private static final String B = "B";
     private static final String START_TRACK_KERN = "StartTrackKern";
     private static final String END_TRACK_KERN = "EndTrackKern";
-    // private static final String START_KERN_PAIRS = "StartKernPairs";
-    // private static final String START_KERN_PAIRS0 = "StartKernPairs0";
     private static final String START_KERN_PAIRS1 = "StartKernPairs1";
-    // private static final String END_KERN_PAIRS = "EndKernPairs";
     private static final String START_COMPOSITES = "StartComposites";
     private static final String START_COMP_FONT_METRICS = "StartCompFontMetrics";
 
@@ -96,11 +94,11 @@ public class AFMParser {
     private static final int PARSE_NORMAL = 0;
     private static final int PARSE_CHAR_METRICS = 1;
 
-    private static final Map VALUE_PARSERS;
-    private static final Map PARSE_MODE_CHANGES;
+    private static final Map<String, AbstractValueHandler> VALUE_PARSERS;
+    private static final Map<String, Integer> PARSE_MODE_CHANGES;
 
     static {
-        VALUE_PARSERS = new java.util.HashMap();
+        VALUE_PARSERS = new HashMap<>();
         VALUE_PARSERS.put(START_FONT_METRICS, new StartFontMetrics());
         VALUE_PARSERS.put(FONT_NAME, new StringSetter(FONT_NAME));
         VALUE_PARSERS.put(FULL_NAME, new StringSetter(FULL_NAME));
@@ -153,10 +151,9 @@ public class AFMParser {
         VALUE_PARSERS.put(KPX, new KPXHandler());
         VALUE_PARSERS.put(KPY, new NotImplementedYet(KPY));
 
-        PARSE_MODE_CHANGES = new java.util.HashMap();
-        PARSE_MODE_CHANGES.put(START_CHAR_METRICS, new Integer(
-                PARSE_CHAR_METRICS));
-        PARSE_MODE_CHANGES.put(END_CHAR_METRICS, new Integer(PARSE_NORMAL));
+        PARSE_MODE_CHANGES = new java.util.HashMap<>();
+        PARSE_MODE_CHANGES.put(START_CHAR_METRICS, PARSE_CHAR_METRICS);
+        PARSE_MODE_CHANGES.put(END_CHAR_METRICS, PARSE_NORMAL);
     }
 
     /**
@@ -212,7 +209,7 @@ public class AFMParser {
      *             if an I/O error occurs
      */
     public AFMFile parse(final BufferedReader reader) throws IOException {
-        final Stack stack = new Stack();
+        final Stack<Object> stack = new Stack<>();
         int parseMode = PARSE_NORMAL;
         while (true) {
             final String line = reader.readLine();
@@ -230,7 +227,7 @@ public class AFMParser {
             default:
                 throw new IllegalStateException("Invalid parse mode");
             }
-            final Integer newParseMode = (Integer) PARSE_MODE_CHANGES.get(key);
+            final Integer newParseMode = PARSE_MODE_CHANGES.get(key);
             if (newParseMode != null) {
                 parseMode = newParseMode.intValue();
             }
@@ -238,7 +235,7 @@ public class AFMParser {
         return (AFMFile) stack.pop();
     }
 
-    private String parseLine(final String line, final Stack stack)
+    private String parseLine(final String line, final Stack<Object> stack)
             throws IOException {
         int startpos = 0;
         // Find key
@@ -248,14 +245,14 @@ public class AFMParser {
 
         // Parse value
         startpos = skipToNonWhiteSpace(line, endpos);
-        final ValueHandler vp = (ValueHandler) VALUE_PARSERS.get(key);
+        final ValueHandler vp = VALUE_PARSERS.get(key);
         if (vp != null) {
             vp.parse(line, startpos, stack);
         }
         return key;
     }
 
-    private String parseCharMetrics(final String line, final Stack stack)
+    private String parseCharMetrics(final String line, final Stack<Object> stack)
             throws IOException {
         int startpos = 0;
         final AFMCharMetrics chm = new AFMCharMetrics();
@@ -280,7 +277,7 @@ public class AFMParser {
             startpos = endpos + 1;
 
             // Parse value
-            final ValueHandler vp = (ValueHandler) VALUE_PARSERS.get(key);
+            final ValueHandler vp = VALUE_PARSERS.get(key);
             if (vp != null) {
                 vp.parse(value, 0, stack);
             }
@@ -322,8 +319,8 @@ public class AFMParser {
     // ---------------- Value Handlers ---------------------------
 
     private interface ValueHandler {
-        void parse(final String line, final int startpos, final Stack stack)
-                throws IOException;
+        void parse(final String line, final int startpos,
+                final Stack<Object> stack) throws IOException;
     }
 
     private abstract static class AbstractValueHandler implements ValueHandler {
@@ -338,7 +335,7 @@ public class AFMParser {
 
         protected Number getNumberValue(final String line, final int startpos) {
             try {
-                return new Integer(getIntegerValue(line, startpos));
+                return getIntegerValue(line, startpos);
             } catch (final NumberFormatException nfe) {
                 return new Double(getDoubleValue(line, startpos));
             }
@@ -363,7 +360,7 @@ public class AFMParser {
     private static class StartFontMetrics extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) throws IOException {
             final int endpos = findValue(line, startpos);
             final double version = Double.parseDouble(line.substring(startpos,
                     endpos));
@@ -405,7 +402,7 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final String s = getStringValue(line, startpos);
             final Object obj = stack.peek();
             setValue(obj, s);
@@ -420,7 +417,7 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final NamedCharacter ch = new NamedCharacter(getStringValue(line,
                     startpos));
             final Object obj = stack.peek();
@@ -433,13 +430,13 @@ public class AFMParser {
             super(variable);
         }
 
-        protected Object getContextObject(final Stack stack) {
+        protected Object getContextObject(final Stack<Object> stack) {
             return stack.peek();
         }
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final Number num = getNumberValue(line, startpos);
             setValue(getContextObject(stack), num);
         }
@@ -452,9 +449,9 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final int value = getIntegerValue(line, startpos);
-            setValue(getContextObject(stack), new Integer(value));
+            setValue(getContextObject(stack), value);
         }
     }
 
@@ -465,7 +462,7 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final double value = getDoubleValue(line, startpos);
             setValue(getContextObject(stack), new Double(value));
         }
@@ -478,7 +475,7 @@ public class AFMParser {
         }
 
         @Override
-        protected Object getContextObject(final Stack stack) {
+        protected Object getContextObject(final Stack<Object> stack) {
             if (stack.peek() instanceof AFMWritingDirectionMetrics) {
                 return stack.peek();
             } else {
@@ -503,7 +500,7 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final double value = getDoubleValue(line, startpos);
             setValue(getContextObject(stack), new Double(value));
         }
@@ -516,13 +513,13 @@ public class AFMParser {
             this.method = "set" + variable.substring(2); // Cut "Is" in front
         }
 
-        protected Object getContextObject(final Stack stack) {
+        protected Object getContextObject(final Stack<Object> stack) {
             return stack.peek();
         }
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final Boolean b = getBooleanValue(line, startpos);
             // Uses Java Beans API
             final Statement statement = new Statement(getContextObject(stack),
@@ -543,7 +540,7 @@ public class AFMParser {
         }
 
         @Override
-        protected Object getContextObject(final Stack stack) {
+        protected Object getContextObject(final Stack<Object> stack) {
             if (stack.peek() instanceof AFMWritingDirectionMetrics) {
                 return stack.peek();
             } else {
@@ -563,7 +560,7 @@ public class AFMParser {
     private static class FontBBox extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final Rectangle rect = parseBBox(line, startpos);
 
             final AFMFile afm = (AFMFile) stack.peek();
@@ -598,7 +595,7 @@ public class AFMParser {
     private static class CharBBox extends FontBBox {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final Rectangle rect = parseBBox(line, startpos);
 
             final AFMCharMetrics metrics = (AFMCharMetrics) stack.peek();
@@ -609,7 +606,7 @@ public class AFMParser {
     private static class IsBaseFont extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) throws IOException {
             if (getBooleanValue(line, startpos).booleanValue()) {
                 throw new IOException(
                         "Only base fonts are currently supported!");
@@ -620,7 +617,7 @@ public class AFMParser {
     private static class IsCIDFont extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) throws IOException {
             if (getBooleanValue(line, startpos).booleanValue()) {
                 throw new IOException("CID fonts are currently not supported!");
             }
@@ -636,7 +633,7 @@ public class AFMParser {
 
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             log.warn("Support for '" + this.key
                     + "' has not been implemented, yet!"
                     + " Some font data in the AFM file will be ignored.");
@@ -646,7 +643,7 @@ public class AFMParser {
     private static class StartDirection extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) {
             final int index = getIntegerValue(line, startpos);
             final AFMWritingDirectionMetrics wdm = new AFMWritingDirectionMetrics();
             final AFMFile afm = (AFMFile) stack.peek();
@@ -658,7 +655,7 @@ public class AFMParser {
     private static class EndDirection extends AbstractValueHandler {
         @Override
         public void parse(final String line, final int startpos,
-                final Stack stack) throws IOException {
+                final Stack<Object> stack) throws IOException {
             if (!(stack.pop() instanceof AFMWritingDirectionMetrics)) {
                 throw new IOException("AFM format error: nesting incorrect");
             }
@@ -667,8 +664,8 @@ public class AFMParser {
 
     private static class KPXHandler extends AbstractValueHandler {
         @Override
-        public void parse(final String line, int startpos, final Stack stack)
-                throws IOException {
+        public void parse(final String line, int startpos,
+                final Stack<Object> stack) {
             final AFMFile afm = (AFMFile) stack.peek();
             int endpos;
 

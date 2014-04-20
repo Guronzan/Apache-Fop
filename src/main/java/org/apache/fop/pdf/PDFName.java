@@ -57,7 +57,7 @@ public class PDFName extends PDFObject {
         if (!name.startsWith("/")) {
             sb.append('/');
         }
-        for (int i = 0, c = name.length(); i < c; i++) {
+        for (int i = 0, c = name.length(); i < c; ++i) {
             final char ch = name.charAt(i);
             if (ch >= 33 && ch <= 126) {
                 sb.append(ch);

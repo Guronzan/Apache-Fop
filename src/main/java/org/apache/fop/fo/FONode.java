@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.fo.expr.PropertyException;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.apache.fop.fo.extensions.ExtensionElementMapping;
 import org.apache.fop.fo.extensions.InternalElementMapping;
@@ -84,7 +85,6 @@ public abstract class FONode implements Cloneable {
      *            if true, clean the list of child nodes
      * @return the cloned FO node
      * @throws FOPException
-     *             if there's a problem while cloning the node
      */
     public FONode clone(final FONode cloneparent, final boolean removeChildren)
             throws FOPException {
@@ -111,11 +111,11 @@ public abstract class FONode implements Cloneable {
      *
      * @param propertyList
      *            the <code>PropertyList</code>
+     * @throws PropertyException
      * @throws FOPException
-     *             if there was an error when processing the
-     *             <code>PropertyList</code>
      */
-    public void bind(final PropertyList propertyList) throws FOPException {
+    public void bind(final PropertyList propertyList) throws PropertyException,
+    FOPException {
         // nop
     }
 
@@ -978,7 +978,7 @@ public abstract class FONode implements Cloneable {
     /**
      * Base iterator interface over a FO's children
      */
-    public interface FONodeIterator extends ListIterator {
+    public interface FONodeIterator extends ListIterator<FONode> {
 
         /**
          * Returns the parent node for this iterator's list of child nodes

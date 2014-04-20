@@ -19,6 +19,7 @@
 
 package org.apache.fop.render;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +79,7 @@ implements RendererConfigurator, IFDocumentHandlerConfigurator {
 
         final FontEventListener listener = new FontEventAdapter(renderer
                 .getUserAgent().getEventBroadcaster());
-        final List/* <EmbedFontInfo> */embedFontInfoList = buildFontList(cfg,
+        final List<EmbedFontInfo> embedFontInfoList = buildFontList(cfg,
                 fontResolver, listener);
         printRenderer.addFontList(embedFontInfoList);
     }
@@ -96,7 +97,7 @@ implements RendererConfigurator, IFDocumentHandlerConfigurator {
      * @throws FOPException
      *             if an error occurs while processing the configuration
      */
-    protected List/* <EmbedFontInfo> */buildFontList(final Configuration cfg,
+    protected List<EmbedFontInfo> buildFontList(final Configuration cfg,
             FontResolver fontResolver, final FontEventListener listener)
                     throws FOPException {
         final FopFactory factory = this.userAgent.getFactory();
@@ -111,18 +112,18 @@ implements RendererConfigurator, IFDocumentHandlerConfigurator {
         // Read font configuration
         final FontInfoConfigurator fontInfoConfigurator = new FontInfoConfigurator(
                 cfg, fontManager, fontResolver, listener, strict);
-        final List/* <EmbedFontInfo> */fontInfoList = new java.util.ArrayList/*
-         * <
-         * EmbedFontInfo
-         * >
-         */();
+        final List<EmbedFontInfo> fontInfoList = new ArrayList<>();
         fontInfoConfigurator.configure(fontInfoList);
         return fontInfoList;
     }
 
     // ---=== IFDocumentHandler configuration ===---
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws FOPException
+     */
     @Override
     public void configure(final IFDocumentHandler documentHandler)
             throws FOPException {
@@ -135,7 +136,7 @@ implements RendererConfigurator, IFDocumentHandlerConfigurator {
             final FontInfo fontInfo) throws FOPException {
         final FontManager fontManager = this.userAgent.getFactory()
                 .getFontManager();
-        final List fontCollections = new java.util.ArrayList();
+        final List<FontCollection> fontCollections = new ArrayList<>();
         fontCollections.add(new Base14FontCollection(fontManager
                 .isBase14KerningEnabled()));
 
@@ -146,12 +147,13 @@ implements RendererConfigurator, IFDocumentHandlerConfigurator {
                     this.userAgent);
             final FontEventListener listener = new FontEventAdapter(
                     this.userAgent.getEventBroadcaster());
-            final List fontList = buildFontList(cfg, fontResolver, listener);
+            final List<EmbedFontInfo> fontList = buildFontList(cfg,
+                    fontResolver, listener);
             fontCollections
             .add(new CustomFontCollection(fontResolver, fontList));
         }
 
-        fontManager.setup(fontInfo, (FontCollection[]) fontCollections
+        fontManager.setup(fontInfo, fontCollections
                 .toArray(new FontCollection[fontCollections.size()]));
         documentHandler.setFontInfo(fontInfo);
     }

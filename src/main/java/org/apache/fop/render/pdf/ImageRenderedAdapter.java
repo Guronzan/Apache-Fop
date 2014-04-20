@@ -183,9 +183,9 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
             icm.getReds(reds);
             icm.getGreens(greens);
             icm.getBlues(blues);
-            for (int i = 0; i < ((IndexColorModel) cm).getMapSize(); i++) {
+            for (int i = 0; i < ((IndexColorModel) cm).getMapSize(); ++i) {
                 if ((alphas[i] & 0xFF) == 0) {
-                    return new Integer(i);
+                    return (i);
                 }
             }
         }
@@ -257,11 +257,11 @@ public class ImageRenderedAdapter extends AbstractImageAdapter {
                 throw new UnsupportedOperationException(
                         "hival must not go beyond " + MAX_HIVAL);
             }
-            indexed.add(new Integer(hival));
+            indexed.add((hival));
             final int[] palette = new int[c];
             icm.getRGBs(palette);
             final ByteArrayOutputStream baout = new ByteArrayOutputStream();
-            for (int i = 0; i < c; i++) {
+            for (int i = 0; i < c; ++i) {
                 // TODO Probably doesn't work for non RGB based color spaces
                 // See log warning above
                 final int entry = palette[i];

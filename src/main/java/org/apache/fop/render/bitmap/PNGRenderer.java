@@ -69,13 +69,17 @@ public class PNGRenderer extends Java2DRenderer {
         this.firstOutputStream = outputStream;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
 
         super.stopRenderer();
 
-        for (int i = 0; i < this.pageViewportList.size(); i++) {
+        for (int i = 0; i < this.pageViewportList.size(); ++i) {
 
             final OutputStream os = getCurrentOutputStream(i);
             if (os == null) {
@@ -86,8 +90,7 @@ public class PNGRenderer extends Java2DRenderer {
             }
             try {
                 // Do the rendering: get the image for this page
-                final PageViewport pv = (PageViewport) this.pageViewportList
-                        .get(i);
+                final PageViewport pv = this.pageViewportList.get(i);
                 final RenderedImage image = getPageImage(pv);
 
                 // Encode this image

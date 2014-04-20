@@ -48,7 +48,7 @@ import org.apache.fop.util.ListUtil;
  */
 @Slf4j
 public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
-implements BlockLevelLayoutManager {
+        implements BlockLevelLayoutManager {
 
     protected BlockParent parentArea;
 
@@ -59,7 +59,7 @@ implements BlockLevelLayoutManager {
     /** space-after value adjusted for block-progression-unit handling */
     protected int adjustedSpaceAfter;
     /** Only used to store the original list when createUnitElements is called */
-    protected List storedList;
+    protected List<ListElement> storedList;
     /** Indicates whether break before has been served or not */
     protected boolean breakBeforeServed;
     /**
@@ -255,13 +255,13 @@ implements BlockLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         this.referenceIPD = context.getRefIPD();
         updateContentAreaIPDwithOverconstrainedAdjust();
 
-        final List contentList = new LinkedList();
-        final List elements = new LinkedList();
+        final List<ListElement> contentList = new LinkedList<ListElement>();
+        final List<ListElement> elements = new LinkedList<ListElement>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -292,8 +292,8 @@ implements BlockLevelLayoutManager {
         while ((currentChildLM = getChildLM()) != null) {
             final LayoutContext childLC = new LayoutContext(0);
 
-            final List childrenElements = getNextChildElements(currentChildLM,
-                    context, childLC, alignment);
+            final List<BreakElement> childrenElements = getNextChildElements(
+                    currentChildLM, context, childLC, alignment);
 
             if (contentList.isEmpty()) {
                 // Propagate keep-with-previous up from the first child
@@ -303,7 +303,7 @@ implements BlockLevelLayoutManager {
             if (childrenElements != null && !childrenElements.isEmpty()) {
                 if (!contentList.isEmpty()
                         && !ElementListUtils
-                        .startsWithForcedBreak(childrenElements)) {
+                                .startsWithForcedBreak(childrenElements)) {
                     // there is a block handled by prevLM before the one
                     // handled by curLM, and the one handled
                     // by the current LM does not begin with a break
@@ -311,12 +311,11 @@ implements BlockLevelLayoutManager {
                 }
                 if (childrenElements.size() == 1
                         && ElementListUtils
-                        .startsWithForcedBreak(childrenElements)) {
+                                .startsWithForcedBreak(childrenElements)) {
 
                     if (currentChildLM.isFinished() && !hasNextChildLM()) {
                         // a descendant of this block has break-before
-                        forcedBreakAfterLast = (BreakElement) childrenElements
-                                .get(0);
+                        forcedBreakAfterLast = childrenElements.get(0);
                         context.clearPendingMarks();
                         break;
                     }
@@ -384,14 +383,14 @@ implements BlockLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment, final Stack lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
         this.referenceIPD = context.getRefIPD();
         updateContentAreaIPDwithOverconstrainedAdjust();
 
-        final List contentList = new LinkedList();
-        final List elements = new LinkedList();
+        final List<ListElement> contentList = new LinkedList<ListElement>();
+        final List<ListElement> elements = new LinkedList<ListElement>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -419,7 +418,7 @@ implements BlockLevelLayoutManager {
         BreakElement forcedBreakAfterLast = null;
 
         LayoutContext childLC = new LayoutContext(0);
-        List childrenElements;
+        List<ListElement> childrenElements;
         LayoutManager currentChildLM;
         if (lmStack.isEmpty()) {
             assert restartAtLM != null && restartAtLM.getParent() == this;
@@ -444,7 +443,7 @@ implements BlockLevelLayoutManager {
         if (childrenElements != null && !childrenElements.isEmpty()) {
             if (!contentList.isEmpty()
                     && !ElementListUtils
-                    .startsWithForcedBreak(childrenElements)) {
+                            .startsWithForcedBreak(childrenElements)) {
                 // there is a block handled by prevLM before the one
                 // handled by curLM, and the one handled
                 // by the current LM does not begin with a break
@@ -509,7 +508,7 @@ implements BlockLevelLayoutManager {
             if (childrenElements != null && !childrenElements.isEmpty()) {
                 if (!contentList.isEmpty()
                         && !ElementListUtils
-                        .startsWithForcedBreak(childrenElements)) {
+                                .startsWithForcedBreak(childrenElements)) {
                     // there is a block handled by prevLM before the one
                     // handled by curLM, and the one handled
                     // by the current LM does not begin with a break
@@ -517,7 +516,7 @@ implements BlockLevelLayoutManager {
                 }
                 if (childrenElements.size() == 1
                         && ElementListUtils
-                        .startsWithForcedBreak(childrenElements)) {
+                                .startsWithForcedBreak(childrenElements)) {
 
                     if (currentChildLM.isFinished() && !hasNextChildLM()) {
                         // a descendant of this block has break-before
@@ -588,14 +587,14 @@ implements BlockLevelLayoutManager {
         return elements;
     }
 
-    private List getNextChildElements(final LayoutManager childLM,
+    private <T> List<T> getNextChildElements(final LayoutManager childLM,
             final LayoutContext context, final LayoutContext childLC,
             final int alignment) {
         return getNextChildElements(childLM, context, childLC, alignment, null,
                 null, null);
     }
 
-    private List getNextChildElements(final LayoutManager childLM,
+    private <T> List<T> getNextChildElements(final LayoutManager childLM,
             final LayoutContext context, final LayoutContext childLC,
             final int alignment, final Stack lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
@@ -615,8 +614,9 @@ implements BlockLevelLayoutManager {
             return childLM.getNextKnuthElements(childLC, alignment);
         } else {
             if (childLM instanceof LineLayoutManager) {
-                return ((LineLayoutManager) childLM).getNextKnuthElements(
-                        childLC, alignment, (LeafPosition) restartPosition);
+                return (List<T>) ((LineLayoutManager) childLM)
+                        .getNextKnuthElements(childLC, alignment,
+                                (LeafPosition) restartPosition);
             } else {
                 return childLM.getNextKnuthElements(childLC, alignment,
                         lmStack, restartPosition, restartAtLM);
@@ -633,7 +633,7 @@ implements BlockLevelLayoutManager {
      * @param childLC
      *            the currently active child layout context
      */
-    protected void addInBetweenBreak(final List contentList,
+    protected void addInBetweenBreak(final List<ListElement> contentList,
             final LayoutContext parentLC, final LayoutContext childLC) {
 
         if (mustKeepTogether() || parentLC.isKeepWithNextPending()
@@ -728,7 +728,7 @@ implements BlockLevelLayoutManager {
             if (lastElement.isGlue()) {
                 // lastElement is a glue
                 /* LF */// log.debug("  BLM.negotiateBPDAdjustment> bpunit con glue");
-                final ListIterator storedListIterator = this.storedList
+                final ListIterator<ListElement> storedListIterator = this.storedList
                         .listIterator(mappingPos.getFirstIndex());
                 int newAdjustment = 0;
                 while (storedListIterator.nextIndex() <= mappingPos
@@ -738,7 +738,7 @@ implements BlockLevelLayoutManager {
                     if (storedElement.isGlue()) {
                         newAdjustment += ((BlockLevelLayoutManager) storedElement
                                 .getLayoutManager()).negotiateBPDAdjustment(adj
-                                        - newAdjustment, storedElement);
+                                - newAdjustment, storedElement);
                         /* LF */// log.debug("  BLM.negotiateBPDAdjustment> (progressivo) righe: "
                         // + newAdjustment);
                     }
@@ -746,7 +746,7 @@ implements BlockLevelLayoutManager {
                 newAdjustment = newAdjustment > 0 ? this.bpUnit
                         * neededUnits(newAdjustment) : -this.bpUnit
                         * neededUnits(-newAdjustment);
-                return newAdjustment;
+                        return newAdjustment;
             } else {
                 // lastElement is a penalty: this means that the paragraph
                 // has been split between consecutive pages:
@@ -759,7 +759,7 @@ implements BlockLevelLayoutManager {
                     /* LF */// log.debug("  BLM.negotiateBPDAdjustment> chiamata passata");
                     return ((BlockLevelLayoutManager) storedPenalty
                             .getLayoutManager()).negotiateBPDAdjustment(
-                                    storedPenalty.getWidth(), storedPenalty);
+                            storedPenalty.getWidth(), storedPenalty);
                 } else {
                     // the original penalty has width = 0
                     // the adjustment involves only the spaces before and after
@@ -774,7 +774,7 @@ implements BlockLevelLayoutManager {
             lastElement.setPosition(innerPosition);
             final int returnValue = ((BlockLevelLayoutManager) lastElement
                     .getLayoutManager()).negotiateBPDAdjustment(adj,
-                            lastElement);
+                    lastElement);
             lastElement.setPosition(savedPos);
             /* LF */// log.debug("  BLM.negotiateBPDAdjustment> righe: " +
             // returnValue);
@@ -817,7 +817,7 @@ implements BlockLevelLayoutManager {
                     .getPosition();
             spaceGlue.setPosition(innerPosition);
             ((BlockLevelLayoutManager) spaceGlue.getLayoutManager())
-            .discardSpace(spaceGlue);
+                    .discardSpace(spaceGlue);
             spaceGlue.setPosition(savedPos);
         }
     }
@@ -826,16 +826,14 @@ implements BlockLevelLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
-        /* LF */// log.debug("");
-        /* LF */// log.debug("  BLM.getChangedKnuthElements> inizio: oldList.size() = "
-        // + oldList.size());
-        ListIterator oldListIterator = oldList.listIterator();
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
         KnuthElement returnedElement;
         KnuthElement currElement = null;
         KnuthElement prevElement = null;
-        List returnedList = new LinkedList();
-        final List returnList = new LinkedList();
+        List<ListElement> returnedList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
         int fromIndex = 0;
 
         // "unwrap" the Positions stored in the elements
@@ -844,13 +842,6 @@ implements BlockLevelLayoutManager {
             oldElement = (KnuthElement) oldListIterator.next();
             final Position innerPosition = ((NonLeafPosition) oldElement
                     .getPosition()).getPosition();
-            // log.debug(" BLM> unwrapping: "
-            // + (oldElement.isBox() ? "box    " : (oldElement.isGlue() ?
-            // "glue   " : "penalty"))
-            // + " creato da " +
-            // oldElement.getLayoutManager().getClass().getName());
-            // log.debug(" BLM> unwrapping:         "
-            // + oldElement.getPosition().getClass().getName());
             if (innerPosition != null) {
                 // oldElement was created by a descendant of this BlockLM
                 oldElement.setPosition(innerPosition);
@@ -863,7 +854,7 @@ implements BlockLevelLayoutManager {
         }
 
         // create the iterator
-        List workList;
+        List<ListElement> workList;
         if (this.bpUnit == 0) {
             workList = oldList;
         } else {
@@ -892,7 +883,8 @@ implements BlockLevelLayoutManager {
             // + " compresi su " + storedList.size() + " elementi totali");
             workList = this.storedList.subList(iFirst, iLast + 1);
         }
-        final ListIterator workListIterator = workList.listIterator();
+        final ListIterator<ListElement> workListIterator = workList
+                .listIterator();
 
         // log.debug("  BLM.getChangedKnuthElements> workList.size() = "
         // + workList.size() + " da 0 a " + (workList.size() - 1));
@@ -903,7 +895,7 @@ implements BlockLevelLayoutManager {
             // + " nella workList");
             if (prevElement != null
                     && prevElement.getLayoutManager() != currElement
-                    .getLayoutManager()) {
+                            .getLayoutManager()) {
                 // prevElement is the last element generated by the same LM
                 final BlockLevelLayoutManager prevLM = (BlockLevelLayoutManager) prevElement
                         .getLayoutManager();
@@ -918,7 +910,7 @@ implements BlockLevelLayoutManager {
                     returnedList.addAll(prevLM.getChangedKnuthElements(
                             workList.subList(fromIndex,
                                     workListIterator.previousIndex()),
-                                    alignment));
+                            alignment));
                     bSomethingAdded = true;
                 } else {
                     // prevLM == this
@@ -943,7 +935,7 @@ implements BlockLevelLayoutManager {
                             false, new Position(this), false));
                 } else if (bSomethingAdded
                         && !((KnuthElement) ListUtil.getLast(returnedList))
-                                .isGlue()) {
+                        .isGlue()) {
                     // add a null penalty to allow a break between blocks
                     returnedList.add(new KnuthPenalty(0, 0, false,
                             new Position(this), false));
@@ -960,9 +952,9 @@ implements BlockLevelLayoutManager {
                 // + " a " + oldList.size() + " su " +
                 // currLM.getClass().getName());
                 returnedList
-                .addAll(currLM.getChangedKnuthElements(
-                        workList.subList(fromIndex, workList.size()),
-                        alignment));
+                        .addAll(currLM.getChangedKnuthElements(
+                                workList.subList(fromIndex, workList.size()),
+                                alignment));
             } else {
                 // currLM == this
                 // there are no more elements to add
@@ -1007,12 +999,12 @@ implements BlockLevelLayoutManager {
         /* LF */if (this.bpUnit > 0) {
             /* LF */this.storedList = returnedList;
             /* LF */returnedList = createUnitElements(returnedList);
-        /* LF */}
+            /* LF */}
         /* estensione */
 
         // "wrap" the Position stored in each element of returnedList
         // and add elements to returnList
-        final ListIterator listIter = returnedList.listIterator();
+        final ListIterator<ListElement> listIter = returnedList.listIterator();
         while (listIter.hasNext()) {
             returnedElement = (KnuthElement) listIter.next();
             returnedElement.setPosition(new NonLeafPosition(this,
@@ -1159,7 +1151,7 @@ implements BlockLevelLayoutManager {
                 context.addPendingBeforeMark(new PaddingElement(
                         getAuxiliaryPosition(),
                         borderAndPadding
-                        .getPaddingLengthProperty(CommonBorderPaddingBackground.BEFORE),
+                                .getPaddingLengthProperty(CommonBorderPaddingBackground.BEFORE),
                         RelSide.BEFORE, false, false, this));
             }
             if (borderAndPadding.getBorderAfterWidth(false) > 0) {
@@ -1167,13 +1159,13 @@ implements BlockLevelLayoutManager {
                         getAuxiliaryPosition(),
                         borderAndPadding.getBorderInfo(
                                 CommonBorderPaddingBackground.AFTER).getWidth(),
-                                RelSide.AFTER, false, false, this));
+                        RelSide.AFTER, false, false, this));
             }
             if (borderAndPadding.getPaddingAfter(false, this) > 0) {
                 context.addPendingAfterMark(new PaddingElement(
                         getAuxiliaryPosition(),
                         borderAndPadding
-                        .getPaddingLengthProperty(CommonBorderPaddingBackground.AFTER),
+                                .getPaddingLengthProperty(CommonBorderPaddingBackground.AFTER),
                         RelSide.AFTER, false, false, this));
             }
         }
@@ -1256,7 +1248,7 @@ implements BlockLevelLayoutManager {
      *            to generate border and padding
      */
     protected void addKnuthElementsForBorderPaddingBefore(
-            final List returnList, final boolean isFirst) {
+            final List<ListElement> returnList, final boolean isFirst) {
         // Border and Padding (before)
         final CommonBorderPaddingBackground borderAndPadding = getBorderPaddingBackground();
         if (borderAndPadding != null) {
@@ -1265,15 +1257,15 @@ implements BlockLevelLayoutManager {
                         borderAndPadding.getBorderInfo(
                                 CommonBorderPaddingBackground.BEFORE)
                                 .getWidth(), RelSide.BEFORE, isFirst, false,
-                                this));
+                        this));
             }
             if (borderAndPadding.getPaddingBefore(false, this) > 0) {
                 returnList
-                .add(new PaddingElement(
-                        getAuxiliaryPosition(),
-                        borderAndPadding
-                        .getPaddingLengthProperty(CommonBorderPaddingBackground.BEFORE),
-                        RelSide.BEFORE, isFirst, false, this));
+                        .add(new PaddingElement(
+                                getAuxiliaryPosition(),
+                                borderAndPadding
+                                        .getPaddingLengthProperty(CommonBorderPaddingBackground.BEFORE),
+                                RelSide.BEFORE, isFirst, false, this));
             }
         }
     }
@@ -1288,25 +1280,25 @@ implements BlockLevelLayoutManager {
      *            true if this is the last time a layout manager instance needs
      *            to generate border and padding
      */
-    protected void addKnuthElementsForBorderPaddingAfter(final List returnList,
-            final boolean isLast) {
+    protected void addKnuthElementsForBorderPaddingAfter(
+            final List<ListElement> returnList, final boolean isLast) {
         // Border and Padding (after)
         final CommonBorderPaddingBackground borderAndPadding = getBorderPaddingBackground();
         if (borderAndPadding != null) {
             if (borderAndPadding.getPaddingAfter(false, this) > 0) {
                 returnList
-                .add(new PaddingElement(
-                        getAuxiliaryPosition(),
-                        borderAndPadding
-                        .getPaddingLengthProperty(CommonBorderPaddingBackground.AFTER),
-                        RelSide.AFTER, false, isLast, this));
+                        .add(new PaddingElement(
+                                getAuxiliaryPosition(),
+                                borderAndPadding
+                                        .getPaddingLengthProperty(CommonBorderPaddingBackground.AFTER),
+                                RelSide.AFTER, false, isLast, this));
             }
             if (borderAndPadding.getBorderAfterWidth(false) > 0) {
                 returnList
-                .add(new BorderElement(getAuxiliaryPosition(),
-                        borderAndPadding.getBorderInfo(
-                                CommonBorderPaddingBackground.AFTER)
-                                .getWidth(), RelSide.AFTER, false,
+                        .add(new BorderElement(getAuxiliaryPosition(),
+                                borderAndPadding.getBorderInfo(
+                                        CommonBorderPaddingBackground.AFTER)
+                                        .getWidth(), RelSide.AFTER, false,
                                 isLast, this));
             }
         }
@@ -1321,8 +1313,8 @@ implements BlockLevelLayoutManager {
      *            the layout context
      * @return true if an element has been added due to a break-before.
      */
-    protected boolean addKnuthElementsForBreakBefore(final List returnList,
-            final LayoutContext context) {
+    protected boolean addKnuthElementsForBreakBefore(
+            final List<ListElement> returnList, final LayoutContext context) {
         final int breakBefore = getBreakBefore();
         if (breakBefore == EN_PAGE || breakBefore == EN_COLUMN
                 || breakBefore == EN_EVEN_PAGE || breakBefore == EN_ODD_PAGE) {
@@ -1366,8 +1358,8 @@ implements BlockLevelLayoutManager {
      *            the layout context
      * @return true if an element has been added due to a break-after.
      */
-    protected boolean addKnuthElementsForBreakAfter(final List returnList,
-            final LayoutContext context) {
+    protected boolean addKnuthElementsForBreakAfter(
+            final List<ListElement> returnList, final LayoutContext context) {
         int breakAfter = -1;
         if (this.fobj instanceof BreakPropertySet) {
             breakAfter = ((BreakPropertySet) this.fobj).getBreakAfter();
@@ -1391,17 +1383,15 @@ implements BlockLevelLayoutManager {
      * @param alignment
      *            vertical alignment
      */
-    protected void addKnuthElementsForSpaceBefore(final List returnList/*
-     * ,
-     * Position
-     * returnPosition
-     */,
-     final int alignment) {
+    protected void addKnuthElementsForSpaceBefore(
+            final List<ListElement> returnList/*
+                                               * , Position returnPosition
+                                               */, final int alignment) {
         final SpaceProperty spaceBefore = getSpaceBeforeProperty();
         // append elements representing space-before
         if (spaceBefore != null
                 && !(spaceBefore.getMinimum(this).getLength().getValue(this) == 0 && spaceBefore
-                .getMaximum(this).getLength().getValue(this) == 0)) {
+                        .getMaximum(this).getLength().getValue(this) == 0)) {
             returnList.add(new SpaceElement(getAuxiliaryPosition(),
                     spaceBefore, RelSide.BEFORE, true, false, this));
         }
@@ -1438,17 +1428,15 @@ implements BlockLevelLayoutManager {
      * @param alignment
      *            vertical alignment
      */
-    protected void addKnuthElementsForSpaceAfter(final List returnList/*
-     * ,
-     * Position
-     * returnPosition
-     */,
-     final int alignment) {
+    protected void addKnuthElementsForSpaceAfter(
+            final List<ListElement> returnList/*
+                                               * , Position returnPosition
+                                               */, final int alignment) {
         final SpaceProperty spaceAfter = getSpaceAfterProperty();
         // append elements representing space-after
         if (spaceAfter != null
                 && !(spaceAfter.getMinimum(this).getLength().getValue(this) == 0 && spaceAfter
-                .getMaximum(this).getLength().getValue(this) == 0)) {
+                        .getMaximum(this).getLength().getValue(this) == 0)) {
             returnList.add(new SpaceElement(getAuxiliaryPosition(), spaceAfter,
                     RelSide.AFTER, false, true, this));
         }
@@ -1479,7 +1467,8 @@ implements BlockLevelLayoutManager {
          */
     }
 
-    protected List createUnitElements(final List oldList) {
+    protected List<ListElement> createUnitElements(
+            final List<ListElement> oldList) {
         // log.debug("Start conversion: " + oldList.size()
         // + " elements, space-before.min=" +
         // layoutProps.spaceBefore.getSpace().min
@@ -1502,11 +1491,11 @@ implements BlockLevelLayoutManager {
         }
 
         MinOptMax totalLength = MinOptMax.ZERO;
-        final LinkedList newList = new LinkedList();
+        final LinkedList<ListElement> newList = new LinkedList<>();
 
         // log.debug(" Prima scansione");
         // scan the list once to compute total min, opt and max length
-        ListIterator oldListIterator = oldList.listIterator();
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
         while (oldListIterator.hasNext()) {
             final KnuthElement element = (KnuthElement) oldListIterator.next();
             if (element.isBox()) {
@@ -1605,7 +1594,7 @@ implements BlockLevelLayoutManager {
                         neededUnits(lengthAfterBreak.getMax()));
 
                 // rewind the iterator and lengthAfterBreak
-                for (int i = 0; i < iStepsForward; i++) {
+                for (int i = 0; i < iStepsForward; ++i) {
                     final KnuthElement el = (KnuthElement) oldListIterator
                             .previous();
                     if (el.isGlue()) {
@@ -1667,7 +1656,7 @@ implements BlockLevelLayoutManager {
                 }
                 final MappingPosition mappingPos = new MappingPosition(this,
                         firstIndex - firstIndexCorrection, lastIndex
-                        - lastIndexCorrection);
+                                - lastIndexCorrection);
 
                 // new box
                 newList.add(new KnuthBox((uNewNormal - uLengthChange)
@@ -1769,7 +1758,7 @@ implements BlockLevelLayoutManager {
             // insert the correct elements
             newList.addFirst(new KnuthBox(
                     wrongBox.getWidth() - decreasedLength, wrongBox
-                    .getPosition(), false));
+                            .getPosition(), false));
             newList.addFirst(new KnuthGlue(decreasedLength, 0, 0,
                     Adjustment.SPACE_BEFORE_ADJUSTMENT, wrongBox.getPosition(),
                     false));
@@ -1793,7 +1782,7 @@ implements BlockLevelLayoutManager {
             // if the old sequence is box(h) penalty(inf) glue(x,y,z) box(0)
             // (it cannot be parted and has some stretch or shrink)
             // the wrong box is the first one, not the last one
-            final LinkedList preserveList = new LinkedList();
+            final LinkedList<ListElement> preserveList = new LinkedList<ListElement>();
             if (wrongBox.getWidth() == 0) {
                 preserveList.add(wrongBox);
                 preserveList.addFirst(newList.removeLast());
@@ -1873,8 +1862,8 @@ implements BlockLevelLayoutManager {
      * @param targetList
      *            target list receiving the wrapped position elements
      */
-    protected void wrapPositionElements(final List sourceList,
-            final List targetList) {
+    protected void wrapPositionElements(final List<ListElement> sourceList,
+            final List<ListElement> targetList) {
         wrapPositionElements(sourceList, targetList, false);
     }
 
@@ -1890,10 +1879,10 @@ implements BlockLevelLayoutManager {
      *            if true, every Position is wrapped regardless of its LM of
      *            origin
      */
-    protected void wrapPositionElements(final List sourceList,
-            final List targetList, final boolean force) {
+    protected void wrapPositionElements(final List<ListElement> sourceList,
+            final List<ListElement> targetList, final boolean force) {
 
-        final ListIterator listIter = sourceList.listIterator();
+        final ListIterator<ListElement> listIter = sourceList.listIterator();
         Object tempElement;
         while (listIter.hasNext()) {
             tempElement = listIter.next();
@@ -1901,7 +1890,8 @@ implements BlockLevelLayoutManager {
                 wrapPositionElement((ListElement) tempElement, targetList,
                         force);
             } else if (tempElement instanceof List) {
-                wrapPositionElements((List) tempElement, targetList, force);
+                wrapPositionElements((List<ListElement>) tempElement,
+                        targetList, force);
             }
         }
     }
@@ -1919,7 +1909,7 @@ implements BlockLevelLayoutManager {
      *            origin
      */
     protected void wrapPositionElement(final ListElement el,
-            final List targetList, final boolean force) {
+            final List<ListElement> targetList, final boolean force) {
         if (force || el.getLayoutManager() != this) {
             el.setPosition(notifyPos(new NonLeafPosition(this, el.getPosition())));
         }

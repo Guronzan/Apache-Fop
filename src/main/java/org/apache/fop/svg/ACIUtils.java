@@ -20,13 +20,16 @@
 package org.apache.fop.svg;
 
 import java.text.AttributedCharacterIterator;
+import java.text.AttributedCharacterIterator.Attribute;
 import java.text.CharacterIterator;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.Map.Entry;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utilities for java.text.AttributedCharacterIterator.
  */
+@Slf4j
 public final class ACIUtils {
 
     private ACIUtils() {
@@ -35,31 +38,30 @@ public final class ACIUtils {
 
     /**
      * Dumps the contents of an ACI to System.out. Used for debugging only.
-     * 
+     *
      * @param aci
      *            the ACI to dump
      */
     public static void dumpAttrs(final AttributedCharacterIterator aci) {
         aci.first();
-        final Iterator i = aci.getAttributes().entrySet().iterator();
-        while (i.hasNext()) {
-            final Map.Entry entry = (Map.Entry) i.next();
+        for (final Entry<Attribute, Object> entry : aci.getAttributes()
+                .entrySet()) {
             if (entry.getValue() != null) {
-                System.out.println(entry.getKey() + ": " + entry.getValue());
+                log.info("{}: {}", entry.getKey(), entry.getValue());
             }
         }
         int start = aci.getBeginIndex();
-        System.out.print("AttrRuns: ");
+        log.info("AttrRuns: ");
         while (aci.current() != CharacterIterator.DONE) {
             final int end = aci.getRunLimit();
-            System.out.print("" + (end - start) + ", ");
+            log.info("" + (end - start) + ", ");
             aci.setIndex(end);
             if (start == end) {
                 break;
             }
             start = end;
         }
-        System.out.println("");
+        log.info("");
     }
 
 }

@@ -89,11 +89,11 @@ public class PDFGState extends PDFObject {
         DEFAULT = new PDFGState();
         final Map vals = DEFAULT.values;
         /*
-         * vals.put(LW, new Float(1.0)); vals.put(LC, new Integer(0));
-         * vals.put(LJ, new Integer(0)); vals.put(ML, new Float(10.0));
+         * vals.put(LW, new Float(1.0)); vals.put(LC, (0));
+         * vals.put(LJ, (0)); vals.put(ML, new Float(10.0));
          * vals.put(D, "0 []"); vals.put(RI, "RelativeColorimetric");
          * vals.put(OP, Boolean.FALSE); vals.put(op, Boolean.FALSE);
-         * vals.put(OPM, new Integer(1)); vals.put(Font, "");
+         * vals.put(OPM, (1)); vals.put(Font, "");
          */
 
         vals.put(GSTATE_ALPHA_STROKE, new Float(1.0));

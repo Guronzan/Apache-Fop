@@ -192,7 +192,7 @@ public class TTFFontLoader extends FontLoader {
     private void copyWidthsSingleByte(final TTFFile ttf) {
         final int[] wx = ttf.getWidths();
         for (int i = this.singleFont.getFirstChar(); i <= this.singleFont
-                .getLastChar(); i++) {
+                .getLastChar(); ++i) {
             this.singleFont.setWidth(i, ttf.getCharWidth(i));
         }
         final Iterator<TTFCmapEntry> iter = ttf.getCMaps().listIterator();

@@ -19,8 +19,9 @@
 
 package org.apache.fop.area;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +35,7 @@ import org.apache.fop.fo.pagination.bookmarks.BookmarkTree;
  */
 public class BookmarkData extends AbstractOffDocumentItem implements Resolvable {
 
-    private final List subData = new java.util.ArrayList();
+    private final List<BookmarkData> subData = new ArrayList<>();
 
     // bookmark-title for this fo:bookmark
     private String bookmarkTitle = null;
@@ -50,7 +51,7 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
     private PageViewport pageRef = null;
 
     // unresolved idrefs by this bookmark and child bookmarks below it
-    private final Map unresolvedIDRefs = new java.util.HashMap();
+    private final Map<String, List<BookmarkData>> unresolvedIDRefs = new HashMap<>();
 
     /**
      * Create a new bookmark data object. This should only be called by the
@@ -67,8 +68,7 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
         this.bShow = true;
 
         for (int count = 0; count < bookmarkTree.getBookmarks().size(); count++) {
-            final Bookmark bkmk = (Bookmark) bookmarkTree.getBookmarks().get(
-                    count);
+            final Bookmark bkmk = bookmarkTree.getBookmarks().get(count);
             addSubData(createBookmarkData(bkmk));
         }
     }
@@ -88,9 +88,9 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
     }
 
     private void putUnresolved(final String id, final BookmarkData bd) {
-        List refs = (List) this.unresolvedIDRefs.get(id);
+        List<BookmarkData> refs = this.unresolvedIDRefs.get(id);
         if (refs == null) {
-            refs = new java.util.ArrayList();
+            refs = new ArrayList<>();
             this.unresolvedIDRefs.put(id, refs);
         }
         refs.add(bd);
@@ -189,7 +189,7 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
      * @return the child bookmark data
      */
     public BookmarkData getSubData(final int count) {
-        return (BookmarkData) this.subData.get(count);
+        return this.subData.get(count);
     }
 
     /**
@@ -219,8 +219,7 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
      */
     @Override
     public String[] getIDRefs() {
-        return (String[]) this.unresolvedIDRefs.keySet().toArray(
-                new String[] {});
+        return this.unresolvedIDRefs.keySet().toArray(new String[] {});
     }
 
     /**
@@ -231,20 +230,18 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
      * {@inheritDoc} List)
      */
     @Override
-    public void resolveIDRef(final String id, final List pages) {
+    public void resolveIDRef(final String id, final List<PageViewport> pages) {
         if (id.equals(this.idRef)) {
             // Own ID has been resolved, so note the page
-            this.pageRef = (PageViewport) pages.get(0);
+            this.pageRef = pages.get(0);
             // Note: Determining the placement inside the page is the renderer's
             // job.
         }
 
         // Notify all child bookmarks
-        final Collection refs = (Collection) this.unresolvedIDRefs.get(id);
+        final Collection<BookmarkData> refs = this.unresolvedIDRefs.get(id);
         if (refs != null) {
-            final Iterator iter = refs.iterator();
-            while (iter.hasNext()) {
-                final BookmarkData bd = (BookmarkData) iter.next();
+            for (final BookmarkData bd : refs) {
                 bd.resolveIDRef(id, pages);
             }
         }
@@ -272,8 +269,7 @@ public class BookmarkData extends AbstractOffDocumentItem implements Resolvable 
     private BookmarkData createBookmarkData(final Bookmark bookmark) {
         final BookmarkData data = new BookmarkData(bookmark);
         for (int count = 0; count < bookmark.getChildBookmarks().size(); count++) {
-            final Bookmark bkmk = (Bookmark) bookmark.getChildBookmarks().get(
-                    count);
+            final Bookmark bkmk = bookmark.getChildBookmarks().get(count);
             data.addSubData(createBookmarkData(bkmk));
         }
         return data;

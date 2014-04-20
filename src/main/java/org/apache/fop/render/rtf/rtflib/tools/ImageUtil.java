@@ -61,7 +61,7 @@ public class ImageUtil {
         final StringBuilder s = new StringBuilder(value);
         final int len = s.length();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             if (Character.isDigit(s.charAt(i))) {
                 retString += s.charAt(i);
             } else {
@@ -124,7 +124,7 @@ public class ImageUtil {
 
             }
 
-            for (int i = 0; i < pLen; i++) {
+            for (int i = 0; i < pLen; ++i) {
                 if (pattern[i] != data[searchAt + i]) {
                     return false;
                 }
@@ -137,7 +137,7 @@ public class ImageUtil {
 
             }
 
-            for (int i = 0; i < pLen; i++) {
+            for (int i = 0; i < pLen; ++i) {
                 if (pattern[pLen - i - 1] != data[searchAt - i]) {
                     return false;
                 }
@@ -178,7 +178,7 @@ public class ImageUtil {
 
             }
 
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length; ++i) {
                 bitMoving -= bit;
                 int iData = data[startAt + i];
                 if (iData < 0) {
@@ -192,7 +192,7 @@ public class ImageUtil {
 
             }
 
-            for (int i = 0; i < length; i++) {
+            for (int i = 0; i < length; ++i) {
                 bitMoving -= bit;
                 int iData = data[startAt - i];
                 if (iData < 0) {

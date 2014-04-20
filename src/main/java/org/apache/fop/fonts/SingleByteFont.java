@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * Generic SingleByte font
  */
 @Slf4j
-public class SingleByteFont extends CustomFont {
+public class SingleByteFont extends CustomFont<String, String> {
 
     private SingleByteEncoding mapping;
     private boolean useNativeEncoding = false;
@@ -127,7 +127,7 @@ public class SingleByteFont extends CustomFont {
                 SimpleSingleByteEncoding encoding = null;
                 char mappedStart = 0;
                 final int additionalsCount = this.additionalEncodings.size();
-                for (int i = 0; i < additionalsCount; i++) {
+                for (int i = 0; i < additionalsCount; ++i) {
                     mappedStart += 256;
                     encoding = getAdditionalEncoding(i);
                     final char alt = encoding.mapChar(ch);
@@ -336,7 +336,7 @@ public class SingleByteFont extends CustomFont {
     public int[] getAdditionalWidths(final int index) {
         final SimpleSingleByteEncoding enc = getAdditionalEncoding(index);
         final int[] arr = new int[enc.getLastChar() - enc.getFirstChar() + 1];
-        for (int i = 0, c = arr.length; i < c; i++) {
+        for (int i = 0, c = arr.length; i < c; ++i) {
             final NamedCharacter nc = enc.getCharacterForIndex(enc
                     .getFirstChar() + i);
             final UnencodedCharacter uc = (UnencodedCharacter) this.unencodedCharacters

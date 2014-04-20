@@ -28,6 +28,7 @@ import org.apache.fop.apps.FOPException;
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Trait;
 import org.apache.fop.fonts.CustomFontCollection;
+import org.apache.fop.fonts.EmbedFontInfo;
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontInfo;
@@ -47,15 +48,15 @@ public abstract class PrintRenderer extends AbstractRenderer {
     protected FontResolver fontResolver = null;
 
     /** list of fonts */
-    protected List/* <EmbedFontInfo> */embedFontInfoList = null;
+    protected List<EmbedFontInfo> embedFontInfoList = null;
 
     /**
      * Adds a font list to current list of fonts
-     * 
+     *
      * @param fontList
      *            a font info list
      */
-    public void addFontList(final List/* <EmbedFontInfo> */fontList) {
+    public void addFontList(final List<EmbedFontInfo> fontList) {
         if (this.embedFontInfoList == null) {
             setFontList(fontList);
         } else {
@@ -67,18 +68,22 @@ public abstract class PrintRenderer extends AbstractRenderer {
      * @param embedFontInfoList
      *            list of available fonts
      */
-    public void setFontList(final List/* <EmbedFontInfo> */embedFontInfoList) {
+    public void setFontList(final List<EmbedFontInfo> embedFontInfoList) {
         this.embedFontInfoList = embedFontInfoList;
     }
 
     /**
      * @return list of available embedded fonts
      */
-    public List/* <EmbedFontInfo> */getFontList() {
+    public List<EmbedFontInfo> getFontList() {
         return this.embedFontInfoList;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws FOPException
+     */
     @Override
     public void setupFontInfo(final FontInfo inFontInfo) throws FOPException {
         this.fontInfo = inFontInfo;
@@ -93,7 +98,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
     /**
      * Returns the internal font key for a font triplet coming from the area
      * tree
-     * 
+     *
      * @param area
      *            the area from which to retrieve the font triplet information
      * @return the internal font key (F1, F2 etc.) or null if not found
@@ -112,7 +117,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * Returns a Font object constructed based on the font traits in an area
-     * 
+     *
      * @param area
      *            the area from which to retrieve the font triplet information
      * @return the requested Font instance or null if not found
@@ -125,7 +130,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * Instantiates a RendererContext for an image
-     * 
+     *
      * @return a newly created RendererContext.
      */
     protected RendererContext instantiateRendererContext() {
@@ -134,7 +139,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * Creates a RendererContext for an image.
-     * 
+     *
      * @param x
      *            the x coordinate (in millipoints)
      * @param y
@@ -152,11 +157,10 @@ public abstract class PrintRenderer extends AbstractRenderer {
         final RendererContext context = instantiateRendererContext();
         context.setUserAgent(this.userAgent);
 
-        context.setProperty(RendererContextConstants.WIDTH, new Integer(width));
-        context.setProperty(RendererContextConstants.HEIGHT,
-                new Integer(height));
-        context.setProperty(RendererContextConstants.XPOS, new Integer(x));
-        context.setProperty(RendererContextConstants.YPOS, new Integer(y));
+        context.setProperty(RendererContextConstants.WIDTH, width);
+        context.setProperty(RendererContextConstants.HEIGHT, height);
+        context.setProperty(RendererContextConstants.XPOS, x);
+        context.setProperty(RendererContextConstants.YPOS, y);
         context.setProperty(RendererContextConstants.PAGE_VIEWPORT,
                 getCurrentPageViewport());
         if (foreignAttributes != null) {
@@ -168,7 +172,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * Renders an XML document (SVG for example).
-     * 
+     *
      * @param doc
      *            the DOM Document containing the XML document to be rendered
      * @param ns

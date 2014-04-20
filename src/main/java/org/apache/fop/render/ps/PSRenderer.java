@@ -31,8 +31,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -116,7 +118,7 @@ import org.apache.xmlgraphics.ps.dsc.events.DSCCommentHiResBoundingBox;
  * @version $Id: PSRenderer.java 932497 2010-04-09 16:34:29Z vhennebert $
  */
 @Slf4j
-public class PSRenderer extends AbstractPathOrientedRenderer implements
+public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
         ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
 
     /** The MIME type for PostScript */
@@ -139,15 +141,15 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
     /**
      * Used to temporarily store PSSetupCode instance until they can be written.
      */
-    private List setupCodeList;
+    private List<ExtensionAttachment> setupCodeList;
 
     /**
      * This is a map of PSResource instances of all fonts defined (key: font
      * key)
      */
-    private Map fontResources;
+    private Map<String, PSResource> fontResources;
     /** This is a map of PSResource instances of all forms (key: uri) */
-    private Map formResources;
+    private Map<String, PSResource> formResources;
 
     /** encapsulation of dictionary used in setpagedevice instruction **/
     private PSPageDeviceDictionary pageDeviceDictionary;
@@ -163,10 +165,10 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
     private Rectangle2D documentBoundingBox;
 
     /** This is a collection holding all document header comments */
-    private Collection headerComments;
+    private Collection<ExtensionAttachment> headerComments;
 
     /** This is a collection holding all document footer comments */
-    private Collection footerComments;
+    private Collection<ExtensionAttachment> footerComments;
 
     /** {@inheritDoc} */
     @Override
@@ -417,7 +419,8 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                         .getSupportedFlavors(renderingContext);
 
                 // Only now fully load/prepare the image
-                final Map hints = ImageUtil.getDefaultHints(sessionContext);
+                final Map<String, Object> hints = ImageUtil
+                        .getDefaultHints(sessionContext);
                 final org.apache.xmlgraphics.image.loader.Image img = manager
                         .getImage(info, flavors, hints, sessionContext);
 
@@ -428,9 +431,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                 // ...and embed as inline image
                 basicHandler.handleImage(renderingContext, img, targetRect);
             } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Image " + info + " is embedded as a form later");
-                }
+                log.debug("Image {} is embedded as a form later", info);
                 // Don't load image at this time, just put a form placeholder in
                 // the stream
                 final PSResource form = getFormForImage(info.getOriginalURI());
@@ -467,9 +468,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
             throw new IllegalArgumentException("uri must not be empty or null");
         }
         if (this.formResources == null) {
-            this.formResources = new java.util.HashMap();
+            this.formResources = new HashMap<>();
         }
-        PSResource form = (PSResource) this.formResources.get(uri);
+        PSResource form = this.formResources.get(uri);
         if (form == null) {
             form = new PSImageFormResource(this.formResources.size() + 1, uri);
             this.formResources.put(uri, form);
@@ -490,26 +491,6 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         final float fh = height / 1000f;
         org.apache.xmlgraphics.ps.PSImageUtils.renderBitmapImage(image, fx, fy,
                 fw, fh, this.gen);
-    }
-
-    /**
-     * Draw a line.
-     *
-     * @param startx
-     *            the start x position
-     * @param starty
-     *            the start y position
-     * @param endx
-     *            the x end position
-     * @param endy
-     *            the y end position
-     */
-    private void drawLine(final float startx, final float starty,
-            final float endx, final float endy) {
-        writeln(this.gen.formatDouble(startx) + " "
-                + this.gen.formatDouble(starty) + " M "
-                + this.gen.formatDouble(endx) + " "
-                + this.gen.formatDouble(endy) + " lineto stroke newpath");
     }
 
     /** Saves the graphics state of the rendering engine. */
@@ -617,9 +598,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
     protected PSResource getPSResourceForFontKey(final String key) {
         PSResource res = null;
         if (this.fontResources != null) {
-            res = (PSResource) this.fontResources.get(key);
+            res = this.fontResources.get(key);
         } else {
-            this.fontResources = new java.util.HashMap();
+            this.fontResources = new HashMap<>();
         }
         if (res == null) {
             res = new PSResource(PSResource.TYPE_FONT,
@@ -721,9 +702,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         this.gen.writeDSCComment(DSCConstants.CREATOR,
                 new String[] { this.userAgent.getProducer() });
         this.gen.writeDSCComment(DSCConstants.CREATION_DATE,
-                new Object[] { new java.util.Date() });
-        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL, new Integer(
-                this.gen.getPSLevel()));
+                new Object[] { new Date() });
+        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL,
+                this.gen.getPSLevel());
         this.gen.writeDSCComment(DSCConstants.PAGES,
                 new Object[] { DSCConstants.ATEND });
         this.gen.writeDSCComment(DSCConstants.BBOX, DSCConstants.ATEND);
@@ -732,10 +713,8 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         this.gen.writeDSCComment(DSCConstants.DOCUMENT_SUPPLIED_RESOURCES,
                 new Object[] { DSCConstants.ATEND });
         if (this.headerComments != null) {
-            for (final Iterator iter = this.headerComments.iterator(); iter
-                    .hasNext();) {
-                final PSExtensionAttachment comment = (PSExtensionAttachment) iter
-                        .next();
+            for (final Object element : this.headerComments) {
+                final PSExtensionAttachment comment = (PSExtensionAttachment) element;
                 this.gen.writeln("%" + comment.getContent());
             }
         }
@@ -775,16 +754,13 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         // Write trailer
         this.gen.writeDSCComment(DSCConstants.TRAILER);
         if (this.footerComments != null) {
-            for (final Iterator iter = this.footerComments.iterator(); iter
-                    .hasNext();) {
-                final PSExtensionAttachment comment = (PSExtensionAttachment) iter
-                        .next();
+            for (final Object element : this.footerComments) {
+                final PSExtensionAttachment comment = (PSExtensionAttachment) element;
                 this.gen.commentln("%" + comment.getContent());
             }
             this.footerComments.clear();
         }
-        this.gen.writeDSCComment(DSCConstants.PAGES, new Integer(
-                this.currentPageNumber));
+        this.gen.writeDSCComment(DSCConstants.PAGES, this.currentPageNumber);
         new DSCCommentBoundingBox(this.documentBoundingBox).generate(this.gen);
         new DSCCommentHiResBoundingBox(this.documentBoundingBox)
                 .generate(this.gen);
@@ -857,7 +833,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                         .getCategory())) {
                     if (attachment instanceof PSSetupCode) {
                         if (this.setupCodeList == null) {
-                            this.setupCodeList = new java.util.ArrayList();
+                            this.setupCodeList = new ArrayList<>();
                         }
                         if (!this.setupCodeList.contains(attachment)) {
                             this.setupCodeList.add(attachment);
@@ -885,12 +861,12 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                         }
                     } else if (attachment instanceof PSCommentBefore) {
                         if (this.headerComments == null) {
-                            this.headerComments = new java.util.ArrayList();
+                            this.headerComments = new ArrayList<>();
                         }
                         this.headerComments.add(attachment);
                     } else if (attachment instanceof PSCommentAfter) {
                         if (this.footerComments == null) {
-                            this.footerComments = new java.util.ArrayList();
+                            this.footerComments = new ArrayList<>();
                         }
                         this.footerComments.add(attachment);
                     }
@@ -917,12 +893,12 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                 PSProcSets.STD_PROCSET);
         this.gen.writeDSCComment(DSCConstants.PAGE,
                 new Object[] { page.getPageNumberString(),
-                        new Integer(this.currentPageNumber) });
+                        this.currentPageNumber });
 
         final double pageWidth = page.getViewArea().width / 1000f;
         final double pageHeight = page.getViewArea().height / 1000f;
         boolean rotate = false;
-        final List pageSizes = new java.util.ArrayList();
+        final List<Long> pageSizes = new ArrayList<>();
         if (getPSUtil().isAutoRotateLandscape() && pageHeight < pageWidth) {
             rotate = true;
             pageSizes.add(new Long(Math.round(pageHeight)));
@@ -934,10 +910,8 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         this.pageDeviceDictionary.put("/PageSize", pageSizes);
 
         if (page.hasExtensionAttachments()) {
-            for (final Iterator iter = page.getExtensionAttachments()
-                    .iterator(); iter.hasNext();) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) iter
-                        .next();
+            for (final ExtensionAttachment attachment : page
+                    .getExtensionAttachments()) {
                 if (attachment instanceof PSSetPageDevice) {
                     /**
                      * Extract all PSSetPageDevice instances from the attachment
@@ -971,7 +945,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         } catch (final IOException e) {
             log.error(e.getMessage());
         }
-        final Integer zero = new Integer(0);
+        final Integer zero = 0;
         final Rectangle2D pageBoundingBox = new Rectangle2D.Double();
         if (rotate) {
             pageBoundingBox.setRect(0, 0, pageHeight, pageWidth);
@@ -1007,9 +981,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         this.gen.writeDSCComment(DSCConstants.BEGIN_PAGE_SETUP);
 
         if (page.hasExtensionAttachments()) {
-            final List extensionAttachments = page.getExtensionAttachments();
-            for (int i = 0; i < extensionAttachments.size(); i++) {
-                final Object attObj = extensionAttachments.get(i);
+            final List<ExtensionAttachment> extensionAttachments = page
+                    .getExtensionAttachments();
+            for (final ExtensionAttachment attObj : extensionAttachments) {
                 if (attObj instanceof PSExtensionAttachment) {
                     final PSExtensionAttachment attachment = (PSExtensionAttachment) attObj;
                     if (attachment instanceof PSCommentBefore) {
@@ -1048,9 +1022,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         this.gen.showPage();
         this.gen.writeDSCComment(DSCConstants.PAGE_TRAILER);
         if (page.hasExtensionAttachments()) {
-            final List extensionAttachments = page.getExtensionAttachments();
-            for (int i = 0; i < extensionAttachments.size(); i++) {
-                final Object attObj = extensionAttachments.get(i);
+            final List<ExtensionAttachment> extensionAttachments = page
+                    .getExtensionAttachments();
+            for (final ExtensionAttachment attObj : extensionAttachments) {
                 if (attObj instanceof PSExtensionAttachment) {
                     final PSExtensionAttachment attachment = (PSExtensionAttachment) attObj;
                     if (attachment instanceof PSCommentAfter) {
@@ -1177,7 +1151,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         if (singleByteFont != null && singleByteFont.hasAdditionalEncodings()) {
             int start = 0;
             int currentEncoding = -1;
-            for (int i = 0; i < textLen; i++) {
+            for (int i = 0; i < textLen; ++i) {
                 final char c = text.charAt(i);
                 final char mapped = tf.mapChar(c);
                 final int encoding = mapped / 256;
@@ -1214,7 +1188,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         if (letterAdjust == null && area.getTextLetterSpaceAdjust() == 0
                 && area.getTextWordSpaceAdjust() == 0) {
             sb.append("(");
-            for (int i = start; i < end; i++) {
+            for (int i = start; i < end; ++i) {
                 final char c = text.charAt(i);
                 final char mapped = (char) (tf.mapChar(c) % 256);
                 PSGenerator.escapeChar(mapped, sb);
@@ -1223,7 +1197,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
         } else {
             sb.append("(");
             final int[] offsets = new int[len];
-            for (int i = start; i < end; i++) {
+            for (int i = start; i < end; ++i) {
                 final char c = text.charAt(i);
                 final char mapped = tf.mapChar(c);
                 final char codepoint = (char) (mapped % 256);
@@ -1243,7 +1217,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
                 PSGenerator.escapeChar(codepoint, sb);
             }
             sb.append(")" + PSGenerator.LF + "[");
-            for (int i = 0; i < len; i++) {
+            for (int i = 0; i < len; ++i) {
                 if (i > 0) {
                     if (i % 8 == 0) {
                         sb.append(PSGenerator.LF);
@@ -1260,9 +1234,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
 
     /** {@inheritDoc} */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<PSState> breakOutOfStateStack() {
         try {
-            final List breakOutList = new java.util.ArrayList();
+            final List<PSState> breakOutList = new ArrayList<>();
             PSState state;
             while (true) {
                 if (breakOutList.size() == 0) {
@@ -1284,13 +1258,11 @@ public class PSRenderer extends AbstractPathOrientedRenderer implements
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
+    protected void restoreStateStackAfterBreakOut(
+            final List<PSState> breakOutList) {
         try {
             comment("------ restoring context after break-out...");
-            PSState state;
-            final Iterator i = breakOutList.iterator();
-            while (i.hasNext()) {
-                state = (PSState) i.next();
+            for (final PSState state : breakOutList) {
                 saveGraphicsState();
                 state.reestablish(this.gen);
             }

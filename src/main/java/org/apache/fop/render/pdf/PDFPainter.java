@@ -373,7 +373,7 @@ public class PDFPainter extends AbstractIFPainter {
         if (dx != null && dxl > 0 && dx[0] != 0) {
             textutil.adjustGlyphTJ(-dx[0] / fontSize);
         }
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char orgChar = text.charAt(i);
             char ch;
             float glyphAdjust = 0;

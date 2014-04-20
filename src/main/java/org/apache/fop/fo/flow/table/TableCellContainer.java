@@ -69,7 +69,7 @@ public abstract class TableCellContainer extends TableFObj implements
          * for the next row
          */
         if (rowSpan > 1) {
-            for (int i = 0; i < colSpan; i++) {
+            for (int i = 0; i < colSpan; ++i) {
                 this.pendingSpans.set(colNumber - 1 + i, new PendingSpan(
                         rowSpan));
             }

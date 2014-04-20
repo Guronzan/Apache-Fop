@@ -20,9 +20,7 @@
 package org.apache.fop.fo.flow.table;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.ValidationException;
@@ -43,7 +41,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     private int currentRowIndex;
 
     /** The rows belonging to this row group. List of List of {@link GridUnit}s. */
-    private List/* <List<GridUnit>> */rows;
+    private List<List<GridUnit>> rows;
 
     private boolean firstInPart = true;
 
@@ -51,7 +49,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
      * The last encountered row. This is the last row of the table if it has no
      * footer.
      */
-    private List lastRow;
+    private List<GridUnit> lastRow;
 
     private BorderResolver borderResolver;
 
@@ -70,7 +68,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
      * Prepares this builder for creating a new row group.
      */
     private void initialize() {
-        this.rows = new ArrayList();
+        this.rows = new ArrayList<>();
         this.currentRowIndex = 0;
     }
 
@@ -78,16 +76,16 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     @Override
     void addTableCell(final TableCell cell) {
         for (int i = this.rows.size(); i < this.currentRowIndex
-                + cell.getNumberRowsSpanned(); i++) {
-            final List effRow = new ArrayList(this.numberOfColumns);
-            for (int j = 0; j < this.numberOfColumns; j++) {
+                + cell.getNumberRowsSpanned(); ++i) {
+            final List<GridUnit> effRow = new ArrayList<>(this.numberOfColumns);
+            for (int j = 0; j < this.numberOfColumns; ++j) {
                 effRow.add(null);
             }
             this.rows.add(effRow);
         }
         final int columnIndex = cell.getColumnNumber() - 1;
         final PrimaryGridUnit pgu = new PrimaryGridUnit(cell, columnIndex);
-        List row = (List) this.rows.get(this.currentRowIndex);
+        List<GridUnit> row = this.rows.get(this.currentRowIndex);
         row.set(columnIndex, pgu);
         // TODO
         GridUnit[] cellRow = new GridUnit[cell.getNumberColumnsSpanned()];
@@ -98,8 +96,8 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
             cellRow[j] = gu;
         }
         pgu.addRow(cellRow);
-        for (int i = 1; i < cell.getNumberRowsSpanned(); i++) {
-            row = (List) this.rows.get(this.currentRowIndex + i);
+        for (int i = 1; i < cell.getNumberRowsSpanned(); ++i) {
+            row = this.rows.get(this.currentRowIndex + i);
             cellRow = new GridUnit[cell.getNumberColumnsSpanned()];
             for (int j = 0; j < cell.getNumberColumnsSpanned(); j++) {
                 final GridUnit gu = new GridUnit(pgu, j, i);
@@ -110,9 +108,9 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
         }
     }
 
-    private static void setFlagForCols(final int flag, final List row) {
-        for (final ListIterator iter = row.listIterator(); iter.hasNext();) {
-            ((GridUnit) iter.next()).setFlag(flag);
+    private static void setFlagForCols(final int flag, final List<GridUnit> row) {
+        for (final GridUnit gridUnit : row) {
+            gridUnit.setFlag(flag);
         }
     }
 
@@ -144,9 +142,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
                     this.currentTableRow.getName(), false,
                     this.currentTableRow.getLocator());
         }
-        for (final Iterator iter = ((List) this.rows.get(this.currentRowIndex))
-                .iterator(); iter.hasNext();) {
-            final GridUnit gu = (GridUnit) iter.next();
+        for (final GridUnit gu : this.rows.get(this.currentRowIndex)) {
             // The row hasn't been filled with empty grid units yet
             if (gu != null) {
                 gu.setRow(this.currentTableRow);
@@ -162,10 +158,10 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     private void handleRowEnd(final TableCellContainer container) {
-        final List currentRow = (List) this.rows.get(this.currentRowIndex);
+        final List<GridUnit> currentRow = this.rows.get(this.currentRowIndex);
         this.lastRow = currentRow;
         // Fill gaps with empty grid units
-        for (int i = 0; i < this.numberOfColumns; i++) {
+        for (int i = 0; i < this.numberOfColumns; ++i) {
             if (currentRow.get(i) == null) {
                 currentRow.set(i, new EmptyGridUnit(this.table,
                         this.currentTableRow, i));

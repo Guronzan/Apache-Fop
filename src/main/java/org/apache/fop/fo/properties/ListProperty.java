@@ -19,6 +19,7 @@
 
 package org.apache.fop.fo.properties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.FObj;
@@ -57,8 +58,8 @@ public class ListProperty extends Property {
 
     }
 
-    /** Vector containing the list of sub-properties */
-    protected List list = new java.util.Vector();
+    /** List containing the list of sub-properties */
+    protected List<Property> list = new ArrayList<>();
 
     /**
      * Simple constructor used by subclasses to do some special processing.
@@ -90,7 +91,7 @@ public class ListProperty extends Property {
      * @return this.list
      */
     @Override
-    public List getList() {
+    public List<Property> getList() {
         return this.list;
     }
 

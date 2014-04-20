@@ -334,7 +334,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
          */
 
         startElement("bookmarkTree");
-        for (int i = 0; i < bookmarkRoot.getCount(); i++) {
+        for (int i = 0; i < bookmarkRoot.getCount(); ++i) {
             renderBookmarkItem(bookmarkRoot.getSubData(i));
         }
         endElement("bookmarkTree");
@@ -349,7 +349,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
         addAttribute("internal-link",
                 InternalLink.makeXMLAttribute(pvKey, bm.getIDRef()));
         startElement("bookmark", this.atts);
-        for (int i = 0; i < bm.getCount(); i++) {
+        for (int i = 0; i < bm.getCount(); ++i) {
             renderBookmarkItem(bm.getSubData(i));
         }
         endElement("bookmark");
@@ -376,8 +376,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
 
     /** {@inheritDoc} */
     @Override
-    public void startRenderer(final OutputStream outputStream)
-            throws IOException {
+    public void startRenderer(final OutputStream outputStream) {
         log.debug("Rendering areas to Area Tree XML");
 
         if (this.handler == null) {
@@ -452,13 +451,11 @@ public class XMLRenderer extends AbstractXMLRenderer {
 
     /** {@inheritDoc} */
     @Override
-    protected void handleExtensionAttachments(final List attachments) {
+    protected void handleExtensionAttachments(
+            final List<ExtensionAttachment> attachments) {
         if (attachments != null && attachments.size() > 0) {
             startElement("extension-attachments");
-            final Iterator i = attachments.iterator();
-            while (i.hasNext()) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) i
-                        .next();
+            for (final ExtensionAttachment attachment : attachments) {
                 if (attachment instanceof XMLizable) {
                     try {
                         ((XMLizable) attachment).toSAX(this.handler);
@@ -503,7 +500,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
                         ExtensionElementMapping.URI);
                 final NodeList nodes = getUserAgent().getStructureTree()
                         .getPageSequence(this.pageSequenceIndex++);
-                for (int i = 0, n = nodes.getLength(); i < n; i++) {
+                for (int i = 0, n = nodes.getLength(); i < n; ++i) {
                     final Node node = nodes.item(i);
                     try {
                         new DOM2SAX(this.handler).writeFragment(node);
@@ -522,10 +519,8 @@ public class XMLRenderer extends AbstractXMLRenderer {
         final LineArea seqTitle = pageSequence.getTitle();
         if (seqTitle != null) {
             startElement("title");
-            final List children = seqTitle.getInlineAreas();
-
-            for (int count = 0; count < children.size(); count++) {
-                final InlineArea inline = (InlineArea) children.get(count);
+            final List<InlineArea> children = seqTitle.getInlineAreas();
+            for (final InlineArea inline : children) {
                 renderInlineArea(inline);
             }
 
@@ -885,7 +880,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
         if (letterAdjust != null) {
             final StringBuilder sb = new StringBuilder(64);
             boolean nonZeroFound = false;
-            for (int i = 0, c = letterAdjust.length; i < c; i++) {
+            for (int i = 0, c = letterAdjust.length; i < c; ++i) {
                 if (i > 0) {
                     sb.append(' ');
                 }

@@ -27,7 +27,10 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -100,7 +103,7 @@ import org.xml.sax.SAXException;
  * interface. It is used to generate content using FOP's intermediate format.
  */
 @Slf4j
-public class IFRenderer extends AbstractPathOrientedRenderer {
+public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
 
     // TODO Many parts of the Renderer infrastructure are using floats
     // (coordinates in points)
@@ -124,8 +127,8 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
 
     private boolean inPageSequence = false;
 
-    private final Stack graphicContextStack = new Stack();
-    private final Stack viewportDimensionStack = new Stack();
+    private final Stack<IFGraphicContext> graphicContextStack = new Stack<>();
+    private final Stack<Dimension> viewportDimensionStack = new Stack<>();
     private IFGraphicContext graphicContext = new IFGraphicContext();
     // private Stack groupStack = new Stack();
 
@@ -136,22 +139,22 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
      * conjunction with the page reference to fully specify the details of a
      * "go-to" action.
      */
-    private final Map idPositions = new java.util.HashMap();
+    private final Map<String, Point> idPositions = new HashMap<>();
 
     /**
      * The "go-to" actions in idGoTos that are not complete yet
      */
-    private final List unfinishedGoTos = new java.util.ArrayList();
+    private final List<GoToXYAction> unfinishedGoTos = new ArrayList<>();
     // can't use a Set because PDFGoTo.equals returns true if the target is the
     // same,
     // even if the object number differs
 
     /** Maps unique PageViewport key to page indices (for link target handling) */
-    protected Map pageIndices = new java.util.HashMap();
+    protected Map<String, Integer> pageIndices = new HashMap<>();
 
     private BookmarkTree bookmarkTree;
-    private final List deferredDestinations = new java.util.ArrayList();
-    private final List deferredLinks = new java.util.ArrayList();
+    private final List<NamedDestination> deferredDestinations = new ArrayList<>();
+    private final List<Link> deferredLinks = new ArrayList<>();
     private final ActionSet actionSet = new ActionSet();
 
     private final TextUtil textUtil = new TextUtil();
@@ -283,10 +286,10 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             // Wrap up document navigation
             if (hasDocumentNavigation()) {
                 finishOpenGoTos();
-                final Iterator iter = this.deferredDestinations.iterator();
+                final Iterator<NamedDestination> iter = this.deferredDestinations
+                        .iterator();
                 while (iter.hasNext()) {
-                    final NamedDestination dest = (NamedDestination) iter
-                            .next();
+                    final NamedDestination dest = iter.next();
                     iter.remove();
                     getDocumentNavigationHandler().renderNamedDestination(dest);
                 }
@@ -368,7 +371,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             return;
         }
         this.bookmarkTree = new BookmarkTree();
-        for (int i = 0; i < bookmarks.getCount(); i++) {
+        for (int i = 0; i < bookmarks.getCount(); ++i) {
             final BookmarkData ext = bookmarks.getSubData(i);
             final Bookmark b = renderBookmarkItem(ext);
             this.bookmarkTree.addBookmark(b);
@@ -396,7 +399,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
 
         final Bookmark b = new Bookmark(bookmarkItem.getBookmarkTitle(),
                 bookmarkItem.showChildItems(), action);
-        for (int i = 0; i < bookmarkItem.getCount(); i++) {
+        for (int i = 0; i < bookmarkItem.getCount(); ++i) {
             b.addChildBookmark(renderBookmarkItem(bookmarkItem.getSubData(i)));
         }
         return b;
@@ -415,7 +418,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             if (pageIndex < 0) {
                 // pageIndex = page
             }
-            final Point position = (Point) this.idPositions.get(targetID);
+            final Point position = this.idPositions.get(targetID);
             // can the GoTo already be fully filled in?
             if (pageIndex >= 0 && position != null) {
                 action = new GoToXYAction(targetID, pageIndex, position);
@@ -435,8 +438,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
         if (count > 0) {
             final Point defaultPos = new Point(0, 0); // top-o-page
             while (!this.unfinishedGoTos.isEmpty()) {
-                final GoToXYAction action = (GoToXYAction) this.unfinishedGoTos
-                        .get(0);
+                final GoToXYAction action = this.unfinishedGoTos.get(0);
                 noteGoToPosition(action, defaultPos);
             }
             final PDFEventProducer eventProducer = PDFEventProducer.Provider
@@ -534,7 +536,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
                     this.documentMetadata = createDefaultDocumentMetadata();
                 }
                 this.documentHandler
-                .handleExtensionObject(this.documentMetadata);
+                        .handleExtensionObject(this.documentMetadata);
                 this.documentHandler.endDocumentHeader();
                 this.inPageSequence = true;
             }
@@ -579,7 +581,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
         } else {
             xmpBasic.setCreatorTool(Version.getVersion());
         }
-        xmpBasic.setMetadataDate(new java.util.Date());
+        xmpBasic.setMetadataDate(new Date());
         if (getUserAgent().getCreationDate() != null) {
             xmpBasic.setCreateDate(getUserAgent().getCreationDate());
         } else {
@@ -597,13 +599,10 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
     /** {@inheritDoc} */
     @Override
     public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
-        if (log.isTraceEnabled()) {
-            log.trace("renderPage() " + page);
-        }
+            FOPException {
+        log.trace("renderPage() {}", page);
         try {
-            this.pageIndices.put(page.getKey(),
-                    new Integer(page.getPageIndex()));
+            this.pageIndices.put(page.getKey(), page.getPageIndex());
             final Rectangle viewArea = page.getViewArea();
             final Dimension dim = new Dimension(viewArea.width, viewArea.height);
 
@@ -625,9 +624,9 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
 
             this.documentHandler.startPageTrailer();
             if (hasDocumentNavigation()) {
-                final Iterator iter = this.deferredLinks.iterator();
+                final Iterator<Link> iter = this.deferredLinks.iterator();
                 while (iter.hasNext()) {
-                    final Link link = (Link) iter.next();
+                    final Link link = iter.next();
                     iter.remove();
                     getDocumentNavigationHandler().renderLink(link);
                 }
@@ -645,10 +644,8 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
     private void processExtensionAttachments(final AreaTreeObject area)
             throws IFException {
         if (area.hasExtensionAttachments()) {
-            for (final Iterator iter = area.getExtensionAttachments()
-                    .iterator(); iter.hasNext();) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) iter
-                        .next();
+            for (final ExtensionAttachment attachment : area
+                    .getExtensionAttachments()) {
                 this.documentHandler.handleExtensionObject(attachment);
             }
         }
@@ -692,7 +689,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
                 }
             }
         }
-        this.graphicContext = (IFGraphicContext) this.graphicContextStack.pop();
+        this.graphicContext = this.graphicContextStack.pop();
     }
 
     private void pushGroup(final IFGraphicContext.Group group) {
@@ -706,9 +703,9 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
 
     /** {@inheritDoc} */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<IFGraphicContext> breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
-        final List breakOutList = new java.util.ArrayList();
+        final List<IFGraphicContext> breakOutList = new ArrayList<>();
         while (!this.graphicContextStack.empty()) {
             // Handle groups
             final IFGraphicContext.Group[] groups = this.graphicContext
@@ -722,19 +719,19 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             }
 
             breakOutList.add(0, this.graphicContext);
-            this.graphicContext = (IFGraphicContext) this.graphicContextStack
-                    .pop();
+            this.graphicContext = this.graphicContextStack.pop();
         }
         return breakOutList;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
+    protected void restoreStateStackAfterBreakOut(
+            final List<IFGraphicContext> breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
-        for (int i = 0, c = breakOutList.size(); i < c; i++) {
+        for (int i = 0, c = breakOutList.size(); i < c; ++i) {
             this.graphicContextStack.push(this.graphicContext);
-            this.graphicContext = (IFGraphicContext) breakOutList.get(i);
+            this.graphicContext = breakOutList.get(i);
 
             // Handle groups
             final IFGraphicContext.Group[] groups = this.graphicContext
@@ -817,7 +814,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             // one established by the page. We save the state stack for
             // restoration
             // after the block-container has been painted. See below.
-            List breakOutList = null;
+            List<IFGraphicContext> breakOutList = null;
             if (bv.getPositioning() == Block.FIXED) {
                 breakOutList = breakOutOfStateStack();
             }
@@ -961,8 +958,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
         saveGraphicsState();
         try {
             final IFGraphicContext.Viewport viewport = new IFGraphicContext.Viewport(
-                    at, (Dimension) this.viewportDimensionStack.peek(),
-                    clipRect);
+                    at, this.viewportDimensionStack.peek(), clipRect);
             this.graphicContext.pushGroup(viewport);
             viewport.start(this.painter);
         } catch (final IFException e) {
@@ -1021,7 +1017,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
             final boolean pvKeyOK = pvKey != null && pvKey.length() > 0;
             final boolean idRefOK = idRef != null && idRef.length() > 0;
             if (pvKeyOK && idRefOK) {
-                final Integer pageIndex = (Integer) this.pageIndices.get(pvKey);
+                final Integer pageIndex = this.pageIndices.get(pvKey);
                 action = getGoToActionForID(idRef,
                         pageIndex != null ? pageIndex.intValue() : -1);
             } else {
@@ -1092,8 +1088,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
         final FontTriplet triplet = (FontTriplet) text.getTrait(Trait.FONT);
         try {
             this.painter.setFont(triplet.getName(), triplet.getStyle(),
-                    new Integer(triplet.getWeight()), "normal", new Integer(
-                            size), ct);
+                    triplet.getWeight(), "normal", size, ct);
         } catch (final IFException e) {
             handleIFException(e);
         }
@@ -1168,14 +1163,14 @@ public class IFRenderer extends AbstractPathOrientedRenderer {
         if (letterAdjust != null) {
             this.textUtil.adjust(letterAdjust[0]);
         }
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char ch = s.charAt(i);
             this.textUtil.addChar(ch);
             int glyphAdjust = 0;
             if (this.textUtil.combined && font.hasChar(ch)) {
                 final int tls = i < l - 1 ? parentArea
                         .getTextLetterSpaceAdjust() : 0;
-                glyphAdjust += tls;
+                        glyphAdjust += tls;
             }
             if (letterAdjust != null && i < l - 1) {
                 glyphAdjust += letterAdjust[i + 1];

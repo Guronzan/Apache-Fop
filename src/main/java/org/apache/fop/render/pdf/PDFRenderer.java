@@ -29,7 +29,8 @@ import java.awt.geom.Rectangle2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -108,8 +109,8 @@ import org.w3c.dom.NodeList;
  * Renderer that renders areas to PDF.
  */
 @Slf4j
-public class PDFRenderer extends AbstractPathOrientedRenderer implements
-PDFConfigurationConstants {
+public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
+        implements PDFConfigurationConstants {
 
     /** The MIME type for PDF */
     public static final String MIME_TYPE = MimeConstants.MIME_PDF;
@@ -135,34 +136,34 @@ PDFConfigurationConstants {
      * Map of pages using the PageViewport as the key this is used for prepared
      * pages that cannot be immediately rendered
      */
-    private Map pages;
+    private Map<PageViewport, PDFPage> pages;
 
     /**
      * Maps unique PageViewport key to PDF page reference
      */
-    protected Map pageReferences = new java.util.HashMap();
+    protected Map<String, String> pageReferences = new HashMap<>();
 
     /**
      * Maps unique PageViewport key back to PageViewport itself
      */
-    // protected Map pvReferences = new java.util.HashMap();
+    // protected Map pvReferences = new HashMap();
 
     /**
      * Maps XSL-FO element IDs to their on-page XY-positions Must be used in
      * conjunction with the page reference to fully specify the PDFGoTo details
      */
-    protected Map idPositions = new java.util.HashMap();
+    protected Map<String, Point2D.Float> idPositions = new HashMap<>();
 
     /**
      * Maps XSL-FO element IDs to PDFGoTo objects targeting the corresponding
      * areas These objects may not all be fully filled in yet
      */
-    protected Map idGoTos = new java.util.HashMap();
+    protected Map<String, PDFGoTo> idGoTos = new HashMap<>();
 
     /**
      * The PDFGoTos in idGoTos that are not complete yet
      */
-    protected List unfinishedGoTos = new java.util.ArrayList();
+    protected List<PDFGoTo> unfinishedGoTos = new ArrayList<>();
     // can't use a Set because PDFGoTo.equals returns true if the target is the
     // same,
     // even if the object number differs
@@ -266,7 +267,7 @@ PDFConfigurationConstants {
             final Point2D.Float defaultPos = new Point2D.Float(0f,
                     this.pageHeight / 1000f); // top-o-page
             while (!this.unfinishedGoTos.isEmpty()) {
-                final PDFGoTo gt = (PDFGoTo) this.unfinishedGoTos.get(0);
+                final PDFGoTo gt = this.unfinishedGoTos.get(0);
                 finishIDGoTo(gt, defaultPos);
             }
             final PDFEventProducer eventProducer = PDFEventProducer.Provider
@@ -353,7 +354,7 @@ PDFConfigurationConstants {
      *            the BookmarkData object containing all the Bookmark-Items
      */
     protected void renderBookmarkTree(final BookmarkData bookmarks) {
-        for (int i = 0; i < bookmarks.getCount(); i++) {
+        for (int i = 0; i < bookmarks.getCount(); ++i) {
             final BookmarkData ext = bookmarks.getSubData(i);
             renderBookmarkItem(ext, null);
         }
@@ -385,7 +386,7 @@ PDFConfigurationConstants {
                     + "\" has a null PageViewport.");
         }
 
-        for (int i = 0; i < bookmarkItem.getCount(); i++) {
+        for (int i = 0; i < bookmarkItem.getCount(); ++i) {
             renderBookmarkItem(bookmarkItem.getSubData(i), pdfOutline);
         }
     }
@@ -473,7 +474,7 @@ PDFConfigurationConstants {
     public void preparePage(final PageViewport page) {
         setupPage(page);
         if (this.pages == null) {
-            this.pages = new java.util.HashMap();
+            this.pages = new HashMap<>();
         }
         this.pages.put(page, this.currentPage);
     }
@@ -503,7 +504,7 @@ PDFConfigurationConstants {
     public void renderPage(final PageViewport page) throws IOException,
     FOPException {
         if (this.pages != null
-                && (this.currentPage = (PDFPage) this.pages.get(page)) != null) {
+                && (this.currentPage = this.pages.get(page)) != null) {
             // Retrieve previously prepared page (out-of-line rendering)
             this.pages.remove(page);
         } else {
@@ -667,32 +668,14 @@ PDFConfigurationConstants {
     }
 
     /**
-     * Draw a line.
-     *
-     * @param startx
-     *            the start x position
-     * @param starty
-     *            the start y position
-     * @param endx
-     *            the x end position
-     * @param endy
-     *            the y end position
-     */
-    private void drawLine(final float startx, final float starty,
-            final float endx, final float endy) {
-        this.generator.add(format(startx) + " " + format(starty) + " m ");
-        this.generator.add(format(endx) + " " + format(endy) + " l S\n");
-    }
-
-    /**
      * Breaks out of the state stack to handle fixed block-containers.
      *
      * @return the saved state stack to recreate later
      */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<AbstractPaintingState.AbstractData> breakOutOfStateStack() {
         final PDFPaintingState paintingState = getState();
-        final List breakOutList = new java.util.ArrayList();
+        final List<AbstractPaintingState.AbstractData> breakOutList = new ArrayList<>();
         AbstractPaintingState.AbstractData data;
         while (true) {
             data = paintingState.getData();
@@ -715,13 +698,10 @@ PDFConfigurationConstants {
      *            the state stack to restore.
      */
     @Override
-    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
+    protected void restoreStateStackAfterBreakOut(
+            final List<AbstractData> breakOutList) {
         this.generator.comment("------ restoring context after break-out...");
-        // currentState.pushAll(breakOutList);
-        AbstractData data;
-        final Iterator i = breakOutList.iterator();
-        while (i.hasNext()) {
-            data = (AbstractData) i.next();
+        for (final AbstractData data : breakOutList) {
             saveGraphicsState();
             final AffineTransform at = data.getTransform();
             concatenateTransformationMatrix(at);
@@ -801,11 +781,10 @@ PDFConfigurationConstants {
      */
     protected PDFGoTo getPDFGoToForID(final String targetID, final String pvKey) {
         // Already a PDFGoTo present for this target? If not, create.
-        PDFGoTo gt = (PDFGoTo) this.idGoTos.get(targetID);
+        PDFGoTo gt = this.idGoTos.get(targetID);
         if (gt == null) {
-            final String pdfPageRef = (String) this.pageReferences.get(pvKey);
-            final Point2D.Float position = (Point2D.Float) this.idPositions
-                    .get(targetID);
+            final String pdfPageRef = this.pageReferences.get(pvKey);
+            final Point2D.Float position = this.idPositions.get(targetID);
             // can the GoTo already be fully filled in?
             if (pdfPageRef != null && position != null) {
                 // getPDFGoTo shares PDFGoTo objects as much as possible.
@@ -848,7 +827,7 @@ PDFConfigurationConstants {
         tf.transform(position, position);
         this.idPositions.put(id, position);
         // is there already a PDFGoTo waiting to be completed?
-        final PDFGoTo gt = (PDFGoTo) this.idGoTos.get(id);
+        final PDFGoTo gt = this.idGoTos.get(id);
         if (gt != null) {
             finishIDGoTo(gt, pdfPageRef, position);
         }
@@ -1187,7 +1166,7 @@ PDFConfigurationConstants {
 
         final int l = s.length();
 
-        for (int i = start; i < end; i++) {
+        for (int i = start; i < end; ++i) {
             final char orgChar = s.charAt(i);
             char ch;
             float glyphAdjust = 0;
@@ -1264,21 +1243,6 @@ PDFConfigurationConstants {
      *            URL of the bitmap
      * @param pos
      *            Position of the bitmap
-     * @deprecated Use {@link #putImage(String, Rectangle2D, Map)} instead.
-     */
-    @Deprecated
-    protected void putImage(final String uri, final Rectangle2D pos) {
-        putImage(uri, pos, null);
-    }
-
-    /**
-     * Adds a PDF XObject (a bitmap or form) to the PDF that will later be
-     * referenced.
-     *
-     * @param uri
-     *            URL of the bitmap
-     * @param pos
-     *            Position of the bitmap
      * @param foreignAttributes
      *            foreign attributes associated with the image
      */
@@ -1309,7 +1273,8 @@ PDFConfigurationConstants {
                     .getImageSessionContext();
             info = manager.getImageInfo(uri, sessionContext);
 
-            final Map hints = ImageUtil.getDefaultHints(sessionContext);
+            final Map<String, Object> hints = ImageUtil
+                    .getDefaultHints(sessionContext);
             final ImageFlavor[] supportedFlavors = this.imageHandlerRegistry
                     .getSupportedFlavors();
             final org.apache.xmlgraphics.image.loader.Image img = manager
@@ -1417,8 +1382,7 @@ PDFConfigurationConstants {
         context.setProperty(PDFRendererContextConstants.PDF_FONT_INFO,
                 this.fontInfo);
         context.setProperty(PDFRendererContextConstants.PDF_FONT_NAME, "");
-        context.setProperty(PDFRendererContextConstants.PDF_FONT_SIZE,
-                new Integer(0));
+        context.setProperty(PDFRendererContextConstants.PDF_FONT_SIZE, 0);
         return context;
     }
 

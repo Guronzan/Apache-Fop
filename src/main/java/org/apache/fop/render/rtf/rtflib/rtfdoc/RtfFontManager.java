@@ -27,12 +27,13 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * RTF font table
- * 
+ *
  * @author Andreas Putz a.putz@skynamics.com
  */
 public final class RtfFontManager {
@@ -44,9 +45,9 @@ public final class RtfFontManager {
     private static RtfFontManager instance = null;
 
     /** Index table for the fonts */
-    private Hashtable fontIndex = null;
+    private Hashtable<String, Integer> fontIndex = null;
     /** Used fonts to this vector */
-    private Vector fontTable = null;
+    private List<String> fontTable = null;
 
     // ////////////////////////////////////////////////
     // @@ Construction
@@ -56,8 +57,8 @@ public final class RtfFontManager {
      * Constructor.
      */
     private RtfFontManager() {
-        this.fontTable = new Vector();
-        this.fontIndex = new Hashtable();
+        this.fontTable = new ArrayList<>();
+        this.fontIndex = new Hashtable<>();
 
         init();
     }
@@ -92,9 +93,9 @@ public final class RtfFontManager {
 
         /*
          * {\\f0\\fswiss Helv;}
-         * 
+         *
          * // f1 is used by RtfList and RtfListItem for bullets
-         * 
+         *
          * {\\f1\\froman\\fcharset2 Symbol;} {\\f2\\froman\\fprq2 Times New
          * Roman;} {\\f3\\froman Times New Roman;}
          */
@@ -148,11 +149,11 @@ public final class RtfFontManager {
 
         final int len = this.fontTable.size();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             header.writeGroupMark(true);
             header.newLine();
             header.write("\\f" + i);
-            header.write(" " + (String) this.fontTable.elementAt(i));
+            header.write(" " + this.fontTable.get(i));
             header.write(";");
             header.writeGroupMark(false);
         }
@@ -176,8 +177,7 @@ public final class RtfFontManager {
      *            Identifier of font
      */
     private void addFont(final String family) {
-        this.fontIndex.put(getFontKey(family),
-                new Integer(this.fontTable.size()));
-        this.fontTable.addElement(family);
+        this.fontIndex.put(getFontKey(family), this.fontTable.size());
+        this.fontTable.add(family);
     }
 }

@@ -22,6 +22,7 @@ package org.apache.fop.fonts.apps;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -59,16 +60,16 @@ public abstract class AbstractFontReader {
      *            the command-line arguments
      * @return the arguments
      */
-    protected static String[] parseArguments(final Map options,
+    protected static String[] parseArguments(final Map<String, String> options,
             final String[] args) {
-        final List arguments = new java.util.ArrayList();
-        for (int i = 0; i < args.length; i++) {
+        final List<String> arguments = new ArrayList<>();
+        for (int i = 0; i < args.length; ++i) {
             if (args[i].startsWith("-")) {
                 if ("-d".equals(args[i]) || "-q".equals(args[i])) {
                     options.put(args[i], "");
                 } else if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
                     options.put(args[i], args[i + 1]);
-                    i++;
+                    ++i;
                 } else {
                     options.put(args[i], "");
                 }
@@ -76,7 +77,7 @@ public abstract class AbstractFontReader {
                 arguments.add(args[i]);
             }
         }
-        return (String[]) arguments.toArray(new String[0]);
+        return arguments.toArray(new String[0]);
     }
 
     /**

@@ -115,7 +115,7 @@ public class TextArea extends AbstractTextArea {
         final StringBuilder text = new StringBuilder();
         InlineArea child;
         // assemble the text
-        for (int i = 0; i < this.inlines.size(); i++) {
+        for (int i = 0; i < this.inlines.size(); ++i) {
             child = (InlineArea) this.inlines.get(i);
             if (child instanceof WordArea) {
                 text.append(((WordArea) child).getWord());

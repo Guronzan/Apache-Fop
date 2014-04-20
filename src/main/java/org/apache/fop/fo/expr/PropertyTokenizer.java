@@ -302,7 +302,7 @@ class PropertyTokenizer {
      * character is an opening parenthesis.
      */
     private boolean followingParen() {
-        for (int i = this.exprIndex; i < this.exprLength; i++) {
+        for (int i = this.exprIndex; i < this.exprLength; ++i) {
             switch (this.expr.charAt(i)) {
             case '(':
                 this.exprIndex = i + 1;

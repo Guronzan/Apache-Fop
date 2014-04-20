@@ -20,9 +20,8 @@
 package org.apache.fop.area;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.traits.BorderProps;
 
@@ -37,7 +36,6 @@ import org.apache.fop.traits.BorderProps;
 /**
  * Base object for all areas.
  */
-@Slf4j
 public class Area extends AreaTreeObject implements Serializable {
     /**
      *
@@ -135,7 +133,7 @@ public class Area extends AreaTreeObject implements Serializable {
     /**
      * Traits for this area stored in a HashMap
      */
-    protected Map props = null;
+    protected Map<Object, Object> props = null;
 
     /**
      * Get the area class of this area.
@@ -384,7 +382,7 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public void addTrait(final Object traitCode, final Object prop) {
         if (this.props == null) {
-            this.props = new java.util.HashMap(20);
+            this.props = new HashMap<>(20);
         }
         this.props.put(traitCode, prop);
     }
@@ -394,7 +392,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *
      * @return the map of traits
      */
-    public Map getTraits() {
+    public Map<Object, Object> getTraits() {
         return this.props;
     }
 

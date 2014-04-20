@@ -27,13 +27,14 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Singelton of the RTF color table. This class was created for <fo:basic-link>
  * tag processing.
- * 
+ *
  * @author <a href="mailto:a.putz@skynamics.com">Andreas Putz</a>
  */
 
@@ -55,9 +56,9 @@ public final class RtfColorTable {
     private static RtfColorTable instance = null;
 
     /** Index table for the colors */
-    private Hashtable colorIndex = null;
+    private Hashtable<Integer, Integer> colorIndex = null;
     /** Used colors to this vector */
-    private Vector colorTable = null;
+    private List<Integer> colorTable = null;
     /** Map of color names to color numbers */
     private Hashtable namedColors = null;
 
@@ -69,9 +70,9 @@ public final class RtfColorTable {
      * Constructor.
      */
     private RtfColorTable() {
-        this.colorTable = new Vector();
-        this.colorIndex = new Hashtable();
-        this.namedColors = new Hashtable();
+        this.colorTable = new ArrayList<>();
+        this.colorIndex = new Hashtable<>();
+        this.namedColors = new Hashtable<>();
 
         init();
     }
@@ -123,7 +124,7 @@ public final class RtfColorTable {
 
     /** define a named color for getColorNumber(String) */
     private void addNamedColor(final String name, final int colorNumber) {
-        this.namedColors.put(name.toLowerCase(), new Integer(colorNumber));
+        this.namedColors.put(name.toLowerCase(), (colorNumber));
     }
 
     // ////////////////////////////////////////////////
@@ -152,7 +153,7 @@ public final class RtfColorTable {
      * @return The number of the color in the table
      */
     public Integer getColorNumber(final int red, final int green, final int blue) {
-        final Integer identifier = new Integer(determineIdentifier(red, green,
+        final Integer identifier = (determineIdentifier(red, green,
                 blue));
         final Object o = this.colorIndex.get(identifier);
         int retVal;
@@ -172,7 +173,7 @@ public final class RtfColorTable {
             retVal = ((Integer) o).intValue() + 1;
         }
 
-        return new Integer(retVal);
+        return (retVal);
     }
 
     /**
@@ -199,9 +200,8 @@ public final class RtfColorTable {
 
         final int len = this.colorTable.size();
 
-        for (int i = 0; i < len; i++) {
-            final int identifier = ((Integer) this.colorTable.get(i))
-                    .intValue();
+        for (int i = 0; i < len; ++i) {
+            final int identifier = this.colorTable.get(i).intValue();
 
             header.newLine();
             header.write("\\red" + determineColorLevel(identifier, RED));
@@ -224,8 +224,8 @@ public final class RtfColorTable {
      *            Identifier of color
      */
     private void addColor(final Integer i) {
-        this.colorIndex.put(i, new Integer(this.colorTable.size()));
-        this.colorTable.addElement(i);
+        this.colorIndex.put(i, this.colorTable.size());
+        this.colorTable.add(i);
     }
 
     /**

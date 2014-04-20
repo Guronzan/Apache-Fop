@@ -19,7 +19,7 @@
 
 package org.apache.fop.hyphenation;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This interface is used to connect the XML pattern file parser to the
@@ -33,7 +33,7 @@ public interface PatternConsumer {
      * Add a character class. A character class defines characters that are
      * considered equivalent for the purpose of hyphenation (e.g. "aA"). It
      * usually means to ignore case.
-     * 
+     *
      * @param chargroup
      *            character group
      */
@@ -45,11 +45,11 @@ public interface PatternConsumer {
      * his own hyphenation. A hyphenatedword is a vector of alternating String's
      * and {@link Hyphen Hyphen} instances
      */
-    void addException(final String word, final ArrayList hyphenatedword);
+    void addException(final String word, final List<Object> hyphenatedword);
 
     /**
      * Add hyphenation patterns.
-     * 
+     *
      * @param pattern
      *            the pattern
      * @param values

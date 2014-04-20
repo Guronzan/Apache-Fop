@@ -22,8 +22,6 @@ package org.apache.fop.fo.properties;
 import java.awt.Color;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.Numeric;
@@ -32,7 +30,6 @@ import org.apache.fop.fo.Constants;
 /**
  * Base class for all property objects
  */
-@Slf4j
 public class Property {
 
     /**
@@ -158,7 +155,7 @@ public class Property {
      *
      * @return collection of other property (sub-property) objects
      */
-    public List getList() {
+    public List<Property> getList() {
         return null;
     }
 

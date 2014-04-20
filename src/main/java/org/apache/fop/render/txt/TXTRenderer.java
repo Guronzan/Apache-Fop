@@ -39,6 +39,7 @@ import org.apache.fop.area.inline.TextArea;
 import org.apache.fop.render.AbstractPathOrientedRenderer;
 import org.apache.fop.render.txt.border.AbstractBorderElement;
 import org.apache.fop.render.txt.border.BorderManager;
+import org.apache.xmlgraphics.ps.PSState;
 import org.apache.xmlgraphics.util.UnitConv;
 
 /**
@@ -49,7 +50,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  *         new Renderer interface)
  */
 @Slf4j
-public class TXTRenderer extends AbstractPathOrientedRenderer {
+public class TXTRenderer extends AbstractPathOrientedRenderer<PSState> {
 
     private static final char LIGHT_SHADE = '\u2591';
 
@@ -244,7 +245,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer {
         // init buffers
         this.charData = new StringBuilder[this.pageHeight];
         this.decoData = new StringBuilder[this.pageHeight];
-        for (int i = 0; i < this.pageHeight; i++) {
+        for (int i = 0; i < this.pageHeight; ++i) {
             this.charData[i] = new StringBuilder();
             this.decoData[i] = new StringBuilder();
         }
@@ -316,7 +317,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer {
      * {@inheritDoc}
      */
     @Override
-    public void startRenderer(final OutputStream os) throws IOException {
+    public void startRenderer(final OutputStream os) {
         log.info("Rendering areas to TEXT.");
         this.outputStream = os;
         this.currentStream = new TXTStream(os);
@@ -338,7 +339,8 @@ public class TXTRenderer extends AbstractPathOrientedRenderer {
      * Does nothing. {@inheritDoc}
      */
     @Override
-    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
+    protected void restoreStateStackAfterBreakOut(
+            final List<PSState> breakOutList) {
     }
 
     /**
@@ -347,7 +349,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer {
      * @return null {@inheritDoc}
      */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<PSState> breakOutOfStateStack() {
         return null;
     }
 
@@ -582,7 +584,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer {
         }
 
         addBitOfBorder(x, y, style, startType);
-        for (int i = 0; i < length - 2; i++) {
+        for (int i = 0; i < length - 2; ++i) {
             x += dx;
             y += dy;
             addBitOfBorder(x, y, style, startType + endType);

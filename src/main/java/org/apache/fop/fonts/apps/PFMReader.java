@@ -21,8 +21,9 @@ package org.apache.fop.fonts.apps;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -48,13 +49,13 @@ public class PFMReader extends AbstractFontReader {
     }
 
     private static void displayUsage() {
-        System.out.println("java " + PFMReader.class.getName()
+        log.info("java " + PFMReader.class.getName()
                 + " [options] metricfile.pfm xmlfile.xml");
-        System.out.println();
-        System.out.println("where options can be:");
-        System.out.println("-d  Debug mode");
-        System.out.println("-q  Quiet mode");
-        System.out.println("-fn <fontname>");
+        log.info("");
+        log.info("where options can be:");
+        log.info("-d  Debug mode");
+        log.info("-q  Quiet mode");
+        log.info("-fn <fontname>");
         System.out
         .println("    default is to use the fontname in the .pfm file, but");
         System.out
@@ -63,7 +64,7 @@ public class PFMReader extends AbstractFontReader {
         .println("    embedded font is used (if you're embedding fonts)");
         System.out
         .println("    instead of installed fonts when viewing documents ");
-        System.out.println("    with Acrobat Reader.");
+        log.info("    with Acrobat Reader.");
     }
 
     /**
@@ -90,27 +91,27 @@ public class PFMReader extends AbstractFontReader {
         String className = null;
         String fontName = null;
 
-        final Map options = new java.util.HashMap();
+        final Map<String, String> options = new HashMap<>();
         final String[] arguments = parseArguments(options, args);
 
         final PFMReader app = new PFMReader();
 
         log.info("PFM Reader for Apache FOP " + Version.getVersion() + "\n");
 
-        if (options.get("-ef") != null) {
-            embFile = (String) options.get("-ef");
+        if (options.containsKey("-ef")) {
+            embFile = options.get("-ef");
         }
 
-        if (options.get("-er") != null) {
-            embResource = (String) options.get("-er");
+        if (options.containsKey("-er")) {
+            embResource = options.get("-er");
         }
 
-        if (options.get("-fn") != null) {
-            fontName = (String) options.get("-fn");
+        if (options.containsKey("-fn")) {
+            fontName = options.get("-fn");
         }
 
-        if (options.get("-cn") != null) {
-            className = (String) options.get("-cn");
+        if (options.containsKey("-cn")) {
+            className = options.get("-cn");
         }
 
         if (arguments.length != 2 || options.get("-h") != null
@@ -247,64 +248,64 @@ public class PFMReader extends AbstractFontReader {
 
         el = doc.createElement("cap-height");
         root.appendChild(el);
-        Integer value = new Integer(pfm.getCapHeight());
+        Integer value = pfm.getCapHeight();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("x-height");
         root.appendChild(el);
-        value = new Integer(pfm.getXHeight());
+        value = pfm.getXHeight();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("ascender");
         root.appendChild(el);
-        value = new Integer(pfm.getLowerCaseAscent());
+        value = pfm.getLowerCaseAscent();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("descender");
         root.appendChild(el);
-        value = new Integer(pfm.getLowerCaseDescent());
+        value = pfm.getLowerCaseDescent();
         el.appendChild(doc.createTextNode(value.toString()));
 
         final Element bbox = doc.createElement("bbox");
         root.appendChild(bbox);
         final int[] bb = pfm.getFontBBox();
         final String[] names = { "left", "bottom", "right", "top" };
-        for (int i = 0; i < names.length; i++) {
+        for (int i = 0; i < names.length; ++i) {
             el = doc.createElement(names[i]);
             bbox.appendChild(el);
-            value = new Integer(bb[i]);
+            value = bb[i];
             el.appendChild(doc.createTextNode(value.toString()));
         }
 
         el = doc.createElement("flags");
         root.appendChild(el);
-        value = new Integer(pfm.getFlags());
+        value = pfm.getFlags();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("stemv");
         root.appendChild(el);
-        value = new Integer(pfm.getStemV());
+        value = pfm.getStemV();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("italicangle");
         root.appendChild(el);
-        value = new Integer(pfm.getItalicAngle());
+        value = pfm.getItalicAngle();
         el.appendChild(doc.createTextNode(value.toString()));
 
         el = doc.createElement("first-char");
         root.appendChild(el);
-        value = new Integer(pfm.getFirstChar());
-        el.appendChild(doc.createTextNode(value.toString()));
+        Short valueShort = pfm.getFirstChar();
+        el.appendChild(doc.createTextNode(valueShort.toString()));
 
         el = doc.createElement("last-char");
         root.appendChild(el);
-        value = new Integer(pfm.getLastChar());
-        el.appendChild(doc.createTextNode(value.toString()));
+        valueShort = pfm.getLastChar();
+        el.appendChild(doc.createTextNode(valueShort.toString()));
 
         final Element widths = doc.createElement("widths");
         root.appendChild(widths);
 
-        for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); i++) {
+        for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); ++i) {
             el = doc.createElement("char");
             widths.appendChild(el);
             el.setAttribute("idx", Integer.toString(i));
@@ -312,22 +313,20 @@ public class PFMReader extends AbstractFontReader {
         }
 
         // Get kerning
-        final Iterator iter = pfm.getKerning().keySet().iterator();
-        while (iter.hasNext()) {
-            final Integer kpx1 = (Integer) iter.next();
+        for (final Entry<Integer, Map<Integer, Integer>> entry : pfm
+                .getKerning().entrySet()) {
+            final Integer kpx1 = entry.getKey();
             el = doc.createElement("kerning");
             el.setAttribute("kpx1", kpx1.toString());
             root.appendChild(el);
             Element el2 = null;
 
-            final Map h2 = (Map) pfm.getKerning().get(kpx1);
-            final Iterator enum2 = h2.entrySet().iterator();
-            while (enum2.hasNext()) {
-                final Map.Entry entry = (Map.Entry) enum2.next();
-                final Integer kpx2 = (Integer) entry.getKey();
+            for (final Entry<Integer, Integer> subEntry : entry.getValue()
+                    .entrySet()) {
+                final Integer kpx2 = subEntry.getKey();
                 el2 = doc.createElement("pair");
                 el2.setAttribute("kpx2", kpx2.toString());
-                final Integer val = (Integer) entry.getValue();
+                final Integer val = subEntry.getValue();
                 el2.setAttribute("kern", val.toString());
                 el.appendChild(el2);
             }

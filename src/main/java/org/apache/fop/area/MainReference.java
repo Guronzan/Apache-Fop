@@ -20,7 +20,6 @@
 package org.apache.fop.area;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -35,7 +34,7 @@ public class MainReference extends Area {
      */
     private static final long serialVersionUID = 7635126485620012448L;
     private final BodyRegion parent;
-    private List spanAreas = new java.util.ArrayList();
+    private List<Span> spanAreas = new ArrayList<>();
     private boolean isEmpty = true;
 
     /**
@@ -77,7 +76,7 @@ public class MainReference extends Area {
      *
      * @return the list of span areas
      */
-    public List getSpans() {
+    public List<Span> getSpans() {
         return this.spanAreas;
     }
 
@@ -89,33 +88,31 @@ public class MainReference extends Area {
      * @param spans
      *            content already laid out
      */
-    public void setSpans(final List spans) {
-        this.spanAreas = new ArrayList(spans);
+    public void setSpans(final List<Span> spans) {
+        this.spanAreas = new ArrayList<>(spans);
     }
 
     /**
      * Get the span area currently being filled (i.e., the last span created).
-     * 
+     *
      * @return the active span.
      */
     public Span getCurrentSpan() {
-        return (Span) this.spanAreas.get(this.spanAreas.size() - 1);
+        return this.spanAreas.get(this.spanAreas.size() - 1);
     }
 
     /**
      * Indicates whether any child areas have been added to this reference area.
      *
      * This is achieved by looping through each span.
-     * 
+     *
      * @return true if no child areas have been added yet.
      */
     public boolean isEmpty() {
         if (this.isEmpty) {
             boolean nonEmptyFound = false;
             if (this.spanAreas != null) {
-                for (final Iterator spaniter = this.spanAreas.iterator(); spaniter
-                        .hasNext();) {
-                    final Span spanArea = (Span) spaniter.next();
+                for (final Span spanArea : this.spanAreas) {
                     nonEmptyFound |= !spanArea.isEmpty();
                 }
             }

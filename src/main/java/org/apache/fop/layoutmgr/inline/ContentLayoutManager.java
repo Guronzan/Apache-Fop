@@ -20,7 +20,6 @@
 package org.apache.fop.layoutmgr.inline;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -39,6 +38,7 @@ import org.apache.fop.layoutmgr.KnuthPossPosIter;
 import org.apache.fop.layoutmgr.KnuthSequence;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.PageSequenceLayoutManager;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
@@ -129,11 +129,9 @@ InlineLevelLayoutManager {
 
         this.stackSize = 0;
 
-        final List contentList = getNextKnuthElements(childLC,
+        final List<KnuthElement> contentList = getNextKnuthElements(childLC,
                 Constants.EN_START);
-        final ListIterator contentIter = contentList.listIterator();
-        while (contentIter.hasNext()) {
-            final KnuthElement element = (KnuthElement) contentIter.next();
+        for (final KnuthElement element : contentList) {
             if (element instanceof KnuthInlineBox) {
                 final KnuthInlineBox box = (KnuthInlineBox) element;
                 // TODO handle alignment here?
@@ -231,8 +229,8 @@ InlineLevelLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public List getChildLMs() {
-        final List childLMs = new ArrayList(1);
+    public List<LayoutManager> getChildLMs() {
+        final List<LayoutManager> childLMs = new ArrayList<>(1);
         childLMs.add(this.childLM);
         return childLMs;
     }
@@ -255,22 +253,22 @@ InlineLevelLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public void addChildLMs(final List newLMs) {
+    public void addChildLMs(final List<LayoutManager> newLMs) {
         if (newLMs == null || newLMs.size() == 0) {
             return;
         }
-        final ListIterator iter = newLMs.listIterator();
+        final ListIterator<LayoutManager> iter = newLMs.listIterator();
         while (iter.hasNext()) {
-            final LayoutManager lm = (LayoutManager) iter.next();
+            final LayoutManager lm = iter.next();
             addChildLM(lm);
         }
     }
 
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<KnuthElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
-        final List contentList = new LinkedList();
-        List returnedList;
+        final List<KnuthElement> contentList = new LinkedList<>();
+        List<KnuthElement> returnedList;
 
         this.childLM.initialize();
         while (!this.childLM.isFinished()) {
@@ -285,8 +283,8 @@ InlineLevelLayoutManager {
                     final Object obj = returnedList.remove(0);
                     if (obj instanceof KnuthSequence) {
                         final KnuthSequence ks = (KnuthSequence) obj;
-                        for (final Iterator it = ks.iterator(); it.hasNext();) {
-                            contentElement = (KnuthElement) it.next();
+                        for (final Object element : ks) {
+                            contentElement = (KnuthElement) element;
                             this.stackSize += contentElement.getWidth();
                             contentList.add(contentElement);
                         }
@@ -304,7 +302,7 @@ InlineLevelLayoutManager {
     }
 
     @Override
-    public List addALetterSpaceTo(final List oldList) {
+    public List<ListElement> addALetterSpaceTo(final List<ListElement> oldList) {
         return oldList;
     }
 
@@ -315,7 +313,7 @@ InlineLevelLayoutManager {
      *            the elements representing the word space
      */
     @Override
-    public void removeWordSpace(final List oldList) {
+    public void removeWordSpace(final List<ListElement> oldList) {
         // do nothing
         log.warn(this.getClass().getName()
                 + " should not receive a call to removeWordSpace(list)");
@@ -331,14 +329,13 @@ InlineLevelLayoutManager {
     }
 
     @Override
-    public boolean applyChanges(final List oldList) {
+    public boolean applyChanges(final List<ListElement> oldList) {
         return false;
     }
 
     @Override
-    public List getChangedKnuthElements(final List oldList,
-            /* int flaggedPenalty, */
-            final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         return null;
     }
 

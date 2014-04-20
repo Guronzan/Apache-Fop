@@ -21,6 +21,7 @@ package org.apache.fop.fonts;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,8 +30,8 @@ import javax.xml.transform.Source;
 /**
  * Abstract base class for custom fonts loaded from files, for example.
  */
-public abstract class CustomFont extends Typeface implements FontDescriptor,
-        MutableFont {
+public abstract class CustomFont<T, U> extends Typeface implements
+        FontDescriptor, MutableFont<T, U> {
 
     private String fontName = null;
     private String fullName = null;
@@ -54,7 +55,7 @@ public abstract class CustomFont extends Typeface implements FontDescriptor,
     private int firstChar = 0;
     private int lastChar = 255;
 
-    private Map<Integer, Map> kerning;
+    private Map<U, Map<T, U>> kerning;
 
     private boolean useKerning = true;
 
@@ -308,11 +309,11 @@ public abstract class CustomFont extends Typeface implements FontDescriptor,
      * {@inheritDoc}
      */
     @Override
-    public final Map getKerningInfo() {
+    public final Map<U, Map<T, U>> getKerningInfo() {
         if (hasKerningInfo()) {
             return this.kerning;
         } else {
-            return java.util.Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -332,7 +333,7 @@ public abstract class CustomFont extends Typeface implements FontDescriptor,
 
     /** {@inheritDoc} */
     @Override
-    public void setFamilyNames(final Set names) {
+    public void setFamilyNames(final Set<String> names) {
         this.familyNames = new java.util.HashSet<>(names);
     }
 
@@ -493,9 +494,9 @@ public abstract class CustomFont extends Typeface implements FontDescriptor,
 
     /** {@inheritDoc} */
     @Override
-    public void putKerningEntry(final Integer key, final Map value) {
+    public void putKerningEntry(final U key, final Map<T, U> value) {
         if (this.kerning == null) {
-            this.kerning = new java.util.HashMap<>();
+            this.kerning = new HashMap<>();
         }
         this.kerning.put(key, value);
     }
@@ -507,7 +508,7 @@ public abstract class CustomFont extends Typeface implements FontDescriptor,
      *            the kerning map (Map<Integer, Map<Integer, Integer>, the
      *            integers are character codes)
      */
-    public void replaceKerningMap(final Map<Integer, Map> kerningMap) {
+    public void replaceKerningMap(final Map<U, Map<T, U>> kerningMap) {
         if (kerningMap == null) {
             this.kerning = Collections.emptyMap();
         } else {

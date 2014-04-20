@@ -21,6 +21,7 @@ package org.apache.fop.render.intermediate;
 
 import java.awt.geom.AffineTransform;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.batik.parser.ParseException;
@@ -35,11 +36,11 @@ public class AffineTransformArrayParser implements TransformListHandler {
 
     private static final AffineTransform[] EMPTY_ARRAY = new AffineTransform[0];
 
-    private List transforms;
+    private List<AffineTransform> transforms;
 
     /**
      * Utility method for creating an AffineTransform array.
-     * 
+     *
      * @param r
      *            The reader used to read the transform specification.
      * @return the AffineTransform array
@@ -59,7 +60,7 @@ public class AffineTransformArrayParser implements TransformListHandler {
 
     /**
      * Utility method for creating an AffineTransform.
-     * 
+     *
      * @param s
      *            The transform specification.
      * @return the AffineTransform array
@@ -82,7 +83,7 @@ public class AffineTransformArrayParser implements TransformListHandler {
 
     /**
      * Returns the AffineTransform array initialized during the last parsing.
-     * 
+     *
      * @return the array or null if this handler has not been used by a parser.
      */
     public AffineTransform[] getAffineTransforms() {
@@ -90,15 +91,14 @@ public class AffineTransformArrayParser implements TransformListHandler {
             return null;
         } else {
             final int count = this.transforms.size();
-            return (AffineTransform[]) this.transforms
-                    .toArray(new AffineTransform[count]);
+            return this.transforms.toArray(new AffineTransform[count]);
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public void startTransformList() throws ParseException {
-        this.transforms = new java.util.ArrayList();
+        this.transforms = new ArrayList<>();
     }
 
     /** {@inheritDoc} */

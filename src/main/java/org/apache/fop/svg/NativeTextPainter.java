@@ -23,7 +23,7 @@ import java.awt.Graphics2D;
 import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -84,15 +84,15 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
 
     /** {@inheritDoc} */
     @Override
-    protected void paintTextRuns(final List textRuns, final Graphics2D g2d) {
-        if (log.isTraceEnabled()) {
-            log.trace("paintTextRuns: count = " + textRuns.size());
-        }
+    protected void paintTextRuns(
+            @SuppressWarnings("rawtypes") final List textRuns,
+            final Graphics2D g2d) {
+        log.trace("paintTextRuns: count = {}", textRuns.size());
         if (!isSupported(g2d)) {
             super.paintTextRuns(textRuns, g2d);
             return;
         }
-        for (int i = 0; i < textRuns.size(); i++) {
+        for (int i = 0; i < textRuns.size(); ++i) {
             final TextRun textRun = (TextRun) textRuns.get(i);
             try {
                 paintTextRun(textRun, g2d);
@@ -111,9 +111,10 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
      * @return the array of fonts
      */
     protected Font[] findFonts(final AttributedCharacterIterator aci) {
-        final List fonts = new java.util.ArrayList();
-        final List gvtFonts = (List) aci
-                .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
+        final List<Font> fonts = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        final List<GVTFontFamily> gvtFonts = (List<GVTFontFamily>) aci
+        .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
         final Float posture = (Float) aci.getAttribute(TextAttribute.POSTURE);
         final Float taWeight = (Float) aci.getAttribute(TextAttribute.WEIGHT);
         final Float fontSize = (Float) aci.getAttribute(TextAttribute.SIZE);
@@ -158,9 +159,7 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
         }
 
         if (gvtFonts != null) {
-            final Iterator i = gvtFonts.iterator();
-            while (i.hasNext()) {
-                final GVTFontFamily fam = (GVTFontFamily) i.next();
+            for (final GVTFontFamily fam : gvtFonts) {
                 if (fam instanceof SVGFontFamily) {
                     return null; // Let Batik paint this text!
                 }
@@ -191,7 +190,7 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
             final int fsize = (int) (fontSize.floatValue() * 1000);
             fonts.add(this.fontInfo.getFontInstance(triplet, fsize));
         }
-        return (Font[]) fonts.toArray(new Font[fonts.size()]);
+        return fonts.toArray(new Font[fonts.size()]);
     }
 
     /**
@@ -228,17 +227,17 @@ public abstract class NativeTextPainter extends StrokingTextPainter {
             final TextSpanLayout layout, final int index,
             final boolean visibleChar) {
         if (log.isTraceEnabled()) {
-            log.trace("glyph " + index + " -> " + layout.getGlyphIndex(index)
-                    + " => " + ch);
+            log.trace("glyph {} -> {} => {}", index,
+                    layout.getGlyphIndex(index), ch);
             if (CharUtilities.isAnySpace(ch) && ch != 32) {
-                log.trace("Space found: " + Integer.toHexString(ch));
+                log.trace("Space found: {}", Integer.toHexString(ch));
             } else if (ch == CharUtilities.ZERO_WIDTH_JOINER) {
-                log.trace("ZWJ found: " + Integer.toHexString(ch));
+                log.trace("ZWJ found: {}", Integer.toHexString(ch));
             } else if (ch == CharUtilities.SOFT_HYPHEN) {
-                log.trace("Soft hyphen found: " + Integer.toHexString(ch));
+                log.trace("Soft hyphen found: {}", Integer.toHexString(ch));
             }
             if (!visibleChar) {
-                log.trace("Invisible glyph found: " + Integer.toHexString(ch));
+                log.trace("Invisible glyph found: {}", Integer.toHexString(ch));
             }
         }
     }

@@ -20,8 +20,8 @@
 package org.apache.fop.events.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.xmlgraphics.util.XMLizable;
@@ -39,12 +39,12 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     private String methodName;
     private EventSeverity severity;
-    private final List params = new java.util.ArrayList();
+    private final List<Parameter> params = new ArrayList<>();
     private String exceptionClass;
 
     /**
      * Creates an new instance.
-     * 
+     *
      * @param methodName
      *            the event method's name
      * @param severity
@@ -58,7 +58,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Adds a method parameter.
-     * 
+     *
      * @param param
      *            the method parameter
      */
@@ -68,7 +68,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Adds a method parameter.
-     * 
+     *
      * @param type
      *            the type of the parameter
      * @param name
@@ -83,7 +83,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Sets the event method name.
-     * 
+     *
      * @param name
      *            the event name
      */
@@ -93,7 +93,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Returns the event method name
-     * 
+     *
      * @return the event name
      */
     public String getMethodName() {
@@ -102,7 +102,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Sets the event's severity level.
-     * 
+     *
      * @param severity
      *            the severity
      */
@@ -112,7 +112,7 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Returns the event's severity level.
-     * 
+     *
      * @return the severity
      */
     public EventSeverity getSeverity() {
@@ -121,17 +121,17 @@ public class EventMethodModel implements Serializable, XMLizable {
 
     /**
      * Returns an unmodifiable list of parameters for this event method.
-     * 
+     *
      * @return the list of parameters
      */
-    public List getParameters() {
+    public List<Parameter> getParameters() {
         return Collections.unmodifiableList(this.params);
     }
 
     /**
      * Sets the primary exception class for this event method. Note: Not all
      * event methods throw exceptions!
-     * 
+     *
      * @param exceptionClass
      *            the exception class
      */
@@ -142,7 +142,7 @@ public class EventMethodModel implements Serializable, XMLizable {
     /**
      * Returns the primary exception class for this event method. This method
      * returns null if the event is only informational or just a warning.
-     * 
+     *
      * @return the primary exception class or null
      */
     public String getExceptionClass() {
@@ -162,64 +162,10 @@ public class EventMethodModel implements Serializable, XMLizable {
         }
         final String elName = "method";
         handler.startElement("", elName, elName, atts);
-        final Iterator iter = this.params.iterator();
-        while (iter.hasNext()) {
-            ((XMLizable) iter.next()).toSAX(handler);
+        for (final Parameter param : this.params) {
+            ((XMLizable) param).toSAX(handler);
         }
         handler.endElement("", elName, elName);
     }
 
-    /**
-     * Represents an event parameter.
-     */
-    public static class Parameter implements Serializable, XMLizable {
-
-        private static final long serialVersionUID = 6062500277953887099L;
-
-        private final Class type;
-        private final String name;
-
-        /**
-         * Creates a new event parameter.
-         * 
-         * @param type
-         *            the parameter type
-         * @param name
-         *            the parameter name
-         */
-        public Parameter(final Class type, final String name) {
-            this.type = type;
-            this.name = name;
-        }
-
-        /**
-         * Returns the parameter type.
-         * 
-         * @return the parameter type
-         */
-        public Class getType() {
-            return this.type;
-        }
-
-        /**
-         * Returns the parameter name.
-         * 
-         * @return the parameter name
-         */
-        public String getName() {
-            return this.name;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public void toSAX(final ContentHandler handler) throws SAXException {
-            final AttributesImpl atts = new AttributesImpl();
-            atts.addAttribute("", "type", "type", "CDATA", getType().getName());
-            atts.addAttribute("", "name", "name", "CDATA", getName());
-            final String elName = "parameter";
-            handler.startElement("", elName, elName, atts);
-            handler.endElement("", elName, elName);
-        }
-
-    }
 }

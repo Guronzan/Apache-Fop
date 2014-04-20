@@ -195,7 +195,7 @@ public class SolidAndDoubleBorderElement extends AbstractBorderElement {
     public SolidAndDoubleBorderElement(final int style, final int type) {
         super(type);
         if (style == EN_DOUBLE) {
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; ++i) {
                 this.data[i] *= 2;
             }
         }
@@ -212,7 +212,7 @@ public class SolidAndDoubleBorderElement extends AbstractBorderElement {
             final SolidAndDoubleBorderElement sde) {
         final AbstractBorderElement e = new SolidAndDoubleBorderElement(
                 EN_SOLID, 0);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             if (sde.getData(i) != 0) {
                 e.setData(i, sde.getData(i));
             } else {
@@ -262,13 +262,13 @@ public class SolidAndDoubleBorderElement extends AbstractBorderElement {
     private void modifyData() {
         int c1 = 0;
         int c2 = 0;
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             c1 += this.data[i] == 1 ? 1 : 0;
             c2 += this.data[i] == 2 ? 1 : 0;
         }
         final int m = c1 > c2 ? 1 : 0;
         final int[] p = { 0, m, 2 * (1 - m) };
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             this.data[i] = p[this.data[i]];
         }
     }

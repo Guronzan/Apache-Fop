@@ -77,7 +77,7 @@ public class DashedBorderElement extends AbstractBorderElement {
             final SolidAndDoubleBorderElement sdb) {
         final AbstractBorderElement e = new SolidAndDoubleBorderElement(
                 EN_SOLID, 0);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             e.setData(i, Math.max(this.data[i], sdb.getData(i)));
         }
         return e;
@@ -92,7 +92,7 @@ public class DashedBorderElement extends AbstractBorderElement {
      * @return merged border element
      */
     private AbstractBorderElement mergeDashed(final DashedBorderElement dbe) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             this.data[i] = Math.max(this.data[i], dbe.getData(i));
         }
         return this;
@@ -107,7 +107,7 @@ public class DashedBorderElement extends AbstractBorderElement {
     private AbstractBorderElement toSolidAndDouble() {
         final AbstractBorderElement e = new SolidAndDoubleBorderElement(
                 EN_SOLID, 0);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             e.setData(i, this.data[i]);
         }
         return e;

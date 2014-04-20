@@ -60,7 +60,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Create a new PCLGraphics2D.
-     * 
+     *
      * @param gen
      *            the PCL Generator to paint with
      */
@@ -71,7 +71,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Copy constructor
-     * 
+     *
      * @param g
      *            parent PCLGraphics2D
      */
@@ -96,7 +96,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Sets the GraphicContext
-     * 
+     *
      * @param c
      *            GraphicContext to use
      */
@@ -106,7 +106,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Allows to disable all clipping operations.
-     * 
+     *
      * @param value
      *            true if clipping should be disabled.
      */
@@ -116,7 +116,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Central handler for IOExceptions for this class.
-     * 
+     *
      * @param ioe
      *            IOException to handle
      */
@@ -129,7 +129,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
      * Raises an UnsupportedOperationException if this instance is configured to
      * do so and an unsupported feature has been requested. Clients can make use
      * of this to fall back to a more compatible way of painting a PCL graphic.
-     * 
+     *
      * @param msg
      *            the error message to be displayed
      */
@@ -148,7 +148,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Applies a new Stroke object.
-     * 
+     *
      * @param stroke
      *            Stroke object to use
      * @throws IOException
@@ -237,7 +237,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
             // Pen widths are set as absolute metric values (WU0;)
             final Point2D ptDest = getTransform().deltaTransform(ptSrc, null);
             final double transDist = UnitConv.pt2mm(ptDest.distance(0, 0));
-            // System.out.println("--" + ptDest.distance(0, 0) + " " +
+            // log.info("--" + ptDest.distance(0, 0) + " " +
             // transDist);
             this.gen.writeText(";PW" + this.gen.formatDouble4(transDist) + ";");
 
@@ -249,7 +249,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Applies a new Paint object.
-     * 
+     *
      * @param paint
      *            Paint object to use
      * @throws IOException
@@ -335,7 +335,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Processes a path iterator generating the nexessary painting operations.
-     * 
+     *
      * @param iter
      *            PathIterator to process
      * @throws IOException
@@ -411,7 +411,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Processes a path iterator generating the nexessary painting operations.
-     * 
+     *
      * @param iter
      *            PathIterator to process
      * @throws IOException
@@ -579,19 +579,19 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * positioning and rotation issues final int width =
          * img.getWidth(observer); final int height = img.getHeight(observer);
          * if (width == -1 || height == -1) { return false; }
-         * 
+         *
          * Dimension size = new Dimension(width, height); BufferedImage buf =
          * buildBufferedImage(size);
-         * 
+         *
          * java.awt.Graphics2D g = buf.createGraphics(); try {
          * g.setComposite(AlphaComposite.SrcOver); g.setBackground(new
          * Color(255, 255, 255)); g.setPaint(new Color(255, 255, 255));
          * g.fillRect(0, 0, width, height); g.clip(new Rectangle(0, 0,
          * buf.getWidth(), buf.getHeight()));
-         * 
+         *
          * if (!g.drawImage(img, 0, 0, observer)) { return false; } } finally {
          * g.dispose(); }
-         * 
+         *
          * try { AffineTransform at = getTransform(); gen.enterPCLMode(false);
          * //Shape imclip = getClip(); Clipping is not available in PCL Point2D
          * p1 = new Point2D.Double(x, y); at.transform(p1, p1);
@@ -599,7 +599,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * gen.setCursorPos(p1.getX(), p1.getY()); gen.paintBitmap(buf, 72);
          * gen.enterHPGL2Mode(false); } catch (IOException ioe) {
          * handleIOException(ioe); }
-         * 
+         *
          * return true;
          */
     }
@@ -633,7 +633,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
 
     /**
      * Creates a buffered image.
-     * 
+     *
      * @param size
      *            dimensions of the image to be created
      * @return the buffered image

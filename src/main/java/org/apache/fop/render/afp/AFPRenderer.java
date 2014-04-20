@@ -29,7 +29,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +75,7 @@ import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontManager;
+import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.render.AbstractPathOrientedRenderer;
 import org.apache.fop.render.Graphics2DAdapter;
 import org.apache.fop.render.RendererContext;
@@ -85,6 +85,7 @@ import org.apache.fop.render.afp.extensions.AFPIncludeFormMap;
 import org.apache.fop.render.afp.extensions.AFPInvokeMediumMap;
 import org.apache.fop.render.afp.extensions.AFPPageOverlay;
 import org.apache.fop.render.afp.extensions.AFPPageSetup;
+import org.apache.fop.util.AbstractPaintingState.AbstractData;
 import org.apache.xmlgraphics.image.loader.ImageException;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.ImageInfo;
@@ -148,8 +149,8 @@ import org.apache.xmlgraphics.ps.ImageEncodingHelper;
  *
  */
 @Slf4j
-public class AFPRenderer extends AbstractPathOrientedRenderer implements
-AFPCustomizable {
+public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
+        implements AFPCustomizable {
 
     private static final int X = 0;
     private static final int Y = 1;
@@ -167,16 +168,10 @@ AFPCustomizable {
     private AFPBorderPainter borderPainter;
 
     /** the map of page segments */
-    private final Map/* <String,String> */pageSegmentMap = new java.util.HashMap/*
-     * <
-     * String
-     * ,
-     * String
-     * >
-     */();
+    private final Map<String, String> pageSegmentMap = new java.util.HashMap<>();
 
     /** the map of saved incomplete pages */
-    private final Map pages = new java.util.HashMap/* <PageViewport,PageObject> */();
+    private final Map<PageViewport, PageObject> pages = new java.util.HashMap<>();
 
     /** the AFP datastream */
     private DataStream dataStream;
@@ -262,10 +257,8 @@ AFPCustomizable {
             log.error(e.getMessage());
         }
         if (pageSequence.hasExtensionAttachments()) {
-            for (final Iterator iter = pageSequence.getExtensionAttachments()
-                    .iterator(); iter.hasNext();) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) iter
-                        .next();
+            for (final ExtensionAttachment attachment : pageSequence
+                    .getExtensionAttachments()) {
                 if (attachment instanceof AFPInvokeMediumMap) {
                     final AFPInvokeMediumMap imm = (AFPInvokeMediumMap) attachment;
                     final String mediumMap = imm.getName();
@@ -385,7 +378,7 @@ AFPCustomizable {
     /** {@inheritDoc} */
     @Override
     public void renderPage(final PageViewport pageViewport) throws IOException,
-    FOPException {
+            FOPException {
         this.paintingState.clear();
 
         final Rectangle2D bounds = pageViewport.getViewArea();
@@ -394,8 +387,7 @@ AFPCustomizable {
         this.paintingState.concatenate(baseTransform);
 
         if (this.pages.containsKey(pageViewport)) {
-            this.dataStream.restorePage((PageObject) this.pages
-                    .remove(pageViewport));
+            this.dataStream.restorePage(this.pages.remove(pageViewport));
         } else {
             final int pageWidth = Math.round(this.unitConv
                     .mpt2units((float) bounds.getWidth()));
@@ -476,15 +468,15 @@ AFPCustomizable {
     }
 
     private static final ImageFlavor[] NATIVE_FLAVORS = new ImageFlavor[] {
-        ImageFlavor.XML_DOM,
-        /* ImageFlavor.RAW_PNG, */// PNG not natively supported in AFP
-        ImageFlavor.RAW_JPEG, ImageFlavor.RAW_CCITTFAX,
-        ImageFlavor.RAW_EPS, ImageFlavor.RAW_TIFF, ImageFlavor.GRAPHICS2D,
-        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
+            ImageFlavor.XML_DOM,
+            /* ImageFlavor.RAW_PNG, */// PNG not natively supported in AFP
+            ImageFlavor.RAW_JPEG, ImageFlavor.RAW_CCITTFAX,
+            ImageFlavor.RAW_EPS, ImageFlavor.RAW_TIFF, ImageFlavor.GRAPHICS2D,
+            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.XML_DOM, ImageFlavor.GRAPHICS2D,
-        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
+            ImageFlavor.XML_DOM, ImageFlavor.GRAPHICS2D,
+            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     /** {@inheritDoc} */
     @Override
@@ -501,7 +493,7 @@ AFPCustomizable {
         final int x = origin.x + posInt.x;
         final int y = origin.y + posInt.y;
 
-        final String name = (String) this.pageSegmentMap.get(uri);
+        final String name = this.pageSegmentMap.get(uri);
         if (name != null) {
             final float[] srcPts = { x, y, posInt.width, posInt.height };
             final int[] coords = this.unitConv.mpts2units(srcPts);
@@ -520,7 +512,8 @@ AFPCustomizable {
                 info = manager.getImageInfo(uri, sessionContext);
 
                 // Only now fully load/prepare the image
-                final Map hints = ImageUtil.getDefaultHints(sessionContext);
+                final Map<String, Object> hints = ImageUtil
+                        .getDefaultHints(sessionContext);
 
                 final boolean nativeImagesSupported = this.paintingState
                         .isNativeImagesSupported();
@@ -558,7 +551,7 @@ AFPCustomizable {
                 } else {
                     throw new UnsupportedOperationException(
                             "No AFPImageHandler available for image: " + info
-                            + " (" + img.getClass().getName() + ")");
+                                    + " (" + img.getClass().getName() + ")");
                 }
 
             } catch (final ImageException ie) {
@@ -608,14 +601,15 @@ AFPCustomizable {
 
     /** {@inheritDoc} */
     @Override
-    public void restoreStateStackAfterBreakOut(final List breakOutList) {
+    public void restoreStateStackAfterBreakOut(
+            final List<AbstractData> breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
         this.paintingState.saveAll(breakOutList);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<AbstractData> breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
         return this.paintingState.restoreAll();
     }
@@ -650,8 +644,7 @@ AFPCustomizable {
 
         // register font as necessary
         final String internalFontName = getInternalFontNameForArea(text);
-        final Map/* <String,FontMetrics> */fontMetricMap = this.fontInfo
-                .getFonts();
+        final Map<String, FontMetrics> fontMetricMap = this.fontInfo.getFonts();
         final AFPFont font = (AFPFont) fontMetricMap.get(internalFontName);
         final AFPPageFonts pageFonts = this.paintingState.getPageFonts();
         final AFPFontAttributes fontAttributes = pageFonts.registerFont(
@@ -698,7 +691,7 @@ AFPCustomizable {
         variableSpaceCharacterIncrement = Math.round(this.unitConv
                 .mpt2units(variableSpaceCharacterIncrement));
         textDataInfo
-        .setVariableSpaceCharacterIncrement(variableSpaceCharacterIncrement);
+                .setVariableSpaceCharacterIncrement(variableSpaceCharacterIncrement);
 
         final int interCharacterAdjustment = Math.round(this.unitConv
                 .mpt2units(textLetterSpaceAdjust));
@@ -783,13 +776,9 @@ AFPCustomizable {
      *            the page object
      */
     private void renderInvokeMediumMap(final PageViewport pageViewport) {
-        if (pageViewport.getExtensionAttachments() != null
-                && pageViewport.getExtensionAttachments().size() > 0) {
-            final Iterator it = pageViewport.getExtensionAttachments()
-                    .iterator();
-            while (it.hasNext()) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) it
-                        .next();
+        if (pageViewport.getExtensionAttachments() != null) {
+            for (final ExtensionAttachment attachment : pageViewport
+                    .getExtensionAttachments()) {
                 if (AFPExtensionAttachment.CATEGORY.equals(attachment
                         .getCategory())) {
                     final AFPExtensionAttachment aea = (AFPExtensionAttachment) attachment;
@@ -800,7 +789,7 @@ AFPCustomizable {
                         if (mediumMap != null) {
                             if (!mediumMap.equals(this.lastMediumMap)) {
                                 this.dataStream
-                                .createInvokeMediumMap(mediumMap);
+                                        .createInvokeMediumMap(mediumMap);
                                 this.lastMediumMap = mediumMap;
                             }
                         }
@@ -819,15 +808,11 @@ AFPCustomizable {
      */
     private void renderPageObjectExtensions(final PageViewport pageViewport) {
         this.pageSegmentMap.clear();
-        if (pageViewport.getExtensionAttachments() != null
-                && pageViewport.getExtensionAttachments().size() > 0) {
+        if (pageViewport.getExtensionAttachments() != null) {
             // Extract all AFPPageSetup instances from the attachment list on
             // the s-p-m
-            final Iterator it = pageViewport.getExtensionAttachments()
-                    .iterator();
-            while (it.hasNext()) {
-                final ExtensionAttachment attachment = (ExtensionAttachment) it
-                        .next();
+            for (final ExtensionAttachment attachment : pageViewport
+                    .getExtensionAttachments()) {
                 if (AFPExtensionAttachment.CATEGORY.equals(attachment
                         .getCategory())) {
                     if (attachment instanceof AFPPageSetup) {
@@ -843,7 +828,7 @@ AFPCustomizable {
                             final String name = aps.getName();
                             final String value = aps.getValue();
                             this.dataStream
-                            .createTagLogicalElement(name, value);
+                                    .createTagLogicalElement(name, value);
                         } else if (AFPElementMapping.NO_OPERATION
                                 .equals(element)) {
                             final String content = aps.getContent();

@@ -298,7 +298,7 @@ public class Java2DFontMetrics {
             this.width = new int[256];
         }
         setFont(family, style, size);
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; ++i) {
             this.width[i] = 1000 * internalCharWidth(i);
         }
         return this.width;

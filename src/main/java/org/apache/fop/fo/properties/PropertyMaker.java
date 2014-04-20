@@ -178,7 +178,7 @@ public class PropertyMaker implements Cloneable {
         if (this.shorthands == null) {
             this.shorthands = new PropertyMaker[3];
         }
-        for (int i = 0; i < this.shorthands.length; i++) {
+        for (int i = 0; i < this.shorthands.length; ++i) {
             if (this.shorthands[i] == null) {
                 this.shorthands[i] = shorthand;
                 break;
@@ -714,7 +714,7 @@ public class PropertyMaker implements Cloneable {
         }
         Property prop;
         final int n = this.shorthands.length;
-        for (int i = 0; i < n && this.shorthands[i] != null; i++) {
+        for (int i = 0; i < n && this.shorthands[i] != null; ++i) {
             final PropertyMaker shorthand = this.shorthands[i];
             prop = propertyList.getExplicit(shorthand.propId);
             if (prop != null) {

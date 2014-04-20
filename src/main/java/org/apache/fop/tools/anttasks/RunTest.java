@@ -29,7 +29,10 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
@@ -39,6 +42,7 @@ import org.apache.tools.ant.Task;
  * the TestConverter (with weak code dependency) to run the tests and check the
  * results.
  */
+@Slf4j
 public class RunTest extends Task {
 
     private String basedir;
@@ -48,7 +52,7 @@ public class RunTest extends Task {
 
     /**
      * Sets the test suite name.
-     * 
+     *
      * @param str
      *            name of the test suite
      */
@@ -58,7 +62,7 @@ public class RunTest extends Task {
 
     /**
      * Sets the base directory.
-     * 
+     *
      * @param str
      *            base directory
      */
@@ -68,7 +72,7 @@ public class RunTest extends Task {
 
     /**
      * Sets the reference directory.
-     * 
+     *
      * @param str
      *            reference directory
      */
@@ -78,7 +82,7 @@ public class RunTest extends Task {
 
     /**
      * Sets the reference version.
-     * 
+     *
      * @param str
      *            reference version
      */
@@ -108,15 +112,14 @@ public class RunTest extends Task {
             final Map diff = runConverter(loader, "areatree",
                     "reference/output/");
             if (diff != null && !diff.isEmpty()) {
-                System.out.println("====================================");
-                System.out.println("The following files differ:");
+                log.info("====================================");
+                log.info("The following files differ:");
                 boolean broke = false;
                 for (final Iterator keys = diff.keySet().iterator(); keys
                         .hasNext();) {
                     final Object fname = keys.next();
                     final Boolean pass = (Boolean) diff.get(fname);
-                    System.out.println("file: " + fname
-                            + " - reference success: " + pass);
+                    log.info("file: " + fname + " - reference success: " + pass);
                     if (pass.booleanValue()) {
                         broke = true;
                     }
@@ -135,17 +138,13 @@ public class RunTest extends Task {
      * output has not already been run and then checks the version of the
      * reference jar against the version required. The reference output is then
      * created.
-     * 
+     *
      * @throws BuildException
      *             if an error occurs
      */
     protected void runReference() throws BuildException {
         // check not already done
         final File f = new File(this.basedir + "/reference/output/");
-        // if(f.exists()) {
-        // need to check that files have actually been created.
-        // return;
-        // } else {
         try {
             final ClassLoader loader = new URLClassLoader(
                     createUrls(this.referenceJar));
@@ -174,14 +173,13 @@ public class RunTest extends Task {
             if (failed) {
                 throw new BuildException(
                         "Reference jar could not be found in: " + this.basedir
-                                + "/reference/");
+                        + "/reference/");
             }
             f.mkdirs();
             runConverter(loader, "reference/output/", null);
         } catch (final MalformedURLException mue) {
-            mue.printStackTrace();
+            log.error("MalformedURLException", mue);
         }
-        // }
     }
 
     /**
@@ -190,7 +188,7 @@ public class RunTest extends Task {
      * the test suite for the current test suite file in the base directory.
      * (Note class loader option provided to allow for different fop.jar and
      * other libraries to be activated.)
-     * 
+     *
      * @param loader
      *            the class loader to use to run the tests with
      * @param dest
@@ -225,11 +223,11 @@ public class RunTest extends Task {
     /**
      * Return a list of URL's with the specified URL first and followed by all
      * the jar files from lib/.
-     * 
+     *
      * @return a list of urls to the runtime jar files.
      */
     private URL[] createUrls(final String mainJar) throws MalformedURLException {
-        final ArrayList urls = new ArrayList();
+        final List<URL> urls = new ArrayList<>();
         urls.add(new File(mainJar).toURI().toURL());
         final File[] libFiles = new File("lib").listFiles();
         for (final File libFile : libFiles) {
@@ -237,6 +235,6 @@ public class RunTest extends Task {
                 urls.add(libFile.toURI().toURL());
             }
         }
-        return (URL[]) urls.toArray(new URL[urls.size()]);
+        return urls.toArray(new URL[urls.size()]);
     }
 }

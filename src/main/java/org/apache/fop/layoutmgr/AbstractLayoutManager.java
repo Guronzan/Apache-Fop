@@ -33,6 +33,7 @@ import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.flow.RetrieveMarker;
+import org.apache.xmlgraphics.util.QName;
 
 @Slf4j
 public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
@@ -174,7 +175,8 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
 
     /** {@inheritDoc} */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         log.warn("null implementation of getChangeKnuthElement() called!");
         return null;
     }
@@ -382,7 +384,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
      *            the area to set the attributes on
      */
     protected void transferForeignAttributes(final AreaTreeObject targetArea) {
-        final Map atts = this.fobj.getForeignAttributes();
+        final Map<QName, String> atts = this.fobj.getForeignAttributes();
         targetArea.setForeignAttributes(atts);
     }
 

@@ -71,7 +71,7 @@ public class AFPResourceLevel {
         if (levelString != null) {
             levelString = levelString.toLowerCase();
             AFPResourceLevel resourceLevel = null;
-            for (int i = 0; i < NAMES.length; i++) {
+            for (int i = 0; i < NAMES.length; ++i) {
                 if (NAMES[i].equals(levelString)) {
                     resourceLevel = new AFPResourceLevel(i);
                     break;

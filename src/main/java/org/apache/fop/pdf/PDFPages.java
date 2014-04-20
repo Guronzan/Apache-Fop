@@ -117,7 +117,7 @@ public class PDFPages extends PDFObject {
         final StringBuilder sb = new StringBuilder(64);
         sb.append(getObjectID()).append("<< /Type /Pages\n/Count ")
         .append(getCount()).append("\n/Kids [");
-        for (int i = 0; i < this.kids.size(); i++) {
+        for (int i = 0; i < this.kids.size(); ++i) {
             final Object kid = this.kids.get(i);
             if (kid == null) {
                 throw new IllegalStateException("Gap in the kids list!");

@@ -19,7 +19,7 @@
 
 package org.apache.fop.fonts.substitute;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,9 +92,7 @@ public class FontQualifier {
         final AttributeValue fontWeightAttribute = AttributeValue
                 .valueOf(fontWeight);
         if (fontWeightAttribute != null) {
-            for (final Iterator it = fontWeightAttribute.iterator(); it
-                    .hasNext();) {
-                final Object weightObj = it.next();
+            for (final Object weightObj : fontWeightAttribute) {
                 if (weightObj instanceof String) {
                     final String weightString = ((String) weightObj).trim();
                     try {
@@ -158,27 +156,22 @@ public class FontQualifier {
      *            the font info
      * @return a list of matching font triplets
      */
-    protected List/* <FontTriplet> */match(final FontInfo fontInfo) {
+    protected List<FontTriplet> match(final FontInfo fontInfo) {
         final AttributeValue fontFamilyValue = getFontFamily();
         final AttributeValue weightValue = getFontWeight();
         final AttributeValue styleValue = getFontStyle();
 
-        final List/* <FontTriplet> */matchingTriplets = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+        final List<FontTriplet> matchingTriplets = new ArrayList<>();
 
         // try to find matching destination font triplet
-        for (final Iterator attrIt = fontFamilyValue.iterator(); attrIt
-                .hasNext();) {
-            final String fontFamilyString = (String) attrIt.next();
-            final Map/* <FontTriplet> */triplets = fontInfo.getFontTriplets();
+        for (final Object element : fontFamilyValue) {
+            final String fontFamilyString = (String) element;
+            final Map<FontTriplet, String> triplets = fontInfo
+                    .getFontTriplets();
             if (triplets != null) {
-                final Set/* <FontTriplet> */tripletSet = triplets.keySet();
-                for (final Iterator/* <FontTriplet> */tripletIt = tripletSet
-                        .iterator(); tripletIt.hasNext();) {
-                    final FontTriplet triplet = (FontTriplet) tripletIt.next();
+                final Set<FontTriplet> tripletSet = triplets.keySet();
+                for (final FontTriplet fontTriplet : tripletSet) {
+                    final FontTriplet triplet = fontTriplet;
                     final String fontName = triplet.getName();
 
                     // matched font family name
@@ -188,9 +181,7 @@ public class FontQualifier {
                         // try and match font weight
                         boolean weightMatched = false;
                         final int fontWeight = triplet.getWeight();
-                        for (final Iterator weightIt = weightValue.iterator(); weightIt
-                                .hasNext();) {
-                            final Object weightObj = weightIt.next();
+                        for (final Object weightObj : weightValue) {
                             if (weightObj instanceof FontWeightRange) {
                                 final FontWeightRange intRange = (FontWeightRange) weightObj;
                                 if (intRange.isWithinRange(fontWeight)) {
@@ -216,9 +207,8 @@ public class FontQualifier {
                         // try and match font style
                         boolean styleMatched = false;
                         final String fontStyleString = triplet.getStyle();
-                        for (final Iterator styleIt = styleValue.iterator(); styleIt
-                                .hasNext();) {
-                            final String style = (String) styleIt.next();
+                        for (final Object element2 : styleValue) {
+                            final String style = (String) element2;
                             if (fontStyleString.equals(style)) {
                                 styleMatched = true;
                             }
@@ -243,14 +233,13 @@ public class FontQualifier {
      * @return the highest priority matching font triplet
      */
     protected FontTriplet bestMatch(final FontInfo fontInfo) {
-        final List/* <FontTriplet> */matchingTriplets = match(fontInfo);
+        final List<FontTriplet> matchingTriplets = match(fontInfo);
         FontTriplet bestTriplet = null;
         if (matchingTriplets.size() == 1) {
-            bestTriplet = (FontTriplet) matchingTriplets.get(0);
+            bestTriplet = matchingTriplets.get(0);
         } else {
-            for (final Iterator iterator = matchingTriplets.iterator(); iterator
-                    .hasNext();) {
-                final FontTriplet triplet = (FontTriplet) iterator.next();
+            for (final Object element : matchingTriplets) {
+                final FontTriplet triplet = (FontTriplet) element;
                 if (bestTriplet == null) {
                     bestTriplet = triplet;
                 } else {
@@ -267,28 +256,19 @@ public class FontQualifier {
     /**
      * @return a list of font triplets matching this qualifier
      */
-    public List/* <FontTriplet> */getTriplets() {
-        final List/* <FontTriplet> */triplets = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+    public List<FontTriplet> getTriplets() {
+        final List<FontTriplet> triplets = new java.util.ArrayList<>();
 
         final AttributeValue fontFamilyValue = getFontFamily();
-        for (final Iterator fontFamilyIt = fontFamilyValue.iterator(); fontFamilyIt
-                .hasNext();) {
-            final String name = (String) fontFamilyIt.next();
+        for (final Object element2 : fontFamilyValue) {
+            final String name = (String) element2;
 
             final AttributeValue styleValue = getFontStyle();
-            for (final Iterator styleIt = styleValue.iterator(); styleIt
-                    .hasNext();) {
-                final String style = (String) styleIt.next();
+            for (final Object element3 : styleValue) {
+                final String style = (String) element3;
 
                 final AttributeValue weightValue = getFontWeight();
-                for (final Iterator weightIt = weightValue.iterator(); weightIt
-                        .hasNext();) {
-                    final Object weightObj = weightIt.next();
-
+                for (final Object weightObj : weightValue) {
                     if (weightObj instanceof FontWeightRange) {
                         final FontWeightRange fontWeightRange = (FontWeightRange) weightObj;
                         final int[] weightRange = fontWeightRange.toArray();

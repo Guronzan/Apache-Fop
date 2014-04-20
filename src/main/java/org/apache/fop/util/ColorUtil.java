@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.fo.expr.PropertyException;
+import org.apache.xmlgraphics.java2d.color.ColorSpaces;
 import org.apache.xmlgraphics.java2d.color.DeviceCMYKColorSpace;
 
 /**
@@ -327,7 +328,7 @@ public final class ColorUtil {
                 String iccProfileSrc = null;
                 if (isPseudoProfile(iccProfileName)) {
                     if (CMYK_PSEUDO_PROFILE.equalsIgnoreCase(iccProfileName)) {
-                        colorSpace = DeviceCMYKColorSpace.getInstance();
+                        colorSpace = ColorSpaces.getDeviceCMYKColorSpace();
                     } else {
                         assert false : "Incomplete implementation";
                     }
@@ -461,8 +462,8 @@ public final class ColorUtil {
                                     + "Arguments to cmyk() must be in the range [0%-100%] or [0.0-1.0]");
                 }
                 final float[] cmyk = new float[] { cyan, magenta, yellow, black };
-                final DeviceCMYKColorSpace cmykCs = DeviceCMYKColorSpace
-                        .getInstance();
+                final DeviceCMYKColorSpace cmykCs = ColorSpaces
+                        .getDeviceCMYKColorSpace();
                 final float[] rgb = cmykCs.toRGB(cmyk);
                 parsedColor = ColorExt.createFromFoRgbIcc(rgb[0], rgb[1],
                         rgb[2], CMYK_PSEUDO_PROFILE, null, cmykCs, cmyk);
@@ -732,7 +733,8 @@ public final class ColorUtil {
      */
     public static Color toCMYKGrayColor(final float black) {
         final float[] cmyk = new float[] { 0f, 0f, 0f, 1.0f - black };
-        final DeviceCMYKColorSpace cmykCs = DeviceCMYKColorSpace.getInstance();
+        final DeviceCMYKColorSpace cmykCs = ColorSpaces
+                .getDeviceCMYKColorSpace();
         final float[] rgb = cmykCs.toRGB(cmyk);
         return ColorExt.createFromFoRgbIcc(rgb[0], rgb[1], rgb[2],
                 CMYK_PSEUDO_PROFILE, null, cmykCs, cmyk);

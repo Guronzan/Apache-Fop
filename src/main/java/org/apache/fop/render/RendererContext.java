@@ -20,8 +20,8 @@
 package org.apache.fop.render;
 
 //Java
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.fop.apps.FOUserAgent;
 
@@ -36,12 +36,7 @@ public class RendererContext {
     private final AbstractRenderer renderer;
     private FOUserAgent userAgent;
 
-    private final Map/* <String,Object> */props = new java.util.HashMap/*
-                                                                        * <String
-                                                                        * ,
-                                                                        * Object
-                                                                        * >
-                                                                        */();
+    private final Map<String, Object> props = new java.util.HashMap<>();
 
     /**
      * Constructor for this class. It takes a MIME type as parameter.
@@ -131,15 +126,13 @@ public class RendererContext {
     /** {@inheritDoc} **/
     @Override
     public String toString() {
-        final StringBuilder StringBuilder = new StringBuilder("RendererContext{\n");
-        final Iterator it = this.props.keySet().iterator();
-        while (it.hasNext()) {
-            final String key = (String) it.next();
-            final Object value = this.props.get(key);
-            StringBuilder.append("\t" + key + "=" + value + "\n");
+        final StringBuilder sb = new StringBuilder("RendererContext{\n");
+        for (final Entry<String, Object> entry : this.props.entrySet()) {
+            sb.append("\t").append(entry.getKey()).append("=")
+                    .append(entry.getValue()).append("\n");
         }
-        StringBuilder.append("}");
-        return StringBuilder.toString();
+        sb.append("}");
+        return sb.toString();
     }
 
     /**
@@ -153,7 +146,7 @@ public class RendererContext {
 
         /**
          * Main constructor
-         * 
+         *
          * @param context
          *            the RendererContent instance
          */

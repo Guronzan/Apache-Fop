@@ -388,7 +388,7 @@ public class TTFSubSetFile extends TTFFile {
                 origIndexes[subsetIndex.intValue()] = origIndex.intValue();
             }
 
-            for (int i = 0; i < origIndexes.length; i++) {
+            for (int i = 0; i < origIndexes.length; ++i) {
                 int glyphLength = 0;
                 int nextOffset = 0;
                 final int origGlyphIndex = origIndexes[i];
@@ -490,7 +490,7 @@ public class TTFSubSetFile extends TTFFile {
         boolean moreComposites = true;
         while (moreComposites) {
             flags = in.readTTFUShort(offset);
-            compositeIdx = new Integer(in.readTTFUShort(offset + 2));
+            compositeIdx = (in.readTTFUShort(offset + 2));
             ret.add(compositeIdx);
 
             offset += 4;
@@ -534,7 +534,7 @@ public class TTFSubSetFile extends TTFFile {
 
         while (moreComposites) {
             flags = in.readTTFUShort(offset);
-            compositeIdx = new Integer(in.readTTFUShort(offset + 2));
+            compositeIdx = (in.readTTFUShort(offset + 2));
             final Integer newIdx = (Integer) glyphs.get(compositeIdx);
             if (newIdx == null) {
                 // This errormessage would look much better
@@ -611,7 +611,7 @@ public class TTFSubSetFile extends TTFFile {
                             final Integer cIdx = (Integer) cps.next();
                             if (glyphs.get(cIdx) == null
                                     && newComposites.get(cIdx) == null) {
-                                newComposites.put(cIdx, new Integer(newIndex));
+                                newComposites.put(cIdx, (newIndex));
                                 newIndex++;
                             }
                         }
@@ -822,7 +822,7 @@ public class TTFSubSetFile extends TTFFile {
      */
     private void pad4() {
         final int padSize = this.currentPos % 4;
-        for (int i = 0; i < padSize; i++) {
+        for (int i = 0; i < padSize; ++i) {
             this.output[this.currentPos++] = 0;
             this.realSize++;
         }
@@ -834,7 +834,7 @@ public class TTFSubSetFile extends TTFFile {
     private int maxPow2(final int max) {
         int i = 0;
         while (Math.pow(2, i) < max) {
-            i++;
+            ++i;
         }
 
         return i - 1;

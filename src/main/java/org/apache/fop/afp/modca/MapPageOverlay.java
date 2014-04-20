@@ -118,7 +118,7 @@ public class MapPageOverlay extends AbstractAFPObject {
         // For each overlay
         byte olayref = 0x00;
 
-        for (int i = 0; i < oLayCount; i++) {
+        for (int i = 0; i < oLayCount; ++i) {
             olayref = (byte) (olayref + 1);
 
             data[++pos] = 0x00;

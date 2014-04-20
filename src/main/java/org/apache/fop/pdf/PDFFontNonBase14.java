@@ -58,8 +58,8 @@ public abstract class PDFFontNonBase14 extends PDFFont {
      */
     public void setWidthMetrics(final int firstChar, final int lastChar,
             final PDFArray widths) {
-        put("FirstChar", new Integer(firstChar));
-        put("LastChar", new Integer(lastChar));
+        put("FirstChar", (firstChar));
+        put("LastChar", (lastChar));
         put("Widths", widths);
     }
 

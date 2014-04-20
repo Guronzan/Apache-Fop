@@ -253,10 +253,10 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
         }
 
         @Override
-        protected List getNextKnuthElements(final LayoutContext context,
-                final int alignment) {
+        protected List<ListElement> getNextKnuthElements(
+                final LayoutContext context, final int alignment) {
             LayoutManager curLM; // currently active LM
-            final List returnList = new LinkedList();
+            final List<ListElement> returnList = new LinkedList<>();
 
             while ((curLM = getChildLM()) != null) {
                 final LayoutContext childLC = new LayoutContext(0);

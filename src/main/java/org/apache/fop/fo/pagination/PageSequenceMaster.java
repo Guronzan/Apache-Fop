@@ -144,7 +144,7 @@ public class PageSequenceMaster extends FObj {
         this.currentSubSequenceNumber = -1;
         this.currentSubSequence = null;
         if (this.subSequenceSpecifiers != null) {
-            for (int i = 0; i < this.subSequenceSpecifiers.size(); i++) {
+            for (int i = 0; i < this.subSequenceSpecifiers.size(); ++i) {
                 ((SubSequenceSpecifier) this.subSequenceSpecifiers.get(i))
                 .reset();
             }

@@ -83,7 +83,7 @@ public class SpaceResolver {
             while (iter.hasNext()) {
                 this.noBreak[i] = (UnresolvedListElementWithLength) iter.next();
                 this.noBreakLengths[i] = this.noBreak[i].getLength();
-                i++;
+                ++i;
             }
         }
         if (second != null) {
@@ -91,7 +91,7 @@ public class SpaceResolver {
             while (iter.hasNext()) {
                 this.noBreak[i] = (UnresolvedListElementWithLength) iter.next();
                 this.noBreakLengths[i] = this.noBreak[i].getLength();
-                i++;
+                ++i;
             }
         }
 
@@ -124,7 +124,7 @@ public class SpaceResolver {
             this.firstPart = new UnresolvedListElementWithLength[first.size()];
             this.firstPartLengths = new MinOptMax[this.firstPart.length];
             first.toArray(this.firstPart);
-            for (i = 0; i < this.firstPart.length; i++) {
+            for (i = 0; i < this.firstPart.length; ++i) {
                 this.firstPartLengths[i] = this.firstPart[i].getLength();
             }
         }
@@ -133,7 +133,7 @@ public class SpaceResolver {
             this.secondPart = new UnresolvedListElementWithLength[second.size()];
             this.secondPartLengths = new MinOptMax[this.secondPart.length];
             second.toArray(this.secondPart);
-            for (i = 0; i < this.secondPart.length; i++) {
+            for (i = 0; i < this.secondPart.length; ++i) {
                 this.secondPartLengths[i] = this.secondPart[i].getLength();
             }
         }
@@ -146,7 +146,7 @@ public class SpaceResolver {
                     "The length of both arrays must be equal");
         }
         final StringBuilder sb = new StringBuilder("[");
-        for (int i = 0; i < arr1.length; i++) {
+        for (int i = 0; i < arr1.length; ++i) {
             if (i > 0) {
                 sb.append(", ");
             }
@@ -161,7 +161,7 @@ public class SpaceResolver {
     private void removeConditionalBorderAndPadding(
             final UnresolvedListElement[] elems, final MinOptMax[] lengths,
             final boolean reverse) {
-        for (int i = 0; i < elems.length; i++) {
+        for (int i = 0; i < elems.length; ++i) {
             int effIndex;
             if (reverse) {
                 effIndex = elems.length - 1 - i;
@@ -186,7 +186,7 @@ public class SpaceResolver {
     private void performSpaceResolutionRule1(
             final UnresolvedListElement[] elems, final MinOptMax[] lengths,
             final boolean reverse) {
-        for (int i = 0; i < elems.length; i++) {
+        for (int i = 0; i < elems.length; ++i) {
             int effIndex;
             if (reverse) {
                 effIndex = elems.length - 1 - i;
@@ -225,7 +225,7 @@ public class SpaceResolver {
         // Rule 2 (4.3.1, XSL 1.0)
         boolean hasForcing = false;
         remaining = 0;
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i <= end; ++i) {
             if (lengths[i] == null) {
                 continue;
             }
@@ -240,7 +240,7 @@ public class SpaceResolver {
             return; // shortcut
         }
         if (hasForcing) {
-            for (int i = start; i <= end; i++) {
+            for (int i = start; i <= end; ++i) {
                 if (lengths[i] == null) {
                     continue;
                 }
@@ -259,7 +259,7 @@ public class SpaceResolver {
         // Rule 3 (4.3.1, XSL 1.0)
         // Determine highes precedence
         int highestPrecedence = Integer.MIN_VALUE;
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i <= end; ++i) {
             if (lengths[i] == null) {
                 continue;
             }
@@ -273,7 +273,7 @@ public class SpaceResolver {
         // Suppress space-specifiers with lower precedence
         remaining = 0;
         int greatestOptimum = Integer.MIN_VALUE;
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i <= end; ++i) {
             if (lengths[i] == null) {
                 continue;
             }
@@ -299,7 +299,7 @@ public class SpaceResolver {
         }
         // Suppress space-specifiers with smaller optimum length
         remaining = 0;
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i <= end; ++i) {
             if (lengths[i] == null) {
                 continue;
             }
@@ -320,7 +320,7 @@ public class SpaceResolver {
         // Construct resolved space-specifier from the remaining spaces
         int min = Integer.MIN_VALUE;
         int max = Integer.MAX_VALUE;
-        for (int i = start; i <= end; i++) {
+        for (int i = start; i <= end; ++i) {
             if (lengths[i] == null) {
                 continue;
             }
@@ -354,14 +354,14 @@ public class SpaceResolver {
             if (elems[i] instanceof SpaceElement) {
                 while (i < elems.length) {
                     if (elems[i] == null || elems[i] instanceof SpaceElement) {
-                        i++;
+                        ++i;
                     } else {
                         break;
                     }
                 }
                 performSpaceResolutionRules2to3(elems, lengths, start, i - 1);
             }
-            i++;
+            ++i;
             start = i;
         }
     }
@@ -444,7 +444,7 @@ public class SpaceResolver {
         return sum;
     }
 
-    private void generate(final ListIterator<KnuthElement> iter) {
+    private void generate(final ListIterator<ListElement> iter) {
         final MinOptMax spaceBeforeBreak = sum(this.firstPartLengths);
         final MinOptMax spaceAfterBreak = sum(this.secondPartLengths);
 
@@ -461,7 +461,7 @@ public class SpaceResolver {
             }
             iter.add(new KnuthPenalty(this.breakPoss.getPenaltyWidth(),
                     this.breakPoss.getPenaltyValue(), false, this.breakPoss
-                            .getBreakClass(), new SpaceHandlingBreakPosition(
+                    .getBreakClass(), new SpaceHandlingBreakPosition(
                             this, this.breakPoss), false));
             if (this.breakPoss.getPenaltyValue() <= -KnuthElement.INFINITE) {
                 return; // return early. Not necessary (even wrong) to add
@@ -557,18 +557,18 @@ public class SpaceResolver {
                 final RelSide side) {
             if (isBreakSituation) {
                 if (RelSide.BEFORE == side) {
-                    for (int i = 0; i < this.resolver.secondPart.length; i++) {
+                    for (int i = 0; i < this.resolver.secondPart.length; ++i) {
                         this.resolver.secondPart[i]
                                 .notifyLayoutManager(this.resolver.secondPartLengths[i]);
                     }
                 } else {
-                    for (int i = 0; i < this.resolver.firstPart.length; i++) {
+                    for (int i = 0; i < this.resolver.firstPart.length; ++i) {
                         this.resolver.firstPart[i]
                                 .notifyLayoutManager(this.resolver.firstPartLengths[i]);
                     }
                 }
             } else {
-                for (int i = 0; i < this.resolver.noBreak.length; i++) {
+                for (int i = 0; i < this.resolver.noBreak.length; ++i) {
                     this.resolver.noBreak[i]
                             .notifyLayoutManager(this.resolver.noBreakLengths[i]);
                 }
@@ -634,7 +634,7 @@ public class SpaceResolver {
                 throw new IllegalStateException(
                         "Only applicable to no-break situations");
             }
-            for (int i = 0; i < this.resolver.secondPart.length; i++) {
+            for (int i = 0; i < this.resolver.secondPart.length; ++i) {
                 this.resolver.secondPart[i]
                         .notifyLayoutManager(this.resolver.secondPartLengths[i]);
             }
@@ -654,17 +654,17 @@ public class SpaceResolver {
      * @param elems
      *            the element list
      */
-    public static void resolveElementList(final List<KnuthElement> elems) {
+    public static void resolveElementList(final List<ListElement> elems) {
         if (log.isTraceEnabled()) {
             log.trace(elems.toString());
         }
         boolean first = true;
         boolean last = false;
         boolean skipNextElement = false;
-        List<ListElement> unresolvedFirst = new java.util.ArrayList<ListElement>();
-        List<ListElement> unresolvedSecond = new java.util.ArrayList<ListElement>();
+        List<ListElement> unresolvedFirst = new java.util.ArrayList<>();
+        List<ListElement> unresolvedSecond = new java.util.ArrayList<>();
         List<ListElement> currentGroup;
-        final ListIterator<KnuthElement> iter = elems.listIterator();
+        final ListIterator<ListElement> iter = elems.listIterator();
         while (iter.hasNext()) {
             ListElement el = iter.next();
             if (el.isUnresolvedElement()) {
@@ -774,12 +774,12 @@ public class SpaceResolver {
                 afterBreak.notifyBreakSituation(true, RelSide.AFTER);
             }
         }
-        for (int i = startElementIndex; i <= endElementIndex; i++) {
+        for (int i = startElementIndex; i <= endElementIndex; ++i) {
             final Position pos = ((KnuthElement) effectiveList.get(i))
                     .getPosition();
             if (pos instanceof SpaceResolver.SpaceHandlingPosition) {
                 ((SpaceResolver.SpaceHandlingPosition) pos)
-                        .notifySpaceSituation();
+                .notifySpaceSituation();
             } else if (pos instanceof SpaceResolver.SpaceHandlingBreakPosition) {
                 SpaceResolver.SpaceHandlingBreakPosition noBreak;
                 noBreak = (SpaceResolver.SpaceHandlingBreakPosition) pos;

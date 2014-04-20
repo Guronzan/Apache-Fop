@@ -125,7 +125,7 @@ public class PDFEncoding extends PDFDictionary {
          */
         public DifferencesBuilder addDifference(final int code) {
             this.currentCode = code;
-            this.differences.add(new Integer(code));
+            this.differences.add((code));
             return this;
         }
 

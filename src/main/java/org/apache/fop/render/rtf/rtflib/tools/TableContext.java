@@ -201,7 +201,7 @@ public class TableContext implements ITableColumnsInfo {
             Integer i = (Integer) this.colRowSpanningNumber.get(z);
 
             if (i.intValue() > 0) {
-                i = new Integer(i.intValue() - 1);
+                i = (i.intValue() - 1);
             }
 
             this.colRowSpanningNumber.set(z, i);

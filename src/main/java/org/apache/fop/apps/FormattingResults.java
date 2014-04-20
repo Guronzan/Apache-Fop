@@ -19,6 +19,7 @@
 
 package org.apache.fop.apps;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.pagination.AbstractPageSequence;
@@ -29,7 +30,7 @@ import org.apache.fop.fo.pagination.AbstractPageSequence;
 public class FormattingResults {
 
     private int pageCount = 0;
-    private List pageSequences = null;
+    private List<PageSequenceResults> pageSequences = null;
 
     /**
      * Constructor for the FormattingResults object
@@ -51,7 +52,7 @@ public class FormattingResults {
      *
      * @return A List with PageSequenceResults objects
      */
-    public List getPageSequences() {
+    public List<PageSequenceResults> getPageSequences() {
         return this.pageSequences;
     }
 
@@ -77,7 +78,7 @@ public class FormattingResults {
             final AbstractPageSequence pageSequence, final int pageCount) {
         this.pageCount += pageCount;
         if (this.pageSequences == null) {
-            this.pageSequences = new java.util.ArrayList();
+            this.pageSequences = new ArrayList<>();
         }
         this.pageSequences.add(new PageSequenceResults(pageSequence.getId(),
                 pageCount));

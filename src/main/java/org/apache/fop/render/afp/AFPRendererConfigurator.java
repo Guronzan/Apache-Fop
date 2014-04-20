@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,15 +54,13 @@ import org.apache.fop.fonts.Typeface;
 import org.apache.fop.render.PrintRendererConfigurator;
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
-import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.fop.util.LogUtil;
 
 /**
  * AFP Renderer configurator
  */
 @Slf4j
-public class AFPRendererConfigurator extends PrintRendererConfigurator
-        implements IFDocumentHandlerConfigurator {
+public class AFPRendererConfigurator extends PrintRendererConfigurator {
 
     /**
      * Default constructor
@@ -80,11 +79,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
                 .getFontManager();
 
         final Configuration[] triple = fontCfg.getChildren("font-triplet");
-        final List/* <FontTriplet> */tripletList = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+        final List<FontTriplet> tripletList = new ArrayList<>();
         if (triple.length == 0) {
             log.error("Mandatory font configuration element '<font-triplet...' is missing");
             return null;
@@ -296,7 +291,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
 
     private void toConfigurationException(final String codepage,
             final String characterset, final IOException ioe)
-                    throws ConfigurationException {
+            throws ConfigurationException {
         final String msg = "Failed to load the character set metrics "
                 + characterset + " with code page " + codepage
                 + ". I/O error: " + ioe.getMessage();
@@ -312,7 +307,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
      * @throws ConfigurationException
      *             if something's wrong with the config data
      */
-    private List/* <AFPFontInfo> */buildFontListFromConfiguration(
+    private List<AFPFontInfo> buildFontListFromConfiguration(
             final Configuration cfg) throws FOPException,
             ConfigurationException {
 
@@ -332,10 +327,10 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
         if (referencedFontsCfg != null) {
             localMatcher = FontManagerConfigurator.createFontsMatcher(
                     referencedFontsCfg, this.userAgent.getFactory()
-                    .validateUserConfigStrictly());
+                            .validateUserConfigStrictly());
         }
 
-        final List/* <AFPFontInfo> */fontList = new java.util.ArrayList();
+        final List<AFPFontInfo> fontList = new ArrayList<>();
         final Configuration[] font = fonts.getChildren("font");
         final String fontPath = null;
         for (final Configuration element : font) {
@@ -344,11 +339,8 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
                 if (log.isDebugEnabled()) {
                     log.debug("Adding font " + afi.getAFPFont().getFontName());
                 }
-                final List/* <FontTriplet> */fontTriplets = afi
-                        .getFontTriplets();
-                for (int j = 0; j < fontTriplets.size(); ++j) {
-                    final FontTriplet triplet = (FontTriplet) fontTriplets
-                            .get(j);
+                final List<FontTriplet> fontTriplets = afi.getFontTriplets();
+                for (final FontTriplet triplet : fontTriplets) {
                     if (log.isDebugEnabled()) {
                         log.debug("  Font triplet " + triplet.getName() + ", "
                                 + triplet.getStyle() + ", "
@@ -472,7 +464,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
                     resourceGroupFile.createNewFile();
                     if (resourceGroupFile.canWrite()) {
                         customizable
-                        .setDefaultResourceGroupFilePath(resourceGroupDest);
+                                .setDefaultResourceGroupFilePath(resourceGroupDest);
                     } else {
                         log.warn("Unable to write to default external resource group file '"
                                 + resourceGroupDest + "'");
@@ -511,7 +503,11 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws FOPException
+     */
     @Override
     public void configure(final IFDocumentHandler documentHandler)
             throws FOPException {
@@ -529,7 +525,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
             final FontInfo fontInfo) throws FOPException {
         final FontManager fontManager = this.userAgent.getFactory()
                 .getFontManager();
-        final List fontCollections = new java.util.ArrayList();
+        final List<FontCollection> fontCollections = new ArrayList<>();
 
         final Configuration cfg = super.getRendererConfig(documentHandler
                 .getMimeType());
@@ -547,7 +543,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator
                     .getEventBroadcaster(), null));
         }
 
-        fontManager.setup(fontInfo, (FontCollection[]) fontCollections
+        fontManager.setup(fontInfo, fontCollections
                 .toArray(new FontCollection[fontCollections.size()]));
         documentHandler.setFontInfo(fontInfo);
     }

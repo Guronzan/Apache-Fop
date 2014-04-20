@@ -91,7 +91,7 @@ public class PageNumberGenerator {
             // only accepted token is '0+1'at this stage. Because of the
             // wonderful regular expression support in Java, we will resort to a
             // loop
-            for (int i = 0; i < fmtLen - 1; i++) {
+            for (int i = 0; i < fmtLen - 1; ++i) {
                 if (format.charAt(i) != '0') {
                     // getLogger().debug("'format' token not recognized; using '1'");
                     this.formatType = DECIMAL;

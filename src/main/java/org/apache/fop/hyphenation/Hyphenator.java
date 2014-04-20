@@ -331,7 +331,7 @@ public class Hyphenator {
                     IOUtils.closeQuietly(in);
                 }
                 if (statisticsDump) {
-                    System.out.println("Stats: ");
+                    log.info("Stats: ");
                     hTree.printStats();
                 }
                 return hTree;

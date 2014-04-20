@@ -150,7 +150,8 @@ public interface LayoutManager extends PercentBaseContext {
      *            the desired text alignment
      * @return the list of KnuthElements
      */
-    List getNextKnuthElements(final LayoutContext context, final int alignment);
+    <T> List<T> getNextKnuthElements(final LayoutContext context,
+            final int alignment);
 
     /**
      * Get a sequence of KnuthElements representing the content of the node
@@ -189,7 +190,8 @@ public interface LayoutManager extends PercentBaseContext {
      *            the desired text alignment
      * @return the updated list of KnuthElements
      */
-    List getChangedKnuthElements(final List oldList, final int alignment);
+    List<ListElement> getChangedKnuthElements(final List<ListElement> oldList,
+            final int alignment);
 
     /**
      * Returns the IPD of the content area
@@ -277,7 +279,7 @@ public interface LayoutManager extends PercentBaseContext {
      *            inside a paragraph
      * @return an updated list of elements, taking the new IPD into account
      */
-    List getNextKnuthElements(final LayoutContext context, final int alignment,
-            final Stack lmStack, final Position positionAtIPDChange,
-            final LayoutManager restartAtLM);
+    <T> List<T> getNextKnuthElements(final LayoutContext context,
+            final int alignment, final Stack lmStack,
+            final Position positionAtIPDChange, final LayoutManager restartAtLM);
 }

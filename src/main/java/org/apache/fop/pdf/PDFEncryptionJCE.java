@@ -221,7 +221,7 @@ public class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
 
         while (i < obuffer.length && i < pbuffer.length) {
             obuffer[i] = pbuffer[i];
-            i++;
+            ++i;
         }
         while (i < obuffer.length) {
             obuffer[i++] = (byte) PAD[j++];
@@ -307,7 +307,7 @@ public class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
     private byte[] calcKey(final byte[] hash, final int size) {
         final byte[] key = new byte[size];
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; ++i) {
             key[i] = hash[i];
         }
         return key;
@@ -357,7 +357,7 @@ public class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
         final byte[] hash = this.digest.digest();
         this.encryptionKey = new byte[5];
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; ++i) {
             this.encryptionKey[i] = hash[i];
         }
 
@@ -413,7 +413,7 @@ public class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
         int i = 0;
         while (i < this.encryptionKey.length) {
             hash[i] = this.encryptionKey[i];
-            i++;
+            ++i;
         }
 
         hash[i++] = (byte) (number >>> 0);

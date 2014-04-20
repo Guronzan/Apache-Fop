@@ -41,6 +41,7 @@ import org.apache.fop.layoutmgr.KnuthPossPosIter;
 import org.apache.fop.layoutmgr.KnuthSequence;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LeafPosition;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
 import org.apache.fop.layoutmgr.TraitSetter;
@@ -330,13 +331,13 @@ public class LeaderLayoutManager extends LeafNodeLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List<KnuthElement> getChangedKnuthElements(final List oldList,
-            final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         if (isFinished()) {
             return null;
         }
 
-        final List<KnuthElement> returnList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
 
         addKnuthElementsForBorderPaddingStart(returnList);
 

@@ -50,7 +50,7 @@ public class InlineKnuthSequence extends KnuthSequence {
      * @param list
      *            The list from which to create the new list.
      */
-    public InlineKnuthSequence(final List list) {
+    public InlineKnuthSequence(final List<ListElement> list) {
         super(list);
     }
 
@@ -118,7 +118,7 @@ public class InlineKnuthSequence extends KnuthSequence {
             return;
         }
         removeLast();
-        final LinkedList oldList = new LinkedList();
+        final LinkedList<ListElement> oldList = new LinkedList<>();
         // if there are two consecutive KnuthBoxes the
         // first one does not represent a whole word,
         // so it must be given one more letter space

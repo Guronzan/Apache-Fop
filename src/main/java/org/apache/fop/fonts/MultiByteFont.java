@@ -63,7 +63,7 @@ public class MultiByteFont extends CIDFont {
 
         // Subset prefix as described in chapter 5.5.3 of PDF 1.4
         final StringBuilder sb = new StringBuilder("E");
-        for (int i = 0, c = cntString.length(); i < c; i++) {
+        for (int i = 0, c = cntString.length(); i < c; ++i) {
             // translate numbers to uppercase characters
             sb.append((char) (cntString.charAt(i) + (65 - 48)));
         }
@@ -176,7 +176,7 @@ public class MultiByteFont extends CIDFont {
         final int idx = c;
         int retIdx = SingleByteEncoding.NOT_FOUND_CODE_POINT;
 
-        for (int i = 0; i < this.bfentries.length && retIdx == 0; i++) {
+        for (int i = 0; i < this.bfentries.length && retIdx == 0; ++i) {
             if (this.bfentries[i].getUnicodeStart() <= idx
                     && this.bfentries[i].getUnicodeEnd() >= idx) {
 

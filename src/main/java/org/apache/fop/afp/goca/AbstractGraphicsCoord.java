@@ -135,7 +135,7 @@ public abstract class AbstractGraphicsCoord extends
      */
     protected void addCoords(final byte[] data, int fromIndex) {
         // X/Y POS
-        for (int i = 0; i < this.coords.length; i++, fromIndex += 2) {
+        for (int i = 0; i < this.coords.length; ++i, fromIndex += 2) {
             final byte[] coord = BinaryUtils.convert(this.coords[i], 2);
             data[fromIndex] = coord[0];
             data[fromIndex + 1] = coord[1];
@@ -146,7 +146,7 @@ public abstract class AbstractGraphicsCoord extends
     @Override
     public String toString() {
         String coordsStr = "";
-        for (int i = 0; i < this.coords.length; i++) {
+        for (int i = 0; i < this.coords.length; ++i) {
             coordsStr += i % 2 == 0 ? "x" : "y";
             coordsStr += i / 2 + "=" + this.coords[i] + ",";
         }

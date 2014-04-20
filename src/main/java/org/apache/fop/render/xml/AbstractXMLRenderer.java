@@ -22,6 +22,7 @@ package org.apache.fop.render.xml;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -71,7 +72,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
     /**
      * A list of ExtensionAttachements received through processOffDocumentItem()
      */
-    protected List extensionAttachments;
+    protected List<ExtensionAttachment> extensionAttachments;
 
     /**
      * Handles SAXExceptions.
@@ -221,8 +222,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /** {@inheritDoc} */
     @Override
-    public void startRenderer(final OutputStream outputStream)
-            throws IOException {
+    public void startRenderer(final OutputStream outputStream) {
         if (this.handler == null) {
             final SAXTransformerFactory factory = (SAXTransformerFactory) TransformerFactory
                     .newInstance();
@@ -267,7 +267,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
             final ExtensionAttachment attachment = ((OffDocumentExtensionAttachment) oDI)
                     .getAttachment();
             if (this.extensionAttachments == null) {
-                this.extensionAttachments = new java.util.ArrayList();
+                this.extensionAttachments = new ArrayList<>();
             }
             this.extensionAttachments.add(attachment);
         } else {
@@ -302,7 +302,8 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
      * @param attachments
      *            a list of extension attachments
      */
-    protected abstract void handleExtensionAttachments(final List attachments);
+    protected abstract void handleExtensionAttachments(
+            final List<ExtensionAttachment> attachments);
 
     /**
      * Renders a bookmark tree

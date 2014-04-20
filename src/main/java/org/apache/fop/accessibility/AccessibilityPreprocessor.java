@@ -80,7 +80,7 @@ class AccessibilityPreprocessor extends TransformerDefaultHandler {
             final StructureTree structureTree = new StructureTree();
             final NodeList pageSequences = res.getNode().getFirstChild()
                     .getChildNodes();
-            for (int i = 0; i < pageSequences.getLength(); i++) {
+            for (int i = 0; i < pageSequences.getLength(); ++i) {
                 structureTree.addPageSequenceStructure(pageSequences.item(i)
                         .getChildNodes());
             }

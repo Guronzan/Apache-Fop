@@ -21,12 +21,17 @@ package org.apache.fop.tools.anttasks;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.tools.ant.BuildException;
 
@@ -34,16 +39,15 @@ import org.apache.tools.ant.BuildException;
  * This class is an extension of Ant, a script utility from
  * http://ant.apache.org. It provides methods to compare two files.
  */
-
+@Slf4j
 public class FileCompare {
 
     private String referenceDirectory, testDirectory;
     private String[] filenameList;
-    private String filenames;
 
     /**
      * Sets directory for test files.
-     * 
+     *
      * @param testDirectory
      *            the test directory
      */
@@ -56,7 +60,7 @@ public class FileCompare {
 
     /**
      * Sets directory for reference files.
-     * 
+     *
      * @param referenceDirectory
      *            the reference directory
      */
@@ -70,23 +74,23 @@ public class FileCompare {
 
     /**
      * Sets the comma-separated list of files to process.
-     * 
+     *
      * @param filenames
      *            list of files, comma-separated
      */
     public void setFilenames(final String filenames) {
         final StringTokenizer tokens = new StringTokenizer(filenames, ",");
-        final List filenameListTmp = new java.util.ArrayList(20);
+        final List<String> filenameListTmp = new ArrayList<>(20);
         while (tokens.hasMoreTokens()) {
             filenameListTmp.add(tokens.nextToken());
         }
         this.filenameList = new String[filenameListTmp.size()];
-        this.filenameList = (String[]) filenameListTmp.toArray(new String[0]);
+        this.filenameList = filenameListTmp.toArray(new String[0]);
     }
 
     /**
      * Compares two files to see if they are equal
-     * 
+     *
      * @param f1
      *            first file to compare
      * @param f2
@@ -100,34 +104,36 @@ public class FileCompare {
 
     /**
      * Compare the contents of two files.
-     * 
+     *
      * @param true if files are same byte-by-byte, false otherwise
      */
     private static boolean compareBytes(final File file1, final File file2)
             throws IOException {
-        final BufferedInputStream file1Input = new BufferedInputStream(
-                new java.io.FileInputStream(file1));
-        final BufferedInputStream file2Input = new BufferedInputStream(
-                new java.io.FileInputStream(file2));
+        try (final BufferedInputStream file1Input = new BufferedInputStream(
+                new FileInputStream(file1))) {
+            try (final BufferedInputStream file2Input = new BufferedInputStream(
+                    new FileInputStream(file2))) {
 
-        int charact1 = 0;
-        int charact2 = 0;
+                int charact1 = 0;
+                int charact2 = 0;
 
-        while (charact1 != -1) {
-            if (charact1 == charact2) {
-                charact1 = file1Input.read();
-                charact2 = file2Input.read();
-            } else {
-                return false;
+                while (charact1 != -1) {
+                    if (charact1 == charact2) {
+                        charact1 = file1Input.read();
+                        charact2 = file2Input.read();
+                    } else {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
-
-        return true;
     }
 
     /**
      * Does a file size compare of two files
-     * 
+     *
      * @param true if files are same length, false otherwise
      */
     private static boolean compareFileSize(final File oldFile,
@@ -169,7 +175,7 @@ public class FileCompare {
 
     /**
      * Main method of task compare
-     * 
+     *
      * @throws BuildException
      *             If the execution fails.
      */
@@ -178,7 +184,7 @@ public class FileCompare {
         File oldFile;
         File newFile;
         try {
-            final PrintWriter results = new PrintWriter(new java.io.FileWriter(
+            final PrintWriter results = new PrintWriter(new FileWriter(
                     "results.html"), true);
             writeHeader(results);
             for (final String element : this.filenameList) {
@@ -190,7 +196,7 @@ public class FileCompare {
                         identical = compareBytes(oldFile, newFile);
                     }
                     if (!identical) {
-                        System.out.println("Task Compare: \nFiles "
+                        log.info("Task Compare: \nFiles "
                                 + this.referenceDirectory + oldFile.getName()
                                 + " - " + this.testDirectory
                                 + newFile.getName() + " are *not* identical.");

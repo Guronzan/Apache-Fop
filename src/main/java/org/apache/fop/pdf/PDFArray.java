@@ -22,6 +22,7 @@ package org.apache.fop.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class PDFArray extends PDFObject {
     /**
      * List holding the values of this array
      */
-    protected List values = new java.util.ArrayList();
+    protected List<Object> values = new ArrayList<>();
 
     /**
      * Create a new, empty array object
@@ -67,7 +68,7 @@ public class PDFArray extends PDFObject {
         super(parent);
 
         for (final int value : values) {
-            this.values.add(new Integer(value));
+            this.values.add(value);
         }
     }
 
@@ -96,7 +97,7 @@ public class PDFArray extends PDFObject {
      * @param values
      *            the actual values wrapped by this object
      */
-    public PDFArray(final PDFObject parent, final Collection values) {
+    public PDFArray(final PDFObject parent, final Collection<Integer> values) {
         /* generic creation of PDF object */
         super(parent);
 
@@ -204,28 +205,30 @@ public class PDFArray extends PDFObject {
     /** {@inheritDoc} */
     @Override
     protected int output(final OutputStream stream) throws IOException {
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
-        if (hasObjectNumber()) {
-            writer.write(getObjectID());
-        }
+        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
+            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
+                if (hasObjectNumber()) {
+                    writer.write(getObjectID());
+                }
 
-        writer.write('[');
-        for (int i = 0; i < this.values.size(); i++) {
-            if (i > 0) {
-                writer.write(' ');
+                writer.write('[');
+                for (int i = 0; i < this.values.size(); ++i) {
+                    if (i > 0) {
+                        writer.write(' ');
+                    }
+                    final Object obj = this.values.get(i);
+                    formatObject(obj, cout, writer);
+                }
+                writer.write(']');
+
+                if (hasObjectNumber()) {
+                    writer.write("\nendobj\n");
+                }
+
+                writer.flush();
+                return cout.getCount();
             }
-            final Object obj = this.values.get(i);
-            formatObject(obj, cout, writer);
         }
-        writer.write(']');
-
-        if (hasObjectNumber()) {
-            writer.write("\nendobj\n");
-        }
-
-        writer.flush();
-        return cout.getCount();
     }
 
 }

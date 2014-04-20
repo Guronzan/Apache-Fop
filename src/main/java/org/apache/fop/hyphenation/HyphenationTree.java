@@ -27,10 +27,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.xml.sax.InputSource;
 
@@ -40,8 +41,8 @@ import org.xml.sax.InputSource;
  *
  * @author Carlos Villegas <cav@uniscope.co.jp>
  */
-public class HyphenationTree extends TernaryTree implements PatternConsumer,
-Serializable {
+@Slf4j
+public class HyphenationTree extends TernaryTree implements PatternConsumer {
 
     private static final long serialVersionUID = -7842107987915665573L;
 
@@ -53,7 +54,7 @@ Serializable {
     /**
      * This map stores hyphenation exceptions
      */
-    protected HashMap stoplist;
+    protected HashMap<String, List<String>> stoplist;
 
     /**
      * This map stores the character classes
@@ -66,7 +67,7 @@ Serializable {
     private transient TernaryTree ivalues;
 
     public HyphenationTree() {
-        this.stoplist = new HashMap(23); // usually a small table
+        this.stoplist = new HashMap<>(23); // usually a small table
         this.classmap = new TernaryTree();
         this.vspace = new ByteVector();
         this.vspace.alloc(1); // this reserves index 0, which we don't use
@@ -89,7 +90,7 @@ Serializable {
         final int m = (n & 1) == 1 ? (n >> 1) + 2 : (n >> 1) + 1;
         final int offset = this.vspace.alloc(m);
         final byte[] va = this.vspace.getArray();
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; ++i) {
             final int j = i >> 1;
             final byte v = (byte) (values.charAt(i) - '0' + 1 & 0x0f);
             if ((i & 1) == 1) {
@@ -202,7 +203,7 @@ Serializable {
             v = this.vspace.get(k++);
         }
         final byte[] res = new byte[buf.length()];
-        for (int i = 0; i < res.length; i++) {
+        for (int i = 0; i < res.length; ++i) {
             res[i] = (byte) buf.charAt(i);
         }
         return res;
@@ -214,7 +215,7 @@ Serializable {
      * update interletter values. In other words, it does something like:
      * </p>
      * <code>
-     * for(i=0; i<patterns.length; i++) {
+     * for(i=0; i<patterns.length; ++i) {
      * if ( word.substring(index).startsWidth(patterns[i]) )
      * update_interletter_values(patterns[i]);
      * }
@@ -254,7 +255,7 @@ Serializable {
                         if (j < il.length && value > il[j]) {
                             il[j] = value;
                         }
-                        j++;
+                        ++j;
                     }
                 }
                 return;
@@ -281,7 +282,7 @@ Serializable {
                             if (j < il.length && value > il[j]) {
                                 il[j] = value;
                             }
-                            j++;
+                            ++j;
                         }
                         break;
                     } else {
@@ -361,7 +362,7 @@ Serializable {
         int iIgnoreAtBeginning = 0;
         int iLength = len;
         boolean bEndOfLetters = false;
-        for (i = 1; i <= len; i++) {
+        for (i = 1; i <= len; ++i) {
             c[0] = w[offset + i - 1];
             final int nc = this.classmap.find(c, 0);
             if (nc < 0) { // found a non-letter character ...
@@ -394,14 +395,14 @@ Serializable {
         if (this.stoplist.containsKey(sw)) {
             // assume only simple hyphens (Hyphen.pre="-", Hyphen.post =
             // Hyphen.no = null)
-            final ArrayList hw = (ArrayList) this.stoplist.get(sw);
+            final List<String> hw = this.stoplist.get(sw);
             int j = 0;
-            for (i = 0; i < hw.size(); i++) {
-                final Object o = hw.get(i);
+            for (i = 0; i < hw.size(); ++i) {
+                final String o = hw.get(i);
                 // j = index(sw) = letterindex(word)?
                 // result[k] = corresponding index(w)
-                if (o instanceof String) {
-                    j += ((String) o).length();
+                if (o != null) {
+                    j += o.length();
                     if (j >= remainCharCount && j < len - pushCharCount) {
                         result[k++] = j + iIgnoreAtBeginning;
                     }
@@ -413,7 +414,7 @@ Serializable {
             word[len + 1] = '.'; // word end marker
             word[len + 2] = 0; // null terminated
             final byte[] il = new byte[len + 3]; // initialized to zero
-            for (i = 0; i < len + 1; i++) {
+            for (i = 0; i < len + 1; ++i) {
                 searchPatterns(word, i, il);
             }
 
@@ -421,7 +422,7 @@ Serializable {
             // i is letterindex(word),
             // i + 1 is index(word),
             // result[k] = corresponding index(w)
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < len; ++i) {
                 if ((il[i + 1] & 1) == 1 && i >= remainCharCount
                         && i <= len - pushCharCount) {
                     result[k++] = i + iIgnoreAtBeginning;
@@ -455,7 +456,7 @@ Serializable {
             final char equivChar = chargroup.charAt(0);
             final char[] key = new char[2];
             key[1] = 0;
-            for (int i = 0; i < chargroup.length(); i++) {
+            for (int i = 0; i < chargroup.length(); ++i) {
                 key[0] = chargroup.charAt(i);
                 this.classmap.insert(key, 0, equivChar);
             }
@@ -473,7 +474,7 @@ Serializable {
      *            objects.
      */
     @Override
-    public void addException(final String word, final ArrayList hyphenatedword) {
+    public void addException(final String word, final List hyphenatedword) {
         this.stoplist.put(word, hyphenatedword);
     }
 
@@ -500,13 +501,13 @@ Serializable {
 
     @Override
     public void printStats() {
-        System.out.println("Value space size = "
-                + Integer.toString(this.vspace.length()));
+        log.info("Value space size = {}", this.vspace.length());
         super.printStats();
 
     }
 
-    public static void main(final String[] argv) throws Exception {
+    public static void main(final String[] argv) throws IOException,
+            HyphenationException {
         HyphenationTree ht = null;
         int minCharCount = 2;
         final BufferedReader in = new BufferedReader(
@@ -522,7 +523,7 @@ Serializable {
             if (token.equals("f")) {
                 System.out.print("Pattern: ");
                 token = in.readLine().trim();
-                System.out.println("Values: " + ht.findPattern(token));
+                log.info("Values: " + ht.findPattern(token));
             } else if (token.equals("s")) {
                 System.out.print("Minimun value: ");
                 token = in.readLine().trim();
@@ -577,11 +578,11 @@ Serializable {
                 System.out.print("Word: ");
                 token = in.readLine().trim();
                 System.out.print("Hyphenation points: ");
-                System.out.println(ht.hyphenate(token, minCharCount,
-                        minCharCount));
+                log.info(ht.hyphenate(token, minCharCount, minCharCount)
+                        .toString());
             } else if (token.equals("b")) {
                 if (ht == null) {
-                    System.out.println("No patterns have been loaded.");
+                    log.info("No patterns have been loaded.");
                     break;
                 }
                 System.out.print("Word list filename: ");
@@ -600,20 +601,20 @@ Serializable {
                                 minCharCount, minCharCount);
                         if (hyp != null) {
                             final String hword = hyp.toString();
-                            // System.out.println(line);
-                            // System.out.println(hword);
+                            // log.info(line);
+                            // log.info(hword);
                         } else {
-                            // System.out.println("No hyphenation");
+                            // log.info("No hyphenation");
                         }
                         counter++;
                     }
                 } catch (final Exception ioe) {
-                    System.out.println("Exception " + ioe);
+                    log.info("Exception " + ioe);
                     ioe.printStackTrace();
                 }
                 final long endtime = System.currentTimeMillis();
                 final long result = endtime - starttime;
-                System.out.println(counter + " words in " + result
+                log.info(counter + " words in " + result
                         + " Milliseconds hyphenated");
 
             } else if (token.equals("q")) {

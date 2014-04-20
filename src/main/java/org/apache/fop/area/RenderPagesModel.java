@@ -22,6 +22,7 @@ package org.apache.fop.area;
 // Java
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,9 +51,9 @@ public class RenderPagesModel extends AreaTreeModel {
     /**
      * Pages that have been prepared but not rendered yet.
      */
-    protected List<PageViewport> prepared = new java.util.ArrayList<PageViewport>();
-    private final List<OffDocumentItem> pendingODI = new java.util.ArrayList<OffDocumentItem>();
-    private final List<OffDocumentItem> endDocODI = new java.util.ArrayList<OffDocumentItem>();
+    protected List<PageViewport> prepared = new ArrayList<>();
+    private final List<OffDocumentItem> pendingODI = new ArrayList<>();
+    private final List<OffDocumentItem> endDocODI = new ArrayList<>();
 
     /**
      * Create a new render pages model with the given renderer.
@@ -172,8 +173,9 @@ public class RenderPagesModel extends AreaTreeModel {
      */
     protected boolean checkPreparedPages(final PageViewport newPageViewport,
             final boolean renderUnresolved) {
-        for (final Iterator iter = this.prepared.iterator(); iter.hasNext();) {
-            final PageViewport pageViewport = (PageViewport) iter.next();
+        for (final Iterator<PageViewport> iter = this.prepared.iterator(); iter
+                .hasNext();) {
+            final PageViewport pageViewport = iter.next();
             if (pageViewport.isResolved() || renderUnresolved) {
                 if (!this.renderer.supportsOutOfOrder()
                         && pageViewport.getPageSequence().isFirstPage(
@@ -257,15 +259,16 @@ public class RenderPagesModel extends AreaTreeModel {
         }
     }
 
-    private void processOffDocumentItems(final List list) {
-        for (int count = 0; count < list.size(); count++) {
-            final OffDocumentItem oDI = (OffDocumentItem) list.get(count);
+    private void processOffDocumentItems(final List<OffDocumentItem> list) {
+        for (final OffDocumentItem oDI : list) {
             this.renderer.processOffDocumentItem(oDI);
         }
     }
 
     /**
      * End the document. Render any end document OffDocumentItems {@inheritDoc}
+     *
+     * @throws SAXException
      */
     @Override
     public void endDocument() throws SAXException {

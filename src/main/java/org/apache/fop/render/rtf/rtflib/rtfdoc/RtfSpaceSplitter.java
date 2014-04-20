@@ -72,7 +72,7 @@ public class RtfSpaceSplitter {
     public int split(final String key) {
         Integer i = (Integer) this.commonAttributes.getValue(key);
         if (i == null) {
-            i = new Integer(0);
+            i = (0);
         }
 
         this.commonAttributes.unset(key);

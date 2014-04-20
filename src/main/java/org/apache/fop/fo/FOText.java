@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
+import org.apache.fop.fo.expr.PropertyException;
 import org.apache.fop.fo.flow.Block;
 import org.apache.fop.fo.properties.CommonFont;
 import org.apache.fop.fo.properties.CommonHyphenation;
@@ -95,8 +96,7 @@ public class FOText extends FONode implements CharSequence {
     /** {@inheritDoc} */
     @Override
     protected void characters(final char[] data, final int start,
-            final int length, final PropertyList list, final Locator locator)
-                    throws FOPException {
+            final int length, final PropertyList list, final Locator locator) {
 
         if (this.charBuffer == null) {
             // buffer not yet initialized, do so now
@@ -159,9 +159,13 @@ public class FOText extends FONode implements CharSequence {
         return ft;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws PropertyException
+     */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) throws PropertyException {
         this.commonFont = pList.getFontProps();
         this.commonHyphenation = pList.getHyphenationProps();
         this.color = pList.get(Constants.PR_COLOR).getColor(getUserAgent());

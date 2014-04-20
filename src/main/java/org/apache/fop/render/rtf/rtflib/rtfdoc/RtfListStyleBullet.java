@@ -49,7 +49,7 @@ public class RtfListStyleBullet extends RtfListStyle {
         item.writeControlWord("pnlvlblt");
         item.writeControlWord("ilvl0");
         item.writeOneAttribute(RtfListTable.LIST_NUMBER,
-                new Integer(item.getNumber()));
+                (item.getNumber()));
         item.writeOneAttribute("pnindent",
                 item.getParentList().attrib.getValue(RtfListTable.LIST_INDENT));
         item.writeControlWord("pnf1");

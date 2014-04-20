@@ -260,8 +260,8 @@ public final class FOPropertyMapping implements Constants {
     private static void addPropertyMaker(final String name,
             final PropertyMaker maker) {
         s_generics[maker.getPropId()] = maker;
-        s_htPropNames.put(name, new Integer(maker.getPropId()));
-        s_htPropIds.put(new Integer(maker.getPropId()), name);
+        s_htPropNames.put(name, (maker.getPropId()));
+        s_htPropIds.put((maker.getPropId()), name);
     }
 
     /**
@@ -273,8 +273,8 @@ public final class FOPropertyMapping implements Constants {
      *            Id for the subproperty from CP_* in Constants.java.
      */
     private static void addSubpropMakerName(final String name, final int id) {
-        s_htSubPropNames.put(name, new Integer(id));
-        s_htPropIds.put(new Integer(id), name);
+        s_htSubPropNames.put(name, (id));
+        s_htPropIds.put((id), name);
     }
 
     /**
@@ -403,12 +403,12 @@ public final class FOPropertyMapping implements Constants {
     public static String getPropertyName(final int id) {
         if ((id & Constants.COMPOUND_MASK) == 0
                 || (id & Constants.PROPERTY_MASK) == 0) {
-            return (String) s_htPropIds.get(new Integer(id));
+            return (String) s_htPropIds.get((id));
         } else {
-            return s_htPropIds.get(new Integer(id & Constants.PROPERTY_MASK))
+            return s_htPropIds.get((id & Constants.PROPERTY_MASK))
                     + "."
                     + s_htPropIds
-                            .get(new Integer(id & Constants.COMPOUND_MASK));
+                            .get((id & Constants.COMPOUND_MASK));
         }
     }
 

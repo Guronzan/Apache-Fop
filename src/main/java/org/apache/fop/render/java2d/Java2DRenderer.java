@@ -39,6 +39,7 @@ import java.awt.print.PrinterException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -108,8 +109,8 @@ import org.apache.xmlgraphics.image.loader.util.ImageUtil;
  *
  */
 @Slf4j
-public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
-        implements Printable {
+public abstract class Java2DRenderer extends
+AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
 
     /**
      * Rendering Options key for the controlling the transparent page background
@@ -127,7 +128,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
     protected int pageHeight = 0;
 
     /** List of Viewports */
-    protected List pageViewportList = new java.util.ArrayList();
+    protected List<PageViewport> pageViewportList = new ArrayList<>();
 
     /** The 0-based current page number */
     private int currentPageNumber = 0;
@@ -147,7 +148,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
     /** The current state, holds a Graphics2D and its context */
     protected Java2DGraphicsState state;
 
-    private final Stack stateStack = new Stack();
+    private final Stack<Java2DGraphicsState> stateStack = new Stack<>();
 
     /** true if the renderer has finished rendering all the pages */
     private boolean renderingDone;
@@ -192,7 +193,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
                 new InstalledFontCollection(graphics2D),
                 new ConfiguredFontCollection(getFontResolver(), getFontList()) };
         this.userAgent.getFactory().getFontManager()
-                .setup(getFontInfo(), fontCollections);
+        .setup(getFontInfo(), fontCollections);
     }
 
     /** {@inheritDoc} */
@@ -223,7 +224,11 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
         // do nothing by default
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
         log.debug("Java2DRenderer stopped");
@@ -337,7 +342,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
             // set scale factor
             double scaleX = this.scaleFactor;
             double scaleY = this.scaleFactor;
-            final String scale = (String) this.currentPageViewport
+            final String scale = this.currentPageViewport
                     .getForeignAttributes().get(PageScale.EXT_PAGE_SCALE);
             final Point2D scales = PageScale.getScale(scale);
             if (scales != null) {
@@ -448,7 +453,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
                     + pageIndex + "; only " + this.pageViewportList.size()
                     + " page(s) available.");
         }
-        return (PageViewport) this.pageViewportList.get(pageIndex);
+        return this.pageViewportList.get(pageIndex);
     }
 
     /**
@@ -477,7 +482,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
     @Override
     protected void restoreGraphicsState() {
         this.state.dispose();
-        this.state = (Java2DGraphicsState) this.stateStack.pop();
+        this.state = this.stateStack.pop();
     }
 
     /** {@inheritDoc} */
@@ -514,25 +519,23 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
     @Override
     protected List breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
-        List breakOutList;
-        breakOutList = new java.util.ArrayList();
+        final List breakOutList = new ArrayList<>();
         while (!this.stateStack.isEmpty()) {
             breakOutList.add(0, this.state);
             // We only pop, we don't dispose, because we can use the instances
             // again later
-            this.state = (Java2DGraphicsState) this.stateStack.pop();
+            this.state = this.stateStack.pop();
         }
         return breakOutList;
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
+    protected void restoreStateStackAfterBreakOut(
+            final List<Java2DGraphicsState> breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
 
-        final Iterator it = breakOutList.iterator();
-        while (it.hasNext()) {
-            final Java2DGraphicsState s = (Java2DGraphicsState) it.next();
+        for (final Java2DGraphicsState s : breakOutList) {
             this.stateStack.push(this.state);
             this.state = s;
         }
@@ -846,7 +849,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
                     final int[] offsets = getGlyphOffsets(s, font, text,
                             letterAdjust);
                     float cursor = 0.0f;
-                    for (int i = 0; i < offsets.length; i++) {
+                    for (int i = 0; i < offsets.length; ++i) {
                         final Point2D pt = gv.getGlyphPosition(i);
                         pt.setLocation(cursor, pt.getY());
                         gv.setGlyphPosition(i, pt);
@@ -866,7 +869,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
                         + 2
                         * text.getTextLetterSpaceAdjust() : 0;
 
-                        textCursor += (font.getCharWidth(sp) + tws) / 1000f;
+                textCursor += (font.getCharWidth(sp) + tws) / 1000f;
             } else {
                 throw new IllegalStateException("Unsupported child element: "
                         + child);
@@ -878,7 +881,7 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
             final TextArea text, final int[] letterAdjust) {
         final int textLen = s.length();
         final int[] offsets = new int[textLen];
-        for (int i = 0; i < textLen; i++) {
+        for (int i = 0; i < textLen; ++i) {
             final char c = s.charAt(i);
             final char mapped = font.mapChar(c);
             int wordSpace;
@@ -989,8 +992,8 @@ public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
     }
 
     private static final ImageFlavor[] FLAVOURS = new ImageFlavor[] {
-            ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
-            ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
+        ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
+        ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
 
     /** {@inheritDoc} */
     @Override

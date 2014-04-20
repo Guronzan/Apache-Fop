@@ -19,14 +19,21 @@
 
 package org.apache.fop.fonts;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The FontInfo holds font information for the layout and rendering of a fo
@@ -38,29 +45,28 @@ import lombok.extern.slf4j.Slf4j;
 public class FontInfo {
 
     /** Map containing fonts that have been used */
-    private Map/* <String,FontMetrics> */usedFonts = null; // (String = font
-    // key)
+    private Map<String, FontMetrics> usedFonts = null;
 
     /** look up a font-triplet to find a font-name */
-    private Map/* <FontTriplet,String> */triplets = null; // (String = font key)
+    private Map<FontTriplet, String> triplets = null;
 
     /**
      * look up a font-triplet to find its priority (only used inside
      * addFontProperties())
      */
-    private Map/* <FontTriplet,Integer> */tripletPriorities = null; // Map<FontTriplet,Integer>
+    private Map<FontTriplet, Integer> tripletPriorities = null;
 
     /** look up a font-name to get a font (that implements FontMetrics at least) */
-    private Map/* <String,FontMetrics> */fonts = null; // (String = font key)
+    private Map<String, FontMetrics> fonts = null;
 
     /**
      * a collection of missing fonts; used to make sure the user gets a warning
      * for a missing font only once (not every time the font is used)
      */
-    private Set/* <FontTriplet> */loggedFontKeys = null;
+    private Set<FontTriplet> loggedFontKeys = null;
 
     /** Cache for Font instances. */
-    private Map/* <FontTriplet, Map> */fontInstanceCache = null;
+    private Map<FontTriplet, Map<Integer, Font>> fontInstanceCache = null;
 
     /** Event listener for font events */
     private FontEventListener eventListener = null;
@@ -69,10 +75,10 @@ public class FontInfo {
      * Main constructor
      */
     public FontInfo() {
-        this.triplets = new java.util.HashMap/* <FontTriplet, String> */();
-        this.tripletPriorities = new java.util.HashMap/* <FontTriplet, Integer> */();
-        this.fonts = new java.util.HashMap/* <String, FontMetrics> */();
-        this.usedFonts = new java.util.HashMap/* <String,FontMetrics> */();
+        this.triplets = new HashMap<>();
+        this.tripletPriorities = new HashMap<>();
+        this.fonts = new HashMap<>();
+        this.usedFonts = new HashMap<>();
     }
 
     /**
@@ -151,11 +157,11 @@ public class FontInfo {
         if (log.isDebugEnabled()) {
             log.debug("Registering: " + triplet + " under " + internalFontKey);
         }
-        final String oldName = (String) this.triplets.get(triplet);
+        final String oldName = this.triplets.get(triplet);
         final int newPriority = triplet.getPriority();
         if (oldName != null) {
-            final int oldPriority = ((Integer) this.tripletPriorities
-                    .get(triplet)).intValue();
+            final int oldPriority = this.tripletPriorities.get(triplet)
+                    .intValue();
             if (oldPriority < newPriority) {
                 logDuplicateFont(triplet, false, oldName, oldPriority,
                         internalFontKey, newPriority);
@@ -166,7 +172,7 @@ public class FontInfo {
             }
         }
         this.triplets.put(triplet, internalFontKey);
-        this.tripletPriorities.put(triplet, new Integer(newPriority));
+        this.tripletPriorities.put(triplet, newPriority);
     }
 
     /**
@@ -191,11 +197,10 @@ public class FontInfo {
         if (log.isDebugEnabled()) {
             log.debug(triplet
                     + (replacing ? ": Replacing " : ": Not replacing ")
-                    + ((FontMetrics) this.fonts.get(this.triplets.get(triplet)))
-                    .getFullName() + " (priority=" + oldPriority
-                    + ") by "
-                    + ((FontMetrics) this.fonts.get(newKey)).getFullName()
-                    + " (priority=" + newPriority + ")");
+                    + this.fonts.get(this.triplets.get(triplet)).getFullName()
+                    + " (priority=" + oldPriority + ") by "
+                    + this.fonts.get(newKey).getFullName() + " (priority="
+                    + newPriority + ")");
         }
     }
 
@@ -305,17 +310,7 @@ public class FontInfo {
             return fuzzyFontLookup("any", style, weight, startKey, false);
         }
 
-        // last resort: use default
-        if (key == null && internalFontKey == null) {
-            key = Font.DEFAULT_FONT;
-            internalFontKey = getInternalFontKey(key);
-        }
-
-        if (internalFontKey != null) {
-            return key;
-        } else {
-            return null;
-        }
+        return key;
     }
 
     /**
@@ -329,12 +324,9 @@ public class FontInfo {
         this.usedFonts.put(internalName, this.fonts.get(internalName));
     }
 
-    private Map/* <FontTriplet,Map<Integer,Font>> */getFontInstanceCache() {
+    private Map<FontTriplet, Map<Integer, Font>> getFontInstanceCache() {
         if (this.fontInstanceCache == null) {
-            this.fontInstanceCache = new java.util.HashMap/*
-             * <FontTriplet,
-             * Map<Integer,Font>>
-             */();
+            this.fontInstanceCache = new HashMap<>();
         }
         return this.fontInstanceCache;
     }
@@ -350,14 +342,13 @@ public class FontInfo {
      * @return the requested Font instance
      */
     public Font getFontInstance(final FontTriplet triplet, final int fontSize) {
-        Map/* <Integer,Font> */sizes = (Map/* <Integer,Font> */) getFontInstanceCache()
-                .get(triplet);
+        Map<Integer, Font> sizes = getFontInstanceCache().get(triplet);
         if (sizes == null) {
-            sizes = new java.util.HashMap/* <Integer,Font> */();
+            sizes = new HashMap<>();
             getFontInstanceCache().put(triplet, sizes);
         }
-        final Integer size = new Integer(fontSize);
-        Font font = (Font) sizes.get(size);
+        final Integer size = fontSize;
+        Font font = sizes.get(size);
         if (font == null) {
             final String fontKey = getInternalFontKey(triplet);
             useFont(fontKey);
@@ -368,12 +359,8 @@ public class FontInfo {
         return font;
     }
 
-    private List/* <FontTriplet> */getTripletsForName(final String fontName) {
-        final List/* <FontTriplet> */matchedTriplets = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+    private List<FontTriplet> getTripletsForName(final String fontName) {
+        final List<FontTriplet> matchedTriplets = new ArrayList<>();
         final Iterator it = this.triplets.keySet().iterator();
         while (it.hasNext()) {
             final FontTriplet triplet = (FontTriplet) it.next();
@@ -401,18 +388,14 @@ public class FontInfo {
                 : Font.WEIGHT_NORMAL;
 
         FontTriplet matchedTriplet = null;
-        final List/* <FontTriplet> */triplets = getTripletsForName(awtFontName);
-        if (!triplets.isEmpty()) {
-            final Iterator it = triplets.iterator();
-            while (it.hasNext()) {
-                final FontTriplet triplet = (FontTriplet) it.next();
-                final boolean styleMatched = triplet.getStyle().equals(
-                        awtFontStyle);
-                final boolean weightMatched = triplet.getWeight() == awtFontWeight;
-                if (styleMatched && weightMatched) {
-                    matchedTriplet = triplet;
-                    break;
-                }
+        final List<FontTriplet> triplets = getTripletsForName(awtFontName);
+        for (final FontTriplet triplet : triplets) {
+            final boolean styleMatched = triplet.getStyle()
+                    .equals(awtFontStyle);
+            final boolean weightMatched = triplet.getWeight() == awtFontWeight;
+            if (styleMatched && weightMatched) {
+                matchedTriplet = triplet;
+                break;
             }
         }
 
@@ -447,13 +430,9 @@ public class FontInfo {
         return fontLookup(family, style, weight, true);
     }
 
-    private List/* <FontTriplet> */fontLookup(final String[] families,
+    private List<FontTriplet> fontLookup(final String[] families,
             final String style, final int weight, final boolean substitutable) {
-        final List/* <FontTriplet> */matchingTriplets = new java.util.ArrayList/*
-         * <
-         * FontTriplet
-         * >
-         */();
+        final List<FontTriplet> matchingTriplets = new ArrayList<>();
         FontTriplet triplet = null;
         for (final String familie : families) {
             triplet = fontLookup(familie, style, weight, substitutable);
@@ -487,8 +466,8 @@ public class FontInfo {
         }
 
         // try matching without substitutions
-        List/* <FontTriplet> */matchedTriplets = fontLookup(families, style,
-                weight, false);
+        List<FontTriplet> matchedTriplets = fontLookup(families, style, weight,
+                false);
 
         // if there are no matching font triplets found try with substitutions
         if (matchedTriplets.size() == 0) {
@@ -498,7 +477,7 @@ public class FontInfo {
         // no matching font triplets found!
         if (matchedTriplets.size() == 0) {
             final StringBuilder sb = new StringBuilder();
-            for (int i = 0, c = families.length; i < c; i++) {
+            for (int i = 0, c = families.length; i < c; ++i) {
                 if (i > 0) {
                     sb.append(", ");
                 }
@@ -518,9 +497,9 @@ public class FontInfo {
         return fontTriplets;
     }
 
-    private Set/* <FontTriplet> */getLoggedFontKeys() {
+    private Set<FontTriplet> getLoggedFontKeys() {
         if (this.loggedFontKeys == null) {
-            this.loggedFontKeys = new java.util.HashSet/* <FontTriplet> */();
+            this.loggedFontKeys = new HashSet<>();
         }
         return this.loggedFontKeys;
     }
@@ -620,7 +599,7 @@ public class FontInfo {
      * @return the associated internal key or null, if not found
      */
     public String getInternalFontKey(final FontTriplet triplet) {
-        return (String) this.triplets.get(triplet);
+        return this.triplets.get(triplet);
     }
 
     /**
@@ -644,8 +623,8 @@ public class FontInfo {
      *
      * @return a read-only Map with font key/FontMetrics pairs
      */
-    public Map/* <String,FontMetrics> */getFonts() {
-        return java.util.Collections.unmodifiableMap(this.fonts);
+    public Map<String, FontMetrics> getFonts() {
+        return Collections.unmodifiableMap(this.fonts);
     }
 
     /**
@@ -653,7 +632,7 @@ public class FontInfo {
      *
      * @return a Map with FontTriplet/font key pairs
      */
-    public Map/* <FontTriplet,String> */getFontTriplets() {
+    public Map<FontTriplet, String> getFontTriplets() {
         return this.triplets;
     }
 
@@ -663,7 +642,7 @@ public class FontInfo {
      *
      * @return a read-only Map with font key/FontMetrics pairs
      */
-    public Map/* <String,FontMetrics> */getUsedFonts() {
+    public Map<String, FontMetrics> getUsedFonts() {
         return this.usedFonts;
     }
 
@@ -675,7 +654,7 @@ public class FontInfo {
      * @return font metrics
      */
     public FontMetrics getMetricsFor(final String fontName) {
-        final FontMetrics metrics = (FontMetrics) this.fonts.get(fontName);
+        final FontMetrics metrics = this.fonts.get(fontName);
         this.usedFonts.put(fontName, metrics);
         return metrics;
     }
@@ -687,11 +666,10 @@ public class FontInfo {
      *            The font name we are looking for
      * @return A list of matching font triplets
      */
-    public List/* <FontTriplet> */getTripletsFor(final String fontName) {
-        final List/* <FontTriplet> */foundTriplets = new java.util.ArrayList();
-        for (final Iterator iter = this.triplets.entrySet().iterator(); iter
-                .hasNext();) {
-            final Map.Entry tripletEntry = (Map.Entry) iter.next();
+    public List<FontTriplet> getTripletsFor(final String fontName) {
+        final List<FontTriplet> foundTriplets = new ArrayList<>();
+        for (final Entry<FontTriplet, String> tripletEntry : this.triplets
+                .entrySet()) {
             if (fontName.equals(tripletEntry.getValue())) {
                 foundTriplets.add(tripletEntry.getKey());
             }
@@ -709,10 +687,10 @@ public class FontInfo {
      * @return The first triplet for the given font name
      */
     public FontTriplet getTripletFor(final String fontName) {
-        final List/* <FontTriplet> */foundTriplets = getTripletsFor(fontName);
+        final List<FontTriplet> foundTriplets = getTripletsFor(fontName);
         if (foundTriplets.size() > 0) {
             Collections.sort(foundTriplets);
-            return (FontTriplet) foundTriplets.get(0);
+            return foundTriplets.get(0);
         }
         return null;
     }
@@ -765,19 +743,13 @@ public class FontInfo {
      */
     @Override
     public String toString() {
-        final Collection entries = new java.util.TreeSet();
-        Iterator iter = this.triplets.keySet().iterator();
-        while (iter.hasNext()) {
-            final FontTriplet triplet = (FontTriplet) iter.next();
+        final Collection<String> entries = new TreeSet<>();
+        for (final FontTriplet triplet : this.triplets.keySet()) {
             final String key = getInternalFontKey(triplet);
             final FontMetrics metrics = getMetricsFor(key);
             entries.add(triplet.toString() + " -> " + key + " -> "
                     + metrics.getFontName() + "\n");
         }
-        final StringBuilder StringBuilder = new StringBuilder();
-        for (iter = entries.iterator(); iter.hasNext();) {
-            StringBuilder.append(iter.next());
-        }
-        return StringBuilder.toString();
+        return StringUtils.join(entries, "");
     }
 }

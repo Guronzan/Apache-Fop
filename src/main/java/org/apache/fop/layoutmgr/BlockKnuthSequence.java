@@ -45,7 +45,7 @@ public class BlockKnuthSequence extends KnuthSequence {
      * @param list
      *            The list from which to create the new list.
      */
-    public BlockKnuthSequence(final List list) {
+    public BlockKnuthSequence(final List<ListElement> list) {
         super(list);
     }
 

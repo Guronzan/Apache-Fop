@@ -342,7 +342,7 @@ public abstract class PropertyList {
 
         String attributeNS;
         final FopFactory factory = getFObj().getUserAgent().getFactory();
-        for (int i = 0; i < attributes.getLength(); i++) {
+        for (int i = 0; i < attributes.getLength(); ++i) {
             /*
              * convert all attributes with the same namespace as the fo element
              * the "xml:lang" property is a special case

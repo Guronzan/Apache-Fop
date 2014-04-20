@@ -360,7 +360,7 @@ public abstract class PtocaBuilder implements PtocaConstants {
             writeByte(8); // Number of bits in component 4
             final float[] comps = col.getColorComponents(null);
             assert comps.length == 4;
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; ++i) {
                 final int component = Math.round(comps[i] * 255);
                 writeByte(component);
             }

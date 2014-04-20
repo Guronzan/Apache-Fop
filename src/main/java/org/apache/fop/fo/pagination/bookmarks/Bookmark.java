@@ -20,6 +20,7 @@
 package org.apache.fop.fo.pagination.bookmarks;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
@@ -34,7 +35,7 @@ import org.xml.sax.Locator;
  */
 public class Bookmark extends FObj {
     private BookmarkTitle bookmarkTitle;
-    private final ArrayList childBookmarks = new ArrayList();
+    private final List<Bookmark> childBookmarks = new ArrayList<>();
 
     // The value of properties relevant for this FO
     private String internalDestination;
@@ -113,7 +114,7 @@ public class Bookmark extends FObj {
         if (obj instanceof BookmarkTitle) {
             this.bookmarkTitle = (BookmarkTitle) obj;
         } else if (obj instanceof Bookmark) {
-            this.childBookmarks.add(obj);
+            this.childBookmarks.add((Bookmark) obj);
         }
     }
 
@@ -161,7 +162,7 @@ public class Bookmark extends FObj {
      *
      * @return an <code>ArrayList</code> containing the child Bookmarks
      */
-    public ArrayList getChildBookmarks() {
+    public List<Bookmark> getChildBookmarks() {
         return this.childBookmarks;
     }
 

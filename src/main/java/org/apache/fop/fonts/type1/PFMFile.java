@@ -23,6 +23,7 @@ package org.apache.fop.fonts.type1;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class PFMFile {
     // Extent table
     private int[] extentTable;
 
-    private final Map kerningTab = new java.util.HashMap();
+    private final Map<Integer, Map<Integer, Integer>> kerningTab = new HashMap<>();
 
     /**
      * Parses a PFM file
@@ -75,38 +76,39 @@ public class PFMFile {
         final byte[] pfmBytes = IOUtils.toByteArray(inStream);
         InputStream bufin = inStream;
         bufin = new ByteArrayInputStream(pfmBytes);
-        final PFMInputStream in = new PFMInputStream(bufin);
-        bufin.mark(512);
-        final short sh1 = in.readByte();
-        final short sh2 = in.readByte();
-        if (sh1 == 128 && sh2 == 1) {
-            // Found the first section header of a PFB file!
-            throw new IOException(
-                    "Cannot parse PFM file. You probably specified the PFB file"
-                            + " of a Type 1 font as parameter instead of the PFM.");
-        }
-        bufin.reset();
-        final byte[] b = new byte[16];
-        bufin.read(b);
-        if (new String(b, "US-ASCII").equalsIgnoreCase("StartFontMetrics")) {
-            // Found the header of a AFM file!
-            throw new IOException(
-                    "Cannot parse PFM file. You probably specified the AFM file"
-                            + " of a Type 1 font as parameter instead of the PFM.");
-        }
-        bufin.reset();
-        final int version = in.readShort();
-        if (version != 256) {
-            log.warn("PFM version expected to be '256' but got '" + version
-                    + "'."
-                    + " Please make sure you specify the PFM as parameter"
-                    + " and not the PFB or the AFM.");
-        }
-        // final long filesize = in.readInt();
-        bufin.reset();
+        try (final PFMInputStream in = new PFMInputStream(bufin)) {
+            bufin.mark(512);
+            final short sh1 = in.readByte();
+            final short sh2 = in.readByte();
+            if (sh1 == 128 && sh2 == 1) {
+                // Found the first section header of a PFB file!
+                throw new IOException(
+                        "Cannot parse PFM file. You probably specified the PFB file"
+                                + " of a Type 1 font as parameter instead of the PFM.");
+            }
+            bufin.reset();
+            final byte[] b = new byte[16];
+            bufin.read(b);
+            if (new String(b, "US-ASCII").equalsIgnoreCase("StartFontMetrics")) {
+                // Found the header of a AFM file!
+                throw new IOException(
+                        "Cannot parse PFM file. You probably specified the AFM file"
+                                + " of a Type 1 font as parameter instead of the PFM.");
+            }
+            bufin.reset();
+            final int version = in.readShort();
+            if (version != 256) {
+                log.warn("PFM version expected to be '256' but got '" + version
+                        + "'."
+                        + " Please make sure you specify the PFM as parameter"
+                        + " and not the PFB or the AFM.");
+            }
+            // final long filesize = in.readInt();
+            bufin.reset();
 
-        loadHeader(in);
-        loadExtension(in);
+            loadHeader(in);
+            loadExtension(in);
+        }
     }
 
     /**
@@ -214,12 +216,12 @@ public class PFMFile {
                 log.trace("glyphs: " + glyph1 + ", " + glyph2);
             }
 
-            Map adjTab = (Map) this.kerningTab.get(new Integer(g1));
+            Map<Integer, Integer> adjTab = this.kerningTab.get(g1);
             if (adjTab == null) {
-                adjTab = new java.util.HashMap();
+                adjTab = new HashMap<>();
             }
-            adjTab.put(new Integer(g2), new Integer(adj));
-            this.kerningTab.put(new Integer(g1), adjTab);
+            adjTab.put(g2, adj);
+            this.kerningTab.put(g1, adjTab);
         }
     }
 
@@ -256,7 +258,7 @@ public class PFMFile {
             throws IOException {
         this.extentTable = new int[this.dfLastChar - this.dfFirstChar + 1];
         this.dfMinWidth = this.dfMaxWidth;
-        for (short i = this.dfFirstChar; i <= this.dfLastChar; i++) {
+        for (short i = this.dfFirstChar; i <= this.dfLastChar; ++i) {
             this.extentTable[i - this.dfFirstChar] = inStream.readShort();
             if (this.extentTable[i - this.dfFirstChar] < this.dfMinWidth) {
                 this.dfMinWidth = this.extentTable[i - this.dfFirstChar];
@@ -280,7 +282,7 @@ public class PFMFile {
      *
      * @return A Map containing the kerning table
      */
-    public Map getKerning() {
+    public Map<Integer, Map<Integer, Integer>> getKerning() {
         return this.kerningTab;
     }
 

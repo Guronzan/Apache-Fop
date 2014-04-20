@@ -22,11 +22,13 @@ package org.apache.fop.afp.modca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.afp.AFPLineDataInfo;
 import org.apache.fop.afp.Completable;
 import org.apache.fop.afp.Factory;
+import org.apache.fop.afp.Streamable;
 import org.apache.fop.afp.fonts.AFPFont;
 import org.apache.fop.afp.ptoca.PtocaProducer;
 
@@ -59,10 +61,10 @@ public abstract class AbstractPageObject extends AbstractNamedAFPObject
     private PresentationTextObject currentPresentationTextObject = null;
 
     /** The list of tag logical elements */
-    protected List/* <TagLogicalElement> */tagLogicalElements = null;
+    protected List<TagLogicalElement> tagLogicalElements = null;
 
     /** The list of objects within this resource container */
-    protected List/* <AbstractStructuredAFPObject> */objects = new java.util.ArrayList();
+    protected List<Streamable> objects = new ArrayList<>();
 
     /** The page width */
     private int width;
@@ -223,15 +225,12 @@ public abstract class AbstractPageObject extends AbstractNamedAFPObject
 
     /**
      * Returns the list of {@link TagLogicalElement}s.
-     * 
+     *
      * @return the TLEs
      */
-    protected List getTagLogicalElements() {
+    protected List<TagLogicalElement> getTagLogicalElements() {
         if (this.tagLogicalElements == null) {
-            this.tagLogicalElements = new java.util.ArrayList/*
-                                                              * <TagLogicalElement
-                                                              * >
-                                                              */();
+            this.tagLogicalElements = new ArrayList<>();
         }
         return this.tagLogicalElements;
     }
@@ -249,7 +248,7 @@ public abstract class AbstractPageObject extends AbstractNamedAFPObject
     public void createTagLogicalElement(final String name, final String value,
             final int tleID) {
         final TagLogicalElement tle = new TagLogicalElement(name, value, tleID);
-        final List list = getTagLogicalElements();
+        final List<TagLogicalElement> list = getTagLogicalElements();
         list.add(tle);
     }
 
@@ -359,7 +358,7 @@ public abstract class AbstractPageObject extends AbstractNamedAFPObject
      * @param obj
      *            an AFP object
      */
-    public void addObject(final Object obj) {
+    public void addObject(final Streamable obj) {
         this.objects.add(obj);
     }
 

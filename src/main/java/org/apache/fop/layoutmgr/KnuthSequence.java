@@ -28,7 +28,7 @@ import org.apache.fop.util.ListUtil;
 /**
  * Represents a list of {@link KnuthElement Knuth elements}.
  */
-public abstract class KnuthSequence extends ArrayList {
+public abstract class KnuthSequence extends ArrayList<ListElement> {
 
     /**
      *
@@ -50,7 +50,7 @@ public abstract class KnuthSequence extends ArrayList {
      * @param list
      *            The list from which to create the new list.
      */
-    public KnuthSequence(final List list) {
+    public KnuthSequence(final List<ListElement> list) {
         super(list);
     }
 

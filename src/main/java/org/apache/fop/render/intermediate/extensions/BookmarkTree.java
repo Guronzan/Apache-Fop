@@ -19,6 +19,7 @@
 
 package org.apache.fop.render.intermediate.extensions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,7 +29,7 @@ import java.util.List;
  */
 public class BookmarkTree {
 
-    private final List bookmarks = new java.util.ArrayList();
+    private final List<Bookmark> bookmarks = new ArrayList<>();
 
     /**
      * Constructs a new bookmark tree.
@@ -39,7 +40,7 @@ public class BookmarkTree {
 
     /**
      * Adds a new top-level bookmark.
-     * 
+     *
      * @param bookmark
      *            the bookmark
      */
@@ -49,10 +50,10 @@ public class BookmarkTree {
 
     /**
      * Returns a list of top-level bookmarks.
-     * 
+     *
      * @return the top-level bookmarks
      */
-    public List getBookmarks() {
+    public List<Bookmark> getBookmarks() {
         return Collections.unmodifiableList(this.bookmarks);
     }
 

@@ -19,12 +19,13 @@
 
 package org.apache.fop.fonts.substitute;
 
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 /**
  * Encapsulates a font attribute value
  */
-public class AttributeValue extends java.util.ArrayList {
+public class AttributeValue extends ArrayList<Object> {
 
     private static final long serialVersionUID = 748610847500940557L;
 

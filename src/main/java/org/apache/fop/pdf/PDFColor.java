@@ -220,24 +220,24 @@ public class PDFColor extends PDFPathPaint {
      *
      * @return a list containing the Double values of the color
      */
-    public List getVector() {
-        final List theColorVector = new ArrayList();
+    public List getList() {
+        final List theColorList = new ArrayList();
         if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_RGB) {
             // RGB
-            theColorVector.add(new Double(this.red));
-            theColorVector.add(new Double(this.green));
-            theColorVector.add(new Double(this.blue));
+            theColorList.add(new Double(this.red));
+            theColorList.add(new Double(this.green));
+            theColorList.add(new Double(this.blue));
         } else if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_CMYK) {
             // CMYK
-            theColorVector.add(new Double(this.cyan));
-            theColorVector.add(new Double(this.magenta));
-            theColorVector.add(new Double(this.yellow));
-            theColorVector.add(new Double(this.black));
+            theColorList.add(new Double(this.cyan));
+            theColorList.add(new Double(this.magenta));
+            theColorList.add(new Double(this.yellow));
+            theColorList.add(new Double(this.black));
         } else {
             // GRAY
-            theColorVector.add(new Double(this.black));
+            theColorList.add(new Double(this.black));
         }
-        return theColorVector;
+        return theColorList;
     }
 
     /**

@@ -85,7 +85,7 @@ final class FoUnitsConverter {
         final StringBuilder number = new StringBuilder();
         final StringBuilder units = new StringBuilder();
 
-        for (int i = 0; i < foValue.length(); i++) {
+        for (int i = 0; i < foValue.length(); ++i) {
             final char c = foValue.charAt(i);
             if (Character.isDigit(c) || c == '.') {
                 number.append(c);

@@ -21,6 +21,7 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -44,14 +45,10 @@ import org.apache.fop.afp.fonts.AFPFont;
 public final class ActiveEnvironmentGroup extends AbstractEnvironmentGroup {
 
     /** The collection of MapCodedFont objects */
-    private final List/* <MapCodedFonts> */mapCodedFonts = new java.util.ArrayList/*
-     * <
-     * MapCodedFonts
-     * >
-     */();
+    private final List<MapCodedFont> mapCodedFonts = new java.util.ArrayList<>();
 
     /** the collection of MapPageSegments objects */
-    private List mapPageSegments = null;
+    private List<MapPageSegment> mapPageSegments = null;
 
     /** the Object Area Descriptor for the active environment group */
     private ObjectAreaDescriptor objectAreaDescriptor = null;
@@ -211,7 +208,9 @@ public final class ActiveEnvironmentGroup extends AbstractEnvironmentGroup {
                 mapCodedFont.addFont(fontRef, font, size, orientation);
             } catch (final MaximumSizeExceededException ex) {
                 // Should never happen (but log just in case)
-                log.error("createFont():: resulted in a MaximumSizeExceededException");
+                log.error(
+                        "createFont():: resulted in a MaximumSizeExceededException",
+                        ex);
             }
         }
     }
@@ -225,7 +224,7 @@ public final class ActiveEnvironmentGroup extends AbstractEnvironmentGroup {
     private MapCodedFont getCurrentMapCodedFont() {
         final int size = this.mapCodedFonts.size();
         if (size > 0) {
-            return (MapCodedFont) this.mapCodedFonts.get(size - 1);
+            return this.mapCodedFonts.get(size - 1);
         } else {
             return null;
         }
@@ -235,18 +234,19 @@ public final class ActiveEnvironmentGroup extends AbstractEnvironmentGroup {
         try {
             needMapPageSegment().addPageSegment(name);
         } catch (final MaximumSizeExceededException e) {
+            log.error("MaxiumuSizeExceededException", e);
             // Should not happen, handled internally
             throw new IllegalStateException("Internal error: " + e.getMessage());
         }
     }
 
     private MapPageSegment getCurrentMapPageSegment() {
-        return (MapPageSegment) getLastElement(this.mapPageSegments);
+        return getLastElement(this.mapPageSegments);
     }
 
     private MapPageSegment needMapPageSegment() {
         if (this.mapPageSegments == null) {
-            this.mapPageSegments = new java.util.ArrayList();
+            this.mapPageSegments = new ArrayList<>();
         }
         MapPageSegment seg = getCurrentMapPageSegment();
         if (seg == null || seg.isFull()) {

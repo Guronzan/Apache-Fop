@@ -76,7 +76,7 @@ public class PDFNumsArray extends PDFObject {
      *            the new value
      */
     public void put(final int key, final Object obj) {
-        put(new Integer(key), obj);
+        put((key), obj);
     }
 
     /**
@@ -98,7 +98,7 @@ public class PDFNumsArray extends PDFObject {
      * @return the requested value
      */
     public Object get(final int key) {
-        return get(new Integer(key));
+        return get((key));
     }
 
     /** {@inheritDoc} */

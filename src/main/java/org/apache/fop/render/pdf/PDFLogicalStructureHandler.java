@@ -144,7 +144,7 @@ class PDFLogicalStructureHandler {
             structElemPart.setLanguage(language);
         }
 
-        for (int i = 0, n = structureTree.getLength(); i < n; i++) {
+        for (int i = 0, n = structureTree.getLength(); i < n; ++i) {
             final Node node = structureTree.item(i);
             assert node.getLocalName().equals("flow")
             || node.getLocalName().equals("static-content");
@@ -190,7 +190,7 @@ class PDFLogicalStructureHandler {
         }
         this.structTreeMap.put(ptr, structElem);
         final NodeList nodes = node.getChildNodes();
-        for (int i = 0, n = nodes.getLength(); i < n; i++) {
+        for (int i = 0, n = nodes.getLength(); i < n; ++i) {
             processNode(nodes.item(i), structElem, false);
         }
     }

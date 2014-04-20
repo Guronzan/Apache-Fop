@@ -67,7 +67,7 @@ public class Span extends Area {
         this.colWidth = (this.ipd - (this.colCount - 1) * this.colGap)
                 / this.colCount;
 
-        for (int i = 0; i < this.colCount; i++) {
+        for (int i = 0; i < this.colCount; ++i) {
             final NormalFlow newFlow = new NormalFlow(this.colWidth);
             this.flowAreas.add(newFlow);
         }
@@ -161,7 +161,7 @@ public class Span extends Area {
      */
     public void notifyFlowsFinished() {
         int maxFlowBPD = Integer.MIN_VALUE;
-        for (int i = 0; i < this.colCount; i++) {
+        for (int i = 0; i < this.colCount; ++i) {
             maxFlowBPD = Math.max(maxFlowBPD, getNormalFlow(i).getAllocBPD());
         }
         this.bpd = maxFlowBPD;
@@ -176,7 +176,7 @@ public class Span extends Area {
      */
     public boolean isEmpty() {
         int areaCount = 0;
-        for (int i = 0; i < getColumnCount(); i++) {
+        for (int i = 0; i < getColumnCount(); ++i) {
             final NormalFlow flow = getNormalFlow(i);
             if (flow != null) {
                 if (flow.getChildAreas() != null) {

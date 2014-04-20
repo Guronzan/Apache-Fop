@@ -307,7 +307,7 @@ ImageHandler {
             final byte[] data = new byte[4096];
             while (remaining > 0) {
                 final int size = Math.min(remaining, data.length);
-                for (int i = 0; i < size; i++) {
+                for (int i = 0; i < size; ++i) {
                     data[i] = (byte) ~rawData[pos]; // invert bits
                     pos++;
                 }

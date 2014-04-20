@@ -19,8 +19,10 @@
 
 package org.apache.fop.render;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -38,19 +40,17 @@ import org.apache.xmlgraphics.util.Service;
 @Slf4j
 public class ImageHandlerRegistry {
 
-    private static final Comparator HANDLER_COMPARATOR = new Comparator() {
+    private static final Comparator<ImageHandler> HANDLER_COMPARATOR = new Comparator<ImageHandler>() {
         @Override
-        public int compare(final Object o1, final Object o2) {
-            final ImageHandler h1 = (ImageHandler) o1;
-            final ImageHandler h2 = (ImageHandler) o2;
+        public int compare(final ImageHandler h1, final ImageHandler h2) {
             return h1.getPriority() - h2.getPriority();
         }
     };
 
     /** Map containing image handlers for various {@link Image} subclasses. */
-    private final Map handlers = new java.util.HashMap<>();
+    private final Map<Class, ImageHandler> handlers = new java.util.HashMap<>();
     /** List containing the same handlers as above but ordered by priority */
-    private final List handlerList = new java.util.LinkedList<>();
+    private final List<ImageHandler> handlerList = new LinkedList<>();
 
     private int handlerRegistrations;
 
@@ -99,16 +99,16 @@ public class ImageHandlerRegistry {
         this.handlers.put(imageClass, handler);
 
         // Sorted insert (sort by priority)
-        final ListIterator iter = this.handlerList.listIterator();
+        final ListIterator<ImageHandler> iter = this.handlerList.listIterator();
         while (iter.hasNext()) {
-            final ImageHandler h = (ImageHandler) iter.next();
+            final ImageHandler h = iter.next();
             if (HANDLER_COMPARATOR.compare(handler, h) < 0) {
                 iter.previous();
                 break;
             }
         }
         iter.add(handler);
-        this.handlerRegistrations++;
+        ++this.handlerRegistrations;
     }
 
     /**
@@ -125,9 +125,9 @@ public class ImageHandlerRegistry {
      */
     public ImageHandler getHandler(final RenderingContext targetContext,
             final Image image) {
-        final ListIterator iter = this.handlerList.listIterator();
+        final ListIterator<ImageHandler> iter = this.handlerList.listIterator();
         while (iter.hasNext()) {
-            final ImageHandler h = (ImageHandler) iter.next();
+            final ImageHandler h = iter.next();
             if (h.isCompatible(targetContext, image)) {
                 // Return the first handler in the prioritized list that is
                 // compatible
@@ -147,10 +147,8 @@ public class ImageHandlerRegistry {
     public synchronized ImageFlavor[] getSupportedFlavors(
             final RenderingContext context) {
         // Extract all ImageFlavors into a single array
-        final List flavors = new java.util.ArrayList();
-        final Iterator iter = this.handlerList.iterator();
-        while (iter.hasNext()) {
-            final ImageHandler handler = (ImageHandler) iter.next();
+        final List<ImageFlavor> flavors = new ArrayList<>();
+        for (final ImageHandler handler : this.handlerList) {
             if (handler.isCompatible(context, null)) {
                 final ImageFlavor[] f = handler.getSupportedImageFlavors();
                 for (final ImageFlavor element : f) {
@@ -158,7 +156,7 @@ public class ImageHandlerRegistry {
                 }
             }
         }
-        return (ImageFlavor[]) flavors.toArray(new ImageFlavor[flavors.size()]);
+        return flavors.toArray(new ImageFlavor[flavors.size()]);
     }
 
     /**
@@ -167,15 +165,14 @@ public class ImageHandlerRegistry {
      */
     private void discoverHandlers() {
         // add mappings from available services
-        final Iterator providers = Service.providers(ImageHandler.class);
+        final Iterator<ImageHandler> providers = Service
+                .providers(ImageHandler.class);
         if (providers != null) {
             while (providers.hasNext()) {
-                final ImageHandler handler = (ImageHandler) providers.next();
+                final ImageHandler handler = providers.next();
                 try {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Dynamically adding ImageHandler: "
-                                + handler.getClass().getName());
-                    }
+                    log.debug("Dynamically adding ImageHandler: {}", handler
+                            .getClass().getName());
                     addHandler(handler);
                 } catch (final IllegalArgumentException e) {
                     log.error("Error while adding ImageHandler", e);

@@ -27,14 +27,15 @@
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Singelton of the RTF style sheet table. This class belongs to the
  * <jfor:stylesheet> tag processing.
- * 
+ *
  * @author <a href="mailto:a.putz@skynamics.com">Andreas Putz</a>
  */
 public class RtfStyleSheetTable {
@@ -68,13 +69,13 @@ public class RtfStyleSheetTable {
     // ////////////////////////////////////////////////
 
     /** Table of styles */
-    private Hashtable styles = null;
+    private Hashtable<String, Integer> styles = null;
 
     /** Used, style attributes to this vector */
-    private Hashtable attrTable = null;
+    private Hashtable<String, RtfAttributes> attrTable = null;
 
     /** Used, style names to this vector */
-    private Vector nameTable = null;
+    private List<String> nameTable = null;
 
     /** Default style */
     private String defaultStyleName = STANDARD_STYLE;
@@ -87,9 +88,9 @@ public class RtfStyleSheetTable {
      * Constructor.
      */
     private RtfStyleSheetTable() {
-        this.styles = new Hashtable();
-        this.attrTable = new Hashtable();
-        this.nameTable = new Vector();
+        this.styles = new Hashtable<>();
+        this.attrTable = new Hashtable<>();
+        this.nameTable = new ArrayList<>();
     }
 
     /**
@@ -111,7 +112,7 @@ public class RtfStyleSheetTable {
 
     /**
      * Sets the default style.
-     * 
+     *
      * @param styleName
      *            Name of the default style, defined in the stylesheet
      */
@@ -121,7 +122,7 @@ public class RtfStyleSheetTable {
 
     /**
      * Gets the name of the default style.
-     * 
+     *
      * @return Default style name.
      */
     public String getDefaultStyleName() {
@@ -143,24 +144,23 @@ public class RtfStyleSheetTable {
 
     /**
      * Adds a style to the table.
-     * 
+     *
      * @param name
      *            Name of style to add
      * @param attrs
      *            Rtf attributes which defines the style
      */
     public void addStyle(final String name, final RtfAttributes attrs) {
-        this.nameTable.addElement(name);
+        this.nameTable.add(name);
         if (attrs != null) {
             this.attrTable.put(name, attrs);
         }
-        this.styles.put(name, new Integer(this.nameTable.size() - 1
-                + startIndex));
+        this.styles.put(name, this.nameTable.size() - 1 + startIndex);
     }
 
     /**
      * Adds the style attributes to the given attributes.
-     * 
+     *
      * @param name
      *            Name of style, of which the attributes will copied to attr
      * @param attr
@@ -172,13 +172,13 @@ public class RtfStyleSheetTable {
         int status = STATUS_OK;
 
         // Gets the style number from table
-        Integer style = (Integer) this.styles.get(name);
+        Integer style = this.styles.get(name);
 
         if (style == null && !name.equals(this.defaultStyleName)) {
             // If style not found, and style was not the default style, try the
             // default style
             name = this.defaultStyleName;
-            style = (Integer) this.styles.get(name);
+            style = this.styles.get(name);
             // set status for default style setting
             status = STATUS_DEFAULT;
         }
@@ -192,12 +192,11 @@ public class RtfStyleSheetTable {
         // default attributes
         attr.set("cs", style.intValue());
 
-        final Object o = this.attrTable.get(name);
-        if (o != null) {
-            final RtfAttributes rtfAttr = (RtfAttributes) o;
-
-            for (final Iterator names = rtfAttr.nameIterator(); names.hasNext();) {
-                final String attrName = (String) names.next();
+        final RtfAttributes rtfAttr = this.attrTable.get(name);
+        if (rtfAttr != null) {
+            for (final Iterator<String> names = rtfAttr.nameIterator(); names
+                    .hasNext();) {
+                final String attrName = names.next();
                 if (!attr.isSet(attrName)) {
                     final Integer i = (Integer) rtfAttr.getValue(attrName);
                     if (i == null) {
@@ -213,7 +212,7 @@ public class RtfStyleSheetTable {
 
     /**
      * Writes the rtf style sheet table.
-     * 
+     *
      * @param header
      *            Rtf header is the parent
      * @throws IOException
@@ -227,8 +226,8 @@ public class RtfStyleSheetTable {
         header.writeControlWord("stylesheet");
 
         final int number = this.nameTable.size();
-        for (int i = 0; i < number; i++) {
-            final String name = (String) this.nameTable.elementAt(i);
+        for (int i = 0; i < number; ++i) {
+            final String name = this.nameTable.get(i);
             header.writeGroupMark(true);
             header.writeControlWord("*\\" + getRtfStyleReference(name));
 
@@ -246,7 +245,7 @@ public class RtfStyleSheetTable {
 
     /**
      * Gets the rtf style reference from the table.
-     * 
+     *
      * @param name
      *            Name of Style
      * @return Rtf attribute of the style reference

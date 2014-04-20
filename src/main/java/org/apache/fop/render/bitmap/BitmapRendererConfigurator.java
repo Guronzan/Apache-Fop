@@ -21,11 +21,13 @@ package org.apache.fop.render.bitmap;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.fonts.EmbedFontInfo;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontEventAdapter;
 import org.apache.fop.fonts.FontEventListener;
@@ -34,7 +36,6 @@ import org.apache.fop.fonts.FontManager;
 import org.apache.fop.fonts.FontResolver;
 import org.apache.fop.render.DefaultFontResolver;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
-import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.fop.render.java2d.Base14FontCollection;
 import org.apache.fop.render.java2d.ConfiguredFontCollection;
 import org.apache.fop.render.java2d.InstalledFontCollection;
@@ -46,8 +47,7 @@ import org.apache.fop.util.ColorUtil;
 /**
  * Configurator for bitmap output.
  */
-public class BitmapRendererConfigurator extends Java2DRendererConfigurator
-implements IFDocumentHandlerConfigurator {
+public class BitmapRendererConfigurator extends Java2DRendererConfigurator {
 
     /**
      * Default constructor
@@ -129,7 +129,7 @@ implements IFDocumentHandlerConfigurator {
         final Graphics2D graphics2D = Java2DFontMetrics
                 .createFontMetricsGraphics2D();
 
-        final List fontCollections = new java.util.ArrayList();
+        final List<FontCollection> fontCollections = new ArrayList<>();
         fontCollections.add(new Base14FontCollection(graphics2D));
         fontCollections.add(new InstalledFontCollection(graphics2D));
 
@@ -140,12 +140,13 @@ implements IFDocumentHandlerConfigurator {
                     this.userAgent);
             final FontEventListener listener = new FontEventAdapter(
                     this.userAgent.getEventBroadcaster());
-            final List fontList = buildFontList(cfg, fontResolver, listener);
+            final List<EmbedFontInfo> fontList = buildFontList(cfg,
+                    fontResolver, listener);
             fontCollections.add(new ConfiguredFontCollection(fontResolver,
                     fontList));
         }
 
-        fontManager.setup(fontInfo, (FontCollection[]) fontCollections
+        fontManager.setup(fontInfo, fontCollections
                 .toArray(new FontCollection[fontCollections.size()]));
         documentHandler.setFontInfo(fontInfo);
     }

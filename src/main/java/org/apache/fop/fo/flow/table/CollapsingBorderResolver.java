@@ -39,14 +39,14 @@ class CollapsingBorderResolver implements BorderResolver {
      * The previously registered row, either in the header or the body(-ies),
      * but not in the footer (handled separately).
      */
-    private List/* <GridUnit> */previousRow;
+    private List<GridUnit> previousRow;
 
     private boolean firstInTable;
 
-    private List/* <GridUnit> */footerFirstRow;
+    private List<GridUnit> footerFirstRow;
 
     /** The last currently registered footer row. */
-    private List/* <GridUnit> */footerLastRow;
+    private List<GridUnit> footerLastRow;
 
     private Resolver delegate;
 
@@ -56,13 +56,13 @@ class CollapsingBorderResolver implements BorderResolver {
 
     private Resolver resolverInFooter;
 
-    private List/* <ConditionalBorder> */leadingBorders;
+    private List<ConditionalBorder> leadingBorders;
 
-    private List/* <ConditionalBorder> */trailingBorders;
+    private List<ConditionalBorder> trailingBorders;
 
     /* TODO Temporary hack for resolved borders in header */
     /* Currently the normal border is always used. */
-    private List/* <GridUnit> */headerLastRow = null;
+    private List<GridUnit> headerLastRow = null;
 
     /* End of temporary hack */
 
@@ -91,14 +91,14 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param withLeadingTrailing
          * @param withRest
          */
-        void resolveBordersFirstRowInTable(final List/* <GridUnit> */row,
+        void resolveBordersFirstRowInTable(final List<GridUnit> row,
                 final boolean withNormal, final boolean withLeadingTrailing,
                 final boolean withRest) {
             assert CollapsingBorderResolver.this.firstInTable;
-            for (int i = 0; i < row.size(); i++) {
+            for (int i = 0; i < row.size(); ++i) {
                 final TableColumn column = CollapsingBorderResolver.this.table
                         .getColumn(i);
-                ((GridUnit) row.get(i)).integrateBorderSegment(
+                row.get(i).integrateBorderSegment(
                         CommonBorderPaddingBackground.BEFORE, column,
                         withNormal, withLeadingTrailing, withRest);
             }
@@ -112,13 +112,13 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param rowBefore
          * @param rowAfter
          */
-        void resolveBordersBetweenRows(final List/* <GridUnit> */rowBefore,
-                final List/* <GridUnit> */rowAfter) {
+        void resolveBordersBetweenRows(final List<GridUnit> rowBefore,
+                final List<GridUnit> rowAfter) {
             assert rowBefore != null && rowAfter != null;
-            for (int i = 0; i < rowAfter.size(); i++) {
-                final GridUnit gu = (GridUnit) rowAfter.get(i);
+            for (int i = 0; i < rowAfter.size(); ++i) {
+                final GridUnit gu = rowAfter.get(i);
                 if (gu.getRowSpanIndex() == 0) {
-                    final GridUnit beforeGU = (GridUnit) rowBefore.get(i);
+                    final GridUnit beforeGU = rowBefore.get(i);
                     gu.resolveBorder(beforeGU,
                             CommonBorderPaddingBackground.BEFORE);
                 }
@@ -126,11 +126,11 @@ class CollapsingBorderResolver implements BorderResolver {
         }
 
         /** Integrates the border-after of the part. */
-        void resolveBordersLastRowInPart(final List/* <GridUnit> */row,
+        void resolveBordersLastRowInPart(final List<GridUnit> row,
                 final boolean withNormal, final boolean withLeadingTrailing,
                 final boolean withRest) {
-            for (int i = 0; i < row.size(); i++) {
-                ((GridUnit) row.get(i)).integrateBorderSegment(
+            for (int i = 0; i < row.size(); ++i) {
+                row.get(i).integrateBorderSegment(
                         CommonBorderPaddingBackground.AFTER, this.tablePart,
                         withNormal, withLeadingTrailing, withRest);
             }
@@ -146,13 +146,13 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param withLeadingTrailing
          * @param withRest
          */
-        void resolveBordersLastRowInTable(final List/* <GridUnit> */row,
+        void resolveBordersLastRowInTable(final List<GridUnit> row,
                 final boolean withNormal, final boolean withLeadingTrailing,
                 final boolean withRest) {
-            for (int i = 0; i < row.size(); i++) {
+            for (int i = 0; i < row.size(); ++i) {
                 final TableColumn column = CollapsingBorderResolver.this.table
                         .getColumn(i);
-                ((GridUnit) row.get(i)).integrateBorderSegment(
+                row.get(i).integrateBorderSegment(
                         CommonBorderPaddingBackground.AFTER, column,
                         withNormal, withLeadingTrailing, withRest);
             }
@@ -166,11 +166,11 @@ class CollapsingBorderResolver implements BorderResolver {
          *
          * @param row
          */
-        void integrateLeadingBorders(final List/* <GridUnit> */row) {
+        void integrateLeadingBorders(final List<GridUnit> row) {
             for (int i = 0; i < CollapsingBorderResolver.this.table
-                    .getNumberOfColumns(); i++) {
-                final GridUnit gu = (GridUnit) row.get(i);
-                final ConditionalBorder border = (ConditionalBorder) CollapsingBorderResolver.this.leadingBorders
+                    .getNumberOfColumns(); ++i) {
+                final GridUnit gu = row.get(i);
+                final ConditionalBorder border = CollapsingBorderResolver.this.leadingBorders
                         .get(i);
                 gu.integrateCompetingBorder(
                         CommonBorderPaddingBackground.BEFORE, border, false,
@@ -186,11 +186,11 @@ class CollapsingBorderResolver implements BorderResolver {
          *
          * @param row
          */
-        void integrateTrailingBorders(final List/* <GridUnit> */row) {
+        void integrateTrailingBorders(final List<GridUnit> row) {
             for (int i = 0; i < CollapsingBorderResolver.this.table
-                    .getNumberOfColumns(); i++) {
-                final GridUnit gu = (GridUnit) row.get(i);
-                final ConditionalBorder border = (ConditionalBorder) CollapsingBorderResolver.this.trailingBorders
+                    .getNumberOfColumns(); ++i) {
+                final GridUnit gu = row.get(i);
+                final ConditionalBorder border = CollapsingBorderResolver.this.trailingBorders
                         .get(i);
                 gu.integrateCompetingBorder(
                         CommonBorderPaddingBackground.AFTER, border, false,
@@ -226,15 +226,14 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param container
          *            the containing element
          */
-        void endRow(final List/* <GridUnit> */row,
-                final TableCellContainer container) {
+        void endRow(final List<GridUnit> row, final TableCellContainer container) {
             BorderSpecification borderStart = this.borderStartTableAndBody;
             BorderSpecification borderEnd = this.borderEndTableAndBody;
             // Resolve before- and after-borders for the table-row
             if (container instanceof TableRow) {
                 final TableRow tableRow = (TableRow) container;
-                for (final Iterator iter = row.iterator(); iter.hasNext();) {
-                    final GridUnit gu = (GridUnit) iter.next();
+                for (final Object element : row) {
+                    final GridUnit gu = (GridUnit) element;
                     final boolean first = gu.getRowSpanIndex() == 0;
                     final boolean last = gu.isLastGridUnitRowSpan();
                     gu.integrateBorderSegment(
@@ -251,25 +250,25 @@ class CollapsingBorderResolver implements BorderResolver {
             }
             if (this.firstInPart) {
                 // Integrate the border-before of the part
-                for (int i = 0; i < row.size(); i++) {
-                    ((GridUnit) row.get(i)).integrateBorderSegment(
+                for (int i = 0; i < row.size(); ++i) {
+                    row.get(i).integrateBorderSegment(
                             CommonBorderPaddingBackground.BEFORE,
                             this.tablePart, true, true, true);
                 }
                 this.firstInPart = false;
             }
             // Resolve start/end borders in the row
-            final Iterator guIter = row.iterator();
-            GridUnit gu = (GridUnit) guIter.next();
-            final Iterator colIter = CollapsingBorderResolver.this.table
+            final Iterator<GridUnit> guIter = row.iterator();
+            GridUnit gu = guIter.next();
+            final Iterator<TableColumn> colIter = CollapsingBorderResolver.this.table
                     .getColumns().iterator();
-            TableColumn col = (TableColumn) colIter.next();
+            TableColumn col = colIter.next();
             gu.integrateBorderSegment(CommonBorderPaddingBackground.START, col);
             gu.integrateBorderSegment(CommonBorderPaddingBackground.START,
                     borderStart);
             while (guIter.hasNext()) {
-                final GridUnit nextGU = (GridUnit) guIter.next();
-                final TableColumn nextCol = (TableColumn) colIter.next();
+                final GridUnit nextGU = guIter.next();
+                final TableColumn nextCol = colIter.next();
                 if (gu.isLastGridUnitColSpan()) {
                     gu.integrateBorderSegment(
                             CommonBorderPaddingBackground.END, col);
@@ -296,8 +295,7 @@ class CollapsingBorderResolver implements BorderResolver {
     private class ResolverInHeader extends Resolver {
 
         @Override
-        void endRow(final List/* <GridUnit> */row,
-                final TableCellContainer container) {
+        void endRow(final List<GridUnit> row, final TableCellContainer container) {
             super.endRow(row, container);
             if (CollapsingBorderResolver.this.previousRow != null) {
                 resolveBordersBetweenRows(
@@ -311,9 +309,8 @@ class CollapsingBorderResolver implements BorderResolver {
                  * (ab)use the normal and the rest fields of ConditionalBorder.
                  * But strictly speaking this is not their purposes.
                  */
-                for (final Iterator guIter = row.iterator(); guIter.hasNext();) {
-                    final ConditionalBorder borderBefore = ((GridUnit) guIter
-                            .next()).borderBefore;
+                for (final Object element : row) {
+                    final ConditionalBorder borderBefore = ((GridUnit) element).borderBefore;
                     borderBefore.leadingTrailing = borderBefore.normal;
                     borderBefore.rest = borderBefore.normal;
                 }
@@ -325,7 +322,7 @@ class CollapsingBorderResolver implements BorderResolver {
         @Override
         void endPart() {
             super.endPart();
-            CollapsingBorderResolver.this.leadingBorders = new ArrayList(
+            CollapsingBorderResolver.this.leadingBorders = new ArrayList<>(
                     CollapsingBorderResolver.this.table.getNumberOfColumns());
             /*
              * Another hack... The border-after of a header is always the same.
@@ -335,9 +332,8 @@ class CollapsingBorderResolver implements BorderResolver {
              * the only sensible normal field. That way grid units from the body
              * will always resolve against the same, normal header border.
              */
-            for (final Iterator guIter = CollapsingBorderResolver.this.previousRow
-                    .iterator(); guIter.hasNext();) {
-                final ConditionalBorder borderAfter = ((GridUnit) guIter.next()).borderAfter;
+            for (final Object element : CollapsingBorderResolver.this.previousRow) {
+                final ConditionalBorder borderAfter = ((GridUnit) element).borderAfter;
                 borderAfter.leadingTrailing = borderAfter.normal;
                 borderAfter.rest = borderAfter.normal;
                 CollapsingBorderResolver.this.leadingBorders.add(borderAfter);
@@ -356,8 +352,7 @@ class CollapsingBorderResolver implements BorderResolver {
     private class ResolverInFooter extends Resolver {
 
         @Override
-        void endRow(final List/* <GridUnit> */row,
-                final TableCellContainer container) {
+        void endRow(final List<GridUnit> row, final TableCellContainer container) {
             super.endRow(row, container);
             if (CollapsingBorderResolver.this.footerFirstRow == null) {
                 CollapsingBorderResolver.this.footerFirstRow = row;
@@ -374,14 +369,12 @@ class CollapsingBorderResolver implements BorderResolver {
             resolveBordersLastRowInPart(
                     CollapsingBorderResolver.this.footerLastRow, true, true,
                     true);
-            CollapsingBorderResolver.this.trailingBorders = new ArrayList(
+            CollapsingBorderResolver.this.trailingBorders = new ArrayList<>(
                     CollapsingBorderResolver.this.table.getNumberOfColumns());
             // See same method in ResolverInHeader for an explanation of the
             // hack
-            for (final Iterator guIter = CollapsingBorderResolver.this.footerFirstRow
-                    .iterator(); guIter.hasNext();) {
-                final ConditionalBorder borderBefore = ((GridUnit) guIter
-                        .next()).borderBefore;
+            for (final Object element : CollapsingBorderResolver.this.footerFirstRow) {
+                final ConditionalBorder borderBefore = ((GridUnit) element).borderBefore;
                 borderBefore.leadingTrailing = borderBefore.normal;
                 borderBefore.rest = borderBefore.normal;
                 CollapsingBorderResolver.this.trailingBorders.add(borderBefore);
@@ -398,9 +391,8 @@ class CollapsingBorderResolver implements BorderResolver {
                     CollapsingBorderResolver.this.footerFirstRow);
             // See endRow method in ResolverInHeader for an explanation of the
             // hack
-            for (final Iterator guIter = CollapsingBorderResolver.this.footerLastRow
-                    .iterator(); guIter.hasNext();) {
-                final ConditionalBorder borderAfter = ((GridUnit) guIter.next()).borderAfter;
+            for (final Object element : CollapsingBorderResolver.this.footerLastRow) {
+                final ConditionalBorder borderAfter = ((GridUnit) element).borderAfter;
                 borderAfter.leadingTrailing = borderAfter.normal;
                 borderAfter.rest = borderAfter.normal;
             }
@@ -415,8 +407,7 @@ class CollapsingBorderResolver implements BorderResolver {
         private boolean firstInBody = true;
 
         @Override
-        void endRow(final List/* <GridUnit> */row,
-                final TableCellContainer container) {
+        void endRow(final List<GridUnit> row, final TableCellContainer container) {
             super.endRow(row, container);
             if (CollapsingBorderResolver.this.firstInTable) {
                 resolveBordersFirstRowInTable(row, true, true, true);
@@ -433,8 +424,8 @@ class CollapsingBorderResolver implements BorderResolver {
             CollapsingBorderResolver.this.previousRow = row;
             if (this.firstInBody) {
                 this.firstInBody = false;
-                for (final Iterator iter = row.iterator(); iter.hasNext();) {
-                    final GridUnit gu = (GridUnit) iter.next();
+                for (final Object element : row) {
+                    final GridUnit gu = (GridUnit) element;
                     gu.borderBefore.leadingTrailing = gu.borderBefore.normal;
                 }
             }
@@ -451,9 +442,8 @@ class CollapsingBorderResolver implements BorderResolver {
                         CollapsingBorderResolver.this.previousRow, true, false,
                         false);
             }
-            for (final Iterator iter = CollapsingBorderResolver.this.previousRow
-                    .iterator(); iter.hasNext();) {
-                final GridUnit gu = (GridUnit) iter.next();
+            for (final Object element : CollapsingBorderResolver.this.previousRow) {
+                final GridUnit gu = (GridUnit) element;
                 gu.borderAfter.leadingTrailing = gu.borderAfter.normal;
             }
         }
@@ -481,7 +471,7 @@ class CollapsingBorderResolver implements BorderResolver {
              * TODO The border resolution must be done only once for each table
              * column, even if it's repeated; otherwise, re-resolving against
              * the table's borders will lead to null border specifications.
-             * 
+             *
              * Eventually table columns should probably be cloned instead.
              */
             index += col.getNumberColumnsRepeated();
@@ -490,7 +480,7 @@ class CollapsingBorderResolver implements BorderResolver {
 
     /** {@inheritDoc} */
     @Override
-    public void endRow(final List/* <GridUnit> */row,
+    public void endRow(final List<GridUnit> row,
             final TableCellContainer container) {
         this.delegate.endRow(row, container);
     }
@@ -503,12 +493,10 @@ class CollapsingBorderResolver implements BorderResolver {
         } else {
             if (this.leadingBorders == null || this.table.omitHeaderAtBreak()) {
                 // No header, leading borders determined by the table
-                this.leadingBorders = new ArrayList(
+                this.leadingBorders = new ArrayList<>(
                         this.table.getNumberOfColumns());
-                for (final Iterator colIter = this.table.getColumns()
-                        .iterator(); colIter.hasNext();) {
-                    final ConditionalBorder border = ((TableColumn) colIter
-                            .next()).borderBefore;
+                for (final Object element : this.table.getColumns()) {
+                    final ConditionalBorder border = ((TableColumn) element).borderBefore;
                     this.leadingBorders.add(border);
                 }
             }
@@ -519,12 +507,10 @@ class CollapsingBorderResolver implements BorderResolver {
                 if (this.trailingBorders == null
                         || this.table.omitFooterAtBreak()) {
                     // No footer, trailing borders determined by the table
-                    this.trailingBorders = new ArrayList(
+                    this.trailingBorders = new ArrayList<>(
                             this.table.getNumberOfColumns());
-                    for (final Iterator colIter = this.table.getColumns()
-                            .iterator(); colIter.hasNext();) {
-                        final ConditionalBorder border = ((TableColumn) colIter
-                                .next()).borderAfter;
+                    for (final Object element : this.table.getColumns()) {
+                        final ConditionalBorder border = ((TableColumn) element).borderAfter;
                         this.trailingBorders.add(border);
                     }
                 }
@@ -547,16 +533,14 @@ class CollapsingBorderResolver implements BorderResolver {
         this.delegate = null;
         /* TODO Temporary hack for resolved borders in header */
         if (this.headerLastRow != null) {
-            for (final Iterator iter = this.headerLastRow.iterator(); iter
-                    .hasNext();) {
-                final GridUnit gu = (GridUnit) iter.next();
+            for (final Object element : this.headerLastRow) {
+                final GridUnit gu = (GridUnit) element;
                 gu.borderAfter.leadingTrailing = gu.borderAfter.normal;
             }
         }
         if (this.footerLastRow != null) {
-            for (final Iterator iter = this.footerLastRow.iterator(); iter
-                    .hasNext();) {
-                final GridUnit gu = (GridUnit) iter.next();
+            for (final Object element : this.footerLastRow) {
+                final GridUnit gu = (GridUnit) element;
                 gu.borderAfter.leadingTrailing = gu.borderAfter.normal;
             }
         }

@@ -21,8 +21,8 @@ package org.apache.fop.layoutmgr.inline;
 
 import java.util.List;
 
-import org.apache.fop.layoutmgr.KnuthElement;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 
 /**
@@ -39,7 +39,7 @@ public interface InlineLevelLayoutManager extends LayoutManager {
      *            the elements which must be given one more letter space
      * @return the new elements replacing the old ones
      */
-    List<KnuthElement> addALetterSpaceTo(final List<KnuthElement> oldList);
+    List<ListElement> addALetterSpaceTo(final List<ListElement> oldList);
 
     /**
      * Tell the LM to modify its data, removing the word space represented by
@@ -48,7 +48,7 @@ public interface InlineLevelLayoutManager extends LayoutManager {
      * @param oldList
      *            the elements representing the word space
      */
-    void removeWordSpace(final List<KnuthElement> oldList);
+    void removeWordSpace(final List<ListElement> oldList);
 
     /**
      * Get the word chars corresponding to the given position.
@@ -75,6 +75,6 @@ public interface InlineLevelLayoutManager extends LayoutManager {
      *            the list of the old elements the changes refer to
      * @return true if the LM had to change its data, false otherwise
      */
-    boolean applyChanges(final List oldList);
+    boolean applyChanges(final List<ListElement> oldList);
 
 }

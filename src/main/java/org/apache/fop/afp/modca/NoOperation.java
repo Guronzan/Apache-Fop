@@ -96,7 +96,7 @@ public class NoOperation extends AbstractAFPObject {
         data[8] = 0x00; // Reserved
 
         int pos = 9;
-        for (int i = 0; i < contentLen; i++) {
+        for (int i = 0; i < contentLen; ++i) {
             data[pos++] = contentData[i];
         }
         os.write(data);

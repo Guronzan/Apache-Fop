@@ -22,6 +22,7 @@ package org.apache.fop.render.intermediate;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xmlgraphics.java2d.GraphicContext;
@@ -33,7 +34,7 @@ public class IFGraphicContext extends GraphicContext {
 
     private static final AffineTransform[] EMPTY_TRANSFORM_ARRAY = new AffineTransform[0];
 
-    private final List groupList = new java.util.ArrayList();
+    private final List<Group> groupList = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -62,13 +63,13 @@ public class IFGraphicContext extends GraphicContext {
     public void pushGroup(final Group group) {
         // this.groupDepth++;
         this.groupList.add(group);
-        for (int i = 0, c = group.getTransforms().length; i < c; i++) {
-            transform(group.getTransforms()[i]);
+        for (final AffineTransform transform : group.getTransforms()) {
+            transform(transform);
         }
     }
 
     public Group[] getGroups() {
-        return (Group[]) this.groupList.toArray(new Group[getGroupStackSize()]);
+        return this.groupList.toArray(new Group[getGroupStackSize()]);
     }
 
     public Group[] dropGroups() {

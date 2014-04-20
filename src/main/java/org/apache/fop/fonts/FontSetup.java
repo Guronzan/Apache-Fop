@@ -282,7 +282,7 @@ public class FontSetup {
 
         String internalName = null;
 
-        for (int i = 0; i < embedFontInfoList.size(); i++) {
+        for (int i = 0; i < embedFontInfoList.size(); ++i) {
             final EmbedFontInfo embedFontInfo = (EmbedFontInfo) embedFontInfoList
                     .get(i);
 

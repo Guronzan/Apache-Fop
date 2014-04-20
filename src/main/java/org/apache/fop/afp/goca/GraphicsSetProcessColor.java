@@ -83,7 +83,7 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
 
         // COLSIZE(S)
         final byte[] colsizes = new byte[] { 0x00, 0x00, 0x00, 0x00 };
-        for (int i = 0; i < this.colorComponents.length; i++) {
+        for (int i = 0; i < this.colorComponents.length; ++i) {
             colsizes[i] = (byte) 8;
         }
 
@@ -103,7 +103,7 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
         data[11] = colsizes[3];
 
         // COLVALUE(S)
-        for (int i = 0; i < this.colorComponents.length; i++) {
+        for (int i = 0; i < this.colorComponents.length; ++i) {
             data[i + 12] = (byte) (this.colorComponents[i] * 255);
         }
 

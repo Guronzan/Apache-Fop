@@ -37,9 +37,9 @@ public class KnuthBlockBox extends KnuthBox {
      * MinOptMax object.
      */
     private final int bpd;
-    private final List footnoteList;
+    private final List<FootnoteBodyLayoutManager> footnoteList;
     /** List of Knuth elements. This is a list of LinkedList elements. */
-    private List elementLists = null;
+    private List<List<ListElement>> elementLists;
 
     /**
      * Creates a new box.
@@ -60,7 +60,7 @@ public class KnuthBlockBox extends KnuthBox {
         super(width, pos, auxiliary);
         this.ipdRange = range;
         this.bpd = bpdim;
-        this.footnoteList = new LinkedList();
+        this.footnoteList = new LinkedList<>();
     }
 
     /**
@@ -76,18 +76,19 @@ public class KnuthBlockBox extends KnuthBox {
      * @param auxiliary
      *            is this box auxiliary?
      */
-    public KnuthBlockBox(final int width, final List list, final Position pos,
+    public KnuthBlockBox(final int width,
+            final List<FootnoteBodyLayoutManager> list, final Position pos,
             final boolean auxiliary) {
         super(width, pos, auxiliary);
         this.ipdRange = MinOptMax.ZERO;
         this.bpd = 0;
-        this.footnoteList = new LinkedList(list);
+        this.footnoteList = new LinkedList<>(list);
     }
 
     /**
      * @return the LMs for the footnotes cited in this box.
      */
-    public List getFootnoteBodyLMs() {
+    public List<FootnoteBodyLayoutManager> getFootnoteBodyLMs() {
         return this.footnoteList;
     }
 
@@ -104,9 +105,9 @@ public class KnuthBlockBox extends KnuthBox {
      * @param list
      *            elements corresponding to a footnote body
      */
-    public void addElementList(final List list) {
+    public void addElementList(final List<ListElement> list) {
         if (this.elementLists == null) {
-            this.elementLists = new LinkedList();
+            this.elementLists = new LinkedList<>();
         }
         this.elementLists.add(list);
     }
@@ -117,7 +118,7 @@ public class KnuthBlockBox extends KnuthBox {
      * @return a list of KnuthElement sequences corresponding to footnotes cited
      *         in this box
      */
-    public List getElementLists() {
+    public List<List<ListElement>> getElementLists() {
         return this.elementLists;
     }
 

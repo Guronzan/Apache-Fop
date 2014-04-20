@@ -1261,7 +1261,7 @@ public class AreaTreeParser {
                 if (value != null) {
                     final Class cl = Trait.getTraitClass(trait);
                     if (cl == Integer.class) {
-                        area.addTrait(trait, new Integer(value));
+                        area.addTrait(trait, (value));
                     } else if (cl == Boolean.class) {
                         area.addTrait(trait, Boolean.valueOf(value));
                     } else if (cl == String.class) {
@@ -1379,7 +1379,7 @@ public class AreaTreeParser {
 
         private static void transferForeignObjects(final Attributes atts,
                 final AreaTreeObject ato) {
-            for (int i = 0, c = atts.getLength(); i < c; i++) {
+            for (int i = 0, c = atts.getLength(); i < c; ++i) {
                 final String ns = atts.getURI(i);
                 if (ns.length() > 0) {
                     if (XMLConstants.XMLNS_NAMESPACE_URI.equals(ns)) {

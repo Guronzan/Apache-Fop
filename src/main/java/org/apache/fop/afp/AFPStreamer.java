@@ -216,7 +216,7 @@ public class AFPStreamer implements Streamable {
         this.documentFile.seek(0);
         if (numChunks > 0) {
             buffer = new byte[BUFFER_SIZE];
-            for (int i = 0; i < numChunks; i++) {
+            for (int i = 0; i < numChunks; ++i) {
                 this.documentFile.read(buffer, 0, BUFFER_SIZE);
                 os.write(buffer, 0, BUFFER_SIZE);
             }

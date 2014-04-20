@@ -37,6 +37,7 @@ import org.apache.fop.layoutmgr.KnuthPenalty;
 import org.apache.fop.layoutmgr.KnuthSequence;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LeafPosition;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
 import org.apache.fop.layoutmgr.TraitSetter;
@@ -50,7 +51,7 @@ import org.apache.fop.traits.MinOptMax;
  */
 @Slf4j
 public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
-        implements InlineLevelLayoutManager {
+implements InlineLevelLayoutManager {
 
     /**
      * The inline area that this leafnode will add.
@@ -308,7 +309,7 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
 
     /** {@inheritDoc} */
     @Override
-    public List<KnuthElement> addALetterSpaceTo(final List<KnuthElement> oldList) {
+    public List<ListElement> addALetterSpaceTo(final List<ListElement> oldList) {
         // return the unchanged elements
         return oldList;
     }
@@ -346,13 +347,13 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
 
     /** {@inheritDoc} */
     @Override
-    public List<KnuthElement> getChangedKnuthElements(final List oldList,
-            final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         if (isFinished()) {
             return null;
         }
 
-        final LinkedList<KnuthElement> returnList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
 
         addKnuthElementsForBorderPaddingStart(returnList);
 
@@ -376,7 +377,7 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
      *            return list to add the additional elements to
      */
     protected void addKnuthElementsForBorderPaddingStart(
-            final List<KnuthElement> returnList) {
+            final List<ListElement> returnList) {
         // Border and Padding (start)
         if (this.commonBorderPaddingBackground != null) {
             final int ipStart = this.commonBorderPaddingBackground
@@ -401,7 +402,7 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
      *            return list to add the additional elements to
      */
     protected void addKnuthElementsForBorderPaddingEnd(
-            final List<KnuthElement> returnList) {
+            final List<ListElement> returnList) {
         // Border and Padding (after)
         if (this.commonBorderPaddingBackground != null) {
             final int ipEnd = this.commonBorderPaddingBackground

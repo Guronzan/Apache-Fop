@@ -149,7 +149,7 @@ class ActiveCell {
             this.penaltyValue = other.penaltyValue;
             if (other.footnoteList != null) {
                 if (this.footnoteList == null) {
-                    this.footnoteList = new ArrayList();
+                    this.footnoteList = new ArrayList<>();
                 }
                 this.footnoteList.addAll(other.footnoteList);
             }
@@ -375,7 +375,7 @@ class ActiveCell {
                 if (el instanceof KnuthBlockBox
                         && ((KnuthBlockBox) el).hasAnchors()) {
                     if (this.afterNextStep.footnoteList == null) {
-                        this.afterNextStep.footnoteList = new LinkedList();
+                        this.afterNextStep.footnoteList = new LinkedList<>();
                     }
                     this.afterNextStep.footnoteList.addAll(((KnuthBlockBox) el)
                             .getFootnoteBodyLMs());
@@ -424,7 +424,7 @@ class ActiveCell {
                 + this.totalLength
                 + this.paddingAfterNormal
                 + this.pgu
-                .getAfterBorderWidth(ConditionalBorder.LEADING_TRAILING);
+                        .getAfterBorderWidth(ConditionalBorder.LEADING_TRAILING);
         log.debug(this + ": last step = " + lastStep);
         return lastStep;
     }
@@ -566,7 +566,7 @@ class ActiveCell {
             this.nextStep.totalLength -= this.bpAfterTrailing;
             this.bpAfterTrailing = this.paddingAfterNormal
                     + this.pgu
-                    .getAfterBorderWidth(ConditionalBorder.LEADING_TRAILING);
+                            .getAfterBorderWidth(ConditionalBorder.LEADING_TRAILING);
             // ... and add the new one
             this.nextStep.totalLength += this.bpAfterTrailing;
             this.lastCellPart = true;

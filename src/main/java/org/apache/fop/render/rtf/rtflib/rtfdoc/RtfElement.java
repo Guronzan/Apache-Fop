@@ -304,7 +304,7 @@ public abstract class RtfElement {
 
     /** debugging to given PrintWriter */
     void dump(final Writer w, final int indent) throws IOException {
-        for (int i = 0; i < indent; i++) {
+        for (int i = 0; i < indent; ++i) {
             w.write(' ');
         }
         w.write(toString());

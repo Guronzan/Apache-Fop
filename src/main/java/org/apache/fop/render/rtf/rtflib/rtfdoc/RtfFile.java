@@ -113,7 +113,7 @@ public class RtfFile extends RtfContainer {
         if (this.listTable != null) {
             return this.listTable;
         } else {
-            this.listTable = new RtfListTable(this, this.writer, new Integer(
+            this.listTable = new RtfListTable(this, this.writer, (
                     this.listNum), attr);
             this.listTableContainer.addChild(this.listTable);
         }

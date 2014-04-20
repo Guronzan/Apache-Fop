@@ -37,6 +37,7 @@ import org.apache.fop.layoutmgr.BreakElement;
 import org.apache.fop.layoutmgr.ConditionalElementListener;
 import org.apache.fop.layoutmgr.ElementListObserver;
 import org.apache.fop.layoutmgr.ElementListUtils;
+import org.apache.fop.layoutmgr.FootnoteBodyLayoutManager;
 import org.apache.fop.layoutmgr.Keep;
 import org.apache.fop.layoutmgr.KnuthBlockBox;
 import org.apache.fop.layoutmgr.KnuthBox;
@@ -61,7 +62,7 @@ import org.apache.fop.traits.SpaceVal;
  */
 @Slf4j
 public class ListItemLayoutManager extends BlockStackingLayoutManager implements
-ConditionalElementListener {
+        ConditionalElementListener {
 
     private ListItemContentLayoutManager label;
     private ListItemContentLayoutManager body;
@@ -126,9 +127,9 @@ ConditionalElementListener {
             final StringBuilder sb = new StringBuilder("ListItemPosition:");
             sb.append(getIndex()).append("(");
             sb.append("label:").append(this.iLabelFirstIndex).append("-")
-            .append(this.iLabelLastIndex);
+                    .append(this.iLabelLastIndex);
             sb.append(" body:").append(this.iBodyFirstIndex).append("-")
-            .append(this.iBodyLastIndex);
+                    .append(this.iBodyLastIndex);
             sb.append(")");
             return sb.toString();
         }
@@ -184,7 +185,7 @@ ConditionalElementListener {
                 .getCommonMarginBlock().spaceBefore, this).getSpace();
         this.foSpaceAfter = new SpaceVal(
                 getListItemFO().getCommonMarginBlock().spaceAfter, this)
-        .getSpace();
+                .getSpace();
         this.startIndent = getListItemFO().getCommonMarginBlock().startIndent
                 .getValue(this);
         this.endIndent = getListItemFO().getCommonMarginBlock().endIndent
@@ -285,8 +286,8 @@ ConditionalElementListener {
     private List getCombinedKnuthElementsForListItem(final List labelElements,
             final List bodyElements, final LayoutContext context) {
         // Copy elements to array lists to improve element access performance
-        final List[] elementLists = { new ArrayList(labelElements),
-                new ArrayList(bodyElements) };
+        final List[] elementLists = { new ArrayList<>(labelElements),
+                new ArrayList<>(bodyElements) };
         final int[] fullHeights = {
                 ElementListUtils.calcContentLength(elementLists[0]),
                 ElementListUtils.calcContentLength(elementLists[1]) };
@@ -299,7 +300,7 @@ ConditionalElementListener {
         int addedBoxHeight = 0;
         Keep keepWithNextActive = Keep.KEEP_AUTO;
 
-        final LinkedList returnList = new LinkedList();
+        final List returnList = new LinkedList<>();
         while ((step = getNextStep(elementLists, start, end, partialHeights)) > 0) {
 
             if (end[0] + 1 == elementLists[0].size()) {
@@ -339,15 +340,15 @@ ConditionalElementListener {
             // TODO this should really not be done like this. ListItemLM should
             // remain as
             // footnote-agnostic as possible
-            LinkedList footnoteList = null;
+            LinkedList<FootnoteBodyLayoutManager> footnoteList = null;
             ListElement el;
-            for (int i = 0; i < elementLists.length; i++) {
+            for (int i = 0; i < elementLists.length; ++i) {
                 for (int j = start[i]; j <= end[i]; j++) {
                     el = (ListElement) elementLists[i].get(j);
                     if (el instanceof KnuthBlockBox
                             && ((KnuthBlockBox) el).hasAnchors()) {
                         if (footnoteList == null) {
-                            footnoteList = new LinkedList();
+                            footnoteList = new LinkedList<>();
                         }
                         footnoteList.addAll(((KnuthBlockBox) el)
                                 .getFootnoteBodyLMs());
@@ -391,7 +392,7 @@ ConditionalElementListener {
 
         // get next possible sequence for label and body
         int seqCount = 0;
-        for (int i = 0; i < start.length; i++) {
+        for (int i = 0; i < start.length; ++i) {
             while (end[i] + 1 < elementLists[i].size()) {
                 end[i]++;
                 final KnuthElement el = (KnuthElement) elementLists[i]
@@ -433,16 +434,16 @@ ConditionalElementListener {
             // a label area and a body area
             step = Math.max(end[0] >= start[0] ? partialHeights[0]
                     : Integer.MIN_VALUE, end[1] >= start[1] ? partialHeights[1]
-                            : Integer.MIN_VALUE);
+                    : Integer.MIN_VALUE);
         } else {
             // this is not the first step: choose the minimum increase
             step = Math.min(end[0] >= start[0] ? partialHeights[0]
                     : Integer.MAX_VALUE, end[1] >= start[1] ? partialHeights[1]
-                            : Integer.MAX_VALUE);
+                    : Integer.MAX_VALUE);
         }
 
         // reset bigger-than-step sequences
-        for (int i = 0; i < partialHeights.length; i++) {
+        for (int i = 0; i < partialHeights.length; ++i) {
             if (partialHeights[i] > step) {
                 partialHeights[i] = backupHeights[i];
                 end[i] = start[i] - 1;
@@ -532,7 +533,7 @@ ConditionalElementListener {
         Position lastPos = null;
 
         // "unwrap" the NonLeafPositions stored in parentIter
-        final LinkedList positionList = new LinkedList();
+        final LinkedList<Position> positionList = new LinkedList<Position>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = (Position) parentIter.next();
@@ -657,7 +658,7 @@ ConditionalElementListener {
 
             // Set up dimensions
             /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.curBlockArea);
+                    .getParentArea(this.curBlockArea);
 
             // set traits
             TraitSetter.setProducerID(this.curBlockArea, getListItemFO()

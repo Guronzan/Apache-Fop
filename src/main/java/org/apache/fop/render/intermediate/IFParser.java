@@ -757,7 +757,7 @@ public class IFParser implements IFConstants {
                 final int height = Integer.parseInt(attributes
                         .getValue("height"));
                 final BorderProps[] borders = new BorderProps[4];
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; ++i) {
                     final String b = attributes.getValue(SIDES[i]);
                     if (b != null) {
                         borders[i] = BorderProps.valueOf(
@@ -853,7 +853,7 @@ public class IFParser implements IFConstants {
         private static Map<QName, String> getForeignAttributes(
                 final Attributes atts) {
             Map<QName, String> foreignAttributes = null;
-            for (int i = 0, c = atts.getLength(); i < c; i++) {
+            for (int i = 0, c = atts.getLength(); i < c; ++i) {
                 final String ns = atts.getURI(i);
                 if (ns.length() > 0) {
                     if (handledNamespaces.contains(ns)) {

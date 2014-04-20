@@ -22,9 +22,9 @@ package org.apache.fop.util;
 import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
@@ -39,11 +39,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
     private AbstractData data = null;
 
     /** the state stack */
-    private StateStack/* <AbstractData> */stateStack = new StateStack/*
-     * <
-     * AbstractData
-     * >
-     */();
+    private StateStack<AbstractData> stateStack = new StateStack<>();
 
     /**
      * Instantiates a new state data object
@@ -223,8 +219,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
      */
     public AffineTransform getTransform() {
         final AffineTransform at = new AffineTransform();
-        for (final Iterator iter = this.stateStack.iterator(); iter.hasNext();) {
-            final AbstractData data = (AbstractData) iter.next();
+        for (final AbstractData data : this.stateStack) {
             final AffineTransform stackTrans = data.getTransform();
             at.concatenate(stackTrans);
         }
@@ -256,7 +251,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
         if (this.stateStack.isEmpty()) {
             return null;
         } else {
-            final AbstractData baseData = (AbstractData) this.stateStack.get(0);
+            final AbstractData baseData = this.stateStack.get(0);
             return (AffineTransform) baseData.getTransform().clone();
         }
     }
@@ -303,7 +298,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
      */
     public AbstractData restore() {
         if (!this.stateStack.isEmpty()) {
-            setData((AbstractData) this.stateStack.pop());
+            setData(this.stateStack.pop());
             return this.data;
         } else {
             return null;
@@ -317,12 +312,11 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
      * @param dataList
      *            a state data list
      */
-    public void saveAll(final List/* <AbstractData> */dataList) {
-        final Iterator it = dataList.iterator();
-        while (it.hasNext()) {
+    public void saveAll(final List<AbstractData> dataList) {
+        for (final AbstractData abstractData : dataList) {
             // save current data on stack
             save();
-            setData((AbstractData) it.next());
+            setData(abstractData);
         }
     }
 
@@ -332,12 +326,8 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
      *
      * @return a list of state data popped from the stack
      */
-    public List/* <AbstractData> */restoreAll() {
-        final List/* <AbstractData> */dataList = new java.util.ArrayList/*
-         * <
-         * AbstractData
-         * >
-         */();
+    public List<AbstractData> restoreAll() {
+        final List<AbstractData> dataList = new ArrayList<>();
         AbstractData data;
         while (true) {
             data = getData();
@@ -373,7 +363,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
      *
      * @return the state stack
      */
-    protected Stack/* <AbstractData> */getStateStack() {
+    protected Stack<AbstractData> getStateStack() {
         return this.stateStack;
     }
 
@@ -381,7 +371,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
     @Override
     public Object clone() {
         final AbstractPaintingState state = instantiate();
-        state.stateStack = new StateStack(this.stateStack);
+        state.stateStack = new StateStack<>(this.stateStack);
         state.data = (AbstractData) this.data.clone();
         return state;
     }
@@ -394,8 +384,10 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
 
     /**
      * A stack implementation which holds state objects
+     *
+     * @param <T>
      */
-    public class StateStack extends java.util.Stack {
+    public class StateStack<T> extends Stack<T> {
 
         private static final long serialVersionUID = 4897178211223823041L;
 
@@ -412,7 +404,7 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
          * @param c
          *            initial contents of stack
          */
-        public StateStack(final Collection c) {
+        public StateStack(final Collection<T> c) {
             this.elementCount = c.size();
             // 10% for growth
             this.elementData = new Object[(int) Math.min(

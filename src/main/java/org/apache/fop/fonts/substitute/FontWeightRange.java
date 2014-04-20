@@ -111,7 +111,7 @@ public class FontWeightRange {
             cnt++;
         }
         final int[] range = new int[cnt];
-        for (int i = 0; i < cnt; i++) {
+        for (int i = 0; i < cnt; ++i) {
             range[i] = this.start + i * 100;
         }
         return range;

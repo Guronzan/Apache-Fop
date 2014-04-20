@@ -20,7 +20,8 @@
 package org.apache.fop.area;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,15 +38,15 @@ public class IDTracker {
     // HashMap of ID's whose area is located on one or more consecutive
     // PageViewports. Each ID has an arraylist of PageViewports that
     // form the defined area of this ID
-    private final Map idLocations = new java.util.HashMap();
+    private final Map<String, List<PageViewport>> idLocations = new HashMap<>();
 
     // idref's whose target PageViewports have yet to be identified
     // Each idref has a HashSet of Resolvable objects containing that idref
-    private final Map unresolvedIDRefs = new java.util.HashMap();
+    private final Map<String, Set<Resolvable>> unresolvedIDRefs = new HashMap<>();
 
-    private final Set unfinishedIDs = new java.util.HashSet();
+    private final Set<String> unfinishedIDs = new HashSet<>();
 
-    private final Set alreadyResolvedIDs = new java.util.HashSet();
+    private final Set<String> alreadyResolvedIDs = new HashSet<>();
 
     /**
      * Tie a PageViewport with an ID found on a child area of the PV. Note that
@@ -62,9 +63,9 @@ public class IDTracker {
         if (log.isDebugEnabled()) {
             log.debug("associateIDWithPageViewport(" + id + ", " + pv + ")");
         }
-        List pvList = (List) this.idLocations.get(id);
+        List<PageViewport> pvList = this.idLocations.get(id);
         if (pvList == null) { // first time ID located
-            pvList = new ArrayList();
+            pvList = new ArrayList<>();
             this.idLocations.put(id, pvList);
             pvList.add(pv);
             // signal the PageViewport that it is the first PV to contain this
@@ -122,11 +123,10 @@ public class IDTracker {
         }
         this.unfinishedIDs.remove(id);
 
-        final List pvList = (List) this.idLocations.get(id);
-        final Set todo = (Set) this.unresolvedIDRefs.get(id);
+        final List<PageViewport> pvList = this.idLocations.get(id);
+        final Set<Resolvable> todo = this.unresolvedIDRefs.get(id);
         if (todo != null) {
-            for (final Iterator iter = todo.iterator(); iter.hasNext();) {
-                final Resolvable res = (Resolvable) iter.next();
+            for (final Resolvable res : todo) {
                 res.resolveIDRef(id, pvList);
             }
             this.unresolvedIDRefs.remove(id);
@@ -155,11 +155,10 @@ public class IDTracker {
      *            of PageViewports
      */
     private void tryIDResolution(final String id, final PageViewport pv,
-            final List pvList) {
-        final Set todo = (Set) this.unresolvedIDRefs.get(id);
+            final List<PageViewport> pvList) {
+        final Set<Resolvable> todo = this.unresolvedIDRefs.get(id);
         if (todo != null) {
-            for (final Iterator iter = todo.iterator(); iter.hasNext();) {
-                final Resolvable res = (Resolvable) iter.next();
+            for (final Resolvable res : todo) {
                 if (!this.unfinishedIDs.contains(id)) {
                     res.resolveIDRef(id, pvList);
                 } else {
@@ -181,7 +180,7 @@ public class IDTracker {
         final String[] ids = pv.getIDRefs();
         if (ids != null) {
             for (final String id : ids) {
-                final List pvList = (List) this.idLocations.get(id);
+                final List<PageViewport> pvList = this.idLocations.get(id);
                 if (pvList != null) {
                     tryIDResolution(id, pv, pvList);
                 }
@@ -196,8 +195,8 @@ public class IDTracker {
      *            the id to lookup
      * @return the list of PageViewports
      */
-    public List getPageViewportsContainingID(final String id) {
-        return (List) this.idLocations.get(id);
+    public List<PageViewport> getPageViewportsContainingID(final String id) {
+        return this.idLocations.get(id);
     }
 
     /**
@@ -209,9 +208,9 @@ public class IDTracker {
      *            the Resolvable object needing the idref to be resolved
      */
     public void addUnresolvedIDRef(final String idref, final Resolvable res) {
-        Set todo = (Set) this.unresolvedIDRefs.get(idref);
+        Set<Resolvable> todo = this.unresolvedIDRefs.get(idref);
         if (todo == null) {
-            todo = new java.util.HashSet();
+            todo = new HashSet<>();
             this.unresolvedIDRefs.put(idref, todo);
         }
         // add Resolvable object to this HashSet

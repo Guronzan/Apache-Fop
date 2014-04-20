@@ -95,7 +95,7 @@ Constants {
                     checkEnumValues("ultra-expanded") };
         }
         final int baseValue = baseProperty.getEnum();
-        for (int i = 0; i < this.orderedFontStretchValues.length; i++) {
+        for (int i = 0; i < this.orderedFontStretchValues.length; ++i) {
             if (baseValue == this.orderedFontStretchValues[i].getEnum()) {
                 // increment/decrement the index and make sure its within the
                 // array bounds

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.fop.afp.Factory;
+import org.apache.fop.afp.Streamable;
 import org.apache.fop.afp.ioca.ImageCellPosition;
 import org.apache.fop.afp.ioca.ImageInputDescriptor;
 import org.apache.fop.afp.ioca.ImageOutputControl;
@@ -213,7 +214,7 @@ public class PageObject extends AbstractResourceGroupContainer {
      *            an AFP object
      */
     @Override
-    public void addObject(final Object obj) {
+    public void addObject(final Streamable obj) {
         endPresentationObject();
         super.addObject(obj);
     }

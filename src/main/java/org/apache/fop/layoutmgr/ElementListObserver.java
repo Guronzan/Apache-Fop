@@ -19,7 +19,7 @@
 
 package org.apache.fop.layoutmgr;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,17 +30,17 @@ import java.util.List;
  */
 public class ElementListObserver {
 
-    private static List activeObservers = null;
+    private static List<Observer> activeObservers = null;
 
     /**
      * Adds a new Observer to the list.
-     * 
+     *
      * @param observer
      *            the observer implementation
      */
     public static void addObserver(final Observer observer) {
         if (!isObservationActive()) {
-            activeObservers = new java.util.ArrayList();
+            activeObservers = new ArrayList<>();
         }
         activeObservers.add(observer);
     }
@@ -48,7 +48,7 @@ public class ElementListObserver {
     /**
      * Removes an Observer from the list. This call simply returns if the
      * observer was not on the list and does nothing.
-     * 
+     *
      * @param observer
      *            the observer to remove
      */
@@ -60,7 +60,7 @@ public class ElementListObserver {
 
     /**
      * Notifies all registered observers about the element list.
-     * 
+     *
      * @param elementList
      *            the Knuth element list
      * @param category
@@ -69,15 +69,14 @@ public class ElementListObserver {
      * @param id
      *            ID for the element list (may be null)
      */
-    public static void observe(final List elementList, final String category,
-            final String id) {
+    public static void observe(final List<ListElement> elementList,
+            final String category, final String id) {
         if (isObservationActive()) {
             if (category == null) {
                 throw new NullPointerException("category must not be null");
             }
-            final Iterator i = activeObservers.iterator();
-            while (i.hasNext()) {
-                ((Observer) i.next()).observe(elementList, category, id);
+            for (final Observer observer : activeObservers) {
+                observer.observe(elementList, category, id);
             }
         }
     }
@@ -94,7 +93,7 @@ public class ElementListObserver {
 
         /**
          * Notifies the observer about the element list.
-         * 
+         *
          * @param elementList
          *            the Knuth element list
          * @param category
@@ -103,8 +102,8 @@ public class ElementListObserver {
          * @param id
          *            ID for the element list (may be null)
          */
-        void observe(final List elementList, final String category,
-                final String id);
+        void observe(final List<ListElement> elementList,
+                final String category, final String id);
 
     }
 

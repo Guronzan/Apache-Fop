@@ -24,11 +24,14 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Serialize hyphenation patterns For all xml files in the source directory a
  * pattern file is built in the target directory This class may be called from
  * the ant build file in a java task
  */
+@Slf4j
 public class SerializeHyphPattern {
 
     private boolean errorDump = false;
@@ -88,9 +91,7 @@ public class SerializeHyphPattern {
                 out.writeObject(hTree);
                 out.close();
             } catch (final IOException ioe) {
-                System.err.println("Can't write compiled pattern file: "
-                        + outfile);
-                System.err.println(ioe);
+                log.error("Can't write compiled pattern file: " + outfile, ioe);
             }
         }
     }
@@ -99,12 +100,12 @@ public class SerializeHyphPattern {
      * serializes pattern files
      */
     private HyphenationTree buildPatternFile(final File infile) {
-        System.out.println("Processing " + infile);
+        log.info("Processing " + infile);
         final HyphenationTree hTree = new HyphenationTree();
         try {
             hTree.loadPatterns(infile.toString());
             if (this.errorDump) {
-                System.out.println("Stats: ");
+                log.info("Stats: ");
                 hTree.printStats();
             }
         } catch (final HyphenationException ex) {

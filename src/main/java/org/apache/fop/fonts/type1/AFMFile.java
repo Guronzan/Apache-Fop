@@ -21,10 +21,12 @@ package org.apache.fop.fonts.type1;
 
 import java.awt.geom.Dimension2D;
 import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.fop.fonts.NamedCharacter;
 import org.apache.fop.fonts.SingleByteEncoding;
@@ -54,16 +56,13 @@ public class AFMFile {
 
     private final AFMWritingDirectionMetrics[] writingDirectionMetrics = new AFMWritingDirectionMetrics[3];
 
-    private final List charMetrics = new java.util.ArrayList();
-    // List<AFMCharMetrics>
-    private final Map charNameToMetrics = new java.util.HashMap();
-    // Map<String, AFMCharMetrics>
+    private final List<AFMCharMetrics> charMetrics = new ArrayList<>();
+    private final Map<String, AFMCharMetrics> charNameToMetrics = new HashMap<>();
+
     private int firstChar = -1;
     private int lastChar = -1;
 
-    private Map kerningMap;
-
-    // Map<String, Map<String, Dimension2D>>
+    private Map<String, Map<String, Dimension2DDouble>> kerningMap;
 
     /**
      * Default constructor.
@@ -418,7 +417,7 @@ public class AFMFile {
      * @return the character metrics or null if there's no such character
      */
     public AFMCharMetrics getChar(final String name) {
-        return (AFMCharMetrics) this.charNameToMetrics.get(name);
+        return this.charNameToMetrics.get(name);
     }
 
     /**
@@ -427,7 +426,7 @@ public class AFMFile {
      *
      * @return a List of AFMCharMetrics instances
      */
-    public List getCharMetrics() {
+    public List<AFMCharMetrics> getCharMetrics() {
         return Collections.unmodifiableList(this.charMetrics);
     }
 
@@ -444,11 +443,11 @@ public class AFMFile {
     public void addXKerning(final String name1, final String name2,
             final double kx) {
         if (this.kerningMap == null) {
-            this.kerningMap = new java.util.HashMap();
+            this.kerningMap = new HashMap<>();
         }
-        Map entries = (Map) this.kerningMap.get(name1);
+        Map<String, Dimension2DDouble> entries = this.kerningMap.get(name1);
         if (entries == null) {
-            entries = new java.util.HashMap();
+            entries = new HashMap<>();
             this.kerningMap.put(name1, entries);
         }
         entries.put(name2, new Dimension2DDouble(kx, 0));
@@ -469,40 +468,39 @@ public class AFMFile {
      *
      * @return the kerning map or null if there is no kerning information.
      */
-    public Map createXKerningMapEncoded() {
+    public Map<Integer, Map<Integer, Integer>> createXKerningMapEncoded() {
         if (!hasKerning()) {
             return null;
         }
-        final Map m = new java.util.HashMap();
-        final Iterator iterFrom = this.kerningMap.entrySet().iterator();
-        while (iterFrom.hasNext()) {
-            final Map.Entry entryFrom = (Map.Entry) iterFrom.next();
-            final String name1 = (String) entryFrom.getKey();
+        final Map<Integer, Map<Integer, Integer>> m = new HashMap<>();
+        for (final Entry<String, Map<String, Dimension2DDouble>> entryFrom : this.kerningMap
+                .entrySet()) {
+            final String name1 = entryFrom.getKey();
             final AFMCharMetrics chm1 = getChar(name1);
             if (chm1 == null || !chm1.hasCharCode()) {
                 continue;
             }
-            Map container = null;
-            final Map entriesTo = (Map) entryFrom.getValue();
-            final Iterator iterTo = entriesTo.entrySet().iterator();
-            while (iterTo.hasNext()) {
-                final Map.Entry entryTo = (Map.Entry) iterTo.next();
-                final String name2 = (String) entryTo.getKey();
+            Map<Integer, Integer> container = null;
+            final Map<String, Dimension2DDouble> entriesTo = entryFrom
+                    .getValue();
+            for (final Entry<String, Dimension2DDouble> entryTo : entriesTo
+                    .entrySet()) {
+                final String name2 = entryTo.getKey();
                 final AFMCharMetrics chm2 = getChar(name2);
                 if (chm2 == null || !chm2.hasCharCode()) {
                     continue;
                 }
                 if (container == null) {
-                    final Integer k1 = new Integer(chm1.getCharCode());
-                    container = (Map) m.get(k1);
+                    final Integer k1 = chm1.getCharCode();
+                    container = m.get(k1);
                     if (container == null) {
-                        container = new java.util.HashMap();
+                        container = new HashMap<>();
                         m.put(k1, container);
                     }
                 }
-                final Dimension2D dim = (Dimension2D) entryTo.getValue();
-                container.put(new Integer(chm2.getCharCode()), new Integer(
-                        (int) Math.round(dim.getWidth())));
+                final Dimension2D dim = entryTo.getValue();
+                container.put(chm2.getCharCode(),
+                        (int) Math.round(dim.getWidth()));
             }
         }
         return m;
@@ -517,9 +515,7 @@ public class AFMFile {
      *            the encoding to replace the one given in the AFM
      */
     public void overridePrimaryEncoding(final SingleByteEncoding encoding) {
-        final Iterator iter = this.charMetrics.iterator();
-        while (iter.hasNext()) {
-            final AFMCharMetrics cm = (AFMCharMetrics) iter.next();
+        for (final AFMCharMetrics cm : this.charMetrics) {
             final NamedCharacter nc = cm.getCharacter();
             if (nc.hasSingleUnicodeValue()) {
                 final int mapped = encoding.mapChar(nc.getSingleUnicodeValue());

@@ -110,7 +110,7 @@ public class PDFWArray {
         final StringBuilder p = new StringBuilder();
         p.append("[ ");
         final int len = this.entries.size();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             final Object entry = this.entries.get(i);
             if (entry instanceof int[]) {
                 final int[] line = (int[]) entry;

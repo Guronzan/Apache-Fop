@@ -43,7 +43,7 @@ import org.xml.sax.Locator;
  * <code>fo:table</code></a> object.
  */
 public class Table extends TableFObj implements ColumnNumberManagerHolder,
-BreakPropertySet {
+        BreakPropertySet {
 
     /** properties */
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
@@ -72,7 +72,7 @@ BreakPropertySet {
     private Length orphanContentLimit;
 
     /** collection of columns in this table */
-    private List columns = new ArrayList();
+    private List columns = new ArrayList<>();
 
     private ColumnNumberManager columnNumberManager = new ColumnNumberManager();
 
@@ -309,7 +309,7 @@ BreakPropertySet {
     }
 
     private void finalizeColumns() throws FOPException {
-        for (int i = 0; i < this.columns.size(); i++) {
+        for (int i = 0; i < this.columns.size(); ++i) {
             if (this.columns.get(i) == null) {
                 this.columns.set(i, createImplicitColumn(i + 1));
             }
@@ -336,7 +336,7 @@ BreakPropertySet {
      */
     void ensureColumnNumber(final int columnNumber) throws FOPException {
         assert !this.hasExplicitColumns;
-        for (int i = this.columns.size() + 1; i <= columnNumber; i++) {
+        for (int i = this.columns.size() + 1; i <= columnNumber; ++i) {
             this.columns.add(createImplicitColumn(i));
         }
     }
@@ -380,7 +380,7 @@ BreakPropertySet {
         // for the time being, add the same column
         // (colRepeat - 1) times to the columns list
         // TODO: need to force the column-number (?)
-        for (int i = colNumber - 1; i < colNumber + colRepeat - 1; i++) {
+        for (int i = colNumber - 1; i < colNumber + colRepeat - 1; ++i) {
             this.columns.set(i, col);
         }
 
@@ -402,7 +402,7 @@ BreakPropertySet {
      *
      * @return a list of {@link TableColumn} elements, may contain null elements
      */
-    public List getColumns() {
+    public List<TableColumn> getColumns() {
         return this.columns;
     }
 

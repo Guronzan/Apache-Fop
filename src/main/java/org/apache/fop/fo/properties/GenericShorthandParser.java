@@ -19,8 +19,6 @@
 
 package org.apache.fop.fo.properties;
 
-import java.util.Iterator;
-
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
@@ -44,7 +42,7 @@ public class GenericShorthandParser implements ShorthandParser {
      */
     protected Property getElement(final Property list, final int index) {
         if (list.getList().size() > index) {
-            return (Property) list.getList().get(index);
+            return list.getList().get(index);
         } else {
             return null;
         }
@@ -69,7 +67,7 @@ public class GenericShorthandParser implements ShorthandParser {
 
     /**
      * Converts a property name into a Property
-     * 
+     *
      * @param propId
      *            the property ID in the Constants interface
      * @param maker
@@ -87,9 +85,7 @@ public class GenericShorthandParser implements ShorthandParser {
             final PropertyList propertyList) throws PropertyException {
         Property prop = null;
         // Try each of the stored values in turn
-        final Iterator iprop = property.getList().iterator();
-        while (iprop.hasNext() && prop == null) {
-            final Property p = (Property) iprop.next();
+        for (final Property p : property.getList()) {
             prop = maker.convertShorthandProperty(propertyList, p, null);
         }
         return prop;

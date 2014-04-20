@@ -24,9 +24,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.UIManager;
 
@@ -126,7 +127,7 @@ public class CommandLineOptions {
 
     private InputHandler inputHandler;
 
-    private Vector xsltParams = null;
+    private List xsltParams = null;
 
     private String mimicRenderer = null;
 
@@ -169,7 +170,7 @@ public class CommandLineOptions {
                 addXSLTParameter("fop-output-format", getOutputFormat());
                 addXSLTParameter("fop-version", Version.getVersion());
                 this.foUserAgent
-                .setConserveMemoryPolicy(this.conserveMemoryPolicy);
+                        .setConserveMemoryPolicy(this.conserveMemoryPolicy);
             } else {
                 return false;
             }
@@ -236,10 +237,10 @@ public class CommandLineOptions {
 
     private void addXSLTParameter(final String name, final String value) {
         if (this.xsltParams == null) {
-            this.xsltParams = new Vector();
+            this.xsltParams = new ArrayList<>();
         }
-        this.xsltParams.addElement(name);
-        this.xsltParams.addElement(value);
+        this.xsltParams.add(name);
+        this.xsltParams.add(value);
     }
 
     /**
@@ -257,7 +258,7 @@ public class CommandLineOptions {
             printUsage(System.out);
             return false;
         }
-        for (int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; ++i) {
             if (args[i].equals("-x") || args[i].equals("--dump-config")) {
                 this.showConfiguration = Boolean.TRUE;
             } else if (args[i].equals("-c")) {
@@ -553,17 +554,17 @@ public class CommandLineOptions {
             for (final String s : parts) {
                 if (s.matches("\\d+")) {
                     this.renderingOptions.put(PageableRenderer.START_PAGE,
-                            new Integer(s));
+                            (s));
                 } else if (s.matches("\\d+-\\d+")) {
                     final String[] startend = s.split("-");
                     this.renderingOptions.put(PageableRenderer.START_PAGE,
-                            new Integer(startend[0]));
+                            (startend[0]));
                     this.renderingOptions.put(PageableRenderer.END_PAGE,
-                            new Integer(startend[1]));
+                            (startend[1]));
                 } else {
                     final PagesMode mode = PagesMode.byName(s);
                     this.renderingOptions
-                    .put(PageableRenderer.PAGES_MODE, mode);
+                            .put(PageableRenderer.PAGES_MODE, mode);
                 }
             }
             return 1;
@@ -577,7 +578,7 @@ public class CommandLineOptions {
         if (i + 1 == args.length || isOption(args[i + 1])) {
             throw new FOPException("you must specify the number of copies");
         } else {
-            this.renderingOptions.put(PrintRenderer.COPIES, new Integer(
+            this.renderingOptions.put(PrintRenderer.COPIES, (
                     args[i + 1]));
             return 1;
         }
@@ -658,9 +659,9 @@ public class CommandLineOptions {
             if ("list".equals(mime)) {
                 final String[] mimes = this.factory.getRendererFactory()
                         .listSupportedMimeTypes();
-                System.out.println("Supported MIME types:");
+                log.info("Supported MIME types:");
                 for (final String mime2 : mimes) {
-                    System.out.println("  " + mime2);
+                    log.info("  " + mime2);
                 }
                 System.exit(0);
             }
@@ -1124,7 +1125,7 @@ public class CommandLineOptions {
     }
 
     private static void printVersion() {
-        System.out.println("FOP Version " + Version.getVersion());
+        log.info("FOP Version " + Version.getVersion());
     }
 
     /**
@@ -1222,13 +1223,13 @@ public class CommandLineOptions {
      */
     private void printUsagePrintOutput() {
         System.err
-        .println("USAGE: -print [from[-to][,even|odd]] [-copies numCopies]\n\n"
-                + "Example:\n"
-                + "all pages:                        fop infile.fo -print\n"
-                + "all pages with two copies:        fop infile.fo -print -copies 2\n"
-                + "all pages starting with page 7:   fop infile.fo -print 7\n"
-                + "pages 2 to 3:                     fop infile.fo -print 2-3\n"
-                + "only even page between 10 and 20: fop infile.fo -print 10-20,even\n");
+                .println("USAGE: -print [from[-to][,even|odd]] [-copies numCopies]\n\n"
+                        + "Example:\n"
+                        + "all pages:                        fop infile.fo -print\n"
+                        + "all pages with two copies:        fop infile.fo -print -copies 2\n"
+                        + "all pages starting with page 7:   fop infile.fo -print 7\n"
+                        + "pages 2 to 3:                     fop infile.fo -print 2-3\n"
+                        + "only even page between 10 and 20: fop infile.fo -print 10-20,even\n");
     }
 
     /**

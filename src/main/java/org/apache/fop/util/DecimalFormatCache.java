@@ -55,7 +55,7 @@ public class DecimalFormatCache {
     // DecimalFormat is not thread-safe!
     private static final ThreadLocal[] DECIMAL_FORMAT_CACHE = new DecimalFormatThreadLocal[17];
     static {
-        for (int i = 0, c = DECIMAL_FORMAT_CACHE.length; i < c; i++) {
+        for (int i = 0, c = DECIMAL_FORMAT_CACHE.length; i < c; ++i) {
             DECIMAL_FORMAT_CACHE[i] = new DecimalFormatThreadLocal(i);
         }
     }

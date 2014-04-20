@@ -407,7 +407,7 @@ public abstract class AbstractFOPTextPainter implements TextPainter {
         float wordWidth = 0;
         final float whitespaceWidth = font.getWidth(font.mapChar(' '));
 
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); ++i) {
             float charWidth;
             final char c = str.charAt(i);
             if (!(c == ' ' || c == '\n' || c == '\r' || c == '\t')) {
@@ -424,7 +424,7 @@ public abstract class AbstractFOPTextPainter implements TextPainter {
     }
 
     private boolean hasUnsupportedGlyphs(final String str, final Font font) {
-        for (int i = 0; i < str.length(); i++) {
+        for (int i = 0; i < str.length(); ++i) {
             final char c = str.charAt(i);
             if (!(c == ' ' || c == '\n' || c == '\r' || c == '\t')) {
                 if (!font.hasChar(c)) {

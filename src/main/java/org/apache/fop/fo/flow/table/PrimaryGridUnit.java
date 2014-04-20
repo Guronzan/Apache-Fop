@@ -323,7 +323,7 @@ public class PrimaryGridUnit extends GridUnit {
             widths[1] = getCell().getCommonBorderPaddingBackground()
                     .getBorderEndWidth(false);
         } else {
-            for (int i = 0; i < this.rows.size(); i++) {
+            for (int i = 0; i < this.rows.size(); ++i) {
                 final GridUnit[] gridUnits = (GridUnit[]) this.rows.get(i);
                 widths[0] = Math.max(widths[0], gridUnits[0].borderStart
                         .getBorderInfo().getRetainedWidth());

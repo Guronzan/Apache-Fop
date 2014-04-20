@@ -19,6 +19,7 @@
 
 package org.apache.fop.render.intermediate.extensions;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,12 +30,12 @@ public class Bookmark {
 
     private final String title;
     private final boolean show;
-    private List childBookmarks;
+    private List<Bookmark> childBookmarks;
     private AbstractAction action;
 
     /**
      * Creates a new bookmark.
-     * 
+     *
      * @param title
      *            the bookmark's title
      * @param show
@@ -51,7 +52,7 @@ public class Bookmark {
 
     /**
      * Returns the bookmark's title.
-     * 
+     *
      * @return the title
      */
     public String getTitle() {
@@ -60,7 +61,7 @@ public class Bookmark {
 
     /**
      * Indicates whether the bookmark shall be shown initially.
-     * 
+     *
      * @return true if it shall be shown
      */
     public boolean isShown() {
@@ -69,7 +70,7 @@ public class Bookmark {
 
     /**
      * Returns the action performed when the bookmark is clicked.
-     * 
+     *
      * @return the action
      */
     public AbstractAction getAction() {
@@ -78,7 +79,7 @@ public class Bookmark {
 
     /**
      * Sets the action performed when the bookmark is clicked.
-     * 
+     *
      * @param action
      *            the action
      */
@@ -88,25 +89,25 @@ public class Bookmark {
 
     /**
      * Adds a child bookmark.
-     * 
+     *
      * @param bookmark
      *            the child bookmark
      */
     public void addChildBookmark(final Bookmark bookmark) {
         if (this.childBookmarks == null) {
-            this.childBookmarks = new java.util.ArrayList();
+            this.childBookmarks = new ArrayList<>();
         }
         this.childBookmarks.add(bookmark);
     }
 
     /**
      * Returns a list of child bookmarks.
-     * 
+     *
      * @return the child bookmarks
      */
-    public List getChildBookmarks() {
+    public List<Bookmark> getChildBookmarks() {
         if (this.childBookmarks == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         } else {
             return Collections.unmodifiableList(this.childBookmarks);
         }

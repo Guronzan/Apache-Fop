@@ -70,7 +70,7 @@ public class FontDetector {
      * @throws FOPException
      *             thrown if a problem occurred during detection
      */
-    public void detect(final List/* <EmbedFontInfo> */fontInfoList)
+    public void detect(final List<EmbedFontInfo> fontInfoList)
             throws FOPException {
         // search in font base if it is defined and
         // is a directory but don't recurse
@@ -80,8 +80,8 @@ public class FontDetector {
             try {
                 final File fontBase = FileUtils.toFile(new URL(fontBaseURL));
                 if (fontBase != null) {
-                    final List/* <URL> */fontURLList = fontFileFinder
-                            .find(fontBase.getAbsolutePath());
+                    final List<File> fontURLList = fontFileFinder.find(fontBase
+                            .getAbsolutePath());
                     this.fontAdder.add(fontURLList, fontInfoList);
 
                     // Can only use the font base URL if it's a file URL
@@ -92,7 +92,7 @@ public class FontDetector {
         }
 
         // native o/s font directory finding
-        List/* <URL> */systemFontList;
+        List<File> systemFontList;
         try {
             systemFontList = fontFileFinder.find();
             this.fontAdder.add(systemFontList, fontInfoList);

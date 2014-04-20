@@ -205,7 +205,7 @@ public class PDFFilterList {
                 addFilter(new FlateFilter());
             }
         } else {
-            for (int i = 0; i < filterset.size(); i++) {
+            for (int i = 0; i < filterset.size(); ++i) {
                 final String v = (String) filterset.get(i);
                 addFilter(v);
             }
@@ -280,7 +280,7 @@ public class PDFFilterList {
     private String buildFilterEntries(final List names) {
         int filterCount = 0;
         final StringBuilder sb = new StringBuilder(64);
-        for (int i = 0; i < names.size(); i++) {
+        for (int i = 0; i < names.size(); ++i) {
             final String name = (String) names.get(i);
             if (name.length() > 0) {
                 filterCount++;
@@ -301,7 +301,7 @@ public class PDFFilterList {
 
     private void putFilterEntries(final PDFDictionary dict, final List names) {
         final PDFArray array = new PDFArray(dict);
-        for (int i = 0, c = names.size(); i < c; i++) {
+        for (int i = 0, c = names.size(); i < c; ++i) {
             final String name = (String) names.get(i);
             if (name.length() > 0) {
                 array.add(new PDFName(name));
@@ -347,7 +347,7 @@ public class PDFFilterList {
     private void putDecodeParams(final PDFDictionary dict, final List parms) {
         boolean needParmsEntry = false;
         final PDFArray array = new PDFArray(dict);
-        for (int i = 0, c = parms.size(); i < c; i++) {
+        for (int i = 0, c = parms.size(); i < c; ++i) {
             final Object obj = parms.get(i);
             if (obj != null) {
                 array.add(obj);

@@ -98,7 +98,7 @@ public class IDEStructureParameter implements Streamable {
                     "The number of bits per component must be between 0 and 255");
         }
         this.bitsPerIDE = new byte[numComponents];
-        for (int i = 0; i < numComponents; i++) {
+        for (int i = 0; i < numComponents; ++i) {
             this.bitsPerIDE[i] = (byte) bitsPerComponent;
         }
     }
@@ -112,7 +112,7 @@ public class IDEStructureParameter implements Streamable {
     public void setBitsPerComponent(final int[] bitsPerComponent) {
         final int numComponents = bitsPerComponent.length;
         this.bitsPerIDE = new byte[numComponents];
-        for (int i = 0; i < numComponents; i++) {
+        for (int i = 0; i < numComponents; ++i) {
             final int bits = bitsPerComponent[i];
             if (bits < 0 || bits >= 256) {
                 throw new IllegalArgumentException(
@@ -150,7 +150,7 @@ public class IDEStructureParameter implements Streamable {
         dout.writeByte(length - 2); // LENGTH
         dout.writeByte(flags); // FLAGS
         dout.writeByte(this.colorModel); // FORMAT
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; ++i) {
             dout.writeByte(0); // RESERVED
         }
         dout.write(this.bitsPerIDE); // component sizes

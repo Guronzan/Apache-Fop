@@ -167,8 +167,8 @@ public class PFBParser {
 
     private static final boolean byteCmp(final byte[] src, final int srcOffset,
             final byte[] cmp) {
-        for (int i = 0; i < cmp.length; i++) {
-            // System.out.println("Compare: " + src[srcOffset + i] + " " +
+        for (int i = 0; i < cmp.length; ++i) {
+            // log.info("Compare: " + src[srcOffset + i] + " " +
             // cmp[i]);
             if (src[srcOffset + i] != cmp[i]) {
                 return false;
@@ -179,14 +179,14 @@ public class PFBParser {
 
     private void calcLengths(final PFBData pfb, final byte[] originalData) {
         // Calculate length 1 and 3
-        // System.out.println ("Checking font, size = "+originalData.length);
+        // log.info ("Checking font, size = "+originalData.length);
 
         // Length1 is the size of the initial ascii portion
         // search for "currentfile eexec"
         // Get the first binary number and search backwards for "eexec"
         int len1 = 30;
 
-        // System.out.println("Length1="+len1);
+        // log.info("Length1="+len1);
         while (!byteCmp(originalData, len1 - CURRENTFILE_EEXEC.length,
                 CURRENTFILE_EEXEC)) {
             len1++;
@@ -200,7 +200,7 @@ public class PFBParser {
         len3 -= CLEARTOMARK.length;
         while (!byteCmp(originalData, originalData.length + len3, CLEARTOMARK)) {
             len3--;
-            // System.out.println("Len3="+len3);
+            // log.info("Len3="+len3);
         }
         len3 = -len3;
         len3++;
@@ -218,7 +218,7 @@ public class PFBParser {
                 numZeroes++;
             }
         }
-        // System.out.println("Length3="+len3);
+        // log.info("Length3="+len3);
 
         // Create the 3 segments
         byte[] buffer = new byte[len1];

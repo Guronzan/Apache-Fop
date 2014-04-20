@@ -595,7 +595,7 @@ public class RTFHandler extends FOEventHandler {
                     .convertMptToTwips(iWidth));
             this.builderContext.getTableContext().setNextColumnWidth(width);
             this.builderContext.getTableContext().setNextColumnRowSpanning(
-                    new Integer(0), null);
+                    (0), null);
             this.builderContext.getTableContext()
             .setNextFirstSpanningCol(false);
         } catch (final Exception e) {
@@ -851,10 +851,10 @@ public class RTFHandler extends FOEventHandler {
 
                 // set the number of rows spanned
                 tctx.setCurrentColumnRowSpanning(
-                        new Integer(numberRowsSpanned), cell.getRtfAttributes());
+                        (numberRowsSpanned), cell.getRtfAttributes());
             } else {
                 tctx.setCurrentColumnRowSpanning(
-                        new Integer(numberRowsSpanned), null);
+                        (numberRowsSpanned), null);
             }
 
             // process number-columns-spanned attribute
@@ -879,10 +879,10 @@ public class RTFHandler extends FOEventHandler {
                         hCell.setVMerge(RtfTableCell.MERGE_START);
 
                         // set the number of rows spanned
-                        tctx.setCurrentColumnRowSpanning(new Integer(
+                        tctx.setCurrentColumnRowSpanning((
                                 numberRowsSpanned), cell.getRtfAttributes());
                     } else {
-                        tctx.setCurrentColumnRowSpanning(new Integer(
+                        tctx.setCurrentColumnRowSpanning((
                                 numberRowsSpanned), cell.getRtfAttributes());
                     }
                 }

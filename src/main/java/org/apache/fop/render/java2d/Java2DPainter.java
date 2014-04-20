@@ -237,7 +237,7 @@ public class Java2DPainter extends AbstractIFPainter {
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
             final int wordSpacing, final int[] dx, final String text)
-            throws IFException {
+                    throws IFException {
         this.g2dState.updateColor(this.state.getTextColor());
         final FontTriplet triplet = new FontTriplet(this.state.getFontFamily(),
                 this.state.getFontStyle(), this.state.getFontWeight());
@@ -262,7 +262,7 @@ public class Java2DPainter extends AbstractIFPainter {
             cursor.setLocation(cursor.getX() - dx[0] / 10f, cursor.getY());
             gv.setGlyphPosition(0, cursor);
         }
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char orgChar = text.charAt(i);
             float glyphAdjust = 0;
             final int cw = font.getCharWidth(orgChar);

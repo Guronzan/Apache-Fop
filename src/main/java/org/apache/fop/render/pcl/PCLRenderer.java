@@ -1061,7 +1061,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
 
     private void restoreStateStackAfterBreakOut(final List breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
-        for (int i = 0, c = breakOutList.size(); i < c; i++) {
+        for (int i = 0, c = breakOutList.size(); i < c; ++i) {
             saveGraphicsState();
             this.graphicContext = (GraphicContext) breakOutList.get(i);
         }

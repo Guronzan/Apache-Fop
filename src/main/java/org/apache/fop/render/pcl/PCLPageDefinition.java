@@ -31,7 +31,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  */
 public class PCLPageDefinition {
 
-    private static List pageDefinitions;
+    private static List<PCLPageDefinition> pageDefinitions;
     private static PCLPageDefinition defaultPageDefinition;
 
     private final String name;
@@ -46,7 +46,7 @@ public class PCLPageDefinition {
 
     /**
      * Main constructor
-     * 
+     *
      * @param name
      *            the name of the page definition
      * @param selector
@@ -107,7 +107,7 @@ public class PCLPageDefinition {
 
     /**
      * Tries to determine a matching page definition.
-     * 
+     *
      * @param width
      *            the physical page width (in mpt)
      * @param height
@@ -118,9 +118,9 @@ public class PCLPageDefinition {
      */
     public static PCLPageDefinition getPageDefinition(final long width,
             final long height, final int errorMargin) {
-        final Iterator iter = pageDefinitions.iterator();
+        final Iterator<PCLPageDefinition> iter = pageDefinitions.iterator();
         while (iter.hasNext()) {
-            final PCLPageDefinition def = (PCLPageDefinition) iter.next();
+            final PCLPageDefinition def = iter.next();
             if (def.matches(width, height, errorMargin)) {
                 return def;
             }
@@ -130,15 +130,15 @@ public class PCLPageDefinition {
 
     /**
      * Returns a page definition based on a page format.
-     * 
+     *
      * @param name
      *            the name of the page format (ex. "A4" or "Letter")
      * @return the page definition or null if no match was found
      */
     public static PCLPageDefinition getPageDefinition(final String name) {
-        final Iterator iter = pageDefinitions.iterator();
+        final Iterator<PCLPageDefinition> iter = pageDefinitions.iterator();
         while (iter.hasNext()) {
-            final PCLPageDefinition def = (PCLPageDefinition) iter.next();
+            final PCLPageDefinition def = iter.next();
             if (def.getName().equalsIgnoreCase(name)) {
                 return def;
             }
@@ -154,7 +154,7 @@ public class PCLPageDefinition {
     /**
      * Converts an offset values for logical pages to millipoints. The values
      * are given as pixels in a 300dpi environment.
-     * 
+     *
      * @param offset
      *            the offset as given in the PCL 5 specification (under
      *            "Printable Area")
@@ -184,7 +184,7 @@ public class PCLPageDefinition {
     }
 
     private static void createPageDefinitions() {
-        pageDefinitions = new java.util.ArrayList();
+        pageDefinitions = new java.util.ArrayList<>();
         pageDefinitions.add(new PCLPageDefinition("Letter", 2,
                 createPhysicalPageSizeInch(8.5f, 11), createLogicalPageRect(75,
                         0, 2400, 3300), false));

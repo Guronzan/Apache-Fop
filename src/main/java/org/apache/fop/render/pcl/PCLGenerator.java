@@ -772,7 +772,7 @@ public class PCLGenerator {
     // (1-bit)
     private static final byte[] THRESHOLD_TABLE = new byte[256];
     static { // Initialize the arrays
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; ++i) {
             THRESHOLD_TABLE[i] = (byte) (i < 240 ? 255 : 0);
         }
     }

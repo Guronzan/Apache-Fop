@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -44,17 +45,16 @@ import org.apache.fop.traits.SpaceVal;
  */
 @Slf4j
 public class BlockLayoutManager extends BlockStackingLayoutManager implements
-ConditionalElementListener {
+        ConditionalElementListener {
 
     private Block curBlockArea;
 
     /** Iterator over the child layout managers. */
-    protected ListIterator proxyLMiter;
+    protected ListIterator<LayoutManager> proxyLMiter;
 
     private int lead = 12000;
     private Length lineHeight;
     private int follow = 2000;
-    // private int middleShift = 0;
 
     private boolean discardBorderBefore;
     private boolean discardBorderAfter;
@@ -94,10 +94,10 @@ ConditionalElementListener {
                 .getValue(this);
         this.foSpaceBefore = new SpaceVal(
                 getBlockFO().getCommonMarginBlock().spaceBefore, this)
-        .getSpace();
+                .getSpace();
         this.foSpaceAfter = new SpaceVal(
                 getBlockFO().getCommonMarginBlock().spaceAfter, this)
-        .getSpace();
+                .getSpace();
         this.bpUnit = 0; // non-standard extension
         if (this.bpUnit == 0) {
             // use optimum space values
@@ -116,14 +116,14 @@ ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         return getNextKnuthElements(context, alignment, null, null, null);
     }
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment, final Stack lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
         resetSpaces();
@@ -156,7 +156,7 @@ ConditionalElementListener {
          */
         public ProxyLMiter() {
             super(BlockLayoutManager.this);
-            this.listLMs = new java.util.ArrayList(10);
+            this.listLMs = new ArrayList<>(10);
         }
 
         /**
@@ -174,7 +174,8 @@ ConditionalElementListener {
          * @return true if new child lms were added
          */
         protected boolean createNextChildLMs(final int pos) {
-            final List newLMs = createChildLMs(pos + 1 - this.listLMs.size());
+            final List<LayoutManager> newLMs = createChildLMs(pos + 1
+                    - this.listLMs.size());
             if (newLMs != null) {
                 this.listLMs.addAll(newLMs);
             }
@@ -189,7 +190,7 @@ ConditionalElementListener {
     public boolean createNextChildLMs(final int pos) {
 
         while (this.proxyLMiter.hasNext()) {
-            final LayoutManager lm = (LayoutManager) this.proxyLMiter.next();
+            final LayoutManager lm = this.proxyLMiter.next();
             if (lm instanceof InlineLevelLayoutManager) {
                 final LineLayoutManager lineLM = createLineManager(lm);
                 addChildLM(lineLM);
@@ -212,13 +213,12 @@ ConditionalElementListener {
      * @return the newly created LineLM
      */
     private LineLayoutManager createLineManager(final LayoutManager firstlm) {
-        LineLayoutManager llm;
-        llm = new LineLayoutManager(getBlockFO(), this.lineHeight, this.lead,
-                this.follow);
-        final List inlines = new java.util.ArrayList();
+        final LineLayoutManager llm = new LineLayoutManager(getBlockFO(),
+                this.lineHeight, this.lead, this.follow);
+        final List<LayoutManager> inlines = new ArrayList<>();
         inlines.add(firstlm);
         while (this.proxyLMiter.hasNext()) {
-            final LayoutManager lm = (LayoutManager) this.proxyLMiter.next();
+            final LayoutManager lm = this.proxyLMiter.next();
             if (lm instanceof InlineLevelLayoutManager) {
                 inlines.add(lm);
             } else {
@@ -273,7 +273,7 @@ ConditionalElementListener {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList();
+        final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         boolean spaceBefore = false;
         boolean spaceAfter = false;
@@ -342,7 +342,7 @@ ConditionalElementListener {
             // // the last item inside positionList is a Position;
             // // this means that the paragraph has been split
             // // between consecutive pages
-            final LinkedList splitList = new LinkedList();
+            final LinkedList<KnuthElement> splitList = new LinkedList<>();
             int splitLength = 0;
             final int iFirst = ((MappingPosition) positionList.getFirst())
                     .getFirstIndex();
@@ -350,7 +350,7 @@ ConditionalElementListener {
                     .getLastIndex();
             // copy from storedList to splitList all the elements from
             // iFirst to iLast
-            final ListIterator storedListIterator = this.storedList
+            final ListIterator<ListElement> storedListIterator = this.storedList
                     .listIterator(iFirst);
             while (storedListIterator.nextIndex() <= iLast) {
                 final KnuthElement element = (KnuthElement) storedListIterator
@@ -451,7 +451,7 @@ ConditionalElementListener {
             // Must get dimensions from parent area
             // Don't optimize this line away. It can have ugly side-effects.
             /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.curBlockArea);
+                    .getParentArea(this.curBlockArea);
 
             // set traits
             TraitSetter.setProducerID(this.curBlockArea, getBlockFO().getId());

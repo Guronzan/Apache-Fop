@@ -114,7 +114,7 @@ public class URISpecification {
     public static String escapeURI(String uri) {
         uri = getURL(uri);
         final StringBuilder sb = new StringBuilder();
-        for (int i = 0, c = uri.length(); i < c; i++) {
+        for (int i = 0, c = uri.length(); i < c; ++i) {
             final char ch = uri.charAt(i);
             if (ch == '%') {
                 if (i < c - 3 && isHexDigit(uri.charAt(i + 1))

@@ -57,7 +57,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
         super.useGeneric(generic);
         if (generic instanceof CompoundPropertyMaker) {
             final CompoundPropertyMaker compoundGeneric = (CompoundPropertyMaker) generic;
-            for (int i = 0; i < Constants.COMPOUND_COUNT; i++) {
+            for (int i = 0; i < Constants.COMPOUND_COUNT; ++i) {
                 final PropertyMaker submaker = compoundGeneric.subproperties[i];
                 if (submaker != null) {
                     addSubpropMaker((PropertyMaker) submaker.clone());
@@ -190,7 +190,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
         if (p != null) {
             final Property prop = makeCompound(propertyList, fo);
             final CompoundDatatype pval = (CompoundDatatype) prop.getObject();
-            for (int i = 0; i < Constants.COMPOUND_COUNT; i++) {
+            for (int i = 0; i < Constants.COMPOUND_COUNT; ++i) {
                 final PropertyMaker submaker = this.subproperties[i];
                 if (submaker != null && submaker.setByShorthand) {
                     pval.setComponent(submaker.getPropId()
@@ -304,7 +304,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
             final FObj parentFO) throws PropertyException {
         final Property p = makeNewProperty();
         final CompoundDatatype data = (CompoundDatatype) p.getObject();
-        for (int i = 0; i < Constants.COMPOUND_COUNT; i++) {
+        for (int i = 0; i < Constants.COMPOUND_COUNT; ++i) {
             final PropertyMaker subpropertyMaker = this.subproperties[i];
             if (subpropertyMaker != null) {
                 final Property subproperty = subpropertyMaker

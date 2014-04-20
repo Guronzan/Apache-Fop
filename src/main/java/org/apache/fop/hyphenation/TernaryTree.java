@@ -19,9 +19,12 @@
 
 package org.apache.fop.hyphenation;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Stack;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * <h2>Ternary Search Tree.</h2>
@@ -65,6 +68,7 @@ import java.util.Stack;
  * @author cav@uniscope.co.jp
  */
 
+@Slf4j
 public class TernaryTree implements Cloneable, Serializable {
 
     /**
@@ -260,7 +264,7 @@ public class TernaryTree implements Cloneable, Serializable {
     public static int strcmp(final String str, final char[] a, final int start) {
         int i, d;
         final int len = str.length();
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < len; ++i) {
             d = str.charAt(i) - a[start + i];
             if (d != 0) {
                 return d;
@@ -285,7 +289,7 @@ public class TernaryTree implements Cloneable, Serializable {
 
     public static int strlen(final char[] a, final int start) {
         int len = 0;
-        for (int i = start; i < a.length && a[i] != 0; i++) {
+        for (int i = start; i < a.length && a[i] != 0; ++i) {
             len++;
         }
         return len;
@@ -324,7 +328,7 @@ public class TernaryTree implements Cloneable, Serializable {
                 if (c == 0) {
                     return this.eq[p];
                 }
-                i++;
+                ++i;
                 p = this.eq[p];
             } else if (d < 0) {
                 p = this.lo[p];
@@ -399,7 +403,7 @@ public class TernaryTree implements Cloneable, Serializable {
      */
     public void balance() {
         // System.out.print("Before root splitchar = ");
-        // System.out.println(sc[root]);
+        // log.info(sc[root]);
 
         int i = 0;
         final int n = this.length;
@@ -415,7 +419,7 @@ public class TernaryTree implements Cloneable, Serializable {
 
         // With uniform letter distribution sc[root] should be around 'm'
         // System.out.print("After root splitchar = ");
-        // System.out.println(sc[root]);
+        // log.info(sc[root]);
     }
 
     /**
@@ -651,31 +655,31 @@ public class TernaryTree implements Cloneable, Serializable {
     }
 
     public void printStats() {
-        System.out.println("Number of keys = " + Integer.toString(this.length));
-        System.out.println("Node count = " + Integer.toString(this.freenode));
-        // System.out.println("Array length = " + Integer.toString(eq.length));
-        System.out.println("Key Array length = "
-                + Integer.toString(this.kv.length()));
+        log.info("Number of keys = " + Integer.toString(this.length));
+        log.info("Node count = " + Integer.toString(this.freenode));
+        // log.info("Array length = " + Integer.toString(eq.length));
+        log.info("Key Array length = " + Integer.toString(this.kv.length()));
 
         /*
-         * for(int i=0; i<kv.length(); i++) if ( kv.get(i) != 0 )
-         * System.out.print(kv.get(i)); else System.out.println("");
-         * System.out.println("Keys:"); for(Enumeration enum = keys();
-         * enum.hasMoreElements(); ) System.out.println(enum.nextElement());
+         * for(int i=0; i<kv.length(); ++i) if ( kv.get(i) != 0 )
+         * System.out.print(kv.get(i)); else log.info(""); log.info("Keys:");
+         * for(Enumeration enum = keys(); enum.hasMoreElements(); )
+         * log.info(enum.nextElement());
          */
 
     }
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) throws IOException,
+            HyphenationException {
         final TernaryTree tt = new TernaryTree();
         tt.insert("Carlos", 'C');
         tt.insert("Car", 'r');
         tt.insert("palos", 'l');
         tt.insert("pa", 'p');
         tt.trimToSize();
-        System.out.println((char) tt.find("Car"));
-        System.out.println((char) tt.find("Carlos"));
-        System.out.println((char) tt.find("alto"));
+        log.info(String.valueOf((char) tt.find("Car")));
+        log.info(String.valueOf((char) tt.find("Carlos")));
+        log.info(String.valueOf((char) tt.find("alto")));
         tt.printStats();
     }
 

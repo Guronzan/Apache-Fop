@@ -19,7 +19,6 @@
 
 package org.apache.fop.fo.extensions;
 
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FOEventHandler;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
@@ -47,8 +46,7 @@ public abstract class ExtensionObj extends FObj {
      */
     @Override
     public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList pList)
-            throws FOPException {
+            final Attributes attlist, final PropertyList pList) {
         // Empty
     }
 
@@ -57,7 +55,7 @@ public abstract class ExtensionObj extends FObj {
      */
     @Override
     protected PropertyList createPropertyList(final PropertyList parent,
-            final FOEventHandler foEventHandler) throws FOPException {
+            final FOEventHandler foEventHandler) {
         return null;
     }
 }
