@@ -106,7 +106,7 @@ public class PDFPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void startViewport(final AffineTransform transform,
-            final Dimension size, final Rectangle clipRect) throws IFException {
+            final Dimension size, final Rectangle clipRect) {
         this.generator.saveGraphicsState();
         this.generator.concatenate(toPoints(transform));
         if (clipRect != null) {
@@ -116,24 +116,28 @@ public class PDFPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void endViewport() throws IFException {
+    public void endViewport() {
         this.generator.restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void startGroup(final AffineTransform transform) throws IFException {
+    public void startGroup(final AffineTransform transform) {
         this.generator.saveGraphicsState();
         this.generator.concatenate(toPoints(transform));
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endGroup() throws IFException {
+    public void endGroup() {
         this.generator.restoreGraphicsState();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void drawImage(final String uri, final Rectangle rect)
             throws IFException {
@@ -215,7 +219,11 @@ public class PDFPainter extends AbstractIFPainter {
         this.generator.restoreGraphicsStateAccess();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void drawImage(final Document doc, final Rectangle rect)
             throws IFException {
@@ -250,15 +258,14 @@ public class PDFPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void clipRect(final Rectangle rect) throws IFException {
+    public void clipRect(final Rectangle rect) {
         this.generator.endTextObject();
         this.generator.clipRect(rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void fillRect(final Rectangle rect, final Paint fill)
-            throws IFException {
+    public void fillRect(final Rectangle rect, final Paint fill) {
         if (fill == null) {
             return;
         }
@@ -289,7 +296,11 @@ public class PDFPainter extends AbstractIFPainter {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void drawBorderRect(final Rectangle rect, final BorderProps before,
             final BorderProps after, final BorderProps start,
@@ -307,7 +318,7 @@ public class PDFPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void drawLine(final Point start, final Point end, final int width,
-            final Color color, final RuleStyle style) throws IFException {
+            final Color color, final RuleStyle style) {
         this.generator.endTextObject();
         this.borderPainter.drawLine(start, end, width, color, style);
     }
@@ -326,8 +337,7 @@ public class PDFPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
-            final int wordSpacing, final int[] dx, final String text)
-            throws IFException {
+            final int wordSpacing, final int[] dx, final String text) {
         if (this.accessEnabled) {
             final String ptr = getContext().getStructurePointer();
             final MarkedContentInfo mci = this.logicalStructureHandler

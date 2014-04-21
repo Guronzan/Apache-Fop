@@ -49,52 +49,52 @@ public class Trait implements Serializable {
      * Internal link trait. Contains the PageViewport key and the PROD_ID of the
      * target area
      */
-    public static final Integer INTERNAL_LINK = (1);
+    public static final Integer INTERNAL_LINK = 1;
 
     /**
      * External link. A URL link to an external resource.
      */
-    public static final Integer EXTERNAL_LINK = (2);
+    public static final Integer EXTERNAL_LINK = 2;
 
     /**
      * The font triplet for the current font.
      */
-    public static final Integer FONT = (3);
+    public static final Integer FONT = 3;
 
     /**
      * Font size for the current font.
      */
-    public static final Integer FONT_SIZE = (4);
+    public static final Integer FONT_SIZE = 4;
 
     /**
      * The current color.
      */
-    public static final Integer COLOR = (7);
+    public static final Integer COLOR = 7;
 
     /**
      * The ID of the FO that produced an area.
      */
-    public static final Integer PROD_ID = (8);
+    public static final Integer PROD_ID = 8;
 
     /**
      * Background trait for an area.
      */
-    public static final Integer BACKGROUND = (9);
+    public static final Integer BACKGROUND = 9;
 
     /**
      * Underline trait used when rendering inline parent.
      */
-    public static final Integer UNDERLINE = (10);
+    public static final Integer UNDERLINE = 10;
 
     /**
      * Overline trait used when rendering inline parent.
      */
-    public static final Integer OVERLINE = (11);
+    public static final Integer OVERLINE = 11;
 
     /**
      * Linethrough trait used when rendering inline parent.
      */
-    public static final Integer LINETHROUGH = (12);
+    public static final Integer LINETHROUGH = 12;
 
     /**
      * Shadow offset.
@@ -109,52 +109,52 @@ public class Trait implements Serializable {
     /**
      * The border start.
      */
-    public static final Integer BORDER_START = (15);
+    public static final Integer BORDER_START = 15;
 
     /**
      * The border end.
      */
-    public static final Integer BORDER_END = (16);
+    public static final Integer BORDER_END = 16;
 
     /**
      * The border before.
      */
-    public static final Integer BORDER_BEFORE = (17);
+    public static final Integer BORDER_BEFORE = 17;
 
     /**
      * The border after.
      */
-    public static final Integer BORDER_AFTER = (18);
+    public static final Integer BORDER_AFTER = 18;
 
     /**
      * The padding start.
      */
-    public static final Integer PADDING_START = (19);
+    public static final Integer PADDING_START = 19;
 
     /**
      * The padding end.
      */
-    public static final Integer PADDING_END = (20);
+    public static final Integer PADDING_END = 20;
 
     /**
      * The padding before.
      */
-    public static final Integer PADDING_BEFORE = (21);
+    public static final Integer PADDING_BEFORE = 21;
 
     /**
      * The padding after.
      */
-    public static final Integer PADDING_AFTER = (22);
+    public static final Integer PADDING_AFTER = 22;
 
     /**
      * The space start.
      */
-    public static final Integer SPACE_START = (23);
+    public static final Integer SPACE_START = 23;
 
     /**
      * The space end.
      */
-    public static final Integer SPACE_END = (24);
+    public static final Integer SPACE_END = 24;
 
     /**
      * break before
@@ -169,37 +169,37 @@ public class Trait implements Serializable {
     /**
      * The start-indent trait.
      */
-    public static final Integer START_INDENT = (27);
+    public static final Integer START_INDENT = 27;
 
     /**
      * The end-indent trait.
      */
-    public static final Integer END_INDENT = (28);
+    public static final Integer END_INDENT = 28;
 
     /** The space-before trait. */
-    public static final Integer SPACE_BEFORE = (29);
+    public static final Integer SPACE_BEFORE = 29;
 
     /** The space-after trait. */
-    public static final Integer SPACE_AFTER = (30);
+    public static final Integer SPACE_AFTER = 30;
 
     /** The is-reference-area trait. */
-    public static final Integer IS_REFERENCE_AREA = (31);
+    public static final Integer IS_REFERENCE_AREA = 31;
 
     /** The is-viewport-area trait. */
-    public static final Integer IS_VIEWPORT_AREA = (32);
+    public static final Integer IS_VIEWPORT_AREA = 32;
 
     /** Blinking trait used when rendering inline parent. */
-    public static final Integer BLINK = (33);
+    public static final Integer BLINK = 33;
 
     /** Trait for color of underline decorations when rendering inline parent. */
-    public static final Integer UNDERLINE_COLOR = (34);
+    public static final Integer UNDERLINE_COLOR = 34;
     /** Trait for color of overline decorations when rendering inline parent. */
-    public static final Integer OVERLINE_COLOR = (35);
+    public static final Integer OVERLINE_COLOR = 35;
     /** Trait for color of linethrough decorations when rendering inline parent. */
-    public static final Integer LINETHROUGH_COLOR = (36);
+    public static final Integer LINETHROUGH_COLOR = 36;
 
     /** The ptr trait. Used for accessibility */
-    public static final Integer PTR = (37);
+    public static final Integer PTR = 37;
 
     /** Maximum value used by trait keys */
     public static final int MAX_TRAIT_KEY = 37;
@@ -282,8 +282,8 @@ public class Trait implements Serializable {
      *            the trait code to get the name for
      * @return the trait name
      */
-    public static String getTraitName(final Object traitCode) {
-        return TRAIT_INFO[((Integer) traitCode).intValue()].getName();
+    public static String getTraitName(final Integer traitCode) {
+        return TRAIT_INFO[traitCode.intValue()].getName();
     }
 
     /**
@@ -293,8 +293,8 @@ public class Trait implements Serializable {
      *            the trait code to lookup
      * @return the class type for the trait
      */
-    public static Class getTraitClass(final Object traitCode) {
-        return TRAIT_INFO[((Integer) traitCode).intValue()].getClazz();
+    public static Class getTraitClass(final Integer traitCode) {
+        return TRAIT_INFO[traitCode.intValue()].getClazz();
     }
 
     /**
@@ -424,7 +424,7 @@ public class Trait implements Serializable {
                         && attrValue.charAt(len - 1) == ')'
                         && attrValue.indexOf(',') != -1) {
                     final String value = attrValue.substring(1, len - 1); // remove
-                                                                          // brackets
+                    // brackets
                     final int delimIndex = value.indexOf(',');
                     result[0] = value.substring(0, delimIndex).trim(); // PV key
                     result[1] = value.substring(delimIndex + 1, value.length())
@@ -477,7 +477,7 @@ public class Trait implements Serializable {
         /**
          * Create an <code>ExternalLink</code> from a trait value/attribute
          * value in the area tree
-         * 
+         *
          * @param traitValue
          *            the value to use (should match the result of
          *            {@link #toString()}
@@ -504,7 +504,7 @@ public class Trait implements Serializable {
 
         /**
          * Get the target/destination of the link
-         * 
+         *
          * @return the destination of the link
          */
         public String getDestination() {
@@ -513,7 +513,7 @@ public class Trait implements Serializable {
 
         /**
          * Check if the target has to be displayed in a new window
-         * 
+         *
          * @return <code>true</code> if the target has to be displayed in a new
          *         window
          */
@@ -523,7 +523,7 @@ public class Trait implements Serializable {
 
         /**
          * Return a String representation of the object.
-         * 
+         *
          * @return a <code>String</code> of the form
          *         "org.apache.fop.area.Trait.ExternalLink[dest=someURL,newWindow=false]"
          */
@@ -567,7 +567,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the background color.
-         * 
+         *
          * @return background color, null if n/a
          */
         public Color getColor() {
@@ -576,7 +576,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the horizontal offset for images.
-         * 
+         *
          * @return the horizontal offset
          */
         public int getHoriz() {
@@ -585,7 +585,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the image repetition behaviour for images.
-         * 
+         *
          * @return the image repetition behaviour
          */
         public int getRepeat() {
@@ -594,7 +594,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the URL to the background image
-         * 
+         *
          * @return URL to the background image, null if n/a
          */
         public String getURL() {
@@ -603,7 +603,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the ImageInfo object representing the background image
-         * 
+         *
          * @return the background image, null if n/a
          */
         public ImageInfo getImageInfo() {
@@ -612,7 +612,7 @@ public class Trait implements Serializable {
 
         /**
          * Returns the vertical offset for images.
-         * 
+         *
          * @return the vertical offset
          */
         public int getVertical() {
@@ -621,7 +621,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the color.
-         * 
+         *
          * @param color
          *            The color to set
          */
@@ -631,7 +631,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the horizontal offset.
-         * 
+         *
          * @param horiz
          *            The horizontal offset to set
          */
@@ -641,7 +641,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the image repetition behaviour for images.
-         * 
+         *
          * @param repeat
          *            The image repetition behaviour to set
          */
@@ -651,7 +651,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the image repetition behaviour for images.
-         * 
+         *
          * @param repeat
          *            The image repetition behaviour to set
          */
@@ -661,7 +661,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the URL to the background image.
-         * 
+         *
          * @param url
          *            The URL to set
          */
@@ -671,7 +671,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the ImageInfo of the image to use as the background image.
-         * 
+         *
          * @param info
          *            The background image's info object
          */
@@ -681,7 +681,7 @@ public class Trait implements Serializable {
 
         /**
          * Sets the vertical offset for images.
-         * 
+         *
          * @param vertical
          *            The vertical offset to set
          */

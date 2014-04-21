@@ -112,7 +112,7 @@ public class PageNumber extends FObj implements StructurePointerPropertySet {
 
     /** {@inheritDoc} */
     @Override
-    protected void endOfNode() throws FOPException {
+    protected void endOfNode() {
         getFOEventHandler().endPageNumber(this);
     }
 

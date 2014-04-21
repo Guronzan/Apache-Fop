@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -822,8 +821,8 @@ public class PDFFactory {
      */
     public PDFPattern makeGradient(final PDFResourceContext res,
             final boolean radial, final PDFDeviceColorSpace theColorspace,
-            final List theColors, final List theBounds, final List theCoords,
-            final List theMatrix) {
+            final List<PDFColor> theColors, final List theBounds,
+            final List<Double> theCoords, final List<Double> theMatrix) {
         PDFShading myShad;
         PDFFunction myfunky;
         PDFFunction myfunc;
@@ -832,7 +831,7 @@ public class PDFFactory {
         PDFPattern myPattern;
         // PDFColorSpace theColorSpace;
         final double interpolation = 1.000;
-        final List theFunctions = new ArrayList();
+        final List<PDFFunction> theFunctions = new ArrayList<>();
 
         int currentPosition;
         final int lastPosition = theColors.size() - 1;
@@ -846,10 +845,8 @@ public class PDFFactory {
             // consecutive
             // color
             // pair
-            final PDFColor currentColor = (PDFColor) theColors
-                    .get(currentPosition);
-            final PDFColor nextColor = (PDFColor) theColors
-                    .get(currentPosition + 1);
+            final PDFColor currentColor = theColors.get(currentPosition);
+            final PDFColor nextColor = theColors.get(currentPosition + 1);
             // colorspace must be consistant
             if (getDocument().getColorSpace() != currentColor.getColorSpace()) {
                 currentColor.setColorSpace(getDocument().getColorSpace());
@@ -878,7 +875,7 @@ public class PDFFactory {
             } else { // if the center x, center y, and radius specifiy
                 // the gradient, then assume the same center x, center y,
                 // and radius of zero for the other necessary component
-                final List newCoords = new ArrayList();
+                final List<Double> newCoords = new ArrayList<>();
                 newCoords.add(theCoords.get(0));
                 newCoords.add(theCoords.get(1));
                 newCoords.add(theCoords.get(2));
@@ -1002,7 +999,7 @@ public class PDFFactory {
      *            a list of PDFDestination instances
      * @return the new PDFDests object
      */
-    public PDFDests makeDests(final List destinationList) {
+    public PDFDests makeDests(final List<PDFDestination> destinationList) {
         PDFDests dests;
 
         // TODO: Check why the below conditional branch is needed. Condition is
@@ -1013,9 +1010,7 @@ public class PDFFactory {
         if (deep) {
             dests = new PDFDests();
             final PDFArray kids = new PDFArray(dests);
-            final Iterator iter = destinationList.iterator();
-            while (iter.hasNext()) {
-                final PDFDestination dest = (PDFDestination) iter.next();
+            for (final PDFDestination dest : destinationList) {
                 final PDFNameTreeNode node = new PDFNameTreeNode();
                 getDocument().registerObject(node);
                 node.setLowerLimit(dest.getIDRef());
@@ -1885,7 +1880,8 @@ public class PDFFactory {
      *            the current GState of the current PDF context
      * @return a PDF GState, either an existing GState or a new one
      */
-    public PDFGState makeGState(final Map settings, final PDFGState current) {
+    public PDFGState makeGState(final Map<String, Float> settings,
+            final PDFGState current) {
 
         // try to locate a gstate that has all the settings
         // or will inherit from the current gstate

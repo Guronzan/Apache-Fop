@@ -23,7 +23,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +47,7 @@ import org.apache.fop.afp.util.BinaryUtils;
 public class MapCodedFont extends AbstractStructuredObject {
 
     /** the collection of map coded fonts (maximum of 254) */
-    private final List<FontDefinition> fontList = new java.util.ArrayList<FontDefinition>();
+    private final List<FontDefinition> fontList = new java.util.ArrayList<>();
 
     /**
      * Main constructor
@@ -65,9 +64,7 @@ public class MapCodedFont extends AbstractStructuredObject {
         copySF(startData, Type.MAP, Category.CODED_FONT);
         baos.write(startData);
 
-        final Iterator iter = this.fontList.iterator();
-        while (iter.hasNext()) {
-            final FontDefinition fd = (FontDefinition) iter.next();
+        for (final FontDefinition fd : this.fontList) {
 
             // Start of repeating groups (occurs 1 to 254)
             baos.write(0x00);
@@ -158,7 +155,7 @@ public class MapCodedFont extends AbstractStructuredObject {
      */
     public void addFont(final int fontReference, final AFPFont font,
             final int size, final int orientation)
-                    throws MaximumSizeExceededException {
+            throws MaximumSizeExceededException {
 
         final FontDefinition fontDefinition = new FontDefinition();
 

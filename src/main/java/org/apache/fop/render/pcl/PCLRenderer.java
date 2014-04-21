@@ -35,6 +35,8 @@ import java.awt.image.RenderedImage;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -42,7 +44,6 @@ import java.util.Stack;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.ResourceEventProducer;
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.area.Area;
@@ -93,6 +94,7 @@ import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
 import org.apache.xmlgraphics.java2d.GraphicContext;
 import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
+import org.apache.xmlgraphics.util.QName;
 import org.apache.xmlgraphics.util.UnitConv;
 import org.w3c.dom.Document;
 
@@ -119,7 +121,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
     protected PCLGenerator gen;
     private boolean ioTrouble = false;
 
-    private final Stack graphicContextStack = new Stack();
+    private final Stack<GraphicContext> graphicContextStack = new Stack<>();
     private GraphicContext graphicContext = new GraphicContext();
 
     private PCLPageDefinition currentPageDefinition;
@@ -164,8 +166,8 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
      */
     public void setQualityBeforeSpeed(final boolean qualityBeforeSpeed) {
         this.pclUtil
-        .setRenderingMode(qualityBeforeSpeed ? PCLRenderingMode.QUALITY
-                : PCLRenderingMode.SPEED);
+                .setRenderingMode(qualityBeforeSpeed ? PCLRenderingMode.QUALITY
+                        : PCLRenderingMode.SPEED);
     }
 
     /**
@@ -216,7 +218,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
                 new InstalledFontCollection(graphics2D),
                 new ConfiguredFontCollection(getFontResolver(), getFontList()) };
         this.userAgent.getFactory().getFontManager()
-        .setup(getFontInfo(), fontCollections);
+                .setup(getFontInfo(), fontCollections);
     }
 
     /**
@@ -283,7 +285,11 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
         this.gen.setRasterGraphicsResolution(getResolution());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
         this.gen.separateJobs();
@@ -301,8 +307,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
 
     /** {@inheritDoc} */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         saveGraphicsState();
 
         // Paper source
@@ -355,12 +360,10 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
                 log.warn("Paper type could not be determined. Falling back to: "
                         + this.currentPageDefinition.getName());
             }
-            if (log.isDebugEnabled()) {
-                log.debug("page size: "
-                        + this.currentPageDefinition.getPhysicalPageSize());
-                log.debug("logical page: "
-                        + this.currentPageDefinition.getLogicalPageRect());
-            }
+            log.debug("page size: {}",
+                    this.currentPageDefinition.getPhysicalPageSize());
+            log.debug("logical page: {}",
+                    this.currentPageDefinition.getLogicalPageRect());
 
             if (this.currentPageDefinition.isLandscapeFormat()) {
                 this.gen.writeCommand("&l1O"); // Landscape Orientation
@@ -382,7 +385,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
 
     /** Restores the last graphics state from the stack. */
     protected void restoreGraphicsState() {
-        this.graphicContext = (GraphicContext) this.graphicContextStack.pop();
+        this.graphicContext = this.graphicContextStack.pop();
     }
 
     /**
@@ -436,10 +439,8 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
         final AffineTransform at = new AffineTransform(ctm.toArray());
         this.graphicContext.transform(at);
         changePrintDirection();
-        if (log.isDebugEnabled()) {
-            log.debug("startVPArea: " + at + " --> "
-                    + this.graphicContext.getTransform());
-        }
+        log.debug("startVPArea: {} --> {}", at,
+                this.graphicContext.getTransform());
     }
 
     /**
@@ -449,9 +450,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
     protected void endVParea() {
         restoreGraphicsState();
         changePrintDirection();
-        if (log.isDebugEnabled()) {
-            log.debug("endVPArea() --> " + this.graphicContext.getTransform());
-        }
+        log.debug("endVPArea() --> {}", this.graphicContext.getTransform());
     }
 
     /**
@@ -562,11 +561,11 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
                 final Graphics2DAdapter g2a = getGraphics2DAdapter();
                 final Rectangle paintRect = new Rectangle(rx,
                         this.currentBPPosition + text.getOffset()
-                        - additionalBPD, text.getIPD() + extraWidth,
+                                - additionalBPD, text.getIPD() + extraWidth,
                         text.getBPD() + additionalBPD);
                 final RendererContext rc = createRendererContext(paintRect.x,
                         paintRect.y, paintRect.width, paintRect.height, null);
-                final Map atts = new java.util.HashMap();
+                final Map<QName, String> atts = new HashMap<>();
                 atts.put(ImageHandlerUtil.CONVERSION_MODE,
                         ImageHandlerUtil.CONVERSION_MODE_BITMAP);
                 atts.put(SRC_TRANSPARENCY, "true");
@@ -790,13 +789,13 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
                 + 2
                 * textArea.getTextLetterSpaceAdjust() : 0;
 
-        final double dx = (font.getCharWidth(sp) + tws) / 100f;
-        try {
-            this.gen.writeCommand("&a+" + this.gen.formatDouble2(dx) + "H");
-        } catch (final IOException ioe) {
-            handleIOTrouble(ioe);
-        }
-        super.renderSpace(space);
+                final double dx = (font.getCharWidth(sp) + tws) / 100f;
+                try {
+                    this.gen.writeCommand("&a+" + this.gen.formatDouble2(dx) + "H");
+                } catch (final IOException ioe) {
+                    handleIOTrouble(ioe);
+                }
+                super.renderSpace(space);
     }
 
     /**
@@ -1049,9 +1048,9 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
         }
     }
 
-    private List breakOutOfStateStack() {
+    private List<GraphicContext> breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
-        final List breakOutList = new java.util.ArrayList();
+        final List<GraphicContext> breakOutList = new ArrayList<>();
         while (!this.graphicContextStack.empty()) {
             breakOutList.add(0, this.graphicContext);
             restoreGraphicsState();
@@ -1059,18 +1058,20 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
         return breakOutList;
     }
 
-    private void restoreStateStackAfterBreakOut(final List breakOutList) {
+    private void restoreStateStackAfterBreakOut(
+            final List<GraphicContext> breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
-        for (int i = 0, c = breakOutList.size(); i < c; ++i) {
+        for (final GraphicContext graphicContext : breakOutList) {
             saveGraphicsState();
-            this.graphicContext = (GraphicContext) breakOutList.get(i);
+            this.graphicContext = graphicContext;
         }
     }
 
     /** {@inheritDoc} */
     @Override
     protected RendererContext createRendererContext(final int x, final int y,
-            final int width, final int height, final Map foreignAttributes) {
+            final int width, final int height,
+            final Map<QName, String> foreignAttributes) {
         final RendererContext context = super.createRendererContext(x, y,
                 width, height, foreignAttributes);
         context.setProperty(PCLRendererContextConstants.PCL_COLOR_CANVAS,
@@ -1085,8 +1086,8 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
     }
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
-        ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
+            ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
+            ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
 
     /**
      * Draw an image at the indicated location.
@@ -1099,7 +1100,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
      *            an optional Map with foreign attributes, may be null
      */
     protected void drawImage(String uri, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         uri = URISpecification.getURL(uri);
         final Rectangle posInt = new Rectangle((int) pos.getX(),
                 (int) pos.getY(), (int) pos.getWidth(), (int) pos.getHeight());
@@ -1117,7 +1118,8 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
             info = manager.getImageInfo(uri, sessionContext);
 
             // Only now fully load/prepare the image
-            final Map hints = ImageUtil.getDefaultHints(sessionContext);
+            final Map<Object, Object> hints = ImageUtil
+                    .getDefaultHints(sessionContext);
             final org.apache.xmlgraphics.image.loader.Image img = manager
                     .getImage(info, FLAVORS, hints, sessionContext);
 
@@ -1415,7 +1417,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
 
         final RendererContext rc = createRendererContext(paintRect.x,
                 paintRect.y, paintRect.width, paintRect.height, null);
-        final Map atts = new java.util.HashMap();
+        final Map<QName, String> atts = new HashMap<>();
         atts.put(ImageHandlerUtil.CONVERSION_MODE,
                 ImageHandlerUtil.CONVERSION_MODE_BITMAP);
         atts.put(SRC_TRANSPARENCY, "true");
@@ -1438,9 +1440,9 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
                 }
                 final float[] bw = new float[] {
                         b[0] ? bpsBefore.width / 1000f : 0.0f,
-                                b[1] ? bpsEnd.width / 1000f : 0.0f,
-                                        b[2] ? bpsAfter.width / 1000f : 0.0f,
-                                                b[3] ? bpsStart.width / 1000f : 0.0f };
+                        b[1] ? bpsEnd.width / 1000f : 0.0f,
+                        b[2] ? bpsAfter.width / 1000f : 0.0f,
+                        b[3] ? bpsStart.width / 1000f : 0.0f };
                 final float[] clipw = new float[] {
                         BorderProps.getClippedWidth(bpsBefore) / 1000f,
                         BorderProps.getClippedWidth(bpsEnd) / 1000f,
@@ -1653,7 +1655,7 @@ public class PCLRenderer extends PrintRenderer implements PCLConstants {
         switch (style) {
         case EN_SOLID:
         case EN_DASHED: // TODO Improve me and following (this is just a
-                        // quick-fix ATM)
+            // quick-fix ATM)
         case EN_DOUBLE:
         case EN_DOTTED:
         case EN_GROOVE:

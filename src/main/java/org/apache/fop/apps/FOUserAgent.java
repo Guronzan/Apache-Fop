@@ -23,6 +23,7 @@ package org.apache.fop.apps;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -81,7 +82,7 @@ public class FOUserAgent {
     private URIResolver uriResolver = null;
 
     private float targetResolution = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
-    private final Map rendererOptions = new java.util.HashMap();
+    private final Map<String, Object> rendererOptions = new HashMap<>();
     private File outputFile = null;
     private IFDocumentHandler documentHandlerOverride = null;
     private Renderer rendererOverride = null;
@@ -368,7 +369,7 @@ public class FOUserAgent {
      *
      * @return renderer options
      */
-    public Map getRendererOptions() {
+    public Map<String, Object> getRendererOptions() {
         return this.rendererOptions;
     }
 

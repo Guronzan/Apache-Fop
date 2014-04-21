@@ -53,7 +53,7 @@ public class Destination extends FONode {
     @Override
     public void processNode(final String elementName, final Locator locator,
             final Attributes attlist, final PropertyList pList)
-            throws FOPException {
+                    throws FOPException {
         this.internalDestination = attlist.getValue("internal-destination");
         if (this.internalDestination == null
                 || this.internalDestination.length() == 0) {
@@ -65,7 +65,7 @@ public class Destination extends FONode {
      * {@inheritDoc}
      */
     @Override
-    protected void endOfNode() throws FOPException {
+    protected void endOfNode() {
         this.root.addDestination(this);
     }
 
@@ -81,7 +81,7 @@ public class Destination extends FONode {
     /**
      * Returns the internal destination (an reference of the id property of any
      * FO).
-     * 
+     *
      * @return the internal destination
      */
     public String getInternalDestination() {

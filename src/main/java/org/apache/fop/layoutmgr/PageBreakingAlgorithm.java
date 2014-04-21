@@ -20,7 +20,6 @@
 package org.apache.fop.layoutmgr;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -40,7 +39,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
     private final PageProvider pageProvider;
     private final PageBreakingLayoutListener layoutListener;
     /** List of PageBreakPosition elements. */
-    private LinkedList pageBreaks = null;
+    private LinkedList<PageBreakPosition> pageBreaks = null;
 
     /**
      * Footnotes which are cited between the currently considered active node
@@ -48,9 +47,9 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
      * List&lt;List&lt;KnuthElement&gt;&gt;, it contains the sequences of
      * KnuthElement representing the footnotes bodies.
      */
-    private List footnotesList = null;
+    private List<List<ListElement>> footnotesList = null;
     /** Cumulated bpd of unhandled footnotes. */
-    private List lengthList = null;
+    private List<Integer> lengthList = null;
     /** Length of all the footnotes which will be put on the current page. */
     private int totalFootnotesLength = 0;
     /**
@@ -218,7 +217,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                     + this.lastBeforeKeepContextSwitch);
             log.debug("\tcurrentKeepContext = "
                     + AbstractBreaker
-                    .getBreakClassName(this.currentKeepContext));
+                            .getBreakClassName(this.currentKeepContext));
         }
 
         if (this.lastBeforeKeepContextSwitch == null
@@ -357,12 +356,12 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
      *            list of KnuthElement sequences corresponding to the footnotes
      *            bodies
      */
-    private void handleFootnotes(final List elementLists) {
+    private void handleFootnotes(final List<List<ListElement>> elementLists) {
         // initialization
         if (!this.footnotesPending) {
             this.footnotesPending = true;
-            this.footnotesList = new ArrayList();
-            this.lengthList = new ArrayList();
+            this.footnotesList = new ArrayList<>();
+            this.lengthList = new ArrayList<>();
             this.totalFootnotesLength = 0;
         }
         if (!this.newFootnotes) {
@@ -371,9 +370,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
         }
 
         // compute the total length of the footnotes
-        for (final Iterator elementListsIterator = elementLists.iterator(); elementListsIterator
-                .hasNext();) {
-            final List noteList = (List) elementListsIterator.next();
+        for (final List<ListElement> noteList : elementLists) {
 
             // Space resolution (Note: this does not respect possible stacking
             // constraints
@@ -382,19 +379,17 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
 
             int noteLength = 0;
             this.footnotesList.add(noteList);
-            for (final Iterator noteListIterator = noteList.iterator(); noteListIterator
-                    .hasNext();) {
-                final KnuthElement element = (KnuthElement) noteListIterator
-                        .next();
+            for (final ListElement element2 : noteList) {
+                final KnuthElement element = (KnuthElement) element2;
                 if (element.isBox() || element.isGlue()) {
                     noteLength += element.getWidth();
                 }
             }
             final int prevLength = this.lengthList == null
-                    || this.lengthList.isEmpty() ? 0 : ((Integer) ListUtil
-                            .getLast(this.lengthList)).intValue();
+                    || this.lengthList.isEmpty() ? 0 : ListUtil.getLast(
+                    this.lengthList).intValue();
             // TODO: replace with Integer.valueOf() once we switch to Java 5
-            this.lengthList.add((prevLength + noteLength));
+            this.lengthList.add(prevLength + noteLength);
             this.totalFootnotesLength += noteLength;
         }
     }
@@ -422,14 +417,13 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
 
     private void resetFootnotes(final List elementLists) {
         for (int i = 0; i < elementLists.size(); ++i) {
-            /* LinkedList removedList = (LinkedList) */ListUtil
-            .removeLast(this.footnotesList);
+            ListUtil.removeLast(this.footnotesList);
             ListUtil.removeLast(this.lengthList);
 
             // update totalFootnotesLength
             if (!this.lengthList.isEmpty()) {
-                this.totalFootnotesLength = ((Integer) ListUtil
-                        .getLast(this.lengthList)).intValue();
+                this.totalFootnotesLength = ListUtil.getLast(this.lengthList)
+                        .intValue();
             } else {
                 this.totalFootnotesLength = 0;
             }
@@ -622,10 +616,10 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
         // there will be a break between #(i-h) and #(j+k) too
         if (this.storedPrevBreakIndex != -1
                 && (prevBreakIndex >= this.storedPrevBreakIndex
-                && breakIndex == this.storedBreakIndex
-                && this.storedValue || prevBreakIndex <= this.storedPrevBreakIndex
-                && breakIndex >= this.storedBreakIndex
-                && !this.storedValue)) {
+                        && breakIndex == this.storedBreakIndex
+                        && this.storedValue || prevBreakIndex <= this.storedPrevBreakIndex
+                        && breakIndex >= this.storedBreakIndex
+                        && !this.storedValue)) {
             // use the stored value, do nothing
         } else {
             // compute the new value
@@ -641,7 +635,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                         && this.par.getElement(index - 1).isBox()
                         || this.par.getElement(index).isPenalty()
                         && ((KnuthElement) this.par.getElement(index))
-                        .getPenalty() < KnuthElement.INFINITE) {
+                                .getPenalty() < KnuthElement.INFINITE) {
                     // break found
                     break;
                 }
@@ -672,7 +666,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                 && this.firstNewFootnoteIndex != 0
                 && (listIndex < this.firstNewFootnoteIndex - 1 || elementIndex < getFootnoteList(
                         listIndex).size() - 1)
-                || length < this.totalFootnotesLength;
+                        || length < this.totalFootnotesLength;
     }
 
     /**
@@ -739,17 +733,16 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                 // deferred
                 if (!canDeferOldFootnotes && this.newFootnotes
                         && this.firstNewFootnoteIndex > 0) {
-                    splitLength = ((Integer) this.lengthList
-                            .get(this.firstNewFootnoteIndex - 1)).intValue()
+                    splitLength = this.lengthList.get(
+                            this.firstNewFootnoteIndex - 1).intValue()
                             - prevLength;
                     listIndex = this.firstNewFootnoteIndex;
                     elementIndex = 0;
                 }
                 // try adding the new footnotes
-                while (((Integer) this.lengthList.get(listIndex)).intValue()
-                        - prevLength <= availableLength) {
-                    splitLength = ((Integer) this.lengthList.get(listIndex))
-                            .intValue() - prevLength;
+                while (this.lengthList.get(listIndex).intValue() - prevLength <= availableLength) {
+                    splitLength = this.lengthList.get(listIndex).intValue()
+                            - prevLength;
                     somethingAdded = true;
                     listIndex++;
                     elementIndex = 0;
@@ -896,7 +889,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
                 && ((KnuthPenalty) element).isPenaltyFlagged()
                 && getElement(activeNode.position).isPenalty()
                 && ((KnuthPenalty) getElement(activeNode.position))
-                .isPenaltyFlagged()) {
+                        .isPenaltyFlagged()) {
             // add demerit for consecutive breaks at flagged penalties
             demerits += this.repeatedFlaggedDemerit;
         }
@@ -950,8 +943,8 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
 
         // create pages containing the remaining footnote bodies
         while (this.insertedFootnotesLength < this.totalFootnotesLength) {
-            final int tmpLength = ((Integer) this.lengthList
-                    .get(this.footnoteListIndex)).intValue();
+            final int tmpLength = this.lengthList.get(this.footnoteListIndex)
+                    .intValue();
             // try adding some more content
             if (tmpLength - this.insertedFootnotesLength <= availableBPD) {
                 // add a whole footnote
@@ -994,7 +987,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
      * @return a list of {@link PageBreakPosition} elements corresponding to the
      *         computed page- and column-breaks
      */
-    public LinkedList getPageBreaks() {
+    public LinkedList<PageBreakPosition> getPageBreaks() {
         return this.pageBreaks;
     }
 
@@ -1007,7 +1000,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
      */
     public void insertPageBreakAsFirst(final PageBreakPosition pageBreak) {
         if (this.pageBreaks == null) {
-            this.pageBreaks = new LinkedList();
+            this.pageBreaks = new LinkedList<>();
         }
         this.pageBreaks.addFirst(pageBreak);
     }
@@ -1140,7 +1133,7 @@ class PageBreakingAlgorithm extends BreakingAlgorithm {
      * @return the element-list
      */
     protected final List getFootnoteList(final int index) {
-        return (List) this.footnotesList.get(index);
+        return this.footnotesList.get(index);
     }
 
     /** @return the associated top-level formatting object. */

@@ -20,7 +20,6 @@
 package org.apache.fop.render.afp;
 
 import java.awt.geom.Rectangle2D;
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.fop.afp.AFPDataObjectInfo;
@@ -28,6 +27,7 @@ import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RendererContextConstants;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
+import org.apache.xmlgraphics.util.QName;
 import org.w3c.dom.Document;
 
 /**
@@ -40,7 +40,7 @@ public class AFPImageHandlerXML extends AFPImageHandler {
     /** {@inheritDoc} */
     @Override
     public AFPDataObjectInfo generateDataObjectInfo(
-            final AFPRendererImageInfo rendererImageInfo) throws IOException {
+            final AFPRendererImageInfo rendererImageInfo) {
         final RendererContext rendererContext = rendererImageInfo
                 .getRendererContext();
         final AFPRenderer renderer = (AFPRenderer) rendererContext
@@ -48,7 +48,7 @@ public class AFPImageHandlerXML extends AFPImageHandler {
         final ImageXMLDOM imgXML = (ImageXMLDOM) rendererImageInfo.getImage();
         final Document doc = imgXML.getDocument();
         final String ns = imgXML.getRootNamespace();
-        final Map foreignAttributes = (Map) rendererContext
+        final Map<QName, String> foreignAttributes = (Map<QName, String>) rendererContext
                 .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         final Rectangle2D pos = rendererImageInfo.getPosition();
         renderer.renderDocument(doc, ns, pos, foreignAttributes);
@@ -63,7 +63,7 @@ public class AFPImageHandlerXML extends AFPImageHandler {
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageXMLDOM> getSupportedImageClass() {
         return ImageXMLDOM.class;
     }
 

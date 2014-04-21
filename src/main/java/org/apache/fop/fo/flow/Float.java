@@ -58,7 +58,7 @@ public class Float extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) {
         // No active properties -> Nothing to do.
     }
 

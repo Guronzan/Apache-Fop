@@ -266,7 +266,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
         }
     }
 
-    private void writeClip(final Shape imclip) throws IOException {
+    private void writeClip(final Shape imclip) {
         if (this.clippingDisabled) {
             return;
         }
@@ -579,19 +579,19 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * positioning and rotation issues final int width =
          * img.getWidth(observer); final int height = img.getHeight(observer);
          * if (width == -1 || height == -1) { return false; }
-         *
+         * 
          * Dimension size = new Dimension(width, height); BufferedImage buf =
          * buildBufferedImage(size);
-         *
+         * 
          * java.awt.Graphics2D g = buf.createGraphics(); try {
          * g.setComposite(AlphaComposite.SrcOver); g.setBackground(new
          * Color(255, 255, 255)); g.setPaint(new Color(255, 255, 255));
          * g.fillRect(0, 0, width, height); g.clip(new Rectangle(0, 0,
          * buf.getWidth(), buf.getHeight()));
-         *
+         * 
          * if (!g.drawImage(img, 0, 0, observer)) { return false; } } finally {
          * g.dispose(); }
-         *
+         * 
          * try { AffineTransform at = getTransform(); gen.enterPCLMode(false);
          * //Shape imclip = getClip(); Clipping is not available in PCL Point2D
          * p1 = new Point2D.Double(x, y); at.transform(p1, p1);
@@ -599,7 +599,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * gen.setCursorPos(p1.getX(), p1.getY()); gen.paintBitmap(buf, 72);
          * gen.enterHPGL2Mode(false); } catch (IOException ioe) {
          * handleIOException(ioe); }
-         *
+         * 
          * return true;
          */
     }

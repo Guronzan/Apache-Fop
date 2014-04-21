@@ -51,7 +51,7 @@ import org.apache.fop.traits.MinOptMax;
  */
 @Slf4j
 public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
-implements InlineLevelLayoutManager {
+        implements InlineLevelLayoutManager {
 
     /**
      * The inline area that this leafnode will add.

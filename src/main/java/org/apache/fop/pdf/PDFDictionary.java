@@ -22,7 +22,8 @@ package org.apache.fop.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,13 +37,13 @@ public class PDFDictionary extends PDFObject {
     /**
      * the entry map
      */
-    protected Map entries = new java.util.HashMap();
+    protected Map<String, Object> entries = new HashMap<>();
 
     /**
      * maintains the order of the entries added to the entry map. Whenever you
      * modify "entries", always make sure you adjust this list accordingly.
      */
-    protected List order = new java.util.ArrayList();
+    protected List<String> order = new ArrayList<>();
 
     /**
      * Create a new dictionary object.
@@ -94,7 +95,7 @@ public class PDFDictionary extends PDFObject {
         if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
-        this.entries.put(name, (value));
+        this.entries.put(name, value);
     }
 
     /**
@@ -111,20 +112,22 @@ public class PDFDictionary extends PDFObject {
     /** {@inheritDoc} */
     @Override
     protected int output(final OutputStream stream) throws IOException {
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
-        if (hasObjectNumber()) {
-            writer.write(getObjectID());
+        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
+            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
+                if (hasObjectNumber()) {
+                    writer.write(getObjectID());
+                }
+
+                writeDictionary(cout, writer);
+
+                if (hasObjectNumber()) {
+                    writer.write("\nendobj\n");
+                }
+
+                writer.flush();
+                return cout.getCount();
+            }
         }
-
-        writeDictionary(cout, writer);
-
-        if (hasObjectNumber()) {
-            writer.write("\nendobj\n");
-        }
-
-        writer.flush();
-        return cout.getCount();
     }
 
     /**
@@ -141,9 +144,7 @@ public class PDFDictionary extends PDFObject {
             throws IOException {
         writer.write("<<");
         final boolean compact = this.order.size() <= 2;
-        final Iterator iter = this.order.iterator();
-        while (iter.hasNext()) {
-            final String key = (String) iter.next();
+        for (final String key : this.order) {
             if (compact) {
                 writer.write(' ');
             } else {

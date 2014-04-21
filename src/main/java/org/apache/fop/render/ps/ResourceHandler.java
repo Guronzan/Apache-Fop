@@ -159,7 +159,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
      */
     public void process(final InputStream in, final OutputStream out,
             final int pageCount, final Rectangle2D documentBoundingBox)
-            throws DSCException, IOException {
+                    throws DSCException, IOException {
         final DSCParser parser = new DSCParser(in);
 
         final PSGenerator gen = new PSGenerator(out);
@@ -206,7 +206,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
                 pages.generate(gen);
                 new DSCCommentBoundingBox(documentBoundingBox).generate(gen);
                 new DSCCommentHiResBoundingBox(documentBoundingBox)
-                        .generate(gen);
+                .generate(gen);
 
                 PSFontUtils.determineSuppliedFonts(this.resTracker,
                         this.fontInfo, this.fontInfo.getUsedFonts());
@@ -323,7 +323,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
                     .getFactory().getImageHandlerRegistry();
             flavors = imageHandlerRegistry.getSupportedFlavors(formContext);
 
-            final Map<String, Object> hints = ImageUtil
+            final Map<Object, Object> hints = ImageUtil
                     .getDefaultHints(sessionContext);
             final org.apache.xmlgraphics.image.loader.Image img = manager
                     .getImage(info, flavors, hints, sessionContext);
@@ -333,7 +333,7 @@ public class ResourceHandler implements DSCParserConstants, PSSupportedFlavors {
             if (basicHandler == null) {
                 throw new UnsupportedOperationException(
                         "No ImageHandler available for image: " + img.getInfo()
-                                + " (" + img.getClass().getName() + ")");
+                        + " (" + img.getClass().getName() + ")");
             }
 
             if (!(basicHandler instanceof PSImageHandler)) {

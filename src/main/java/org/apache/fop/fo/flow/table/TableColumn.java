@@ -141,7 +141,7 @@ public class TableColumn extends TableFObj {
 
     /** {@inheritDoc} */
     @Override
-    public void endOfNode() throws FOPException {
+    public void endOfNode() {
         getFOEventHandler().endColumn(this);
     }
 

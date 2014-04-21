@@ -72,7 +72,7 @@ public class ConditionalPageMasterReference extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() {
         getConcreteParent().addConditionalPageMasterReference(this);
     }
 
@@ -114,11 +114,11 @@ public class ConditionalPageMasterReference extends FObj {
                 && !(isFirstPage || isLastPage))
                 // odd-or-even
                 && (this.oddOrEven == EN_ANY || this.oddOrEven == EN_ODD
-                && isOddPage || this.oddOrEven == EN_EVEN && !isOddPage)
+                        && isOddPage || this.oddOrEven == EN_EVEN && !isOddPage)
                 // blank-or-not-blank
                 && (this.blankOrNotBlank == EN_ANY
-                || this.blankOrNotBlank == EN_BLANK && isBlankPage || this.blankOrNotBlank == EN_NOT_BLANK
-                && !isBlankPage);
+                        || this.blankOrNotBlank == EN_BLANK && isBlankPage || this.blankOrNotBlank == EN_NOT_BLANK
+                        && !isBlankPage);
 
     }
 

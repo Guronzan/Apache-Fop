@@ -172,7 +172,7 @@ public class RTFHandler extends FOEventHandler {
         this.bDefer = true;
 
         FontSetup
-        .setup(this.fontInfo, null, new DefaultFontResolver(userAgent));
+                .setup(this.fontInfo, null, new DefaultFontResolver(userAgent));
     }
 
     /**
@@ -244,7 +244,7 @@ public class RTFHandler extends FOEventHandler {
             if (this.pagemaster != null) {
                 this.sect.getRtfAttributes().set(
                         PageAttributesConverter
-                        .convertPageAttributes(this.pagemaster));
+                                .convertPageAttributes(this.pagemaster));
             } else {
                 final RTFEventProducer eventProducer = RTFEventProducer.Provider
                         .get(getUserAgent().getEventBroadcaster());
@@ -257,13 +257,13 @@ public class RTFHandler extends FOEventHandler {
             final int useAblePageWidth = this.pagemaster.getPageWidth()
                     .getValue()
                     - this.pagemaster.getCommonMarginBlock().marginLeft
-                    .getValue()
+                            .getValue()
                     - this.pagemaster.getCommonMarginBlock().marginRight
-                    .getValue()
+                            .getValue()
                     - this.sect.getRtfAttributes()
-                    .getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
+                            .getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
                     - this.sect.getRtfAttributes()
-                    .getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
+                            .getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
             this.percentManager.setDimension(pageSeq, useAblePageWidth);
 
             this.bHeaderSpecified = false;
@@ -594,10 +594,10 @@ public class RTFHandler extends FOEventHandler {
             final Float width = new Float(FoUnitsConverter.getInstance()
                     .convertMptToTwips(iWidth));
             this.builderContext.getTableContext().setNextColumnWidth(width);
-            this.builderContext.getTableContext().setNextColumnRowSpanning(
-                    (0), null);
+            this.builderContext.getTableContext().setNextColumnRowSpanning(0,
+                    null);
             this.builderContext.getTableContext()
-            .setNextFirstSpanningCol(false);
+                    .setNextFirstSpanningCol(false);
         } catch (final Exception e) {
             log.error("startColumn: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -655,9 +655,6 @@ public class RTFHandler extends FOEventHandler {
             textrun.addBookmark(inl.getId());
         } catch (final IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final FOPException fe) {
-            log.error("startInline:" + fe.getMessage());
-            throw new RuntimeException(fe.getMessage());
         } catch (final Exception e) {
             log.error("startInline:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -850,11 +847,10 @@ public class RTFHandler extends FOEventHandler {
                 cell.setVMerge(RtfTableCell.MERGE_START);
 
                 // set the number of rows spanned
-                tctx.setCurrentColumnRowSpanning(
-                        (numberRowsSpanned), cell.getRtfAttributes());
+                tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
+                        cell.getRtfAttributes());
             } else {
-                tctx.setCurrentColumnRowSpanning(
-                        (numberRowsSpanned), null);
+                tctx.setCurrentColumnRowSpanning(numberRowsSpanned, null);
             }
 
             // process number-columns-spanned attribute
@@ -879,11 +875,11 @@ public class RTFHandler extends FOEventHandler {
                         hCell.setVMerge(RtfTableCell.MERGE_START);
 
                         // set the number of rows spanned
-                        tctx.setCurrentColumnRowSpanning((
-                                numberRowsSpanned), cell.getRtfAttributes());
+                        tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
+                                cell.getRtfAttributes());
                     } else {
-                        tctx.setCurrentColumnRowSpanning((
-                                numberRowsSpanned), cell.getRtfAttributes());
+                        tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
+                                cell.getRtfAttributes());
                     }
                 }
             }
@@ -1191,7 +1187,7 @@ public class RTFHandler extends FOEventHandler {
     }
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG };
+            ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG };
 
     /**
      * Puts a graphic/image into the generated RTF file.
@@ -1760,9 +1756,8 @@ public class RTFHandler extends FOEventHandler {
                 // Calculation for column-widths which are not set
                 prepareTable(table);
 
-                for (final Iterator it = table.getColumns().iterator(); it
-                        .hasNext();) {
-                    recurseFONode((FONode) it.next());
+                for (final Object element : table.getColumns()) {
+                    recurseFONode((FONode) element);
                 }
             } else {
                 // TODO Implement implicit column setup handling!

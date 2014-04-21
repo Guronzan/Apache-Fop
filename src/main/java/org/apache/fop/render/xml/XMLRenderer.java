@@ -24,9 +24,11 @@ import java.awt.Color;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
@@ -207,12 +209,10 @@ public class XMLRenderer extends AbstractXMLRenderer {
      *            Area to extract traits from
      */
     protected void addTraitAttributes(final Area area) {
-        final Map traitMap = area.getTraits();
+        final Map<Integer, Object> traitMap = area.getTraits();
         if (traitMap != null) {
-            final Iterator iter = traitMap.entrySet().iterator();
-            while (iter.hasNext()) {
-                final Map.Entry traitEntry = (Map.Entry) iter.next();
-                final Object key = traitEntry.getKey();
+            for (final Entry<Integer, Object> traitEntry : traitMap.entrySet()) {
+                final Integer key = traitEntry.getKey();
                 final String name = Trait.getTraitName(key);
                 final Class clazz = Trait.getTraitClass(key);
                 if ("break-before".equals(name) || "break-after".equals(name)) {
@@ -278,21 +278,18 @@ public class XMLRenderer extends AbstractXMLRenderer {
     }
 
     private void transferForeignObjects(final AreaTreeObject ato) {
-        final Map prefixes = new java.util.HashMap();
-        Iterator iter = ato.getForeignAttributes().entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final QName qname = (QName) entry.getKey();
+        final Map<String, String> prefixes = new HashMap<>();
+        for (final Entry<QName, String> entry : ato.getForeignAttributes()
+                .entrySet()) {
+            final QName qname = entry.getKey();
             prefixes.put(qname.getPrefix(), qname.getNamespaceURI());
-            addAttribute(qname, (String) entry.getValue());
+            addAttribute(qname, entry.getValue());
         }
         // Namespace declarations
-        iter = prefixes.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
-            final String qn = "xmlns:" + (String) entry.getKey();
-            this.atts.addAttribute("", (String) entry.getKey(), qn, CDATA,
-                    (String) entry.getValue());
+        for (final Entry<String, String> entry : prefixes.entrySet()) {
+            final String qn = "xmlns:" + entry.getKey();
+            this.atts.addAttribute("", entry.getKey(), qn, CDATA,
+                    entry.getValue());
         }
     }
 
@@ -307,7 +304,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
             final ExtensionAttachment attachment = ((OffDocumentExtensionAttachment) oDI)
                     .getAttachment();
             if (this.extensionAttachments == null) {
-                this.extensionAttachments = new java.util.ArrayList();
+                this.extensionAttachments = new ArrayList<>();
             }
             this.extensionAttachments.add(attachment);
         } else {
@@ -424,8 +421,7 @@ public class XMLRenderer extends AbstractXMLRenderer {
 
     /** {@inheritDoc} */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         this.atts.clear();
         addAttribute("bounds", page.getViewArea());
         addAttribute("key", page.getKey());

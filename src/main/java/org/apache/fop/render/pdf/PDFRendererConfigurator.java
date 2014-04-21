@@ -19,6 +19,8 @@
 
 package org.apache.fop.render.pdf;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +80,7 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
             final PDFRenderingUtil pdfUtil) throws FOPException {
         // PDF filters
         try {
-            final Map filterMap = buildFilterMapFromConfiguration(cfg);
+            final Map<String, List<String>> filterMap = buildFilterMapFromConfiguration(cfg);
             if (filterMap != null) {
                 pdfUtil.setFilterMap(filterMap);
             }
@@ -160,14 +162,14 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
      * @throws ConfigurationException
      *             if a filter list is defined twice
      */
-    public static Map buildFilterMapFromConfiguration(final Configuration cfg)
-            throws ConfigurationException {
-        final Map filterMap = new java.util.HashMap();
+    public static Map<String, List<String>> buildFilterMapFromConfiguration(
+            final Configuration cfg) throws ConfigurationException {
+        final Map<String, List<String>> filterMap = new HashMap<>();
         final Configuration[] filterLists = cfg.getChildren("filterList");
         for (final Configuration filters : filterLists) {
             String type = filters.getAttribute("type", null);
             final Configuration[] filt = filters.getChildren("value");
-            final List filterList = new java.util.ArrayList();
+            final List<String> filterList = new ArrayList<>();
             for (final Configuration element : filt) {
                 final String name = element.getValue();
                 filterList.add(name);
@@ -178,7 +180,8 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
             }
 
             if (!filterList.isEmpty() && log.isDebugEnabled()) {
-                final StringBuilder debug = new StringBuilder("Adding PDF filter");
+                final StringBuilder debug = new StringBuilder(
+                        "Adding PDF filter");
                 if (filterList.size() != 1) {
                     debug.append("s");
                 }

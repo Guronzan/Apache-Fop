@@ -260,8 +260,8 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
         this.referenceIPD = context.getRefIPD();
         updateContentAreaIPDwithOverconstrainedAdjust();
 
-        final List<ListElement> contentList = new LinkedList<ListElement>();
-        final List<ListElement> elements = new LinkedList<ListElement>();
+        final List<ListElement> contentList = new LinkedList<>();
+        final List<ListElement> elements = new LinkedList<>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -292,7 +292,7 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
         while ((currentChildLM = getChildLM()) != null) {
             final LayoutContext childLC = new LayoutContext(0);
 
-            final List<BreakElement> childrenElements = getNextChildElements(
+            final List<ListElement> childrenElements = getNextChildElements(
                     currentChildLM, context, childLC, alignment);
 
             if (contentList.isEmpty()) {
@@ -315,7 +315,8 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
 
                     if (currentChildLM.isFinished() && !hasNextChildLM()) {
                         // a descendant of this block has break-before
-                        forcedBreakAfterLast = childrenElements.get(0);
+                        forcedBreakAfterLast = (BreakElement) childrenElements
+                                .get(0);
                         context.clearPendingMarks();
                         break;
                     }
@@ -384,13 +385,13 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
     /** {@inheritDoc} */
     @Override
     public List<ListElement> getNextKnuthElements(final LayoutContext context,
-            final int alignment, final Stack lmStack,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
         this.referenceIPD = context.getRefIPD();
         updateContentAreaIPDwithOverconstrainedAdjust();
 
-        final List<ListElement> contentList = new LinkedList<ListElement>();
-        final List<ListElement> elements = new LinkedList<ListElement>();
+        final List<ListElement> contentList = new LinkedList<>();
+        final List<ListElement> elements = new LinkedList<>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -429,7 +430,7 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
             childrenElements = getNextChildElements(currentChildLM, context,
                     childLC, alignment);
         } else {
-            currentChildLM = (BlockLevelLayoutManager) lmStack.pop();
+            currentChildLM = lmStack.pop();
             setCurrentChildLM(currentChildLM);
             childrenElements = getNextChildElements(currentChildLM, context,
                     childLC, alignment, lmStack, restartPosition, restartAtLM);
@@ -587,16 +588,16 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
         return elements;
     }
 
-    private <T> List<T> getNextChildElements(final LayoutManager childLM,
+    private List<ListElement> getNextChildElements(final LayoutManager childLM,
             final LayoutContext context, final LayoutContext childLC,
             final int alignment) {
         return getNextChildElements(childLM, context, childLC, alignment, null,
                 null, null);
     }
 
-    private <T> List<T> getNextChildElements(final LayoutManager childLM,
+    private List<ListElement> getNextChildElements(final LayoutManager childLM,
             final LayoutContext context, final LayoutContext childLC,
-            final int alignment, final Stack lmStack,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
         childLC.copyPendingMarksFrom(context);
         childLC.setStackLimitBP(context.getStackLimitBP());
@@ -614,9 +615,8 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
             return childLM.getNextKnuthElements(childLC, alignment);
         } else {
             if (childLM instanceof LineLayoutManager) {
-                return (List<T>) ((LineLayoutManager) childLM)
-                        .getNextKnuthElements(childLC, alignment,
-                                (LeafPosition) restartPosition);
+                return ((LineLayoutManager) childLM).getNextKnuthElements(
+                        childLC, alignment, (LeafPosition) restartPosition);
             } else {
                 return childLM.getNextKnuthElements(childLC, alignment,
                         lmStack, restartPosition, restartAtLM);
@@ -655,7 +655,7 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
             return;
         }
 
-        final ListElement last = (ListElement) ListUtil.getLast(contentList);
+        final ListElement last = ListUtil.getLast(contentList);
         if (last.isGlue()) {
             // the last element in contentList is a glue;
             // it is a feasible breakpoint, there is no need to add
@@ -1782,7 +1782,7 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
             // if the old sequence is box(h) penalty(inf) glue(x,y,z) box(0)
             // (it cannot be parted and has some stretch or shrink)
             // the wrong box is the first one, not the last one
-            final LinkedList<ListElement> preserveList = new LinkedList<ListElement>();
+            final LinkedList<ListElement> preserveList = new LinkedList<>();
             if (wrongBox.getWidth() == 0) {
                 preserveList.add(wrongBox);
                 preserveList.addFirst(newList.removeLast());
@@ -1883,15 +1883,11 @@ public abstract class BlockStackingLayoutManager extends AbstractLayoutManager
             final List<ListElement> targetList, final boolean force) {
 
         final ListIterator<ListElement> listIter = sourceList.listIterator();
-        Object tempElement;
+        ListElement tempElement;
         while (listIter.hasNext()) {
             tempElement = listIter.next();
-            if (tempElement instanceof ListElement) {
-                wrapPositionElement((ListElement) tempElement, targetList,
-                        force);
-            } else if (tempElement instanceof List) {
-                wrapPositionElements((List<ListElement>) tempElement,
-                        targetList, force);
+            if (tempElement != null) {
+                wrapPositionElement(tempElement, targetList, force);
             }
         }
     }

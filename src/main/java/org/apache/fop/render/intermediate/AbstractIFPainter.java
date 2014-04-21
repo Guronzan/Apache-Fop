@@ -172,9 +172,10 @@ public abstract class AbstractIFPainter implements IFPainter {
      *            the session context for access to resolution information
      * @return the default processing hints
      */
-    protected Map createDefaultImageProcessingHints(
+    protected Map<Object, Object> createDefaultImageProcessingHints(
             final ImageSessionContext sessionContext) {
-        final Map hints = ImageUtil.getDefaultHints(sessionContext);
+        final Map<Object, Object> hints = ImageUtil
+                .getDefaultHints(sessionContext);
 
         // Transfer common foreign attributes to hints
         final Object conversionMode = getContext().getForeignAttribute(

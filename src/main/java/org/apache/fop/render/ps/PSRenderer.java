@@ -44,7 +44,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.fop.ResourceEventProducer;
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.area.Area;
 import org.apache.fop.area.BlockViewport;
@@ -64,6 +63,7 @@ import org.apache.fop.area.inline.WordArea;
 import org.apache.fop.datatypes.URISpecification;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.apache.fop.fonts.Font;
+import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.LazyFont;
 import org.apache.fop.fonts.SingleByteFont;
 import org.apache.fop.fonts.Typeface;
@@ -99,6 +99,7 @@ import org.apache.xmlgraphics.ps.dsc.DSCException;
 import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
 import org.apache.xmlgraphics.ps.dsc.events.DSCCommentBoundingBox;
 import org.apache.xmlgraphics.ps.dsc.events.DSCCommentHiResBoundingBox;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * Renderer that renders to PostScript. <br>
@@ -119,7 +120,7 @@ import org.apache.xmlgraphics.ps.dsc.events.DSCCommentHiResBoundingBox;
  */
 @Slf4j
 public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
-        ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
+ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
 
     /** The MIME type for PostScript */
     public static final String MIME_TYPE = "application/postscript";
@@ -382,7 +383,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
     /** {@inheritDoc} */
     @Override
     protected void drawImage(String uri, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         endTextObject();
         final int x = this.currentIPPosition + (int) Math.round(pos.getX());
         final int y = this.currentBPPosition + (int) Math.round(pos.getY());
@@ -419,7 +420,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
                         .getSupportedFlavors(renderingContext);
 
                 // Only now fully load/prepare the image
-                final Map<String, Object> hints = ImageUtil
+                final Map<Object, Object> hints = ImageUtil
                         .getDefaultHints(sessionContext);
                 final org.apache.xmlgraphics.image.loader.Image img = manager
                         .getImage(info, flavors, hints, sessionContext);
@@ -573,7 +574,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
             postFix = key.substring(pos);
             key = key.substring(0, pos);
         }
-        final Map fonts = this.fontInfo.getFonts();
+        final Map<String, FontMetrics> fonts = this.fontInfo.getFonts();
         Typeface tf = (Typeface) fonts.get(key);
         if (tf instanceof LazyFont) {
             tf = ((LazyFont) tf).getRealFont();
@@ -763,7 +764,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
         this.gen.writeDSCComment(DSCConstants.PAGES, this.currentPageNumber);
         new DSCCommentBoundingBox(this.documentBoundingBox).generate(this.gen);
         new DSCCommentHiResBoundingBox(this.documentBoundingBox)
-                .generate(this.gen);
+        .generate(this.gen);
         this.gen.getResourceTracker().writeResources(false, this.gen);
         this.gen.writeDSCComment(DSCConstants.EOF);
         this.gen.flush();
@@ -878,8 +879,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
 
     /** {@inheritDoc} */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-            FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         log.debug("renderPage(): " + page);
 
         if (this.currentPageNumber == 0) {
@@ -893,7 +893,7 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
                 PSProcSets.STD_PROCSET);
         this.gen.writeDSCComment(DSCConstants.PAGE,
                 new Object[] { page.getPageNumberString(),
-                        this.currentPageNumber });
+                this.currentPageNumber });
 
         final double pageWidth = page.getViewArea().width / 1000f;
         final double pageHeight = page.getViewArea().height / 1000f;
@@ -956,16 +956,16 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
                             new Long(Math.round(pageWidth)) });
             this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                     new Object[] { zero, zero, new Double(pageHeight),
-                            new Double(pageWidth) });
+                    new Double(pageWidth) });
             this.gen.writeDSCComment(DSCConstants.PAGE_ORIENTATION, "Landscape");
         } else {
             pageBoundingBox.setRect(0, 0, pageWidth, pageHeight);
             this.gen.writeDSCComment(DSCConstants.PAGE_BBOX,
                     new Object[] { zero, zero, new Long(Math.round(pageWidth)),
-                            new Long(Math.round(pageHeight)) });
+                    new Long(Math.round(pageHeight)) });
             this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                     new Object[] { zero, zero, new Double(pageWidth),
-                            new Double(pageHeight) });
+                    new Double(pageHeight) });
             if (getPSUtil().isAutoRotateLandscape()) {
                 this.gen.writeDSCComment(DSCConstants.PAGE_ORIENTATION,
                         "Portrait");
@@ -1124,8 +1124,8 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
                 + 2
                 * textArea.getTextLetterSpaceAdjust() : 0;
 
-                rmoveTo((font.getCharWidth(sp) + tws) / 1000f, 0);
-                super.renderSpace(space);
+        rmoveTo((font.getCharWidth(sp) + tws) / 1000f, 0);
+        super.renderSpace(space);
     }
 
     private Typeface getTypeface(final String fontName) {
@@ -1332,9 +1332,9 @@ public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
         endTextObject();
         try {
             this.borderPainter
-                    .drawLine(new Point(startx, starty),
-                            new Point(endx, starty), ruleThickness, col,
-                            RuleStyle.valueOf(style));
+            .drawLine(new Point(startx, starty),
+                    new Point(endx, starty), ruleThickness, col,
+                    RuleStyle.valueOf(style));
         } catch (final IOException ioe) {
             handleIOTrouble(ioe);
         }

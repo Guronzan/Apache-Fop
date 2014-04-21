@@ -220,8 +220,8 @@ public class PDFColor extends PDFPathPaint {
      *
      * @return a list containing the Double values of the color
      */
-    public List getList() {
-        final List theColorList = new ArrayList();
+    public List<Double> getList() {
+        final List<Double> theColorList = new ArrayList<>();
         if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_RGB) {
             // RGB
             theColorList.add(new Double(this.red));
@@ -487,11 +487,11 @@ public class PDFColor extends PDFPathPaint {
         /*
          * If you want to calculate black, uncomment this //pick the lowest
          * color tempDouble = this.red;
-         *
+         * 
          * if (this.green < tempDouble) tempDouble = this.green;
-         *
+         * 
          * if (this.blue < tempDouble) tempDouble = this.blue;
-         *
+         * 
          * this.black = tempDouble / this.blackFactor;
          */
     }

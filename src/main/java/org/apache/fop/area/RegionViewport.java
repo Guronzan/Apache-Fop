@@ -124,10 +124,10 @@ public class RegionViewport extends Area implements Cloneable {
                 (Rectangle2D) this.viewArea.clone());
         rv.regionReference = (RegionReference) this.regionReference.clone();
         if (this.props != null) {
-            rv.props = new HashMap(this.props);
+            rv.props = new HashMap<>(this.props);
         }
         if (this.foreignAttributes != null) {
-            rv.foreignAttributes = new HashMap(this.foreignAttributes);
+            rv.foreignAttributes = new HashMap<>(this.foreignAttributes);
         }
         return rv;
     }

@@ -19,7 +19,6 @@
 
 package org.apache.fop.fonts;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /**
@@ -48,7 +47,7 @@ public final class EncodingMode implements Serializable {
 
     /**
      * Returns the encoding mode name.
-     * 
+     *
      * @return the encoding mode name
      */
     public String getName() {
@@ -57,7 +56,7 @@ public final class EncodingMode implements Serializable {
 
     /**
      * Returns the {@link EncodingMode} by name.
-     * 
+     *
      * @param name
      *            the name of the encoding mode to look up
      * @return the encoding mode constant
@@ -74,7 +73,7 @@ public final class EncodingMode implements Serializable {
         }
     }
 
-    private Object readResolve() throws ObjectStreamException {
+    private Object readResolve() {
         return valueOf(getName());
     }
 

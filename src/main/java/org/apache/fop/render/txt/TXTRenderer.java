@@ -30,7 +30,6 @@ import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.area.Area;
 import org.apache.fop.area.CTM;
 import org.apache.fop.area.PageViewport;
@@ -40,6 +39,7 @@ import org.apache.fop.render.AbstractPathOrientedRenderer;
 import org.apache.fop.render.txt.border.AbstractBorderElement;
 import org.apache.fop.render.txt.border.BorderManager;
 import org.apache.xmlgraphics.ps.PSState;
+import org.apache.xmlgraphics.util.QName;
 import org.apache.xmlgraphics.util.UnitConv;
 
 /**
@@ -227,8 +227,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer<PSState> {
      * {@inheritDoc}
      */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         if (this.firstPage) {
             this.firstPage = false;
         } else {
@@ -485,7 +484,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer<PSState> {
     /** {@inheritDoc} */
     @Override
     protected void drawImage(final String url, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         // No images are painted here
     }
 

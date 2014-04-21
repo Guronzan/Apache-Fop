@@ -21,7 +21,6 @@ package org.apache.fop.fo.pagination;
 
 // Java
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.fop.apps.FOPException;
@@ -55,7 +54,7 @@ public class SimplePageMaster extends FObj {
     /**
      * Page regions (regionClass, Region)
      */
-    private Map regions;
+    private Map<String, Region> regions;
 
     // used for node validation
     private boolean hasRegionBody = false;
@@ -102,7 +101,7 @@ public class SimplePageMaster extends FObj {
         }
 
         // Well, there are only 5 regions so we can save a bit of memory here
-        this.regions = new HashMap(5);
+        this.regions = new HashMap<>(5);
     }
 
     /** {@inheritDoc} */
@@ -225,8 +224,8 @@ public class SimplePageMaster extends FObj {
     protected final PercentBaseContext getPageWidthContext(final int lengthBase) {
         return this.referenceOrientation.getValue() % 180 == 0 ? new SimplePercentBaseContext(
                 null, lengthBase, getPageWidth().getValue())
-                : new SimplePercentBaseContext(null, lengthBase,
-                        getPageHeight().getValue());
+        : new SimplePercentBaseContext(null, lengthBase,
+                getPageHeight().getValue());
     }
 
     /**
@@ -240,8 +239,8 @@ public class SimplePageMaster extends FObj {
     protected final PercentBaseContext getPageHeightContext(final int lengthBase) {
         return this.referenceOrientation.getValue() % 180 == 0 ? new SimplePercentBaseContext(
                 null, lengthBase, getPageHeight().getValue())
-                : new SimplePercentBaseContext(null, lengthBase, getPageWidth()
-                .getValue());
+        : new SimplePercentBaseContext(null, lengthBase, getPageWidth()
+                        .getValue());
     }
 
     /**
@@ -252,7 +251,7 @@ public class SimplePageMaster extends FObj {
      * @return the region, null if it doesn't exist
      */
     public Region getRegion(final int regionId) {
-        return (Region) this.regions.get(String.valueOf(regionId));
+        return this.regions.get(String.valueOf(regionId));
     }
 
     /**
@@ -260,7 +259,7 @@ public class SimplePageMaster extends FObj {
      *
      * @return the regions
      */
-    public Map getRegions() {
+    public Map<String, Region> getRegions() {
         return this.regions;
     }
 
@@ -273,9 +272,7 @@ public class SimplePageMaster extends FObj {
      * @return True if a region with this name exists
      */
     protected boolean regionNameExists(final String regionName) {
-        for (final Iterator regenum = this.regions.values().iterator(); regenum
-                .hasNext();) {
-            final Region r = (Region) regenum.next();
+        for (final Region r : this.regions.values()) {
             if (r.getRegionName().equals(regionName)) {
                 return true;
             }

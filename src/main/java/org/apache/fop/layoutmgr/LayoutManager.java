@@ -279,7 +279,7 @@ public interface LayoutManager extends PercentBaseContext {
      *            inside a paragraph
      * @return an updated list of elements, taking the new IPD into account
      */
-    <T> List<T> getNextKnuthElements(final LayoutContext context,
-            final int alignment, final Stack lmStack,
+    List<ListElement> getNextKnuthElements(final LayoutContext context,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position positionAtIPDChange, final LayoutManager restartAtLM);
 }

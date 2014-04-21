@@ -24,6 +24,7 @@ import org.apache.fop.datatypes.Numeric;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.ValidationException;
 
 /**
  * Abstract base class for the <a
@@ -74,9 +75,13 @@ public abstract class AbstractPageSequence extends FObj {
                 .getNumeric();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws ValidationException
+     */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() throws ValidationException {
         this.pageNumberGenerator = new PageNumberGenerator(this.format,
                 this.groupingSeparator, this.groupingSize, this.letterValue);
 

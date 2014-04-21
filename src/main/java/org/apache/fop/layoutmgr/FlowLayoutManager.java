@@ -39,8 +39,7 @@ import org.apache.fop.fo.pagination.Flow;
  * @todo Reintroduce emergency counter (generate error to avoid endless loop)
  */
 @Slf4j
-public class FlowLayoutManager extends BlockStackingLayoutManager implements
-BlockLevelLayoutManager {
+public class FlowLayoutManager extends BlockStackingLayoutManager {
 
     /** Array of areas currently being filled stored by area class */
     private final BlockParent[] currentAreas = new BlockParent[Area.CLASS_MAX];
@@ -62,10 +61,10 @@ BlockLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
 
-        final List elements = new LinkedList();
+        final List<ListElement> elements = new LinkedList<>();
 
         LayoutManager currentChildLM;
         while ((currentChildLM = getChildLM()) != null) {
@@ -82,11 +81,11 @@ BlockLevelLayoutManager {
     }
 
     /** {@inheritDoc} */
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment, final Position positionAtIPDChange,
             final LayoutManager restartAtLM) {
 
-        final List elements = new LinkedList();
+        final List<ListElement> elements = new LinkedList<>();
 
         LayoutManager currentChildLM = positionAtIPDChange.getLM();
         if (currentChildLM == null) {
@@ -101,7 +100,7 @@ BlockLevelLayoutManager {
                 return elements;
             }
         } else {
-            final Stack lmStack = new Stack();
+            final Stack<LayoutManager> lmStack = new Stack<>();
             while (currentChildLM.getParent() != this) {
                 lmStack.push(currentChildLM);
                 currentChildLM = currentChildLM.getParent();
@@ -127,16 +126,17 @@ BlockLevelLayoutManager {
         return elements;
     }
 
-    private List addChildElements(final List elements,
-            final LayoutManager childLM, final LayoutContext context,
-            final int alignment) {
+    private List<ListElement> addChildElements(
+            final List<ListElement> elements, final LayoutManager childLM,
+            final LayoutContext context, final int alignment) {
         return addChildElements(elements, childLM, context, alignment, null,
                 null, null);
     }
 
-    private List addChildElements(final List elements,
-            final LayoutManager childLM, final LayoutContext context,
-            final int alignment, final Stack lmStack, final Position position,
+    private List<ListElement> addChildElements(
+            final List<ListElement> elements, final LayoutManager childLM,
+            final LayoutContext context, final int alignment,
+            final Stack<LayoutManager> lmStack, final Position position,
             final LayoutManager restartAtLM) {
         if (handleSpanChange(childLM, elements, context)) {
             SpaceResolver.resolveElementList(elements);
@@ -144,8 +144,9 @@ BlockLevelLayoutManager {
         }
 
         final LayoutContext childLC = new LayoutContext(0);
-        final List childrenElements = getNextChildElements(childLM, context,
-                childLC, alignment, lmStack, position, restartAtLM);
+        final List<ListElement> childrenElements = getNextChildElements(
+                childLM, context, childLC, alignment, lmStack, position,
+                restartAtLM);
         if (elements.isEmpty()) {
             context.updateKeepWithPreviousPending(childLC
                     .getKeepWithPreviousPending());
@@ -170,7 +171,7 @@ BlockLevelLayoutManager {
     }
 
     private boolean handleSpanChange(final LayoutManager childLM,
-            final List elements, final LayoutContext context) {
+            final List<ListElement> elements, final LayoutContext context) {
         int span = EN_NONE;
         int disableColumnBalancing = EN_FALSE;
         if (childLM instanceof BlockLayoutManager) {
@@ -197,16 +198,16 @@ BlockLevelLayoutManager {
         }
     }
 
-    private List getNextChildElements(final LayoutManager childLM,
+    private List<ListElement> getNextChildElements(final LayoutManager childLM,
             final LayoutContext context, final LayoutContext childLC,
-            final int alignment, final Stack lmStack,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position restartPosition, final LayoutManager restartLM) {
         childLC.setStackLimitBP(context.getStackLimitBP());
         childLC.setRefIPD(context.getRefIPD());
         childLC.setWritingMode(getCurrentPage().getSimplePageMaster()
                 .getWritingMode());
 
-        List childrenElements;
+        List<ListElement> childrenElements;
         if (lmStack == null) {
             childrenElements = childLM.getNextKnuthElements(childLC, alignment);
         } else {
@@ -216,8 +217,8 @@ BlockLevelLayoutManager {
         assert !childrenElements.isEmpty();
 
         // "wrap" the Position inside each element
-        final List tempList = childrenElements;
-        childrenElements = new LinkedList();
+        final List<ListElement> tempList = childrenElements;
+        childrenElements = new LinkedList<>();
         wrapPositionElements(tempList, childrenElements);
         return childrenElements;
     }
@@ -284,15 +285,12 @@ BlockLevelLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getChangedKnuthElements(final List oldList, /*
-     * int
-     * flaggedPenalty,
-     */
-            final int alignment) {
-        ListIterator oldListIterator = oldList.listIterator();
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
+        ListIterator<ListElement> oldListIterator = oldList.listIterator();
         KnuthElement returnedElement;
-        final List returnedList = new LinkedList();
-        final List returnList = new LinkedList();
+        final List<ListElement> returnedList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
         KnuthElement prevElement = null;
         KnuthElement currElement = null;
         int fromIndex = 0;
@@ -350,7 +348,7 @@ BlockLevelLayoutManager {
 
         // "wrap" the Position stored in each element of returnedList
         // and add elements to returnList
-        final ListIterator listIter = returnedList.listIterator();
+        final ListIterator<ListElement> listIter = returnedList.listIterator();
         while (listIter.hasNext()) {
             returnedElement = (KnuthElement) listIter.next();
             if (returnedElement.getLayoutManager() != this) {

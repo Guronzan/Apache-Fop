@@ -31,6 +31,7 @@ import org.apache.fop.afp.AFPPaintingState;
 import org.apache.fop.afp.AFPResourceInfo;
 import org.apache.fop.afp.AFPUnitConverter;
 import org.apache.fop.render.ImageHandlerBase;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * A base abstract AFP image handler
@@ -81,7 +82,7 @@ public abstract class AFPImageHandler implements ImageHandlerBase {
 
     /**
      * Sets resource information on the data object info.
-     * 
+     *
      * @param dataObjectInfo
      *            the data object info instance
      * @param uri
@@ -91,7 +92,7 @@ public abstract class AFPImageHandler implements ImageHandlerBase {
      */
     protected void setResourceInformation(
             final AFPDataObjectInfo dataObjectInfo, final String uri,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         final AFPResourceInfo resourceInfo = this.foreignAttributeReader
                 .getResourceInfo(foreignAttributes);
         resourceInfo.setUri(uri);
@@ -101,7 +102,7 @@ public abstract class AFPImageHandler implements ImageHandlerBase {
     /**
      * Creates and returns an {@link AFPObjectAreaInfo} instance for the
      * placement of the image.
-     * 
+     *
      * @param paintingState
      *            the painting state
      * @param targetRect

@@ -21,6 +21,7 @@ package org.apache.fop.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ public class PDFOutline extends PDFObject {
     /**
      * list of sub-entries (outline objects)
      */
-    private final List subentries;
+    private final List<PDFOutline> subentries;
 
     /**
      * parent outline object. Root Outlines parent is null
@@ -78,7 +79,7 @@ public class PDFOutline extends PDFObject {
     public PDFOutline(final String title, final String action,
             final boolean openItem) {
         super();
-        this.subentries = new java.util.ArrayList();
+        this.subentries = new ArrayList<>();
         this.count = 0;
         this.parent = null;
         this.prev = null;
@@ -107,9 +108,8 @@ public class PDFOutline extends PDFObject {
      *            a sub outline
      */
     public void addOutline(final PDFOutline outline) {
-        if (this.subentries.size() > 0) {
-            outline.prev = (PDFOutline) this.subentries.get(this.subentries
-                    .size() - 1);
+        if (!this.subentries.isEmpty()) {
+            outline.prev = this.subentries.get(this.subentries.size() - 1);
             outline.prev.next = outline;
         } else {
             this.first = outline;

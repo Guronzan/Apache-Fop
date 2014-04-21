@@ -89,13 +89,6 @@ public class AFPTextHandler implements FOPTextHandler {
         return afpFontAttributes.getFontReference();
     }
 
-    /** {@inheritDoc} */
-    public void drawString(final String text, final float x, final float y)
-            throws IOException {
-        // TODO Remove me after removing the deprecated method in TextHandler.
-        throw new UnsupportedOperationException("Deprecated method!");
-    }
-
     /**
      * Add a text string to the current data object of the AFP datastream. The
      * text is painted using text operations.

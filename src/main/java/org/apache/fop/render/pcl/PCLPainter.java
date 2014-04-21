@@ -29,10 +29,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontTriplet;
@@ -60,7 +59,6 @@ import org.w3c.dom.Document;
 /**
  * {@link IFPainter} implementation that produces PCL 5.
  */
-@Slf4j
 public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
     private static final boolean DEBUG = false;
@@ -74,7 +72,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
     private int currentPrintDirection = 0;
     // private GeneralPath currentPath = null;
 
-    private final Stack graphicContextStack = new Stack();
+    private final Stack<GraphicContext> graphicContextStack = new Stack<>();
     private GraphicContext graphicContext = new GraphicContext();
 
     /**
@@ -136,7 +134,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
     /** {@inheritDoc} */
     @Override
-    public void endViewport() throws IFException {
+    public void endViewport() {
         restoreGraphicsState();
     }
 
@@ -153,14 +151,13 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
     /** {@inheritDoc} */
     @Override
-    public void endGroup() throws IFException {
+    public void endGroup() {
         restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final String uri, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final String uri, final Rectangle rect) {
         drawImageUsingURI(uri, rect);
     }
 
@@ -186,14 +183,13 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final Document doc, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final Document doc, final Rectangle rect) {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void clipRect(final Rectangle rect) throws IFException {
+    public void clipRect(final Rectangle rect) {
         // PCL cannot clip (only HP GL/2 can)
         // If you need clipping support, switch to RenderingMode.BITMAP.
     }
@@ -246,13 +242,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
                     final Java2DPainter painter = new Java2DPainter(g2d,
                             getContext(), PCLPainter.this.parent.getFontInfo(),
                             PCLPainter.this.state);
-                    try {
-                        painter.drawBorderRect(rect, before, after, start, end);
-                    } catch (final IFException e) {
-                        // This should never happen with the Java2DPainter
-                        throw new RuntimeException(
-                                "Unexpected error while painting borders", e);
-                    }
+                    painter.drawBorderRect(rect, before, after, start, end);
                 }
 
                 @Override
@@ -285,13 +275,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
                 final Java2DPainter painter = new Java2DPainter(g2d,
                         getContext(), PCLPainter.this.parent.getFontInfo(),
                         PCLPainter.this.state);
-                try {
-                    painter.drawLine(start, end, width, color, style);
-                } catch (final IFException e) {
-                    // This should never happen with the Java2DPainter
-                    throw new RuntimeException(
-                            "Unexpected error while painting a line", e);
-                }
+                painter.drawLine(start, end, width, color, style);
             }
 
             @Override
@@ -311,7 +295,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
         info.setSize(size);
         final ImageGraphics2D img = new ImageGraphics2D(info, painter);
 
-        final Map hints = new java.util.HashMap();
+        final Map<Object, Object> hints = new HashMap<>();
         if (isSpeedOptimized()) {
             // Gray text may not be painted in this case! We don't get dithering
             // in Sun JREs.
@@ -341,7 +325,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
             final int wordSpacing, final int[] dx, final String text)
-                    throws IFException {
+            throws IFException {
         try {
             final FontTriplet triplet = new FontTriplet(
                     this.state.getFontFamily(), this.state.getFontStyle(),
@@ -394,7 +378,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
         final StringBuilder sb = new StringBuilder(Math.max(16, l));
         if (dx != null && dxl > 0 && dx[0] != 0) {
             sb.append("\u001B&a+")
-            .append(this.gen.formatDouble2(dx[0] / 100.0)).append('H');
+                    .append(this.gen.formatDouble2(dx[0] / 100.0)).append('H');
         }
         for (int i = 0; i < l; ++i) {
             final char orgChar = text.charAt(i);
@@ -426,8 +410,8 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
             if (glyphAdjust != 0) {
                 sb.append("\u001B&a+")
-                .append(this.gen.formatDouble2(glyphAdjust / 100.0))
-                .append('H');
+                        .append(this.gen.formatDouble2(glyphAdjust / 100.0))
+                        .append('H');
             }
 
         }
@@ -523,13 +507,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
                 final Java2DPainter painter = new Java2DPainter(g2d,
                         getContext(), PCLPainter.this.parent.getFontInfo(),
                         PCLPainter.this.state);
-                try {
-                    painter.drawText(x, y, letterSpacing, wordSpacing, dx, text);
-                } catch (final IFException e) {
-                    // This should never happen with the Java2DPainter
-                    throw new RuntimeException(
-                            "Unexpected error while painting text", e);
-                }
+                painter.drawText(x, y, letterSpacing, wordSpacing, dx, text);
             }
 
             @Override
@@ -549,7 +527,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
 
     /** Restores the last graphics state from the stack. */
     private void restoreGraphicsState() {
-        this.graphicContext = (GraphicContext) this.graphicContextStack.pop();
+        this.graphicContext = this.graphicContextStack.pop();
     }
 
     private void concatenateTransformationMatrix(final AffineTransform transform)

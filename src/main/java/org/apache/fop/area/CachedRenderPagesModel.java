@@ -48,7 +48,7 @@ import org.xml.sax.SAXException;
  */
 @Slf4j
 public class CachedRenderPagesModel extends RenderPagesModel {
-    private final Map<PageViewport, String> pageMap = new HashMap<PageViewport, String>();
+    private final Map<PageViewport, String> pageMap = new HashMap<>();
 
     /**
      * Base directory to save temporary file in, typically points to the user's
@@ -84,8 +84,9 @@ public class CachedRenderPagesModel extends RenderPagesModel {
     @Override
     protected boolean checkPreparedPages(final PageViewport newpage,
             final boolean renderUnresolved) {
-        for (final Iterator iter = this.prepared.iterator(); iter.hasNext();) {
-            final PageViewport pageViewport = (PageViewport) iter.next();
+        for (final Iterator<PageViewport> iter = this.prepared.iterator(); iter
+                .hasNext();) {
+            final PageViewport pageViewport = iter.next();
             if (pageViewport.isResolved() || renderUnresolved) {
                 if (pageViewport != newpage) {
                     try {

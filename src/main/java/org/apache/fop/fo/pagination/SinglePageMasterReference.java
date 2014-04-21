@@ -34,7 +34,7 @@ import org.xml.sax.Locator;
  * for a single page. It returns the master name only once until reset.
  */
 public class SinglePageMasterReference extends FObj implements
-SubSequenceSpecifier {
+        SubSequenceSpecifier {
 
     // The value of properties relevant for fo:single-page-master-reference.
     private String masterReference;
@@ -69,7 +69,7 @@ SubSequenceSpecifier {
 
     /** {@inheritDoc} */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() {
         final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
         pageSequenceMaster.addSubsequenceSpecifier(this);
     }

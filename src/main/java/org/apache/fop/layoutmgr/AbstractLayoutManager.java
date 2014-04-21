@@ -166,7 +166,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public <T> List<T> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         log.warn("null implementation of getNextKnuthElements() called!");
         setFinished(true);

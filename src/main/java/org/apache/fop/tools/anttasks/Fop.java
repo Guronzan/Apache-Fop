@@ -423,18 +423,18 @@ class FOPTaskStarter {
     }
 
     private static final String[][] SHORT_NAMES = {
-            { "pdf", MimeConstants.MIME_PDF },
-            { "ps", MimeConstants.MIME_POSTSCRIPT },
-            { "mif", MimeConstants.MIME_MIF },
-            { "rtf", MimeConstants.MIME_RTF },
-            { "pcl", MimeConstants.MIME_PCL },
-            { "txt", MimeConstants.MIME_PLAIN_TEXT },
-            { "at", MimeConstants.MIME_FOP_AREA_TREE },
-            { "xml", MimeConstants.MIME_FOP_AREA_TREE },
-            { "tiff", MimeConstants.MIME_TIFF },
-            { "tif", MimeConstants.MIME_TIFF },
-            { "png", MimeConstants.MIME_PNG },
-            { "afp", MimeConstants.MIME_AFP } };
+        { "pdf", MimeConstants.MIME_PDF },
+        { "ps", MimeConstants.MIME_POSTSCRIPT },
+        { "mif", MimeConstants.MIME_MIF },
+        { "rtf", MimeConstants.MIME_RTF },
+        { "pcl", MimeConstants.MIME_PCL },
+        { "txt", MimeConstants.MIME_PLAIN_TEXT },
+        { "at", MimeConstants.MIME_FOP_AREA_TREE },
+        { "xml", MimeConstants.MIME_FOP_AREA_TREE },
+        { "tiff", MimeConstants.MIME_TIFF },
+        { "tif", MimeConstants.MIME_TIFF },
+        { "png", MimeConstants.MIME_PNG },
+        { "afp", MimeConstants.MIME_AFP } };
 
     private String normalizeOutputFormat(final String format) {
         if (format == null) {
@@ -449,25 +449,25 @@ class FOPTaskStarter {
     }
 
     private static final String[][] EXTENSIONS = {
-            { MimeConstants.MIME_FOP_AREA_TREE, ".at.xml" },
-            { MimeConstants.MIME_FOP_AWT_PREVIEW, null },
-            { MimeConstants.MIME_FOP_PRINT, null },
-            { MimeConstants.MIME_PDF, ".pdf" },
-            { MimeConstants.MIME_POSTSCRIPT, ".ps" },
-            { MimeConstants.MIME_PCL, ".pcl" },
-            { MimeConstants.MIME_PCL_ALT, ".pcl" },
-            { MimeConstants.MIME_PLAIN_TEXT, ".txt" },
-            { MimeConstants.MIME_RTF, ".rtf" },
-            { MimeConstants.MIME_RTF_ALT1, ".rtf" },
-            { MimeConstants.MIME_RTF_ALT2, ".rtf" },
-            { MimeConstants.MIME_MIF, ".mif" },
-            { MimeConstants.MIME_SVG, ".svg" },
-            { MimeConstants.MIME_PNG, ".png" },
-            { MimeConstants.MIME_JPEG, ".jpg" },
-            { MimeConstants.MIME_TIFF, ".tif" },
-            { MimeConstants.MIME_AFP, ".afp" },
-            { MimeConstants.MIME_AFP_ALT, ".afp" },
-            { MimeConstants.MIME_XSL_FO, ".fo" } };
+        { MimeConstants.MIME_FOP_AREA_TREE, ".at.xml" },
+        { MimeConstants.MIME_FOP_AWT_PREVIEW, null },
+        { MimeConstants.MIME_FOP_PRINT, null },
+        { MimeConstants.MIME_PDF, ".pdf" },
+        { MimeConstants.MIME_POSTSCRIPT, ".ps" },
+        { MimeConstants.MIME_PCL, ".pcl" },
+        { MimeConstants.MIME_PCL_ALT, ".pcl" },
+        { MimeConstants.MIME_PLAIN_TEXT, ".txt" },
+        { MimeConstants.MIME_RTF, ".rtf" },
+        { MimeConstants.MIME_RTF_ALT1, ".rtf" },
+        { MimeConstants.MIME_RTF_ALT2, ".rtf" },
+        { MimeConstants.MIME_MIF, ".mif" },
+        { MimeConstants.MIME_SVG, ".svg" },
+        { MimeConstants.MIME_PNG, ".png" },
+        { MimeConstants.MIME_JPEG, ".jpg" },
+        { MimeConstants.MIME_TIFF, ".tif" },
+        { MimeConstants.MIME_AFP, ".afp" },
+        { MimeConstants.MIME_AFP_ALT, ".afp" },
+        { MimeConstants.MIME_XSL_FO, ".fo" } };
 
     private String determineExtension(final String outputFormat) {
         for (final String[] element : EXTENSIONS) {
@@ -497,7 +497,7 @@ class FOPTaskStarter {
     /**
      * {@inheritDoc}
      */
-    public void run() throws FOPException {
+    public void run() {
         // Set base directory
         if (this.task.getBasedir() != null) {
             try {
@@ -545,12 +545,12 @@ class FOPTaskStarter {
                 if (this.task.getForce()
                         || !outf.exists()
                         || this.task.getFofile().lastModified() > outf
-                                .lastModified()) {
+                        .lastModified()) {
                     render(this.task.getFofile(), outf, outputFormat);
                     actioncount++;
                 } else if (outf.exists()
                         && this.task.getFofile().lastModified() <= outf
-                                .lastModified()) {
+                        .lastModified()) {
                     skippedcount++;
                 }
             }
@@ -572,16 +572,16 @@ class FOPTaskStarter {
                 if (this.task.getForce()
                         || !outf.exists()
                         || this.task.getXmlFile().lastModified() > outf
-                                .lastModified()
+                        .lastModified()
                         || this.task.getXsltFile().lastModified() > outf
-                                .lastModified()) {
+                        .lastModified()) {
                     render(this.task.getXmlFile(), this.task.getXsltFile(),
                             outf, outputFormat);
                     actioncount++;
                 } else if (outf.exists()
                         && (this.task.getXmlFile().lastModified() <= outf
-                                .lastModified() || this.task.getXsltFile()
-                                .lastModified() <= outf.lastModified())) {
+                        .lastModified() || this.task.getXsltFile()
+                        .lastModified() <= outf.lastModified())) {
                     skippedcount++;
                 }
             }
@@ -659,10 +659,10 @@ class FOPTaskStarter {
                             + "and no fofile was set.", Project.MSG_WARN);
         } else if (skippedcount > 0) {
             this.task
-                    .log(skippedcount
-                            + " xslfo file(s) skipped (no change found"
-                            + " since last generation; set force=\"true\" to override).",
-                            Project.MSG_INFO);
+            .log(skippedcount
+                    + " xslfo file(s) skipped (no change found"
+                    + " since last generation; set force=\"true\" to override).",
+                    Project.MSG_INFO);
         }
     }
 

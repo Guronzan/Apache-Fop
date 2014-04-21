@@ -33,8 +33,7 @@ import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
  * AFP datastream.
  */
 @Slf4j
-public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState
-implements Cloneable {
+public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState {
 
     private static final long serialVersionUID = 8206711712452344473L;
 
@@ -588,7 +587,7 @@ implements Cloneable {
      * Block level state data
      */
     private class AFPData extends
-    org.apache.fop.util.AbstractPaintingState.AbstractData {
+            org.apache.fop.util.AbstractPaintingState.AbstractData {
         private static final long serialVersionUID = -1789481244175275686L;
 
         /** The current fill status */

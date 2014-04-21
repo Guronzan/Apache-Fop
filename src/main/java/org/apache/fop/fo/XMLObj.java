@@ -22,6 +22,7 @@ package org.apache.fop.fo;
 // Java
 import java.awt.geom.Point2D;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -80,8 +81,7 @@ public abstract class XMLObj extends FONode implements ObjectBuiltListener {
     /** {@inheritDoc} */
     @Override
     public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList propertyList)
-                    throws FOPException {
+            final Attributes attlist, final PropertyList propertyList) {
         setLocator(locator);
         this.name = elementName;
         this.attr = attlist;
@@ -120,7 +120,7 @@ public abstract class XMLObj extends FONode implements ObjectBuiltListener {
         return this.name;
     }
 
-    private static HashMap ns = new HashMap();
+    private static Map<String, String> ns = new HashMap<>();
     static {
         ns.put(XMLConstants.XLINK_PREFIX, XMLConstants.XLINK_NAMESPACE);
     }
@@ -156,7 +156,7 @@ public abstract class XMLObj extends FONode implements ObjectBuiltListener {
                 if (pref.equals(XMLConstants.XMLNS_PREFIX)) {
                     ns.put(tail, rf);
                 } else {
-                    element.setAttributeNS((String) ns.get(pref), tail, rf);
+                    element.setAttributeNS(ns.get(pref), tail, rf);
                 }
             }
         }
@@ -227,7 +227,7 @@ public abstract class XMLObj extends FONode implements ObjectBuiltListener {
     @Override
     protected void characters(final char[] data, final int start,
             final int length, final PropertyList pList, final Locator locator)
-                    throws FOPException {
+            throws FOPException {
         super.characters(data, start, length, pList, locator);
         final String str = new String(data, start, length);
         final org.w3c.dom.Text text = this.doc.createTextNode(str);

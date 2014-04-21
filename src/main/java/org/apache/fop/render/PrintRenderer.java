@@ -36,6 +36,7 @@ import org.apache.fop.fonts.FontManager;
 import org.apache.fop.fonts.FontResolver;
 import org.apache.fop.fonts.FontTriplet;
 import org.apache.fop.fonts.base14.Base14FontCollection;
+import org.apache.xmlgraphics.util.QName;
 import org.w3c.dom.Document;
 
 /** Abstract base class of "Print" type renderers. */
@@ -81,7 +82,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws FOPException
      */
     @Override
@@ -153,7 +154,8 @@ public abstract class PrintRenderer extends AbstractRenderer {
      * @return the RendererContext
      */
     protected RendererContext createRendererContext(final int x, final int y,
-            final int width, final int height, final Map foreignAttributes) {
+            final int width, final int height,
+            final Map<QName, String> foreignAttributes) {
         final RendererContext context = instantiateRendererContext();
         context.setUserAgent(this.userAgent);
 
@@ -183,7 +185,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
      *            the foreign attributes containing rendering hints, or null
      */
     public void renderDocument(final Document doc, final String ns,
-            final Rectangle2D pos, final Map foreignAttributes) {
+            final Rectangle2D pos, final Map<QName, String> foreignAttributes) {
         final int x = this.currentIPPosition + (int) pos.getX();
         final int y = this.currentBPPosition + (int) pos.getY();
         final int width = (int) pos.getWidth();

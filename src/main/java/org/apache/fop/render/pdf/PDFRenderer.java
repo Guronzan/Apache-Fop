@@ -38,7 +38,6 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.ResourceEventProducer;
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.area.Area;
@@ -102,6 +101,7 @@ import org.apache.xmlgraphics.image.loader.ImageInfo;
 import org.apache.xmlgraphics.image.loader.ImageManager;
 import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
+import org.apache.xmlgraphics.util.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -110,7 +110,7 @@ import org.w3c.dom.NodeList;
  */
 @Slf4j
 public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
-        implements PDFConfigurationConstants {
+implements PDFConfigurationConstants {
 
     /** The MIME type for PDF */
     public static final String MIME_TYPE = MimeConstants.MIME_PDF;
@@ -501,8 +501,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
      * stream. {@inheritDoc}
      */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         if (this.pages != null
                 && (this.currentPage = this.pages.get(page)) != null) {
             // Retrieve previously prepared page (out-of-line rendering)
@@ -888,7 +887,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
             }
             final AffineTransform tf = positioning == Block.FIXED ? getState()
                     .getBaseTransform() : getState().getTransform();
-            saveAbsolutePosition(id, this.currentPageRef, ipp, bpp, tf);
+                    saveAbsolutePosition(id, this.currentPageRef, ipp, bpp, tf);
         }
     }
 
@@ -1186,7 +1185,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
                 }
                 final int tls = i < l - 1 ? parentArea
                         .getTextLetterSpaceAdjust() : 0;
-                glyphAdjust -= tls;
+                        glyphAdjust -= tls;
             } else {
                 if (CharUtilities.isFixedWidthSpace(orgChar)) {
                     // Fixed width space are rendered as spaces so copy/paste
@@ -1230,7 +1229,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
     /** {@inheritDoc} */
     @Override
     protected void drawImage(final String url, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         endTextObject();
         putImage(url, pos, foreignAttributes);
     }
@@ -1247,7 +1246,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
      *            foreign attributes associated with the image
      */
     protected void putImage(String uri, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         final Rectangle posInt = new Rectangle((int) pos.getX(),
                 (int) pos.getY(), (int) pos.getWidth(), (int) pos.getHeight());
 
@@ -1273,7 +1272,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
                     .getImageSessionContext();
             info = manager.getImageInfo(uri, sessionContext);
 
-            final Map<String, Object> hints = ImageUtil
+            final Map<Object, Object> hints = ImageUtil
                     .getDefaultHints(sessionContext);
             final ImageFlavor[] supportedFlavors = this.imageHandlerRegistry
                     .getSupportedFlavors();
@@ -1301,7 +1300,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
             } else {
                 throw new UnsupportedOperationException(
                         "No PDFImageHandler available for image: " + info
-                        + " (" + img.getClass().getName() + ")");
+                                + " (" + img.getClass().getName() + ")");
             }
         } catch (final ImageException ie) {
             final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
@@ -1366,7 +1365,8 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
     /** {@inheritDoc} */
     @Override
     protected RendererContext createRendererContext(final int x, final int y,
-            final int width, final int height, final Map foreignAttributes) {
+            final int width, final int height,
+            final Map<QName, String> foreignAttributes) {
         final RendererContext context = super.createRendererContext(x, y,
                 width, height, foreignAttributes);
         context.setProperty(PDFRendererContextConstants.PDF_DOCUMENT,
@@ -1389,7 +1389,7 @@ public class PDFRenderer extends AbstractPathOrientedRenderer<AbstractData>
     /** {@inheritDoc} */
     @Override
     public void renderDocument(final Document doc, final String ns,
-            final Rectangle2D pos, final Map foreignAttributes) {
+            final Rectangle2D pos, final Map<QName, String> foreignAttributes) {
         if (this.accessEnabled) {
             final MarkedContentInfo mci = this.logicalStructureHandler
                     .addImageContentItem(this.imageReference);

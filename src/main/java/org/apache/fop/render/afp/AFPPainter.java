@@ -169,7 +169,7 @@ public class AFPPainter extends AbstractIFPainter {
     @Override
     protected Map createDefaultImageProcessingHints(
             final ImageSessionContext sessionContext) {
-        final Map hints = super
+        final Map<Object, Object> hints = super
                 .createDefaultImageProcessingHints(sessionContext);
 
         // AFP doesn't support alpha channels
@@ -190,8 +190,7 @@ public class AFPPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final String uri, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final String uri, final Rectangle rect) {
         final String name = this.documentHandler.getPageSegmentNameFor(uri);
         if (name != null) {
             final float[] srcPts = { rect.x, rect.y };
@@ -208,14 +207,13 @@ public class AFPPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final Document doc, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final Document doc, final Rectangle rect) {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void clipRect(final Rectangle rect) throws IFException {
+    public void clipRect(final Rectangle rect) {
         // Not supported!
     }
 

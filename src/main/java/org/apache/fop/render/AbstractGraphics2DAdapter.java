@@ -35,6 +35,7 @@ import java.awt.image.WritableRaster;
 import java.io.IOException;
 
 import org.apache.fop.render.RendererContext.RendererContextWrapper;
+import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
 import org.apache.xmlgraphics.util.UnitConv;
 
 /**
@@ -44,7 +45,7 @@ public abstract class AbstractGraphics2DAdapter implements Graphics2DAdapter {
 
     /**
      * Paints the image to a BufferedImage and returns that.
-     * 
+     *
      * @param painter
      *            the painter which will paint the actual image
      * @param context
@@ -143,7 +144,7 @@ public abstract class AbstractGraphics2DAdapter implements Graphics2DAdapter {
      * Sets rendering hints on the Graphics2D created for painting to a
      * BufferedImage. Subclasses can modify the settings to customize the
      * behaviour.
-     * 
+     *
      * @param g2d
      *            the Graphics2D instance
      */
@@ -159,9 +160,7 @@ public abstract class AbstractGraphics2DAdapter implements Graphics2DAdapter {
     public void paintImage(final Graphics2DImagePainter painter,
             final RendererContext context, final int x, final int y,
             final int width, final int height) throws IOException {
-        paintImage(
-                (org.apache.xmlgraphics.java2d.Graphics2DImagePainter) painter,
-                context, x, y, width, height);
+        paintImage(painter, context, x, y, width, height);
     }
 
 }

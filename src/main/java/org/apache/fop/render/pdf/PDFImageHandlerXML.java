@@ -21,7 +21,6 @@ package org.apache.fop.render.pdf;
 
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.io.IOException;
 import java.util.Map;
 
 import org.apache.fop.pdf.PDFXObject;
@@ -30,6 +29,7 @@ import org.apache.fop.render.RendererContextConstants;
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
+import org.apache.xmlgraphics.util.QName;
 import org.w3c.dom.Document;
 
 /**
@@ -42,13 +42,12 @@ public class PDFImageHandlerXML implements PDFImageHandler {
     /** {@inheritDoc} */
     @Override
     public PDFXObject generateImage(final RendererContext context,
-            final Image image, final Point origin, final Rectangle pos)
-                    throws IOException {
+            final Image image, final Point origin, final Rectangle pos) {
         final PDFRenderer renderer = (PDFRenderer) context.getRenderer();
         final ImageXMLDOM imgXML = (ImageXMLDOM) image;
         final Document doc = imgXML.getDocument();
         final String ns = imgXML.getRootNamespace();
-        final Map foreignAttributes = (Map) context
+        final Map<QName, String> foreignAttributes = (Map<QName, String>) context
                 .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         renderer.renderDocument(doc, ns, pos, foreignAttributes);
         return null;
@@ -62,7 +61,7 @@ public class PDFImageHandlerXML implements PDFImageHandler {
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageXMLDOM> getSupportedImageClass() {
         return ImageXMLDOM.class;
     }
 

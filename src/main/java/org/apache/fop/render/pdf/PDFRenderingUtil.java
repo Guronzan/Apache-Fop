@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -76,7 +77,7 @@ class PDFRenderingUtil implements PDFConfigurationConstants {
     protected PDFEncryptionParams encryptionParams;
 
     /** Registry of PDF filters */
-    protected Map filterMap;
+    protected Map<String, List<String>> filterMap;
 
     /**
      * the ICC stream used as output profile by this document for PDF/A and
@@ -235,7 +236,7 @@ class PDFRenderingUtil implements PDFConfigurationConstants {
      * @param filterMap
      *            the filter map
      */
-    public void setFilterMap(final Map filterMap) {
+    public void setFilterMap(final Map<String, List<String>> filterMap) {
         this.filterMap = filterMap;
     }
 
@@ -264,7 +265,7 @@ class PDFRenderingUtil implements PDFConfigurationConstants {
         this.pdfDoc.getProfile().setPDFXMode(this.pdfXMode);
     }
 
-    private void addsRGBColorSpace() throws IOException {
+    private void addsRGBColorSpace() {
         if (this.disableSRGBColorSpace) {
             if (this.pdfAMode != PDFAMode.DISABLED
                     || this.pdfXMode != PDFXMode.DISABLED

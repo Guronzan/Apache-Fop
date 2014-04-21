@@ -19,6 +19,7 @@
 
 package org.apache.fop.area;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -26,14 +27,14 @@ import java.util.List;
  */
 public class PageSequence extends AreaTreeObject {
 
-    private final List pages = new java.util.ArrayList();
+    private final List<PageViewport> pages = new ArrayList<>();
     private LineArea title;
     private String language;
     private String country;
 
     /**
      * Main constructor
-     * 
+     *
      * @param title
      *            the title for the page-sequence, may be null
      */
@@ -51,7 +52,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Sets the page sequence's title.
-     * 
+     *
      * @param title
      *            the title
      */
@@ -61,7 +62,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Adds a new page to the page sequence
-     * 
+     *
      * @param page
      *            the page to be added
      */
@@ -78,18 +79,18 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Returns the page at the given index.
-     * 
+     *
      * @param idx
      *            the index of the requested page
      * @return the requested page or null if it was not found
      */
     public PageViewport getPage(final int idx) {
-        return (PageViewport) this.pages.get(idx);
+        return this.pages.get(idx);
     }
 
     /**
      * Indicates whether a page is the first in this page sequence.
-     * 
+     *
      * @param page
      *            the page to be inspected
      * @return true if the page is the first in this page sequence, false
@@ -101,7 +102,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Returns the language of the page-sequence.
-     * 
+     *
      * @return the language (the value of the language property, "none" is
      *         mapped to null)
      */
@@ -111,7 +112,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Sets the language that applies to this page-sequence.
-     * 
+     *
      * @param language
      *            the language to set ("none" is mapped to null)
      */
@@ -125,7 +126,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Returns the country of the page-sequence.
-     * 
+     *
      * @return the country (the value of the country property, "none" is mapped
      *         to null)
      */
@@ -135,7 +136,7 @@ public class PageSequence extends AreaTreeObject {
 
     /**
      * Sets the country that applies to this page-sequence.
-     * 
+     *
      * @param country
      *            the country to set ("none" is mapped to null)
      */

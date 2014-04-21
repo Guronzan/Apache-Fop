@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,7 @@ public class Main {
             throw new RuntimeException("fop.jar not found in directory: "
                     + baseDir.getAbsolutePath() + " (or below)");
         }
-        final List<URL> jars = new java.util.ArrayList<URL>();
+        final List<URL> jars = new ArrayList<>();
         jars.add(fopJar.toURI().toURL());
         File[] files;
         final FileFilter filter = new FileFilter() {
@@ -98,8 +99,7 @@ public class Main {
         }
         final URL[] urls = jars.toArray(new URL[jars.size()]);
         /*
-         * for (int i = 0, c = urls.length; i < c; ++i) {
-         * log.info(urls[i]); }
+         * for (int i = 0, c = urls.length; i < c; ++i) { log.info(urls[i]); }
          */
         return urls;
     }

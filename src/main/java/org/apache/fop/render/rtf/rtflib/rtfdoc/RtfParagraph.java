@@ -32,16 +32,16 @@ import java.util.List;
 
 /**
  * Model of an RTF paragraph, which can contain RTF text elements.
- * 
+ *
  * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
  * @author Andreas Putz a.putz@skynamics.com
  * @author Boris Poudérous, boris.pouderous@free.fr
  */
 
 public class RtfParagraph extends RtfBookmarkContainerImpl implements
-        IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
-IRtfExternalGraphicContainer, IRtfPageNumberContainer,
-IRtfPageNumberCitationContainer {
+IRtfPageBreakContainer, IRtfHyperLinkContainer,
+        IRtfExternalGraphicContainer, IRtfPageNumberContainer,
+        IRtfPageNumberCitationContainer {
     private RtfText text;
     private RtfHyperLink hyperlink;
     private RtfExternalGraphic externalGraphic;
@@ -82,7 +82,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Accessor for the paragraph text
-     * 
+     *
      * @return the paragraph text
      */
     public String getText() {
@@ -101,7 +101,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * IRtfTextContainer requirement: return a copy of our attributes
-     * 
+     *
      * @return a copy of this paragraphs attributes
      */
     @Override
@@ -114,7 +114,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Overridden to write our attributes before our content
-     * 
+     *
      * @throws IOException
      *             for I/O problems
      */
@@ -171,7 +171,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Overridden to close paragraph
-     * 
+     *
      * @throws IOException
      *             for I/O problems
      */
@@ -194,7 +194,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Close current text run if any and start a new one with default attributes
-     * 
+     *
      * @param str
      *            if not null, added to the RtfText created
      * @return the new RtfText object
@@ -208,7 +208,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Close current text run if any and start a new one
-     * 
+     *
      * @param str
      *            if not null, added to the RtfText created
      * @param attr
@@ -227,7 +227,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * add a page break
-     * 
+     *
      * @throws IOException
      *             for I/O problems
      */
@@ -239,7 +239,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * add a line break
-     * 
+     *
      * @throws IOException
      *             for I/O problems
      */
@@ -250,7 +250,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Add a page number
-     * 
+     *
      * @return new RtfPageNumber object
      * @throws IOException
      *             for I/O problems
@@ -263,7 +263,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Added by Boris POUDEROUS on 2002/07/09
-     * 
+     *
      * @param id
      *            string containing the citation text
      * @return the new RtfPageNumberCitation object
@@ -280,7 +280,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Creates a new hyperlink.
-     * 
+     *
      * @param str
      *            string containing the hyperlink text
      * @param attr
@@ -298,7 +298,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Start a new external graphic after closing all other elements
-     * 
+     *
      * @return the new RtfExternalGraphic
      * @throws IOException
      *             for I/O problems
@@ -329,7 +329,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * Depending on RtfOptions, do not emit any RTF for empty paragraphs
-     * 
+     *
      * @return true if RTF should be written
      */
     @Override
@@ -384,7 +384,7 @@ IRtfPageNumberCitationContainer {
 
     /**
      * accessor for text attributes
-     * 
+     *
      * @return attributes of the text
      */
     public RtfAttributes getTextAttributes() {

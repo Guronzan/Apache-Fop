@@ -38,7 +38,6 @@ import org.apache.fop.fo.flow.table.TableRow;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground.BorderInfo;
 import org.apache.fop.layoutmgr.AreaAdditionUtil;
-import org.apache.fop.layoutmgr.BlockLevelLayoutManager;
 import org.apache.fop.layoutmgr.BlockStackingLayoutManager;
 import org.apache.fop.layoutmgr.ElementListUtils;
 import org.apache.fop.layoutmgr.Keep;
@@ -62,8 +61,7 @@ import org.apache.fop.util.ListUtil;
  * the cell.
  */
 @Slf4j
-public class TableCellLayoutManager extends BlockStackingLayoutManager
-        implements BlockLevelLayoutManager {
+public class TableCellLayoutManager extends BlockStackingLayoutManager {
 
     private final PrimaryGridUnit primaryGridUnit;
 
@@ -197,7 +195,7 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
             // account later
             // Copied from BlockStackingLM
             returnList
-                    .add(new KnuthBox(0, notifyPos(new Position(this)), true));
+            .add(new KnuthBox(0, notifyPos(new Position(this)), true));
         }
         // Space resolution
         SpaceResolver.resolveElementList(returnList);
@@ -365,18 +363,18 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
                 final boolean[] outer = new boolean[] { firstOnPage,
                         lastOnPage, inFirstColumn, inLastColumn };
                 TraitSetter
-                        .addCollapsingBorders(this.curBlockArea,
-                                this.primaryGridUnit
-                                        .getBorderBefore(borderBeforeWhich),
-                                this.primaryGridUnit
-                                        .getBorderAfter(borderAfterWhich),
-                                this.primaryGridUnit.getBorderStart(),
-                                this.primaryGridUnit.getBorderEnd(), outer);
+                .addCollapsingBorders(this.curBlockArea,
+                        this.primaryGridUnit
+                        .getBorderBefore(borderBeforeWhich),
+                        this.primaryGridUnit
+                        .getBorderAfter(borderAfterWhich),
+                        this.primaryGridUnit.getBorderStart(),
+                        this.primaryGridUnit.getBorderEnd(), outer);
             } else {
                 adjustYOffset(this.curBlockArea, borderBeforeWidth);
                 final Block[][] blocks = new Block[getTableCell()
-                        .getNumberRowsSpanned()][getTableCell()
-                                                                            .getNumberColumnsSpanned()];
+                                                   .getNumberRowsSpanned()][getTableCell()
+                        .getNumberColumnsSpanned()];
                 GridUnit[] gridUnits = (GridUnit[]) this.primaryGridUnit
                         .getRows().get(startRow);
                 for (int x = 0; x < getTableCell().getNumberColumnsSpanned(); x++) {
@@ -431,7 +429,7 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
                         final int ipd = getTable()
                                 .getColumn(
                                         this.primaryGridUnit.getColIndex() + x)
-                                        .getColumnWidth().getValue(getParent());
+                                .getColumnWidth().getValue(getParent());
                         if (blocks[y][x] != null) {
                             final Block block = blocks[y][x];
                             adjustYOffset(block, dy);
@@ -494,8 +492,8 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
             final Block colBackgroundArea = getBackgroundArea(paddingRectBPD,
                     borderBeforeWidth);
             ((TableLayoutManager) this.parentLayoutManager)
-                    .registerColumnBackgroundArea(column, colBackgroundArea,
-                            -this.startIndent);
+            .registerColumnBackgroundArea(column, colBackgroundArea,
+                    -this.startIndent);
         }
 
         final TablePart body = this.primaryGridUnit.getTablePart();
@@ -510,7 +508,7 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
             final Block rowBackgroundArea = getBackgroundArea(paddingRectBPD,
                     borderBeforeWidth);
             ((TableLayoutManager) this.parentLayoutManager)
-                    .addBackgroundArea(rowBackgroundArea);
+            .addBackgroundArea(rowBackgroundArea);
             TraitSetter.addBackground(rowBackgroundArea,
                     row.getCommonBorderPaddingBackground(),
                     this.parentLayoutManager, -this.xoffset - this.startIndent,
@@ -584,14 +582,14 @@ public class TableCellLayoutManager extends BlockStackingLayoutManager
             this.curBlockArea = new Block();
             this.curBlockArea.addTrait(Trait.IS_REFERENCE_AREA, Boolean.TRUE);
             TraitSetter
-                    .setProducerID(this.curBlockArea, getTableCell().getId());
+            .setProducerID(this.curBlockArea, getTableCell().getId());
             this.curBlockArea.setPositioning(Block.ABSOLUTE);
             this.curBlockArea.setXOffset(this.xoffset + this.startIndent);
             this.curBlockArea.setYOffset(this.yoffset);
             this.curBlockArea.setIPD(this.cellIPD);
 
             /* Area parentArea = */this.parentLayoutManager
-                    .getParentArea(this.curBlockArea);
+            .getParentArea(this.curBlockArea);
             // Get reference IPD from parentArea
             setCurrentArea(this.curBlockArea); // ??? for generic operations
         }

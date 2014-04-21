@@ -21,6 +21,7 @@ package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class PDFFilterList {
     /** Key for the filter used for metadata */
     public static final String METADATA_FILTER = "metadata";
 
-    private final List filters = new java.util.ArrayList();
+    private final List<PDFFilter> filters = new ArrayList<>();
 
     private boolean ignoreASCIIFilters = false;
 
@@ -65,7 +66,7 @@ public class PDFFilterList {
     /**
      * Use this descriptor if you want to have ASCII filters (such as ASCIIHex
      * and ASCII85) ignored, for example, when encryption is active.
-     * 
+     *
      * @param ignoreASCIIFilters
      *            true if ASCII filters should be ignored
      */
@@ -75,7 +76,7 @@ public class PDFFilterList {
 
     /**
      * Used to disable all filters.
-     * 
+     *
      * @param value
      *            true if all filters shall be disabled
      */
@@ -85,7 +86,7 @@ public class PDFFilterList {
 
     /**
      * Returns true if all filters are disabled.
-     * 
+     *
      * @return true if all filters are disabled
      */
     public boolean isDisableAllFilters() {
@@ -94,7 +95,7 @@ public class PDFFilterList {
 
     /**
      * Indicates whether the filter list is already initialized.
-     * 
+     *
      * @return true if more there are filters present
      */
     public boolean isInitialized() {
@@ -106,7 +107,7 @@ public class PDFFilterList {
      * order they are added. This should always be a new instance of the
      * particular filter of choice. The applied flag in the filter is marked
      * true after it has been applied to the data.
-     * 
+     *
      * @param filter
      *            filter to add
      */
@@ -121,7 +122,7 @@ public class PDFFilterList {
 
     /**
      * Add a filter for compression of the stream by name.
-     * 
+     *
      * @param filterType
      *            name of the filter to add
      */
@@ -155,7 +156,7 @@ public class PDFFilterList {
     /**
      * Checks the filter list for the filter and adds it in the correct place if
      * necessary.
-     * 
+     *
      * @param pdfFilter
      *            the filter to check / add
      */
@@ -171,26 +172,27 @@ public class PDFFilterList {
 
     /**
      * Adds the default filters to this stream.
-     * 
+     *
      * @param filters
      *            Map of filters
      * @param type
      *            which filter list to modify
      */
-    public void addDefaultFilters(final Map filters, final String type) {
+    public void addDefaultFilters(final Map<String, List<String>> filters,
+            final String type) {
         if (METADATA_FILTER.equals(type)) {
             // XMP metadata should not be embedded in clear-text
             addFilter(new NullFilter());
             return;
         }
-        List filterset = null;
+        List<String> filterset = null;
         if (filters != null) {
-            filterset = (List) filters.get(type);
+            filterset = filters.get(type);
             if (filterset == null) {
-                filterset = (List) filters.get(DEFAULT_FILTER);
+                filterset = filters.get(DEFAULT_FILTER);
             }
         }
-        if (filterset == null || filterset.size() == 0) {
+        if (filterset == null || filterset.isEmpty()) {
             if (JPEG_FILTER.equals(type)) {
                 // JPEG is already well compressed
                 addFilter(new NullFilter());
@@ -206,7 +208,7 @@ public class PDFFilterList {
             }
         } else {
             for (int i = 0; i < filterset.size(); ++i) {
-                final String v = (String) filterset.get(i);
+                final String v = filterset.get(i);
                 addFilter(v);
             }
         }
@@ -217,13 +219,13 @@ public class PDFFilterList {
      * and /DecodeParms entries for the stream dictionary. If the filters have
      * already been applied to the data (either externally, or internally) then
      * the dictionary entries are built and returned.
-     * 
+     *
      * @return a String representing the filter list
      */
     protected String buildFilterDictEntries() {
-        if (this.filters != null && this.filters.size() > 0) {
-            final List names = new java.util.ArrayList();
-            final List parms = new java.util.ArrayList();
+        if (this.filters != null && !this.filters.isEmpty()) {
+            final List<String> names = new ArrayList<>();
+            final List<PDFObject> parms = new ArrayList<>();
 
             final int nonNullParams = populateNamesAndParms(names, parms);
 
@@ -240,14 +242,14 @@ public class PDFFilterList {
      * /DecodeParms entries to the stream dictionary. If the filters have
      * already been applied to the data (either externally, or internally) then
      * the dictionary entries added.
-     * 
+     *
      * @param dict
      *            the PDFDictionary to set the entries on
      */
     protected void putFilterDictEntries(final PDFDictionary dict) {
-        if (this.filters != null && this.filters.size() > 0) {
-            final List names = new java.util.ArrayList();
-            final List parms = new java.util.ArrayList();
+        if (this.filters != null && !this.filters.isEmpty()) {
+            final List<String> names = new ArrayList<>();
+            final List<PDFObject> parms = new ArrayList<>();
 
             populateNamesAndParms(names, parms);
 
@@ -257,11 +259,12 @@ public class PDFFilterList {
         }
     }
 
-    private int populateNamesAndParms(final List names, final List parms) {
+    private int populateNamesAndParms(final List<String> names,
+            final List<PDFObject> parms) {
         // run the filters
         int nonNullParams = 0;
         for (int count = 0; count < this.filters.size(); count++) {
-            final PDFFilter filter = (PDFFilter) this.filters.get(count);
+            final PDFFilter filter = this.filters.get(count);
             // place the names in our local vector in reverse order
             if (filter.getName().length() > 0) {
                 names.add(0, filter.getName());
@@ -277,11 +280,10 @@ public class PDFFilterList {
         return nonNullParams;
     }
 
-    private String buildFilterEntries(final List names) {
+    private String buildFilterEntries(final List<String> names) {
         int filterCount = 0;
         final StringBuilder sb = new StringBuilder(64);
-        for (int i = 0; i < names.size(); ++i) {
-            final String name = (String) names.get(i);
+        for (final String name : names) {
             if (name.length() > 0) {
                 filterCount++;
                 sb.append(name);
@@ -299,10 +301,11 @@ public class PDFFilterList {
         }
     }
 
-    private void putFilterEntries(final PDFDictionary dict, final List names) {
+    private void putFilterEntries(final PDFDictionary dict,
+            final List<String> names) {
         final PDFArray array = new PDFArray(dict);
         for (int i = 0, c = names.size(); i < c; ++i) {
-            final String name = (String) names.get(i);
+            final String name = names.get(i);
             if (name.length() > 0) {
                 array.add(new PDFName(name));
             }
@@ -316,7 +319,7 @@ public class PDFFilterList {
         }
     }
 
-    private String buildDecodeParms(final List parms) {
+    private String buildDecodeParms(final List<PDFObject> parms) {
         final StringBuilder sb = new StringBuilder();
         boolean needParmsEntry = false;
         sb.append("\n/DecodeParms ");
@@ -325,7 +328,7 @@ public class PDFFilterList {
             sb.append("[ ");
         }
         for (int count = 0; count < parms.size(); count++) {
-            final String s = (String) parms.get(count);
+            final PDFObject s = parms.get(count);
             if (s != null) {
                 sb.append(s);
                 needParmsEntry = true;
@@ -344,7 +347,8 @@ public class PDFFilterList {
         }
     }
 
-    private void putDecodeParams(final PDFDictionary dict, final List parms) {
+    private void putDecodeParams(final PDFDictionary dict,
+            final List<PDFObject> parms) {
         boolean needParmsEntry = false;
         final PDFArray array = new PDFArray(dict);
         for (int i = 0, c = parms.size(); i < c; ++i) {
@@ -368,7 +372,7 @@ public class PDFFilterList {
     /**
      * Applies all registered filters as necessary. The method returns an
      * OutputStream which will receive the filtered contents.
-     * 
+     *
      * @param stream
      *            raw data output stream
      * @return OutputStream filtered output stream
@@ -380,7 +384,7 @@ public class PDFFilterList {
         OutputStream out = stream;
         if (this.filters != null && !isDisableAllFilters()) {
             for (int count = this.filters.size() - 1; count >= 0; count--) {
-                final PDFFilter filter = (PDFFilter) this.filters.get(count);
+                final PDFFilter filter = this.filters.get(count);
                 out = filter.applyFilter(out);
             }
         }

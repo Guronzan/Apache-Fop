@@ -55,9 +55,9 @@ public interface Resolvable {
      * @param id
      *            an ID matching one of the Resolvable object's unresolved
      *            idref's.
-     * @param pages
+     * @param pvList
      *            the list of PageViewports with the given ID
      *
      */
-    void resolveIDRef(final String id, final List<PageViewport> pages);
+    void resolveIDRef(final String id, final List<PageViewport> pvList);
 }

@@ -163,7 +163,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
     private int returnedIndex = 0;
     private int thisStart = 0;
     private int tempStart = 0;
-    private final List<PendingChange> changeList = new LinkedList<PendingChange>();
+    private final List<PendingChange> changeList = new LinkedList<>();
 
     private AlignmentContext alignmentContext = null;
 
@@ -190,7 +190,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
     public TextLayoutManager(final FOText node) {
         this.foText = node;
         this.letterAdjustArray = new MinOptMax[node.length() + 1];
-        this.areaInfos = new ArrayList<AreaInfo>();
+        this.areaInfos = new ArrayList<>();
     }
 
     private KnuthPenalty makeZeroWidthPenalty(final int penaltyValue) {
@@ -320,13 +320,13 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
             // the line ends at a character like "/" or "-";
             // remove the letter space after the last character
             realWidth = realWidth.minus(this.letterSpaceIPD);
-            letterSpaceCount--;
+            --letterSpaceCount;
         }
 
         for (int i = areaInfo.startIndex; i < areaInfo.breakIndex; ++i) {
             final MinOptMax letterAdjustment = this.letterAdjustArray[i + 1];
             if (letterAdjustment != null && letterAdjustment.isElastic()) {
-                letterSpaceCount++;
+                ++letterSpaceCount;
             }
         }
 
@@ -1031,10 +1031,10 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
             if (!(nothingChanged && stopIndex == areaInfo.breakIndex && !hyphenFollows)) {
                 // the new AreaInfo object is not equal to the old one
                 this.changeList
-                        .add(new PendingChange(new AreaInfo(startIndex,
-                                stopIndex, 0, letterSpaceCount, newIPD,
-                                hyphenFollows, false, false, font),
-                                ((LeafPosition) pos).getLeafPos()));
+                .add(new PendingChange(new AreaInfo(startIndex,
+                        stopIndex, 0, letterSpaceCount, newIPD,
+                        hyphenFollows, false, false, font),
+                        ((LeafPosition) pos).getLeafPos()));
                 nothingChanged = false;
             }
             startIndex = stopIndex;
@@ -1277,7 +1277,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
                     suppressibleLetterSpace ? areaInfo.areaIPD.getOpt()
                             - this.letterSpaceIPD.getOpt() : areaInfo.areaIPD
                             .getOpt(), this.alignmentContext,
-                    notifyPos(mainPosition), false));
+                            notifyPos(mainPosition), false));
         } else {
             // adjustable letter spacing
             final int unsuppressibleLetterSpaces = suppressibleLetterSpace ? areaInfo.letterSpaceCount - 1
@@ -1307,7 +1307,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
             // otherwise nothing happens
             addElementsForAHyphen(baseList, alignment, this.hyphIPD,
                     widthIfNoBreakOccurs, areaInfo.breakOppAfter
-                            && areaInfo.isHyphenated);
+                    && areaInfo.isHyphenated);
         } else if (suppressibleLetterSpace) {
             // the word fragment ends with a character that acts as a hyphen
             // if a break occurs the width does not increase,
@@ -1335,7 +1335,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
             baseList.add(new KnuthPenalty(this.hyphIPD,
                     unflagged ? TextLayoutManager.SOFT_HYPHEN_PENALTY
                             : KnuthPenalty.FLAGGED_PENALTY, !unflagged,
-                    this.auxiliaryPosition, false));
+                            this.auxiliaryPosition, false));
             baseList.add(new KnuthGlue(-(this.lineEndBAP + this.lineStartBAP),
                     -6 * LineLayoutManager.DEFAULT_SPACE_WIDTH, 0,
                     this.auxiliaryPosition, false));
@@ -1357,7 +1357,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
                 baseList.add(new KnuthPenalty(widthIfBreakOccurs,
                         unflagged ? TextLayoutManager.SOFT_HYPHEN_PENALTY
                                 : KnuthPenalty.FLAGGED_PENALTY, !unflagged,
-                        this.auxiliaryPosition, false));
+                                this.auxiliaryPosition, false));
                 baseList.add(new KnuthGlue(widthIfNoBreakOccurs.getOpt()
                         - (this.lineStartBAP + this.lineEndBAP), -3
                         * LineLayoutManager.DEFAULT_SPACE_WIDTH, 0,
@@ -1374,7 +1374,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
                 baseList.add(new KnuthPenalty(widthIfBreakOccurs,
                         unflagged ? TextLayoutManager.SOFT_HYPHEN_PENALTY
                                 : KnuthPenalty.FLAGGED_PENALTY, !unflagged,
-                        this.auxiliaryPosition, false));
+                                this.auxiliaryPosition, false));
                 baseList.add(new KnuthGlue(widthIfNoBreakOccurs.getOpt(), -3
                         * LineLayoutManager.DEFAULT_SPACE_WIDTH, 0,
                         this.auxiliaryPosition, false));
@@ -1391,7 +1391,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
                 baseList.add(new KnuthPenalty(widthIfBreakOccurs,
                         unflagged ? TextLayoutManager.SOFT_HYPHEN_PENALTY
                                 : KnuthPenalty.FLAGGED_PENALTY, !unflagged,
-                        this.auxiliaryPosition, false));
+                                this.auxiliaryPosition, false));
                 // extra elements representing a letter space that is
                 // suppressed
                 // if a break occurs
@@ -1414,7 +1414,7 @@ public class TextLayoutManager extends LeafNodeLayoutManager {
                 baseList.add(new KnuthPenalty(widthIfBreakOccurs,
                         unflagged ? TextLayoutManager.SOFT_HYPHEN_PENALTY
                                 : KnuthPenalty.FLAGGED_PENALTY, !unflagged,
-                        this.auxiliaryPosition, false));
+                                this.auxiliaryPosition, false));
                 // extra elements representing a letter space that is
                 // suppressed
                 // if a break occurs

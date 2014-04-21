@@ -20,7 +20,6 @@
 package org.apache.fop.fo.flow;
 
 // FOP
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
@@ -58,7 +57,7 @@ public class MultiToggle extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) {
         // prSwitchTo = pList.get(PR_SWITCH_TO);
 
     }

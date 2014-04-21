@@ -21,7 +21,6 @@ package org.apache.fop.render.rtf;
 
 import java.awt.Color;
 
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.flow.table.Table;
 import org.apache.fop.fo.flow.table.TableCell;
@@ -75,8 +74,7 @@ public final class TableAttributesConverter {
      * @throws ConverterException
      *             On convertion error
      */
-    static RtfAttributes convertTableAttributes(final Table fobj)
-            throws FOPException {
+    static RtfAttributes convertTableAttributes(final Table fobj) {
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrib.setTwips(ITableAttributes.ATTR_ROW_LEFT_INDENT,
                 fobj.getCommonMarginBlock().marginLeft);
@@ -96,15 +94,14 @@ public final class TableAttributesConverter {
      * @throws ConverterException
      *             On convertion error
      */
-    static RtfAttributes convertTablePartAttributes(final TablePart part)
-            throws FOPException {
+    static RtfAttributes convertTablePartAttributes(final TablePart part) {
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         return attrib;
     }
 
     /**
      * Converts cell attributes to rtf attributes.
-     * 
+     *
      * @param fobj
      *            FObj whose properties are to be converted
      *
@@ -113,8 +110,7 @@ public final class TableAttributesConverter {
      * @throws ConverterException
      *             On conversion error
      */
-    static RtfAttributes convertCellAttributes(final TableCell fobj)
-            throws FOPException {
+    static RtfAttributes convertCellAttributes(final TableCell fobj) {
 
         // Property p;
         // RtfColorTable colorTable = RtfColorTable.getInstance();
@@ -156,7 +152,7 @@ public final class TableAttributesConverter {
         }
         if (color != null
                 && (color.getAlpha() != 0 || color.getRed() != 0
-                || color.getGreen() != 0 || color.getBlue() != 0)) {
+                        || color.getGreen() != 0 || color.getBlue() != 0)) {
             attrib.set(ITableAttributes.CELL_COLOR_BACKGROUND, color);
         }
 
@@ -179,47 +175,47 @@ public final class TableAttributesConverter {
         if (reproduceMSWordBug) {
             // MS Word has a bug where padding left and top are exchanged
             padding = border.getPaddingStart(false, null); // TODO do we need a
-                                                           // real context here?
+            // real context here?
             if (padding != 0) {
                 attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_TOP, padding);
                 attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_TOP, 3 /* =twips */);
             }
             padding = border.getPaddingBefore(false, null); // TODO do we need a
-                                                            // real context
-                                                            // here?
+            // real context
+            // here?
             if (padding != 0) {
                 attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_LEFT,
                         padding);
                 attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_LEFT, 3 /*
-                                                                         * =twips
-                                                                         */);
+                 * =twips
+                 */);
             }
         } else {
             padding = border.getPaddingStart(false, null); // TODO do we need a
-                                                           // real context here?
+            // real context here?
             if (padding != 0) {
                 attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_LEFT,
                         padding);
                 attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_LEFT, 3 /*
-                                                                         * =twips
-                                                                         */);
+                 * =twips
+                 */);
             }
             padding = border.getPaddingBefore(false, null); // TODO do we need a
-                                                            // real context
-                                                            // here?
+            // real context
+            // here?
             if (padding != 0) {
                 attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_TOP, padding);
                 attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_TOP, 3 /* =twips */);
             }
         }
         padding = border.getPaddingEnd(false, null); // TODO do we need a real
-                                                     // context here?
+        // context here?
         if (padding != 0) {
             attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_RIGHT, padding);
             attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_RIGHT, 3 /* =twips */);
         }
         padding = border.getPaddingAfter(false, null); // TODO do we need a real
-                                                       // context here?
+        // context here?
         if (padding != 0) {
             attrib.setTwips(ITableAttributes.ATTR_CELL_PADDING_BOTTOM, padding);
             attrib.set(ITableAttributes.ATTR_CELL_U_PADDING_BOTTOM, 3 /* =twips */);
@@ -260,7 +256,7 @@ public final class TableAttributesConverter {
      *             On converion error
      */
     static RtfAttributes convertRowAttributes(final TableRow fobj,
-            final RtfAttributes rtfatts) throws FOPException {
+            final RtfAttributes rtfatts) {
 
         // Property p;
         // RtfColorTable colorTable = RtfColorTable.getInstance();
@@ -308,7 +304,7 @@ public final class TableAttributesConverter {
          * table. Similarly using BORDER_BOTTOM and BORDER_HORIZONTAL will not
          * work if the cell lies at th bottom of the table. The same rules apply
          * for left right and vertical.
-         * 
+         *
          * Also, the border type must be written after every control word. Thus
          * it is implemented that the border type is the value of the border
          * place.
@@ -353,17 +349,17 @@ public final class TableAttributesConverter {
          * convertAttributetoRtf(ep.getEnum()));
          * attrib.set(ITableAttributes.ROW_BORDER_VERTICAL, "\\" +
          * convertAttributetoRtf(ep.getEnum())); isBorderPresent = true; }
-         * 
+         *
          * //Currently there is only one border width supported in each cell. p
          * = fobj.getProperty(Constants.PR_BORDER_LEFT_WIDTH); if(p == null) { p
          * = fobj.getProperty(Constants.PR_BORDER_RIGHT_WIDTH); } if(p == null)
          * { p = fobj.getProperty(Constants.PR_BORDER_TOP_WIDTH); } if(p ==
          * null) { p = fobj.getProperty(Constants.PR_BORDER_BOTTOM_WIDTH); } if
          * (p != null) { LengthProperty lengthprop = (LengthProperty)p;
-         * 
+         *
          * Float f = new Float(lengthprop.getLength().getValue() / 1000f);
          * String sValue = f.toString() + FixedLength.POINT;
-         * 
+         *
          * attrib.set(BorderAttributesConverter.BORDER_WIDTH,
          * (int)FoUnitsConverter.getInstance().convertToTwips(sValue)); } else
          * if (isBorderPresent) { //if not defined, set default border width

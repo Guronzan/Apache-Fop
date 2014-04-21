@@ -49,12 +49,12 @@ public class FootnoteBody extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) {
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() {
         getFOEventHandler().startFootnoteBody(this);
     }
 

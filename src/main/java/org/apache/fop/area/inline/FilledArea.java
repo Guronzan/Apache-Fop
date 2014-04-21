@@ -22,8 +22,6 @@ package org.apache.fop.area.inline;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.fop.area.Area;
-
 /**
  * Filled area. This inline area contains some inline areas. When the renderer
  * gets the child areas to render the inline areas are repeated to fill the ipd
@@ -68,8 +66,7 @@ public class FilledArea extends InlineParent {
     @Override
     public int getBPD() {
         int bpd = 0;
-        for (final Area element : getChildAreas()) {
-            final InlineArea area = (InlineArea) element;
+        for (final InlineArea area : getChildAreas()) {
             if (bpd < area.getBPD()) {
                 bpd = area.getBPD();
             }
@@ -85,9 +82,9 @@ public class FilledArea extends InlineParent {
      * @return the list of child areas copied to fill the width
      */
     @Override
-    public List<Area> getChildAreas() {
+    public List<InlineArea> getChildAreas() {
         final int units = getIPD() / this.unitWidth;
-        final List<Area> newList = new ArrayList<>();
+        final List<InlineArea> newList = new ArrayList<>();
         for (int count = 0; count < units; ++count) {
             newList.addAll(this.inlines);
         }

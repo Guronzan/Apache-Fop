@@ -32,7 +32,7 @@ import org.apache.fop.fo.FONode;
 public abstract class TableCellContainer extends TableFObj implements
         ColumnNumberManagerHolder {
 
-    protected List pendingSpans;
+    protected List<PendingSpan> pendingSpans;
 
     protected ColumnNumberManager columnNumberManager;
 
@@ -82,7 +82,7 @@ public abstract class TableCellContainer extends TableFObj implements
     }
 
     private void handleCellWidth(final TableCell cell, final int colNumber,
-            final int colSpan) throws FOPException {
+            final int colSpan) {
         final Table t = getTable();
         Length colWidth = null;
 

@@ -84,8 +84,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
     /** {@inheritDoc} */
     @Override
     public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList propertyList)
-                    throws FOPException {
+            final Attributes attlist, final PropertyList propertyList) {
         final String name = attlist.getValue("name");
         if (name != null && name.length() > 0) {
             this.setupCode.setName(name);

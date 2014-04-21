@@ -133,7 +133,7 @@ public class Area extends AreaTreeObject implements Serializable {
     /**
      * Traits for this area stored in a HashMap
      */
-    protected Map<Object, Object> props = null;
+    protected Map<Integer, Object> props = null;
 
     /**
      * Get the area class of this area.
@@ -380,7 +380,7 @@ public class Area extends AreaTreeObject implements Serializable {
      * @param prop
      *            the value of the trait
      */
-    public void addTrait(final Object traitCode, final Object prop) {
+    public void addTrait(final Integer traitCode, final Object prop) {
         if (this.props == null) {
             this.props = new HashMap<>(20);
         }
@@ -392,7 +392,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *
      * @return the map of traits
      */
-    public Map<Object, Object> getTraits() {
+    public Map<Integer, Object> getTraits() {
         return this.props;
     }
 
@@ -408,7 +408,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *            the trait key
      * @return the trait value
      */
-    public Object getTrait(final Object oTraitCode) {
+    public Object getTrait(final Integer oTraitCode) {
         return this.props != null ? this.props.get(oTraitCode) : null;
     }
 
@@ -419,7 +419,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *            the trait key
      * @return true if the trait is set
      */
-    public boolean hasTrait(final Object oTraitCode) {
+    public boolean hasTrait(final Integer oTraitCode) {
         return getTrait(oTraitCode) != null;
     }
 
@@ -430,7 +430,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *            the trait key
      * @return the trait value
      */
-    public boolean getTraitAsBoolean(final Object oTraitCode) {
+    public boolean getTraitAsBoolean(final Integer oTraitCode) {
         return Boolean.TRUE.equals(getTrait(oTraitCode));
     }
 
@@ -441,7 +441,7 @@ public class Area extends AreaTreeObject implements Serializable {
      *            the trait key
      * @return the trait value
      */
-    public int getTraitAsInteger(final Object oTraitCode) {
+    public int getTraitAsInteger(final Integer oTraitCode) {
         final Object obj = getTrait(oTraitCode);
         if (obj instanceof Integer) {
             return ((Integer) obj).intValue();

@@ -61,7 +61,11 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
         return null; // By default, this is not supported
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void startDocument() throws IFException {
         if (getUserAgent() == null) {
@@ -70,49 +74,81 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void startDocumentHeader() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void endDocumentHeader() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void startDocumentTrailer() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void endDocumentTrailer() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void startPageHeader() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void endPageHeader() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void startPageTrailer() throws IFException {
         // nop
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void endPageTrailer() throws IFException {
         // nop

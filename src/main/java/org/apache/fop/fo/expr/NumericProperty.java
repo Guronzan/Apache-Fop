@@ -35,7 +35,7 @@ import org.apache.fop.fo.properties.Property;
  * calculations.
  */
 @Slf4j
-public class NumericProperty extends Property implements Numeric, Length {
+public class NumericProperty extends Property implements Length {
     private final double value;
     private final int dim;
 

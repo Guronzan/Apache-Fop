@@ -22,7 +22,7 @@ package org.apache.fop.area;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.fop.datatypes.FODimension;
@@ -56,7 +56,7 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
     private RegionViewport regionAfter = null;
 
     // temporary map of unresolved objects used when serializing the page
-    private Map unresolved = null;
+    private Map<String, List<Resolvable>> unresolved = null;
 
     /** Set to true to make this page behave as if it were not empty. */
     private boolean fakeNonEmpty = false;
@@ -118,9 +118,7 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
 
         // Create a RegionViewport/ reference area pair for each page region
         RegionReference rr = null;
-        for (final Iterator regenum = spm.getRegions().values().iterator(); regenum
-                .hasNext();) {
-            final Region r = (Region) regenum.next();
+        for (final Region r : spm.getRegions().values()) {
             final RegionViewport rvp = makeRegionViewport(r, reldims, pageCTM,
                     spm);
             if (r.getNameId() == Constants.FO_REGION_BODY) {
@@ -298,7 +296,8 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
      * @param unres
      *            the Map of unresolved objects
      */
-    public void setUnresolvedReferences(final Map unres) {
+    public void setUnresolvedReferences(
+            final Map<String, List<Resolvable>> unres) {
         this.unresolved = unres;
     }
 
@@ -309,7 +308,7 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
      *
      * @return the de-serialized HashMap of unresolved objects
      */
-    public Map getUnresolvedReferences() {
+    public Map<String, List<Resolvable>> getUnresolvedReferences() {
         return this.unresolved;
     }
 

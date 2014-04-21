@@ -37,7 +37,7 @@ public class InlineParent extends InlineArea {
     /**
      * The list of inline areas added to this inline parent.
      */
-    protected List<Area> inlines = new ArrayList<>();
+    protected List<InlineArea> inlines = new ArrayList<>();
 
     /**
      * Controls whether the IPD is automatically adjusted based on the area's
@@ -64,7 +64,7 @@ public class InlineParent extends InlineArea {
         }
         if (childArea instanceof InlineArea) {
             final InlineArea inlineChildArea = (InlineArea) childArea;
-            this.inlines.add(childArea);
+            this.inlines.add((InlineArea) childArea);
             // set the parent area for the child area
             inlineChildArea.setParentArea(this);
             if (this.autoSize) {
@@ -78,7 +78,7 @@ public class InlineParent extends InlineArea {
      *
      * @return the list of child areas
      */
-    public List<Area> getChildAreas() {
+    public List<InlineArea> getChildAreas() {
         return this.inlines;
     }
 
@@ -99,7 +99,7 @@ public class InlineParent extends InlineArea {
         boolean bUnresolvedAreasPresent = false;
         // recursively apply variation factor to descendant areas
         for (int i = 0, len = this.inlines.size(); i < len; ++i) {
-            bUnresolvedAreasPresent |= ((InlineArea) this.inlines.get(i))
+            bUnresolvedAreasPresent |= this.inlines.get(i)
                     .applyVariationFactor(variationFactor, lineStretch,
                             lineShrink);
         }

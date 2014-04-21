@@ -25,7 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -103,7 +103,7 @@ public abstract class AbstractRenderer implements Renderer, Constants {
     /** the currently active PageViewport */
     protected PageViewport currentPageViewport;
 
-    private Set warnedXMLHandlers;
+    private Set<String> warnedXMLHandlers;
 
     /** {@inheritDoc} */
     @Override
@@ -126,7 +126,11 @@ public abstract class AbstractRenderer implements Renderer, Constants {
         return this.userAgent;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException
+     */
     @Override
     public void startRenderer(final OutputStream outputStream)
             throws IOException {
@@ -136,7 +140,11 @@ public abstract class AbstractRenderer implements Renderer, Constants {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IOException
+     */
     @Override
     public void stopRenderer() throws IOException {
     }
@@ -193,15 +201,15 @@ public abstract class AbstractRenderer implements Renderer, Constants {
      * @return An expanded string representing the title
      */
     protected String convertTitleToString(final LineArea title) {
-        final List children = title.getInlineAreas();
+        final List<InlineArea> children = title.getInlineAreas();
         final String str = convertToString(children);
         return str.trim();
     }
 
-    private String convertToString(final List children) {
+    private String convertToString(final List<InlineArea> children) {
         final StringBuilder sb = new StringBuilder();
         for (int count = 0; count < children.size(); count++) {
-            final InlineArea inline = (InlineArea) children.get(count);
+            final InlineArea inline = children.get(count);
             // if (inline instanceof Character) {
             // sb.append(((Character) inline).getChar());
             /* } else */if (inline instanceof TextArea) {
@@ -230,10 +238,13 @@ public abstract class AbstractRenderer implements Renderer, Constants {
 
     // normally this would be overriden to create a page in the
     // output
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException
+     */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-    FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
 
         this.currentPageViewport = page;
         try {
@@ -452,7 +463,7 @@ public abstract class AbstractRenderer implements Renderer, Constants {
      */
     protected void renderFlow(final NormalFlow flow) {
         // the normal flow reference area contains stacked blocks
-        final List blocks = flow.getChildAreas();
+        final List<Block> blocks = flow.getChildAreas();
         if (blocks != null) {
             renderBlocks(null, blocks);
         }
@@ -536,7 +547,7 @@ public abstract class AbstractRenderer implements Renderer, Constants {
      * @param blocks
      *            The block areas
      */
-    protected void renderBlocks(final Block parent, final List blocks) {
+    protected void renderBlocks(final Block parent, final List<Block> blocks) {
         final int saveIP = this.currentIPPosition;
         // int saveBP = currentBPPosition;
 
@@ -638,11 +649,11 @@ public abstract class AbstractRenderer implements Renderer, Constants {
      *            The line area
      */
     protected void renderLineArea(final LineArea line) {
-        final List children = line.getInlineAreas();
+        final List<InlineArea> children = line.getInlineAreas();
         final int saveBP = this.currentBPPosition;
         this.currentBPPosition += line.getSpaceBefore();
         for (int count = 0; count < children.size(); count++) {
-            final InlineArea inline = (InlineArea) children.get(count);
+            final InlineArea inline = children.get(count);
             renderInlineArea(inline);
         }
         this.currentBPPosition = saveBP;
@@ -720,9 +731,8 @@ public abstract class AbstractRenderer implements Renderer, Constants {
     protected void renderText(final TextArea text) {
         final int saveIP = this.currentIPPosition;
         final int saveBP = this.currentBPPosition;
-        final Iterator iter = text.getChildAreas().iterator();
-        while (iter.hasNext()) {
-            renderInlineArea((InlineArea) iter.next());
+        for (final Area area : text.getChildAreas()) {
+            renderInlineArea((InlineArea) area);
         }
         this.currentIPPosition = saveIP + text.getAllocIPD();
     }
@@ -759,9 +769,8 @@ public abstract class AbstractRenderer implements Renderer, Constants {
         final int saveBP = this.currentBPPosition;
         this.currentIPPosition += ip.getBorderAndPaddingWidthStart();
         this.currentBPPosition += ip.getOffset();
-        final Iterator iter = ip.getChildAreas().iterator();
-        while (iter.hasNext()) {
-            renderInlineArea((InlineArea) iter.next());
+        for (final Area area : ip.getChildAreas()) {
+            renderInlineArea((InlineArea) area);
         }
         this.currentIPPosition = saveIP + ip.getAllocIPD();
         this.currentBPPosition = saveBP;
@@ -832,7 +841,7 @@ public abstract class AbstractRenderer implements Renderer, Constants {
         final int saveIP = this.currentIPPosition;
         final int saveBP = this.currentBPPosition;
 
-        final List blocks = cont.getBlocks();
+        final List<Block> blocks = cont.getBlocks();
         renderBlocks(null, blocks);
         this.currentIPPosition = saveIP;
         this.currentBPPosition = saveBP;
@@ -883,7 +892,7 @@ public abstract class AbstractRenderer implements Renderer, Constants {
             }
         } else {
             if (this.warnedXMLHandlers == null) {
-                this.warnedXMLHandlers = new java.util.HashSet();
+                this.warnedXMLHandlers = new HashSet<>();
             }
             if (!this.warnedXMLHandlers.contains(namespace)) {
                 // no handler found for document

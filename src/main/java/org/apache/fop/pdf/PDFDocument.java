@@ -66,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PDFDocument {
 
-    private static final Integer LOCATION_PLACEHOLDER = (0);
+    private static final Integer LOCATION_PLACEHOLDER = 0;
 
     /** Integer constant to represent PDF 1.3 */
     public static final int PDF_VERSION_1_3 = 3;
@@ -87,13 +87,13 @@ public class PDFDocument {
     private int xref;
 
     /** the character position of each object */
-    private final List location = new ArrayList();
+    private final List<Integer> location = new ArrayList<>();
 
     /** List of objects to write in the trailer */
-    private final List trailerObjects = new ArrayList();
+    private final List<PDFObject> trailerObjects = new ArrayList<>();
 
     /** the objects themselves */
-    private final List objects = new LinkedList();
+    private final List<PDFObject> objects = new LinkedList<>();
 
     /** Indicates what PDF version is active */
     private final int pdfVersion = PDF_VERSION_1_4;
@@ -134,43 +134,43 @@ public class PDFDocument {
 
     /** the {@link PDFXObject}s map */
     /* TODO: Should be modified (works only for image subtype) */
-    private final Map xObjectsMap = new HashMap();
+    private final Map<String, PDFXObject> xObjectsMap = new HashMap<>();
 
     /** The {@link PDFFont} map */
-    private final Map fontMap = new HashMap();
+    private final Map<String, PDFFont> fontMap = new HashMap<>();
 
     /** The {@link PDFFilter} map */
-    private Map filterMap = new HashMap();
+    private Map<String, List<String>> filterMap = new HashMap<>();
 
     /** List of {@link PDFGState}s. */
-    private final List gstates = new ArrayList();
+    private final List<PDFObject> gstates = new ArrayList<>();
 
     /** List of {@link PDFFunction}s. */
-    private final List functions = new ArrayList();
+    private final List<PDFObject> functions = new ArrayList<>();
 
     /** List of {@link PDFShading}s. */
-    private final List shadings = new ArrayList();
+    private final List<PDFObject> shadings = new ArrayList<>();
 
     /** List of {@link PDFPattern}s. */
-    private final List patterns = new ArrayList();
+    private final List<PDFObject> patterns = new ArrayList<>();
 
     /** List of {@link PDFLink}s. */
-    private final List links = new ArrayList();
+    private final List<PDFObject> links = new ArrayList<>();
 
     /** List of {@link PDFDestination}s. */
-    private List destinations;
+    private List<PDFDestination> destinations;
 
     /** List of {@link PDFFileSpec}s. */
-    private final List filespecs = new ArrayList();
+    private final List<PDFObject> filespecs = new ArrayList<>();
 
     /** List of {@link PDFGoToRemote}s. */
-    private final List gotoremotes = new ArrayList();
+    private final List<PDFObject> gotoremotes = new ArrayList<>();
 
     /** List of {@link PDFGoTo}s. */
-    private final List gotos = new ArrayList();
+    private final List<PDFObject> gotos = new ArrayList<>();
 
     /** List of {@link PDFLaunch}es. */
-    private final List launches = new ArrayList();
+    private final List<PDFObject> launches = new ArrayList<>();
 
     /**
      * The PDFDests object for the name dictionary. Note: This object is not a
@@ -326,7 +326,7 @@ public class PDFDocument {
      * @param map
      *            the map of filter lists for each stream type
      */
-    public void setFilterMap(final Map map) {
+    public void setFilterMap(final Map<String, List<String>> map) {
         this.filterMap = map;
     }
 
@@ -335,7 +335,7 @@ public class PDFDocument {
      *
      * @return the map of filters being used
      */
-    public Map getFilterMap() {
+    public Map<String, List<String>> getFilterMap() {
         return this.filterMap;
     }
 
@@ -549,9 +549,9 @@ public class PDFDocument {
         return this.encryption;
     }
 
-    private Object findPDFObject(final List list, final PDFObject compare) {
-        for (final Iterator iter = list.iterator(); iter.hasNext();) {
-            final PDFObject obj = (PDFObject) iter.next();
+    private PDFObject findPDFObject(final List<PDFObject> list,
+            final PDFObject compare) {
+        for (final PDFObject obj : list) {
             if (compare.contentEquals(obj)) {
                 return obj;
             }
@@ -604,7 +604,7 @@ public class PDFDocument {
      * @return PDFFont the requested font, null if it wasn't found
      */
     protected PDFFont findFont(final String fontname) {
-        return (PDFFont) this.fontMap.get(fontname);
+        return this.fontMap.get(fontname);
     }
 
     /**
@@ -617,7 +617,7 @@ public class PDFDocument {
     protected PDFDestination findDestination(final PDFDestination compare) {
         final int index = getDestinationList().indexOf(compare);
         if (index >= 0) {
-            return (PDFDestination) getDestinationList().get(index);
+            return getDestinationList().get(index);
         } else {
             return null;
         }
@@ -690,7 +690,7 @@ public class PDFDocument {
     protected PDFGState findGState(final PDFGState wanted,
             final PDFGState current) {
         PDFGState poss;
-        final Iterator iter = this.gstates.iterator();
+        final Iterator<PDFObject> iter = this.gstates.iterator();
         while (iter.hasNext()) {
             final PDFGState avail = (PDFGState) iter.next();
             poss = new PDFGState();
@@ -736,7 +736,7 @@ public class PDFDocument {
      *
      * @return the map of fonts used in this document
      */
-    public Map getFontMap() {
+    public Map<String, PDFFont> getFontMap() {
         return this.fontMap;
     }
 
@@ -782,7 +782,7 @@ public class PDFDocument {
      * @return the PDFXObject for the key if found
      */
     public PDFXObject getXObject(final String key) {
-        return (PDFXObject) this.xObjectsMap.get(key);
+        return this.xObjectsMap.get(key);
     }
 
     /**
@@ -802,7 +802,7 @@ public class PDFDocument {
      */
     public void addDestination(final PDFDestination destination) {
         if (this.destinations == null) {
-            this.destinations = new ArrayList();
+            this.destinations = new ArrayList<>();
         }
         this.destinations.add(destination);
     }
@@ -812,11 +812,11 @@ public class PDFDocument {
      *
      * @return the list of named destinations.
      */
-    public List getDestinationList() {
+    public List<PDFDestination> getDestinationList() {
         if (hasDestinations()) {
             return this.destinations;
         } else {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -942,7 +942,7 @@ public class PDFDocument {
         while (this.location.size() <= objidx) {
             this.location.add(LOCATION_PLACEHOLDER);
         }
-        this.location.set(objidx, (position));
+        this.location.set(objidx, position);
     }
 
     /**
@@ -960,7 +960,7 @@ public class PDFDocument {
         // on the fly even during serialization.
         while (this.objects.size() > 0) {
             /* Retrieve first */
-            final PDFObject object = (PDFObject) this.objects.remove(0);
+            final PDFObject object = this.objects.remove(0);
             /*
              * add the position of this object to the list of object locations
              */
@@ -1046,9 +1046,8 @@ public class PDFDocument {
         }
         output(stream);
         for (int count = 0; count < this.trailerObjects.size(); count++) {
-            final PDFObject o = (PDFObject) this.trailerObjects.get(count);
-            this.location.set(o.getObjectNumber() - 1, (
-                    this.position));
+            final PDFObject o = this.trailerObjects.get(count);
+            this.location.set(o.getObjectNumber() - 1, this.position);
             this.position += o.output(stream);
         }
         /*

@@ -33,6 +33,7 @@ import org.apache.fop.layoutmgr.BlockStackingLayoutManager;
 import org.apache.fop.layoutmgr.Keep;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.NonLeafPosition;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
@@ -50,7 +51,7 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
     private int itemIPD;
 
     private static class StackingIter extends PositionIterator {
-        StackingIter(final Iterator parentIter) {
+        StackingIter(final Iterator<Position> parentIter) {
             super(parentIter);
         }
 
@@ -107,7 +108,8 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         // log.debug("  ListItemContentLayoutManager.getChanged>");
         return super.getChangedKnuthElements(oldList, alignment);
     }
@@ -137,7 +139,7 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList();
+        final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = (Position) parentIter.next();

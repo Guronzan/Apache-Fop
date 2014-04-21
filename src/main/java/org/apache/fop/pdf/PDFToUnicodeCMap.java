@@ -106,6 +106,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
          *
          * @param p
          *            StingBuffer to write to
+         * @throws IOException
          */
         @Override
         protected void writeBFEntries() throws IOException {

@@ -20,6 +20,7 @@
 package org.apache.fop.fo.pagination;
 
 // Java
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ import org.xml.sax.Locator;
 @Slf4j
 public class Declarations extends FObj {
 
-    private Map colorProfiles = null;
+    private Map<String, ColorProfile> colorProfiles = null;
 
     /**
      * @param parent
@@ -55,7 +56,7 @@ public class Declarations extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) {
         // No properties defined for fo:declarations
     }
 
@@ -106,7 +107,7 @@ public class Declarations extends FObj {
 
     private void addColorProfile(final ColorProfile cp) {
         if (this.colorProfiles == null) {
-            this.colorProfiles = new java.util.HashMap();
+            this.colorProfiles = new HashMap<>();
         }
         if (this.colorProfiles.get(cp.getColorProfileName()) != null) {
             // duplicate names
@@ -144,7 +145,7 @@ public class Declarations extends FObj {
     public ColorProfile getColorProfile(final String cpName) {
         ColorProfile profile = null;
         if (this.colorProfiles != null) {
-            profile = (ColorProfile) this.colorProfiles.get(cpName);
+            profile = this.colorProfiles.get(cpName);
         }
         return profile;
     }

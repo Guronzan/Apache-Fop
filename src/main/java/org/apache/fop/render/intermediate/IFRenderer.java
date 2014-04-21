@@ -90,6 +90,7 @@ import org.apache.fop.render.intermediate.extensions.URIAction;
 import org.apache.fop.render.pdf.PDFEventProducer;
 import org.apache.fop.traits.BorderProps;
 import org.apache.fop.traits.RuleStyle;
+import org.apache.xmlgraphics.util.QName;
 import org.apache.xmlgraphics.xmp.Metadata;
 import org.apache.xmlgraphics.xmp.schemas.DublinCoreAdapter;
 import org.apache.xmlgraphics.xmp.schemas.DublinCoreSchema;
@@ -598,8 +599,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
 
     /** {@inheritDoc} */
     @Override
-    public void renderPage(final PageViewport page) throws IOException,
-            FOPException {
+    public void renderPage(final PageViewport page) throws IOException {
         log.trace("renderPage() {}", page);
         try {
             this.pageIndices.put(page.getKey(), page.getPageIndex());
@@ -651,7 +651,8 @@ public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
         }
     }
 
-    private void establishForeignAttributes(final Map foreignAttributes) {
+    private void establishForeignAttributes(
+            final Map<QName, String> foreignAttributes) {
         this.documentHandler.getContext().setForeignAttributes(
                 foreignAttributes);
     }

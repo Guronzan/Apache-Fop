@@ -39,7 +39,7 @@ import org.apache.fop.fo.pagination.AbstractPageSequence;
  */
 @Slf4j
 public abstract class AbstractPageSequenceLayoutManager extends
-AbstractLayoutManager implements TopLevelLayoutManager {
+        AbstractLayoutManager implements TopLevelLayoutManager {
 
     /**
      * AreaTreeHandler which activates the PSLM and controls the rendering of
@@ -129,9 +129,10 @@ AbstractLayoutManager implements TopLevelLayoutManager {
      * @return the first PageViewport that contains the ID trait
      */
     public PageViewport getFirstPVWithID(final String idref) {
-        final List list = this.idTracker.getPageViewportsContainingID(idref);
+        final List<PageViewport> list = this.idTracker
+                .getPageViewportsContainingID(idref);
         if (list != null && list.size() > 0) {
-            return (PageViewport) list.get(0);
+            return list.get(0);
         }
         return null;
     }
@@ -145,9 +146,10 @@ AbstractLayoutManager implements TopLevelLayoutManager {
      * @return the last PageViewport that contains the ID trait
      */
     public PageViewport getLastPVWithID(final String idref) {
-        final List list = this.idTracker.getPageViewportsContainingID(idref);
+        final List<PageViewport> list = this.idTracker
+                .getPageViewportsContainingID(idref);
         if (list != null && list.size() > 0) {
-            return (PageViewport) list.get(list.size() - 1);
+            return list.get(list.size() - 1);
         }
         return null;
     }
@@ -245,7 +247,7 @@ AbstractLayoutManager implements TopLevelLayoutManager {
         final int boundary = rm.getRetrieveBoundary();
 
         // get marker from the current markers on area tree
-        Marker mark = (Marker) getCurrentPV().getMarker(name, pos);
+        Marker mark = getCurrentPV().getMarker(name, pos);
         if (mark == null && boundary != EN_PAGE) {
             // go back over pages until mark found
             // if document boundary then keep going
@@ -258,7 +260,7 @@ AbstractLayoutManager implements TopLevelLayoutManager {
             }
             while (page >= 0) {
                 final PageViewport pv = areaTreeModel.getPage(seq, page);
-                mark = (Marker) pv.getMarker(name, Constants.EN_LEWP);
+                mark = pv.getMarker(name, Constants.EN_LEWP);
                 if (mark != null) {
                     break;
                 }
@@ -305,7 +307,7 @@ AbstractLayoutManager implements TopLevelLayoutManager {
             finishPage();
         }
 
-        this.currentPageNum++;
+        ++this.currentPageNum;
 
         this.curPage = createPage(this.currentPageNum, isBlank);
 

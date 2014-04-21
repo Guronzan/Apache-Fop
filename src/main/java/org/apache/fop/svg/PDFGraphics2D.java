@@ -842,7 +842,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(gp.getTransform());
 
-            final List theMatrix = new ArrayList();
+            final List<Double> theMatrix = new ArrayList<>();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -851,29 +851,29 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
             final Point2D p1 = gp.getStartPoint();
             final Point2D p2 = gp.getEndPoint();
-            final List theCoords = new ArrayList();
+            final List<Double> theCoords = new ArrayList<>();
             theCoords.add(new Double(p1.getX()));
             theCoords.add(new Double(p1.getY()));
             theCoords.add(new Double(p2.getX()));
             theCoords.add(new Double(p2.getY()));
 
-            final List theExtend = new ArrayList();
+            final List<Boolean> theExtend = new ArrayList<>();
             theExtend.add(new Boolean(true));
             theExtend.add(new Boolean(true));
 
-            final List theDomain = new ArrayList();
+            final List<Double> theDomain = new ArrayList<>();
             theDomain.add(new Double(0));
             theDomain.add(new Double(1));
 
-            final List theEncode = new ArrayList();
+            final List<Double> theEncode = new ArrayList<>();
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
 
-            final List theBounds = new ArrayList();
+            final List<Double> theBounds = new ArrayList<>();
 
-            final List someColors = new ArrayList();
+            final List<PDFColor> someColors = new ArrayList<>();
 
             for (int count = 0; count < cols.length; count++) {
                 final Color c1 = cols[count];
@@ -920,7 +920,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(rgp.getTransform());
 
-            final List theMatrix = new ArrayList();
+            final List<Double> theMatrix = new ArrayList<>();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -931,7 +931,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             final Point2D ac = rgp.getCenterPoint();
             final Point2D af = rgp.getFocusPoint();
 
-            final List theCoords = new ArrayList();
+            final List<Double> theCoords = new ArrayList<>();
             double dx = af.getX() - ac.getX();
             double dy = af.getY() - ac.getY();
             final double d = Math.sqrt(dx * dx + dy * dy);
@@ -951,7 +951,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             theCoords.add(new Double(ar));
 
             final Color[] cols = rgp.getColors();
-            final List someColors = new ArrayList();
+            final List<PDFColor> someColors = new ArrayList<>();
             for (final Color cc : cols) {
                 if (cc.getAlpha() != 255) {
                     return false; // PDF can't do alpha
@@ -962,7 +962,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             }
 
             final float[] fractions = rgp.getFractions();
-            final List theBounds = new ArrayList();
+            final List<Double> theBounds = new ArrayList<>();
             for (int count = 1; count < fractions.length - 1; count++) {
                 final float offset = fractions[count];
                 theBounds.add(new Double(offset));
@@ -1038,7 +1038,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         // }
         // }
 
-        final List bbox = new ArrayList();
+        final List<Double> bbox = new ArrayList<>();
         bbox.add(new Double(rect.getX()));
         bbox.add(new Double(rect.getHeight() + rect.getY()));
         bbox.add(new Double(rect.getWidth() + rect.getX()));
@@ -1049,7 +1049,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         transform.concatenate(getTransform());
         transform.concatenate(pp.getPatternTransform());
 
-        final List theMatrix = new ArrayList();
+        final List<Double> theMatrix = new ArrayList<>();
         final double[] mat = new double[6];
         transform.getMatrix(mat);
         for (final double element : mat) {
@@ -1443,7 +1443,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     protected void applyAlpha(final int fillAlpha, final int strokeAlpha) {
         if (fillAlpha != OPAQUE || strokeAlpha != OPAQUE) {
             checkTransparencyAllowed();
-            final Map vals = new HashMap<>();
+            final Map<String, Float> vals = new HashMap<>();
             if (fillAlpha != OPAQUE) {
                 vals.put(PDFGState.GSTATE_ALPHA_NONSTROKE, new Float(
                         fillAlpha / 255f));

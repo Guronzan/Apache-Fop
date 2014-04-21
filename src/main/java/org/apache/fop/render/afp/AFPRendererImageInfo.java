@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.fop.render.RendererContext;
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * The AFP image information
@@ -42,7 +43,7 @@ public class AFPRendererImageInfo {
     protected final Point origin;
 
     /** the foreign attributes */
-    protected final Map foreignAttributes;
+    protected final Map<QName, String> foreignAttributes;
 
     /** the image info */
     protected final ImageInfo info;
@@ -73,7 +74,8 @@ public class AFPRendererImageInfo {
      */
     public AFPRendererImageInfo(final String uri, final Rectangle2D pos,
             final Point origin, final ImageInfo info, final Image img,
-            final RendererContext rendererContext, final Map foreignAttributes) {
+            final RendererContext rendererContext,
+            final Map<QName, String> foreignAttributes) {
         this.uri = uri;
         this.pos = pos;
         this.origin = origin;
@@ -122,10 +124,10 @@ public class AFPRendererImageInfo {
 
     /**
      * Return the foreign attributes
-     * 
+     *
      * @return the foreign attributes
      */
-    public Map getForeignAttributes() {
+    public Map<QName, String> getForeignAttributes() {
         return this.foreignAttributes;
     }
 

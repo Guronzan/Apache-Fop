@@ -71,7 +71,7 @@ public class IFParser implements IFConstants {
     private static SAXTransformerFactory tFactory = (SAXTransformerFactory) SAXTransformerFactory
             .newInstance();
 
-    private static Set<String> handledNamespaces = new java.util.HashSet<String>();
+    private static Set<String> handledNamespaces = new java.util.HashSet<>();
 
     static {
         handledNamespaces.add(XMLNS_NAMESPACE_URI);
@@ -98,7 +98,7 @@ public class IFParser implements IFConstants {
      */
     public void parse(final Source src,
             final IFDocumentHandler documentHandler, final FOUserAgent userAgent)
-                    throws TransformerException, IFException {
+            throws TransformerException, IFException {
         try {
             final Transformer transformer = tFactory.newTransformer();
             transformer.setErrorListener(new DefaultErrorListener());
@@ -143,7 +143,7 @@ public class IFParser implements IFConstants {
 
     private static class Handler extends DefaultHandler {
 
-        private final Map<String, AbstractElementHandler> elementHandlers = new java.util.HashMap<String, AbstractElementHandler>();
+        private final Map<String, AbstractElementHandler> elementHandlers = new java.util.HashMap<>();
 
         private final IFDocumentHandler documentHandler;
         private IFPainter painter;
@@ -170,7 +170,7 @@ public class IFParser implements IFConstants {
         private Attributes pageSequenceAttributes;
 
         private final class StructureTreeBuilderWrapper extends
-                DelegatingContentHandler {
+        DelegatingContentHandler {
 
             private StructureTreeBuilderWrapper() throws SAXException {
                 super(Handler.this.structureTreeBuilder
@@ -241,7 +241,7 @@ public class IFParser implements IFConstants {
         @Override
         public void startElement(final String uri, final String localName,
                 final String qName, final Attributes attributes)
-                throws SAXException {
+                        throws SAXException {
             if (this.delegate != null) {
                 this.delegateDepth++;
                 this.delegate.startElement(uri, localName, qName, attributes);
@@ -284,7 +284,7 @@ public class IFParser implements IFConstants {
                     if (this.navParser == null) {
                         this.navParser = new DocumentNavigationHandler(
                                 this.documentHandler
-                                        .getDocumentNavigationHandler());
+                                .getDocumentNavigationHandler());
                     }
                     this.delegate = this.navParser;
                     this.delegateDepth++;
@@ -407,7 +407,7 @@ public class IFParser implements IFConstants {
 
         private static interface ElementHandler {
             void startElement(final Attributes attributes) throws IFException,
-                    SAXException;
+            SAXException;
 
             void endElement() throws IFException;
 
@@ -416,12 +416,20 @@ public class IFParser implements IFConstants {
 
         private abstract class AbstractElementHandler implements ElementHandler {
 
+            /**
+             * @throws IFException
+             *
+             */
             @Override
             public void startElement(final Attributes attributes)
-                    throws IFException, SAXException {
+                    throws IFException {
                 // nop
             }
 
+            /**
+             * @throws IFException
+             *
+             */
             @Override
             public void endElement() throws IFException {
                 // nop
@@ -687,7 +695,7 @@ public class IFParser implements IFConstants {
                 final int height = Integer.parseInt(attributes
                         .getValue("height"));
                 Handler.this.painter
-                        .clipRect(new Rectangle(x, y, width, height));
+                .clipRect(new Rectangle(x, y, width, height));
             }
 
         }
@@ -743,7 +751,7 @@ public class IFParser implements IFConstants {
         }
 
         private static final String[] SIDES = new String[] { "before", "after",
-                "start", "end" };
+            "start", "end" };
 
         private class BorderRectHandler extends AbstractElementHandler {
 
@@ -766,8 +774,8 @@ public class IFParser implements IFConstants {
                 }
 
                 Handler.this.painter
-                        .drawBorderRect(new Rectangle(x, y, width, height),
-                                borders[0], borders[1], borders[2], borders[3]);
+                .drawBorderRect(new Rectangle(x, y, width, height),
+                        borders[0], borders[1], borders[2], borders[3]);
             }
 
         }
@@ -775,8 +783,7 @@ public class IFParser implements IFConstants {
         private class ImageHandler extends AbstractElementHandler {
 
             @Override
-            public void startElement(final Attributes attributes)
-                    throws IFException {
+            public void startElement(final Attributes attributes) {
                 Handler.this.inForeignObject = true;
             }
 
@@ -860,7 +867,7 @@ public class IFParser implements IFConstants {
                         continue;
                     }
                     if (foreignAttributes == null) {
-                        foreignAttributes = new java.util.HashMap<QName, String>();
+                        foreignAttributes = new java.util.HashMap<>();
                     }
                     final QName qname = new QName(ns, atts.getQName(i));
                     foreignAttributes.put(qname, atts.getValue(i));

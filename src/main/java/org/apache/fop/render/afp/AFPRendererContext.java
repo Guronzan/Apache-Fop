@@ -30,6 +30,7 @@ import org.apache.fop.render.AbstractRenderer;
 import org.apache.fop.render.ImageHandlerUtil;
 import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RendererContextConstants;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * AFP-specific renderer context class.
@@ -68,7 +69,7 @@ public class AFPRendererContext extends RendererContext {
         info.setPaintingState((AFPPaintingState) getProperty(AFPRendererContextConstants.AFP_PAINTING_STATE));
         info.setResourceManager((AFPResourceManager) getProperty(AFPRendererContextConstants.AFP_RESOURCE_MANAGER));
 
-        final Map foreignAttributes = (Map) getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
+        final Map<QName, String> foreignAttributes = (Map<QName, String>) getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         if (foreignAttributes != null) {
             final boolean paintAsBitmap = ImageHandlerUtil
                     .isConversionModeBitmap(foreignAttributes);

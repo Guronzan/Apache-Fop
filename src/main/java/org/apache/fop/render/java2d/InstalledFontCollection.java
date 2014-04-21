@@ -21,6 +21,7 @@ package org.apache.fop.render.java2d;
 
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class InstalledFontCollection implements FontCollection {
     private static final Set<String> HARDCODED_FONT_NAMES;
 
     static {
-        HARDCODED_FONT_NAMES = new java.util.HashSet<String>();
+        HARDCODED_FONT_NAMES = new HashSet<>();
         HARDCODED_FONT_NAMES.add("any");
         HARDCODED_FONT_NAMES.add("sans-serif");
         HARDCODED_FONT_NAMES.add("serif");

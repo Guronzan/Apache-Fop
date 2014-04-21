@@ -34,11 +34,13 @@ public final class ListUtil {
     /**
      * Retrieve the last element from a list.
      *
+     * @param <T>
+     *
      * @param list
      *            The list to work on
      * @return last element
      */
-    public static Object getLast(final List list) {
+    public static <T> T getLast(final List<T> list) {
         return list.get(list.size() - 1);
     }
 
@@ -49,7 +51,7 @@ public final class ListUtil {
      *            The list to work on
      * @return previous last element
      */
-    public static Object removeLast(final List list) {
+    public static <T> T removeLast(final List<T> list) {
         return list.remove(list.size() - 1);
     }
 }

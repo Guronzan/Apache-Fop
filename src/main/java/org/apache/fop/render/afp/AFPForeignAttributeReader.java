@@ -61,11 +61,10 @@ public class AFPForeignAttributeReader {
      * @return the resource information
      */
     public AFPResourceInfo getResourceInfo(
-            final Map/* <QName, String> */foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         final AFPResourceInfo resourceInfo = new AFPResourceInfo();
         if (foreignAttributes != null && !foreignAttributes.isEmpty()) {
-            final String resourceName = (String) foreignAttributes
-                    .get(RESOURCE_NAME);
+            final String resourceName = foreignAttributes.get(RESOURCE_NAME);
             if (resourceName != null) {
                 resourceInfo.setName(resourceName);
             }
@@ -85,16 +84,16 @@ public class AFPForeignAttributeReader {
      * @return the resource level
      */
     public AFPResourceLevel getResourceLevel(
-            final Map/* <QName, String> */foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         AFPResourceLevel resourceLevel = null;
         if (foreignAttributes != null && !foreignAttributes.isEmpty()) {
             if (foreignAttributes.containsKey(RESOURCE_LEVEL)) {
-                final String levelString = (String) foreignAttributes
+                final String levelString = foreignAttributes
                         .get(RESOURCE_LEVEL);
                 resourceLevel = AFPResourceLevel.valueOf(levelString);
                 // if external get resource group file attributes
                 if (resourceLevel != null && resourceLevel.isExternal()) {
-                    final String resourceGroupFile = (String) foreignAttributes
+                    final String resourceGroupFile = foreignAttributes
                             .get(RESOURCE_GROUP_FILE);
                     if (resourceGroupFile == null) {
                         final String msg = RESOURCE_GROUP_FILE
@@ -121,14 +120,14 @@ public class AFPForeignAttributeReader {
                         final boolean exists = resourceExternalGroupFile
                                 .exists();
                         if (exists) {
-                            log.warn("overwriting external resource file: "
-                                    + resourceGroupFile);
+                            log.warn("overwriting external resource file: {}",
+                                    resourceGroupFile);
                         }
                         resourceLevel.setExternalFilePath(resourceGroupFile);
                     } catch (final SecurityException ex) {
                         final String msg = "unable to gain read access to external resource file: "
                                 + resourceGroupFile;
-                        log.error(msg);
+                        log.error(msg, ex);
                     }
                 }
             }

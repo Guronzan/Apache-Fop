@@ -31,8 +31,6 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.Stack;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontTriplet;
@@ -50,7 +48,6 @@ import org.w3c.dom.Document;
 /**
  * {@link IFPainter} implementation that paints on a Graphics2D instance.
  */
-@Slf4j
 public class Java2DPainter extends AbstractIFPainter {
 
     /** the IF context */
@@ -63,7 +60,7 @@ public class Java2DPainter extends AbstractIFPainter {
 
     /** The current state, holds a Graphics2D and its context */
     protected Java2DGraphicsState g2dState;
-    private final Stack g2dStateStack = new Stack();
+    private final Stack<Java2DGraphicsState> g2dStateStack = new Stack<>();
 
     /**
      * Main constructor.
@@ -139,41 +136,36 @@ public class Java2DPainter extends AbstractIFPainter {
     public void startViewport(final AffineTransform transform,
             final Dimension size, final Rectangle clipRect) throws IFException {
         saveGraphicsState();
-        try {
-            concatenateTransformationMatrix(transform);
-            clipRect(clipRect);
-        } catch (final IOException ioe) {
-            throw new IFException("I/O error in startViewport()", ioe);
-        }
+        concatenateTransformationMatrix(transform);
+        clipRect(clipRect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endViewport() throws IFException {
+    public void endViewport() {
         restoreGraphicsState();
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void startGroup(final AffineTransform transform) throws IFException {
         saveGraphicsState();
-        try {
-            concatenateTransformationMatrix(transform);
-        } catch (final IOException ioe) {
-            throw new IFException("I/O error in startGroup()", ioe);
-        }
+        concatenateTransformationMatrix(transform);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endGroup() throws IFException {
+    public void endGroup() {
         restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final String uri, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final String uri, final Rectangle rect) {
         drawImageUsingURI(uri, rect);
     }
 
@@ -187,21 +179,19 @@ public class Java2DPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void drawImage(final Document doc, final Rectangle rect)
-            throws IFException {
+    public void drawImage(final Document doc, final Rectangle rect) {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void clipRect(final Rectangle rect) throws IFException {
+    public void clipRect(final Rectangle rect) {
         getState().updateClip(rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void fillRect(final Rectangle rect, final Paint fill)
-            throws IFException {
+    public void fillRect(final Rectangle rect, final Paint fill) {
         if (fill == null) {
             return;
         }
@@ -215,7 +205,7 @@ public class Java2DPainter extends AbstractIFPainter {
     @Override
     public void drawBorderRect(final Rectangle rect, final BorderProps before,
             final BorderProps after, final BorderProps start,
-            final BorderProps end) throws IFException {
+            final BorderProps end) {
         if (before != null || after != null || start != null || end != null) {
             try {
                 this.borderPainter.drawBorders(rect, before, after, start, end);
@@ -229,15 +219,14 @@ public class Java2DPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void drawLine(final Point start, final Point end, final int width,
-            final Color color, final RuleStyle style) throws IFException {
+            final Color color, final RuleStyle style) {
         this.borderPainter.drawLine(start, end, width, color, style);
     }
 
     /** {@inheritDoc} */
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
-            final int wordSpacing, final int[] dx, final String text)
-                    throws IFException {
+            final int wordSpacing, final int[] dx, final String text) {
         this.g2dState.updateColor(this.state.getTextColor());
         final FontTriplet triplet = new FontTriplet(this.state.getFontFamily(),
                 this.state.getFontStyle(), this.state.getFontWeight());
@@ -290,11 +279,10 @@ public class Java2DPainter extends AbstractIFPainter {
     /** Restores the last graphics state from the stack. */
     protected void restoreGraphicsState() {
         this.g2dState.dispose();
-        this.g2dState = (Java2DGraphicsState) this.g2dStateStack.pop();
+        this.g2dState = this.g2dStateStack.pop();
     }
 
-    private void concatenateTransformationMatrix(final AffineTransform transform)
-            throws IOException {
+    private void concatenateTransformationMatrix(final AffineTransform transform) {
         this.g2dState.transform(transform);
     }
 

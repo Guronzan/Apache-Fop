@@ -25,10 +25,13 @@ import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.fop.accessibility.StructureTree;
 import org.apache.fop.fonts.FontInfo;
@@ -462,14 +465,10 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
 
     private void addForeignAttributes(final AttributesImpl atts)
             throws SAXException {
-        final Map foreignAttributes = getContext().getForeignAttributes();
-        if (!foreignAttributes.isEmpty()) {
-            final Iterator iter = foreignAttributes.entrySet().iterator();
-            while (iter.hasNext()) {
-                final Map.Entry entry = (Map.Entry) iter.next();
-                addAttribute(atts, (QName) entry.getKey(), entry.getValue()
-                        .toString());
-            }
+        final Map<QName, String> foreignAttributes = getContext()
+                .getForeignAttributes();
+        for (final Entry<QName, String> entry : foreignAttributes.entrySet()) {
+            addAttribute(atts, entry.getKey(), entry.getValue());
         }
     }
 
@@ -721,8 +720,8 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
 
     // ---=== IFDocumentNavigationHandler ===---
 
-    private final Map incompleteActions = new java.util.HashMap();
-    private final List completeActions = new java.util.LinkedList();
+    private final Map<String, AbstractAction> incompleteActions = new HashMap<>();
+    private final List<AbstractAction> completeActions = new LinkedList<>();
 
     private void noteAction(final AbstractAction action) {
         if (action == null) {
@@ -762,9 +761,7 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
         try {
             this.handler.startElement(
                     DocumentNavigationExtensionConstants.BOOKMARK_TREE, atts);
-            final Iterator iter = tree.getBookmarks().iterator();
-            while (iter.hasNext()) {
-                final Bookmark b = (Bookmark) iter.next();
+            for (final Bookmark b : tree.getBookmarks()) {
                 serializeBookmark(b);
             }
             this.handler
@@ -786,9 +783,7 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
         this.handler.startElement(
                 DocumentNavigationExtensionConstants.BOOKMARK, atts);
         serializeXMLizable(bookmark.getAction());
-        final Iterator iter = bookmark.getChildBookmarks().iterator();
-        while (iter.hasNext()) {
-            final Bookmark b = (Bookmark) iter.next();
+        for (final Bookmark b : bookmark.getChildBookmarks()) {
             serializeBookmark(b);
         }
         this.handler.endElement(DocumentNavigationExtensionConstants.BOOKMARK);
@@ -818,12 +813,11 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void addResolvedAction(final AbstractAction action)
-            throws IFException {
+    public void addResolvedAction(final AbstractAction action) {
         assert action.isComplete();
         assert action.hasID();
-        final AbstractAction noted = (AbstractAction) this.incompleteActions
-                .remove(action.getID());
+        final AbstractAction noted = this.incompleteActions.remove(action
+                .getID());
         if (noted != null) {
             this.completeActions.add(action);
         } else {
@@ -832,9 +826,9 @@ IFConstants, IFPainter, IFDocumentNavigationHandler {
     }
 
     private void commitNavigation() throws IFException {
-        final Iterator iter = this.completeActions.iterator();
+        final Iterator<AbstractAction> iter = this.completeActions.iterator();
         while (iter.hasNext()) {
-            final AbstractAction action = (AbstractAction) iter.next();
+            final AbstractAction action = iter.next();
             iter.remove();
             serializeXMLizable(action);
         }

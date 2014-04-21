@@ -41,7 +41,7 @@ public class ImageHandlerUtil {
     /**
      * Indicates whether the image conversion mode is set to bitmap mode, i.e.
      * the image shall be converted to a bitmap.
-     * 
+     *
      * @param mode
      *            the conversion mode
      * @return true if conversion mode is "bitmap"
@@ -53,17 +53,17 @@ public class ImageHandlerUtil {
     /**
      * Indicates whether the image conversion mode is set to bitmap mode, i.e.
      * the image shall be converted to a bitmap.
-     * 
+     *
      * @param foreignAttributes
      *            a map of foreign attributes (Map&lt;QName, Object&gt;)
      * @return true if conversion mode is "bitmap"
      */
-    public static boolean isConversionModeBitmap(final Map foreignAttributes) {
+    public static boolean isConversionModeBitmap(
+            final Map<QName, String> foreignAttributes) {
         if (foreignAttributes == null) {
             return false;
         }
-        final String conversionMode = (String) foreignAttributes
-                .get(CONVERSION_MODE);
+        final String conversionMode = foreignAttributes.get(CONVERSION_MODE);
         return isConversionModeBitmap(conversionMode);
     }
 

@@ -19,11 +19,13 @@
 
 package org.apache.fop.svg;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.fonts.EmbedFontInfo;
 import org.apache.fop.fonts.FontEventListener;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontInfoConfigurator;
@@ -41,7 +43,7 @@ public class PDFDocumentGraphics2DConfigurator {
     /**
      * Configures a PDFDocumentGraphics2D instance using an Avalon Configuration
      * object.
-     * 
+     *
      * @param graphics
      *            the PDFDocumentGraphics2D instance
      * @param cfg
@@ -68,7 +70,7 @@ public class PDFDocumentGraphics2DConfigurator {
 
     /**
      * Creates the {@link FontInfo} instance for the given configuration.
-     * 
+     *
      * @param cfg
      *            the configuration
      * @return the font collection
@@ -94,11 +96,7 @@ public class PDFDocumentGraphics2DConfigurator {
             final boolean strict = false;
             final FontInfoConfigurator fontInfoConfigurator = new FontInfoConfigurator(
                     cfg, fontManager, fontResolver, listener, strict);
-            final List/* <EmbedFontInfo> */fontInfoList = new java.util.ArrayList/*
-                                                                                  * <
-                                                                                  * EmbedFontInfo
-                                                                                  * >
-                                                                                  */();
+            final List<EmbedFontInfo> fontInfoList = new ArrayList<>();
             fontInfoConfigurator.configure(fontInfoList);
 
             if (fontManager.useCache()) {

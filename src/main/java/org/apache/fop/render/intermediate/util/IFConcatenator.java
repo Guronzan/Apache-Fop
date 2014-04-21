@@ -47,13 +47,13 @@ public class IFConcatenator {
 
     /**
      * Creates a new IF concatenator.
-     * 
+     *
      * @param targetHandler
      *            the target document handler
      * @param metadata
      *            the metadata object for the generated file (may be null)
      * @throws IFException
-     *             if an IF-related error occurs
+     *             @ * if an IF-related error occurs
      */
     public IFConcatenator(final IFDocumentHandler targetHandler,
             final Metadata metadata) throws IFException {
@@ -78,7 +78,7 @@ public class IFConcatenator {
 
     /**
      * Returns the target document handler.
-     * 
+     *
      * @return the target document handler
      */
     protected IFDocumentHandler getTargetHandler() {
@@ -90,7 +90,8 @@ public class IFConcatenator {
      * trailer and calling {@link IFDocumentHandler#endDocument()}.
      * 
      * @throws IFException
-     *             if an IF-related error occurs
+     *
+     *             @ * if an IF-related error occurs
      */
     public void finish() throws IFException {
         endDocument();
@@ -101,16 +102,15 @@ public class IFConcatenator {
      * All document-level content (i.e. the document header and trailer) is
      * ignored. This method shall not be called after {@link #finish()} has been
      * called.
-     * 
+     *
      * @param src
      *            the JAXP Source identifying the input document
      * @throws TransformerException
-     *             if an XML-related exception occurs during
-     * @throws IFException
-     *             if an IF-related error occurs
+     *             if an XML-related exception occurs during @ * if an
+     *             IF-related error occurs
      */
     public void appendDocument(final Source src) throws TransformerException,
-            IFException {
+    IFException {
         final IFParser parser = new IFParser();
         parser.parse(src, new IFPageSequenceFilter(getTargetHandler()),
                 getTargetHandler().getContext().getUserAgent());
@@ -126,23 +126,27 @@ public class IFConcatenator {
 
         /** {@inheritDoc} */
         @Override
-        public void startDocument() throws IFException {
+        public void startDocument() {
             // ignore
         }
 
         /** {@inheritDoc} */
         @Override
-        public void startDocumentHeader() throws IFException {
+        public void startDocumentHeader() {
             // ignore
         }
 
         /** {@inheritDoc} */
         @Override
-        public void endDocumentHeader() throws IFException {
+        public void endDocumentHeader() {
             // ignore
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         * 
+         * @throws IFException
+         */
         @Override
         public void startPageSequence(final String id) throws IFException {
             assert !this.inPageSequence;
@@ -151,7 +155,11 @@ public class IFConcatenator {
             super.startPageSequence(id);
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         * 
+         * @throws IFException
+         */
         @Override
         public void startPage(final int index, final String name,
                 final String pageMasterName, final Dimension size)
@@ -162,7 +170,11 @@ public class IFConcatenator {
             IFConcatenator.this.nextPageIndex++;
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         * 
+         * @throws IFException
+         */
         @Override
         public void endPageSequence() throws IFException {
             super.endPageSequence();
@@ -173,23 +185,27 @@ public class IFConcatenator {
 
         /** {@inheritDoc} */
         @Override
-        public void startDocumentTrailer() throws IFException {
+        public void startDocumentTrailer() {
             // ignore
         }
 
         /** {@inheritDoc} */
         @Override
-        public void endDocumentTrailer() throws IFException {
+        public void endDocumentTrailer() {
             // ignore
         }
 
         /** {@inheritDoc} */
         @Override
-        public void endDocument() throws IFException {
+        public void endDocument() {
             // ignore
         }
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         * 
+         * @throws IFException
+         */
         @Override
         public void handleExtensionObject(final Object extension)
                 throws IFException {

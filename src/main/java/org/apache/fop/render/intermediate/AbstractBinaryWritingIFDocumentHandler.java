@@ -40,7 +40,7 @@ import org.apache.fop.fonts.base14.Base14FontCollection;
  * implementations.
  */
 public abstract class AbstractBinaryWritingIFDocumentHandler extends
-        AbstractIFDocumentHandler {
+AbstractIFDocumentHandler {
 
     /** The output stream to write the document to */
     protected OutputStream outputStream;
@@ -50,7 +50,11 @@ public abstract class AbstractBinaryWritingIFDocumentHandler extends
     /** Font configuration */
     protected FontInfo fontInfo;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void setResult(final Result result) throws IFException {
         if (result instanceof StreamResult) {
@@ -75,10 +79,6 @@ public abstract class AbstractBinaryWritingIFDocumentHandler extends
                 }
                 out = new java.io.BufferedOutputStream(out);
                 this.ownOutputStream = true;
-            }
-            if (out == null) {
-                throw new IllegalArgumentException(
-                        "Need a StreamResult with an OutputStream");
             }
             this.outputStream = out;
         } else {
@@ -115,7 +115,11 @@ public abstract class AbstractBinaryWritingIFDocumentHandler extends
         setFontInfo(fi);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void startDocument() throws IFException {
         super.startDocument();
@@ -125,7 +129,11 @@ public abstract class AbstractBinaryWritingIFDocumentHandler extends
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     * 
+     * @throws IFException
+     */
     @Override
     public void endDocument() throws IFException {
         if (this.ownOutputStream) {

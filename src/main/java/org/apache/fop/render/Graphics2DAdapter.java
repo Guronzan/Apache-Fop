@@ -21,6 +21,8 @@ package org.apache.fop.render;
 
 import java.io.IOException;
 
+import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
+
 /**
  * This interface represents an optional feature that can be provided by a
  * renderer. It is exposed by calling the getGraphics2DAdapter() method on the
@@ -51,36 +53,6 @@ public interface Graphics2DAdapter {
      * @throws IOException
      *             In case of an I/O error while writing the output format
      */
-    void paintImage(
-            final org.apache.xmlgraphics.java2d.Graphics2DImagePainter painter,
-            final RendererContext context, final int x, final int y,
-            final int width, final int height) throws IOException;
-
-    /**
-     * Paints an arbitrary images on a given Graphics2D instance. The renderer
-     * providing this functionality must set up a Graphics2D instance so that
-     * the image with the given extents (in mpt) can be painted by the painter
-     * passed to this method. The Graphics2DImagePainter is then passed this
-     * Graphics2D instance so the image can be painted.
-     *
-     * @param painter
-     *            the painter which will paint the actual image
-     * @param context
-     *            the renderer context for the current renderer
-     * @param x
-     *            X position of the image
-     * @param y
-     *            Y position of the image
-     * @param width
-     *            width of the image
-     * @param height
-     *            height of the image
-     * @throws IOException
-     *             In case of an I/O error while writing the output format
-     * @deprecated Use the variant with the Graphics2DImagePainter from XML
-     *             Graphics Commons instead
-     */
-    @Deprecated
     void paintImage(final Graphics2DImagePainter painter,
             final RendererContext context, final int x, final int y,
             final int width, final int height) throws IOException;

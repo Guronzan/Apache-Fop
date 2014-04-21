@@ -45,7 +45,7 @@ public class FOElementMapping extends ElementMapping {
     @Override
     protected void initialize() {
         if (this.foObjs == null) {
-            this.foObjs = new HashMap<String, Maker>();
+            this.foObjs = new HashMap<>();
 
             // Declarations and Pagination and Layout Formatting Objects
             this.foObjs.put("root", new RootMaker());
@@ -54,8 +54,6 @@ public class FOElementMapping extends ElementMapping {
             this.foObjs.put("bookmark-tree", new BookmarkTreeMaker());
             this.foObjs.put("bookmark", new BookmarkMaker());
             this.foObjs.put("bookmark-title", new BookmarkTitleMaker());
-            // foObjs.put("page-sequence-wrapper", new
-            // PageSequenceWrapperMaker());
             this.foObjs.put("page-sequence", new PageSequenceMaker());
             this.foObjs.put("layout-master-set", new LayoutMasterSetMaker());
             this.foObjs.put("page-sequence-master",

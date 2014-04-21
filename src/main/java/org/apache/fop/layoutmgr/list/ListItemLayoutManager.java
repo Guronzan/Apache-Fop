@@ -69,8 +69,8 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
 
     private Block curBlockArea = null;
 
-    private List labelList = null;
-    private List bodyList = null;
+    private List<ListElement> labelList = null;
+    private List<ListElement> bodyList = null;
 
     private boolean discardBorderBefore;
     private boolean discardBorderAfter;
@@ -203,12 +203,12 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         this.referenceIPD = context.getRefIPD();
         LayoutContext childLC;
 
-        final List returnList = new LinkedList();
+        final List<ListElement> returnList = new LinkedList<>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -263,7 +263,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         this.keepWithNextPendingOnBody = childLC.getKeepWithNextPending();
 
         // create a combined list
-        final List returnedList = getCombinedKnuthElementsForListItem(
+        final List<ListElement> returnedList = getCombinedKnuthElementsForListItem(
                 this.labelList, this.bodyList, context);
 
         // "wrap" the Position inside each element
@@ -283,8 +283,9 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         return returnList;
     }
 
-    private List getCombinedKnuthElementsForListItem(final List labelElements,
-            final List bodyElements, final LayoutContext context) {
+    private List<ListElement> getCombinedKnuthElementsForListItem(
+            final List<ListElement> labelElements,
+            final List<ListElement> bodyElements, final LayoutContext context) {
         // Copy elements to array lists to improve element access performance
         final List[] elementLists = { new ArrayList<>(labelElements),
                 new ArrayList<>(bodyElements) };
@@ -300,7 +301,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         int addedBoxHeight = 0;
         Keep keepWithNextActive = Keep.KEEP_AUTO;
 
-        final List returnList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
         while ((step = getNextStep(elementLists, start, end, partialHeights)) > 0) {
 
             if (end[0] + 1 == elementLists[0].size()) {
@@ -463,7 +464,8 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
      * {@inheritDoc}
      */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         // log.debug(" LILM.getChanged> label");
         // label
         this.labelList = this.label.getChangedKnuthElements(this.labelList,
@@ -472,7 +474,8 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         // log.debug(" LILM.getChanged> body");
         // body
         // "unwrap" the Positions stored in the elements
-        final ListIterator oldListIterator = oldList.listIterator();
+        final ListIterator<ListElement> oldListIterator = oldList
+                .listIterator();
         KnuthElement oldElement;
         while (oldListIterator.hasNext()) {
             oldElement = (KnuthElement) oldListIterator.next();
@@ -495,15 +498,15 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
             }
         }
 
-        List returnedList = this.body.getChangedKnuthElements(oldList,
-                alignment);
+        List<ListElement> returnedList = this.body.getChangedKnuthElements(
+                oldList, alignment);
         // "wrap" the Position inside each element
-        final List tempList = returnedList;
-        KnuthElement tempElement;
-        returnedList = new LinkedList();
-        final ListIterator listIter = tempList.listIterator();
+        final List<ListElement> tempList = returnedList;
+        ListElement tempElement;
+        returnedList = new LinkedList<>();
+        final ListIterator<ListElement> listIter = tempList.listIterator();
         while (listIter.hasNext()) {
-            tempElement = (KnuthElement) listIter.next();
+            tempElement = listIter.next();
             tempElement.setPosition(new NonLeafPosition(this, tempElement
                     .getPosition()));
             returnedList.add(tempElement);
@@ -533,7 +536,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         Position lastPos = null;
 
         // "unwrap" the NonLeafPositions stored in parentIter
-        final LinkedList<Position> positionList = new LinkedList<Position>();
+        final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = (Position) parentIter.next();

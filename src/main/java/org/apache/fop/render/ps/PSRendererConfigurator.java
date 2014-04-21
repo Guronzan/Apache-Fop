@@ -25,14 +25,12 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.PrintRendererConfigurator;
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
-import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.xmlgraphics.ps.PSGenerator;
 
 /**
  * Postscript renderer config
  */
-public class PSRendererConfigurator extends PrintRendererConfigurator implements
-IFDocumentHandlerConfigurator {
+public class PSRendererConfigurator extends PrintRendererConfigurator {
 
     /**
      * Default constructor
@@ -84,8 +82,7 @@ IFDocumentHandlerConfigurator {
 
     /** {@inheritDoc} */
     @Override
-    public void configure(final IFDocumentHandler documentHandler)
-            throws FOPException {
+    public void configure(final IFDocumentHandler documentHandler) {
         final Configuration cfg = super.getRendererConfig(documentHandler
                 .getMimeType());
         if (cfg != null) {

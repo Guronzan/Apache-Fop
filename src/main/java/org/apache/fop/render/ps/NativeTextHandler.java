@@ -105,13 +105,6 @@ public class NativeTextHandler implements PSTextHandler {
         // nop
     }
 
-    /** {@inheritDoc} */
-    public void drawString(final String text, final float x, final float y)
-            throws IOException {
-        // TODO Remove me after removing the deprecated method in TextHandler.
-        throw new UnsupportedOperationException("Deprecated method!");
-    }
-
     /**
      * Draw a string to the PostScript document. The text is painted using text
      * operations. {@inheritDoc}

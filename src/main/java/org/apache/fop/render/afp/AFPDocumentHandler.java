@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.fop.afp.AFPDitheredRectanglePainter;
@@ -75,13 +76,7 @@ implements AFPCustomizable {
     private DataStream dataStream;
 
     /** the map of page segments */
-    private final Map/* <String,String> */pageSegmentMap = new java.util.HashMap/*
-     * <
-     * String
-     * ,
-     * String
-     * >
-     */();
+    private final Map<String, String> pageSegmentMap = new HashMap<>();
 
     /** Medium Map referenced on previous page **/
     private String lastMediumMap;
@@ -176,7 +171,7 @@ implements AFPCustomizable {
 
     /** {@inheritDoc} */
     @Override
-    public void endDocumentHeader() throws IFException {
+    public void endDocumentHeader() {
     }
 
     /** {@inheritDoc} */
@@ -206,7 +201,7 @@ implements AFPCustomizable {
 
     /** {@inheritDoc} */
     @Override
-    public void endPageSequence() throws IFException {
+    public void endPageSequence() {
         // nop
     }
 
@@ -225,8 +220,7 @@ implements AFPCustomizable {
     /** {@inheritDoc} */
     @Override
     public void startPage(final int index, final String name,
-            final String pageMasterName, final Dimension size)
-                    throws IFException {
+            final String pageMasterName, final Dimension size) {
         this.location = LOC_ELSEWHERE;
         this.paintingState.clear();
         this.pageSegmentMap.clear();
@@ -263,13 +257,13 @@ implements AFPCustomizable {
 
     /** {@inheritDoc} */
     @Override
-    public IFPainter startPageContent() throws IFException {
+    public IFPainter startPageContent() {
         return new AFPPainter(this);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endPageContent() throws IFException {
+    public void endPageContent() {
     }
 
     /** {@inheritDoc} */
@@ -437,7 +431,7 @@ implements AFPCustomizable {
      *         given URI
      */
     String getPageSegmentNameFor(final String uri) {
-        return (String) this.pageSegmentMap.get(uri);
+        return this.pageSegmentMap.get(uri);
     }
 
 }

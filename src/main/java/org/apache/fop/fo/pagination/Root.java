@@ -20,6 +20,7 @@
 package org.apache.fop.fo.pagination;
 
 // java
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.apps.FOPException;
@@ -46,8 +47,8 @@ public class Root extends FObj {
     private LayoutMasterSet layoutMasterSet;
     private Declarations declarations;
     private BookmarkTree bookmarkTree = null;
-    private List destinationList;
-    private final List pageSequences;
+    private List<Destination> destinationList;
+    private final List<PageSequence> pageSequences;
 
     // temporary until above list populated
     private boolean pageSequenceFound = false;
@@ -77,7 +78,7 @@ public class Root extends FObj {
      */
     public Root(final FONode parent) {
         super(parent);
-        this.pageSequences = new java.util.ArrayList();
+        this.pageSequences = new ArrayList<>();
     }
 
     /** {@inheritDoc} */
@@ -153,8 +154,7 @@ public class Root extends FObj {
     }
 
     /** @inheritDoc */
-    protected void validateChildNode(final Locator loc, final FONode child)
-            throws ValidationException {
+    protected void validateChildNode(final Locator loc, final FONode child) {
         if (child instanceof AbstractPageSequence) {
             this.pageSequenceFound = true;
         }
@@ -266,7 +266,7 @@ public class Root extends FObj {
             return null;
         }
         if (currentIndex < this.pageSequences.size() - 1) {
-            return (PageSequence) this.pageSequences.get(currentIndex + 1);
+            return this.pageSequences.get(currentIndex + 1);
         } else {
             return null;
         }
@@ -328,7 +328,7 @@ public class Root extends FObj {
      */
     public void addDestination(final Destination destination) {
         if (this.destinationList == null) {
-            this.destinationList = new java.util.ArrayList();
+            this.destinationList = new ArrayList<>();
         }
         this.destinationList.add(destination);
     }
@@ -338,7 +338,7 @@ public class Root extends FObj {
      *
      * @return the Destination object
      */
-    public List getDestinationList() {
+    public List<Destination> getDestinationList() {
         return this.destinationList;
     }
 

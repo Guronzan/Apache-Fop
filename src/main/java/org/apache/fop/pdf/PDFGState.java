@@ -19,8 +19,9 @@
 
 package org.apache.fop.pdf;
 
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Class representing a /ExtGState object.
@@ -87,20 +88,19 @@ public class PDFGState extends PDFObject {
 
     static {
         DEFAULT = new PDFGState();
-        final Map vals = DEFAULT.values;
+        final Map<String, Float> vals = DEFAULT.values;
         /*
-         * vals.put(LW, new Float(1.0)); vals.put(LC, (0));
-         * vals.put(LJ, (0)); vals.put(ML, new Float(10.0));
-         * vals.put(D, "0 []"); vals.put(RI, "RelativeColorimetric");
-         * vals.put(OP, Boolean.FALSE); vals.put(op, Boolean.FALSE);
-         * vals.put(OPM, (1)); vals.put(Font, "");
+         * vals.put(LW, new Float(1.0)); vals.put(LC, (0)); vals.put(LJ, (0));
+         * vals.put(ML, new Float(10.0)); vals.put(D, "0 []"); vals.put(RI,
+         * "RelativeColorimetric"); vals.put(OP, Boolean.FALSE); vals.put(op,
+         * Boolean.FALSE); vals.put(OPM, (1)); vals.put(Font, "");
          */
 
         vals.put(GSTATE_ALPHA_STROKE, new Float(1.0));
         vals.put(GSTATE_ALPHA_NONSTROKE, new Float(1.0));
     }
 
-    private final Map values = new java.util.HashMap();
+    private final Map<String, Float> values = new HashMap<>();
 
     /**
      * Returns the name of this object
@@ -144,7 +144,7 @@ public class PDFGState extends PDFObject {
      * @param vals
      *            source object to copy from
      */
-    public void addValues(final Map vals) {
+    public void addValues(final Map<String, Float> vals) {
         this.values.putAll(vals);
     }
 
@@ -183,14 +183,14 @@ public class PDFGState extends PDFObject {
         if (!(obj instanceof PDFGState)) {
             return false;
         }
-        final Map vals1 = this.values;
-        final Map vals2 = ((PDFGState) obj).values;
+        final Map<String, Float> vals1 = this.values;
+        final Map<String, Float> vals2 = ((PDFGState) obj).values;
         if (vals1.size() != vals2.size()) {
             return false;
         }
-        for (final Iterator iter = vals1.keySet().iterator(); iter.hasNext();) {
-            final Object str = iter.next();
-            final Object obj1 = vals1.get(str);
+        for (final Entry<String, Float> entry : vals1.entrySet()) {
+            final String str = entry.getKey();
+            final Float obj1 = entry.getValue();
             if (!obj1.equals(vals2.get(str))) {
                 return false;
             }

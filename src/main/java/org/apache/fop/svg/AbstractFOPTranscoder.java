@@ -28,7 +28,6 @@ import javax.xml.transform.stream.StreamSource;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.configuration.DefaultConfiguration;
 import org.apache.batik.bridge.UserAgent;
 import org.apache.batik.dom.svg.SVGDOMImplementation;
@@ -122,8 +121,7 @@ public abstract class AbstractFOPTranscoder extends SVGAbstractTranscoder {
     }
 
     /** {@inheritDoc} */
-    public void configure(final Configuration cfg)
-            throws ConfigurationException {
+    public void configure(final Configuration cfg) {
         this.cfg = cfg;
     }
 
@@ -330,7 +328,7 @@ public abstract class AbstractFOPTranscoder extends SVGAbstractTranscoder {
      * A user agent implementation for FOP's Transcoders.
      */
     protected class FOPTranscoderUserAgent extends
-    SVGAbstractTranscoderUserAgent {
+            SVGAbstractTranscoderUserAgent {
 
         /**
          * Displays the specified error message using the {@link ErrorHandler}.

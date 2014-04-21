@@ -50,7 +50,7 @@ public class PageSequence extends AbstractPageSequence {
     // the set of flows includes StaticContent flows also
 
     /** Map of flows to their flow name (flow-name, Flow) */
-    private Map/* <String, Flow> */flowMap;
+    private Map<String, FONode> flowMap;
 
     /**
      * The currentSimplePageMaster is either the page master for the whole page
@@ -97,11 +97,15 @@ public class PageSequence extends AbstractPageSequence {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws ValidationException
+     */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() throws ValidationException {
         super.startOfNode();
-        this.flowMap = new java.util.HashMap/* <String, Flow> */();
+        this.flowMap = new java.util.HashMap<>();
 
         this.simplePageMaster = getRoot().getLayoutMasterSet()
                 .getSimplePageMaster(this.masterReference);
@@ -255,7 +259,7 @@ public class PageSequence extends AbstractPageSequence {
     }
 
     /** @return the flow map for this page-sequence */
-    public Map getFlowMap() {
+    public Map<String, FONode> getFlowMap() {
         return this.flowMap;
     }
 

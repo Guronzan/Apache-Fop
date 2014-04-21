@@ -278,8 +278,8 @@ public abstract class AbstractBaseLayoutManager implements LayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
-            final int alignment, final Stack lmStack,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position positionAtIPDChange, final LayoutManager restartAtLM) {
         throw new UnsupportedOperationException("Not implemented");
     }

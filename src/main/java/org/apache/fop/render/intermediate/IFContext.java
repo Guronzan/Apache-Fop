@@ -42,7 +42,7 @@ public class IFContext {
     private FOUserAgent userAgent;
 
     /** foreign attributes: Map<QName, Object> */
-    private Map foreignAttributes = Collections.EMPTY_MAP;
+    private Map<QName, String> foreignAttributes = Collections.emptyMap();
 
     private Locale language;
 
@@ -50,7 +50,7 @@ public class IFContext {
 
     /**
      * Main constructor.
-     * 
+     *
      * @param ua
      *            the user agent
      */
@@ -60,7 +60,7 @@ public class IFContext {
 
     /**
      * Set the user agent.
-     * 
+     *
      * @param ua
      *            the user agent
      */
@@ -73,7 +73,7 @@ public class IFContext {
 
     /**
      * Returns the associated user agent.
-     * 
+     *
      * @return the user agent
      */
     public FOUserAgent getUserAgent() {
@@ -82,39 +82,39 @@ public class IFContext {
 
     /**
      * Returns the currently applicable foreign attributes.
-     * 
+     *
      * @return a Map<QName, Object>
      */
-    public Map getForeignAttributes() {
+    public Map<QName, String> getForeignAttributes() {
         return this.foreignAttributes;
     }
 
     /**
      * Returns a foreign attribute.
-     * 
+     *
      * @param qName
      *            the qualified name of the foreign attribute
      * @return the value of the foreign attribute or null if the attribute isn't
      *         specified
      */
-    public Object getForeignAttribute(final QName qName) {
+    public String getForeignAttribute(final QName qName) {
         return this.foreignAttributes.get(qName);
     }
 
     /**
      * Sets the currently applicable foreign attributes.
-     * 
+     *
      * @param foreignAttributes
      *            a Map<QName, Object> or null to reset
      */
-    public void setForeignAttributes(final Map foreignAttributes) {
+    public void setForeignAttributes(final Map<QName, String> foreignAttributes) {
         if (foreignAttributes != null) {
             this.foreignAttributes = foreignAttributes;
         } else {
             // Make sure there is always at least an empty map so we don't have
             // to check
             // in the implementation code
-            this.foreignAttributes = Collections.EMPTY_MAP;
+            this.foreignAttributes = Collections.emptyMap();
         }
     }
 
@@ -127,7 +127,7 @@ public class IFContext {
 
     /**
      * Sets the currently applicable language.
-     * 
+     *
      * @param lang
      *            the language
      */
@@ -137,7 +137,7 @@ public class IFContext {
 
     /**
      * Returns the currently applicable language.
-     * 
+     *
      * @return the language (or null if the language is undefined)
      */
     public Locale getLanguage() {
@@ -147,7 +147,7 @@ public class IFContext {
     /**
      * Sets the structure pointer for the following painted marks. This method
      * is used when accessibility features are enabled.
-     * 
+     *
      * @param ptr
      *            the structure pointer
      */
@@ -157,7 +157,7 @@ public class IFContext {
 
     /**
      * Resets the current structure pointer.
-     * 
+     *
      * @see #setStructurePointer(String)
      */
     public void resetStructurePointer() {
@@ -166,7 +166,7 @@ public class IFContext {
 
     /**
      * Returns the current structure pointer.
-     * 
+     *
      * @return the structure pointer (or null if no pointer is active)
      * @see #setStructurePointer(String)
      */

@@ -51,13 +51,13 @@ public class Footnote extends FObj {
 
     /** {@inheritDoc} */
     @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(final PropertyList pList) {
         // No active properties -> do nothing.
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() {
         getFOEventHandler().startFootnote(this);
     }
 

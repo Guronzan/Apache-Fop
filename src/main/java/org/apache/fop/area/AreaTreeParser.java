@@ -25,6 +25,9 @@ import java.awt.geom.Rectangle2D;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -144,7 +147,7 @@ public class AreaTreeParser {
 
     private static class Handler extends DefaultHandler {
 
-        private final Map<String, AbstractMaker> makers = new java.util.HashMap<String, AbstractMaker>();
+        private final Map<String, AbstractMaker> makers = new HashMap<>();
 
         private final AreaTreeModel treeModel;
         private final FOUserAgent userAgent;
@@ -156,14 +159,14 @@ public class AreaTreeParser {
         private boolean ignoreCharacters = true;
 
         private PageViewport currentPageViewport;
-        private final Map<String, PageViewport> pageViewportsByKey = new java.util.HashMap<String, PageViewport>();
+        private final Map<String, PageViewport> pageViewportsByKey = new HashMap<>();
         // set of "ID firsts" that have already been assigned to a PV:
-        private final Set<String> idFirstsAssigned = new java.util.HashSet<String>();
+        private final Set<String> idFirstsAssigned = new HashSet<>();
 
-        private final Stack<Object> areaStack = new Stack<Object>();
+        private final Stack<Object> areaStack = new Stack<>();
         private boolean firstFlow;
 
-        private final Stack<String> delegateStack = new Stack<String>();
+        private final Stack<String> delegateStack = new Stack<>();
         private ContentHandler delegate;
         private DOMImplementation domImplementation;
         private Locator locator;
@@ -175,7 +178,7 @@ public class AreaTreeParser {
         private Attributes pageSequenceAttributes;
 
         private final class StructureTreeBuilderWrapper extends
-                DelegatingContentHandler {
+        DelegatingContentHandler {
 
             private StructureTreeBuilderWrapper() throws SAXException {
                 super(Handler.this.structureTreeBuilder
@@ -285,7 +288,7 @@ public class AreaTreeParser {
         @Override
         public void startElement(final String uri, final String localName,
                 final String qName, final Attributes attributes)
-                throws SAXException {
+                        throws SAXException {
             if (this.delegate != null) {
                 this.delegateStack.push(qName);
                 this.delegate.startElement(uri, localName, qName, attributes);
@@ -542,7 +545,7 @@ public class AreaTreeParser {
             @Override
             public void endElement() {
                 Handler.this.treeModel
-                        .addPage(Handler.this.currentPageViewport);
+                .addPage(Handler.this.currentPageViewport);
                 Handler.this.currentPageViewport = null;
             }
         }
@@ -1104,7 +1107,7 @@ public class AreaTreeParser {
                 final Object tos = Handler.this.areaStack.pop();
                 assertObjectOfClass(tos, BookmarkData.class);
                 Handler.this.treeModel
-                        .handleOffDocumentItem((BookmarkData) tos);
+                .handleOffDocumentItem((BookmarkData) tos);
                 // as long as the bookmark tree comes after the last
                 // PageViewport in the
                 // area tree XML, we don't have to worry about
@@ -1152,7 +1155,7 @@ public class AreaTreeParser {
                 final PageViewport pv = Handler.this.pageViewportsByKey
                         .get(linkdata[0]);
                 final DestinationData dest = new DestinationData(linkdata[1]);
-                final List<PageViewport> pages = new java.util.ArrayList<PageViewport>();
+                final List<PageViewport> pages = new ArrayList<>();
                 pages.add(pv);
                 dest.resolveIDRef(linkdata[1], pages);
                 Handler.this.areaStack.push(dest);
@@ -1163,7 +1166,7 @@ public class AreaTreeParser {
                 final Object tos = Handler.this.areaStack.pop();
                 assertObjectOfClass(tos, DestinationData.class);
                 Handler.this.treeModel
-                        .handleOffDocumentItem((DestinationData) tos);
+                .handleOffDocumentItem((DestinationData) tos);
             }
         }
 
@@ -1206,8 +1209,8 @@ public class AreaTreeParser {
                 final ExtensionAttachment attachment = (ExtensionAttachment) obj;
                 if (this.currentPageViewport == null) {
                     this.treeModel
-                            .handleOffDocumentItem(new OffDocumentExtensionAttachment(
-                                    attachment));
+                    .handleOffDocumentItem(new OffDocumentExtensionAttachment(
+                            attachment));
                 } else {
                     this.currentPageViewport.addExtensionAttachment(attachment);
                 }
@@ -1231,37 +1234,37 @@ public class AreaTreeParser {
             area.setBPD(Integer.parseInt(attributes.getValue("bpd")));
         }
 
-        private static final Object[] SUBSET_COMMON = new Object[] { Trait.PROD_ID };
-        private static final Object[] SUBSET_LINK = new Object[] {
-                Trait.INTERNAL_LINK, Trait.EXTERNAL_LINK };
-        private static final Object[] SUBSET_COLOR = new Object[] {
-                Trait.BACKGROUND, Trait.COLOR };
-        private static final Object[] SUBSET_FONT = new Object[] { Trait.FONT,
-                Trait.FONT_SIZE, Trait.BLINK, Trait.OVERLINE,
-                Trait.OVERLINE_COLOR, Trait.LINETHROUGH,
-                Trait.LINETHROUGH_COLOR, Trait.UNDERLINE, Trait.UNDERLINE_COLOR };
-        private static final Object[] SUBSET_BOX = new Object[] {
-                Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
-                Trait.BORDER_END, Trait.SPACE_BEFORE, Trait.SPACE_AFTER,
-                Trait.SPACE_START, Trait.SPACE_END, Trait.PADDING_BEFORE,
-                Trait.PADDING_AFTER, Trait.PADDING_START, Trait.PADDING_END,
-                Trait.START_INDENT, Trait.END_INDENT, Trait.IS_REFERENCE_AREA,
-                Trait.IS_VIEWPORT_AREA };
-        private static final Object[] SUBSET_BORDER_PADDING = new Object[] {
-                Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
-                Trait.BORDER_END, Trait.PADDING_BEFORE, Trait.PADDING_AFTER,
-                Trait.PADDING_START, Trait.PADDING_END };
+        private static final Integer[] SUBSET_COMMON = new Integer[] { Trait.PROD_ID };
+        private static final Integer[] SUBSET_LINK = new Integer[] {
+            Trait.INTERNAL_LINK, Trait.EXTERNAL_LINK };
+        private static final Integer[] SUBSET_COLOR = new Integer[] {
+            Trait.BACKGROUND, Trait.COLOR };
+        private static final Integer[] SUBSET_FONT = new Integer[] {
+                Trait.FONT, Trait.FONT_SIZE, Trait.BLINK, Trait.OVERLINE,
+            Trait.OVERLINE_COLOR, Trait.LINETHROUGH,
+            Trait.LINETHROUGH_COLOR, Trait.UNDERLINE, Trait.UNDERLINE_COLOR };
+        private static final Integer[] SUBSET_BOX = new Integer[] {
+            Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
+            Trait.BORDER_END, Trait.SPACE_BEFORE, Trait.SPACE_AFTER,
+            Trait.SPACE_START, Trait.SPACE_END, Trait.PADDING_BEFORE,
+            Trait.PADDING_AFTER, Trait.PADDING_START, Trait.PADDING_END,
+            Trait.START_INDENT, Trait.END_INDENT, Trait.IS_REFERENCE_AREA,
+            Trait.IS_VIEWPORT_AREA };
+        private static final Integer[] SUBSET_BORDER_PADDING = new Integer[] {
+            Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
+            Trait.BORDER_END, Trait.PADDING_BEFORE, Trait.PADDING_AFTER,
+            Trait.PADDING_START, Trait.PADDING_END };
 
         private void setTraits(final Attributes attributes, final Area area,
-                final Object[] traitSubset) {
+                final Integer[] traitSubset) {
             for (int i = traitSubset.length; --i >= 0;) {
-                final Object trait = traitSubset[i];
+                final Integer trait = traitSubset[i];
                 final String traitName = Trait.getTraitName(trait);
                 final String value = attributes.getValue(traitName);
                 if (value != null) {
                     final Class cl = Trait.getTraitClass(trait);
                     if (cl == Integer.class) {
-                        area.addTrait(trait, (value));
+                        area.addTrait(trait, value);
                     } else if (cl == Boolean.class) {
                         area.addTrait(trait, Boolean.valueOf(value));
                     } else if (cl == String.class) {

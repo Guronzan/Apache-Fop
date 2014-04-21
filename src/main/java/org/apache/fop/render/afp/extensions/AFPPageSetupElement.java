@@ -76,8 +76,7 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     /** {@inheritDoc} */
     @Override
     protected void characters(final char[] data, final int start,
-            final int length, final PropertyList pList, final Locator locator)
-                    throws FOPException {
+            final int length, final PropertyList pList, final Locator locator) {
         final StringBuilder sb = new StringBuilder();
         final AFPPageSetup pageSetup = getPageSetupAttachment();
         if (pageSetup.getContent() != null) {
@@ -91,7 +90,7 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     @Override
     public void processNode(final String elementName, final Locator locator,
             final Attributes attlist, final PropertyList propertyList)
-                    throws FOPException {
+            throws FOPException {
         super.processNode(elementName, locator, attlist, propertyList);
         final AFPPageSetup pageSetup = getPageSetupAttachment();
         if (AFPElementMapping.INCLUDE_PAGE_SEGMENT.equals(elementName)) {

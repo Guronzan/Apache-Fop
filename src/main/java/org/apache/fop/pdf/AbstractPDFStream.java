@@ -176,20 +176,25 @@ public abstract class AbstractPDFStream extends PDFDictionary {
         bytesWritten += buf.length;
 
         // Stream contents
-        final CloseBlockerOutputStream cbout = new CloseBlockerOutputStream(out);
-        final CountingOutputStream cout = new CountingOutputStream(cbout);
-        final OutputStream filteredOutput = getFilterList().applyFilters(cout);
-        outputRawStreamData(filteredOutput);
-        filteredOutput.close();
-        refLength.setNumber((cout.getCount()));
-        bytesWritten += cout.getCount();
+        try (final CloseBlockerOutputStream cbout = new CloseBlockerOutputStream(
+                out)) {
+            try (final CountingOutputStream cout = new CountingOutputStream(
+                    cbout)) {
+                final OutputStream filteredOutput = getFilterList()
+                        .applyFilters(cout);
+                outputRawStreamData(filteredOutput);
+                filteredOutput.close();
+                refLength.setNumber(cout.getCount());
+                bytesWritten += cout.getCount();
 
-        // Stream trailer
-        buf = encode("\nendstream");
-        out.write(buf);
-        bytesWritten += buf.length;
+                // Stream trailer
+                buf = encode("\nendstream");
+                out.write(buf);
+                bytesWritten += buf.length;
 
-        return bytesWritten;
+                return bytesWritten;
+            }
+        }
     }
 
     /**
@@ -200,38 +205,41 @@ public abstract class AbstractPDFStream extends PDFDictionary {
     protected int output(final OutputStream stream) throws IOException {
         setupFilterList();
 
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
-        writer.write(getObjectID());
-        // int length = 0;
+        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
+            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
+                writer.write(getObjectID());
+                // int length = 0;
 
-        StreamCache encodedStream = null;
-        PDFNumber refLength = null;
-        final Object lengthEntry;
-        if (getDocument().isEncodingOnTheFly()) {
-            refLength = new PDFNumber();
-            getDocumentSafely().registerObject(refLength);
-            lengthEntry = refLength;
-        } else {
-            encodedStream = encodeStream();
-            lengthEntry = (encodedStream.getSize() + 1);
+                StreamCache encodedStream = null;
+                PDFNumber refLength = null;
+                final Object lengthEntry;
+                if (getDocument().isEncodingOnTheFly()) {
+                    refLength = new PDFNumber();
+                    getDocumentSafely().registerObject(refLength);
+                    lengthEntry = refLength;
+                } else {
+                    encodedStream = encodeStream();
+                    lengthEntry = encodedStream.getSize() + 1;
+                }
+
+                populateStreamDict(lengthEntry);
+                writeDictionary(cout, writer);
+
+                // Send encoded stream to target OutputStream
+                writer.flush();
+                if (encodedStream == null) {
+                    encodeAndWriteStream(cout, refLength);
+                } else {
+                    outputStreamData(encodedStream, cout);
+                    encodedStream.clear(); // Encoded stream can now be
+                                           // discarded
+                }
+
+                writer.write("\nendobj\n");
+                writer.flush();
+                return cout.getCount();
+            }
         }
-
-        populateStreamDict(lengthEntry);
-        writeDictionary(cout, writer);
-
-        // Send encoded stream to target OutputStream
-        writer.flush();
-        if (encodedStream == null) {
-            encodeAndWriteStream(cout, refLength);
-        } else {
-            outputStreamData(encodedStream, cout);
-            encodedStream.clear(); // Encoded stream can now be discarded
-        }
-
-        writer.write("\nendobj\n");
-        writer.flush();
-        return cout.getCount();
     }
 
     /**

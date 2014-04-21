@@ -47,7 +47,7 @@ import org.apache.fop.util.ListUtil;
  */
 @Slf4j
 public class BlockContainerLayoutManager extends BlockStackingLayoutManager
-implements ConditionalElementListener {
+        implements ConditionalElementListener {
 
     private BlockViewport viewportBlockArea;
     private Block referenceArea;
@@ -192,7 +192,7 @@ implements ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         resetSpaces();
         if (isAbsoluteOrFixed()) {
@@ -254,9 +254,9 @@ implements ConditionalElementListener {
 
         final MinOptMax stackLimit = MinOptMax.getInstance(this.relDims.bpd);
 
-        List returnedList;
-        final List contentList = new LinkedList();
-        final List returnList = new LinkedList();
+        List<ListElement> returnedList;
+        final List<ListElement> contentList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -306,7 +306,7 @@ implements ConditionalElementListener {
                     childLC.clearKeepWithPreviousPending();
                 }
                 if (returnedList.size() == 1
-                        && ((ListElement) returnedList.get(0)).isForcedBreak()) {
+                        && returnedList.get(0).isForcedBreak()) {
                     // a descendant of this block has break-before
                     /*
                      * if (returnList.size() == 0) { // the first child (or its
@@ -318,7 +318,7 @@ implements ConditionalElementListener {
 
                     // "wrap" the Position inside each element
                     // moving the elements from contentList to returnList
-                    returnedList = new LinkedList();
+                    returnedList = new LinkedList<>();
                     wrapPositionElements(contentList, returnList);
 
                     return returnList;
@@ -343,7 +343,7 @@ implements ConditionalElementListener {
                             setFinished(true);
                         }
 
-                        returnedList = new LinkedList();
+                        returnedList = new LinkedList<>();
                         wrapPositionElements(contentList, returnList);
 
                         return returnList;
@@ -356,7 +356,7 @@ implements ConditionalElementListener {
                 prevLM = curLM;
             }
 
-            returnedList = new LinkedList();
+            returnedList = new LinkedList<>();
             wrapPositionElements(contentList, returnList);
 
         } else {
@@ -425,8 +425,8 @@ implements ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
-            final int alignment, final Stack lmStack,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
+            final int alignment, final Stack<LayoutManager> lmStack,
             final Position restartPosition, final LayoutManager restartAtLM) {
         resetSpaces();
         if (isAbsoluteOrFixed()) {
@@ -488,9 +488,9 @@ implements ConditionalElementListener {
 
         final MinOptMax stackLimit = MinOptMax.getInstance(this.relDims.bpd);
 
-        List returnedList;
-        final List contentList = new LinkedList();
-        final List returnList = new LinkedList();
+        List<ListElement> returnedList;
+        final List<ListElement> contentList = new LinkedList<>();
+        final List<ListElement> returnList = new LinkedList<>();
 
         if (!this.breakBeforeServed) {
             this.breakBeforeServed = true;
@@ -562,8 +562,7 @@ implements ConditionalElementListener {
                         .getKeepWithPreviousPending());
                 childLC.clearKeepWithPreviousPending();
             }
-            if (returnedList.size() == 1
-                    && ((ListElement) returnedList.get(0)).isForcedBreak()) {
+            if (returnedList.size() == 1 && returnedList.get(0).isForcedBreak()) {
                 // a descendant of this block has break-before
                 /*
                  * if (returnList.size() == 0) { // the first child (or its
@@ -575,7 +574,7 @@ implements ConditionalElementListener {
 
                 // "wrap" the Position inside each element
                 // moving the elements from contentList to returnList
-                returnedList = new LinkedList();
+                returnedList = new LinkedList<>();
                 wrapPositionElements(contentList, returnList);
 
                 return returnList;
@@ -587,8 +586,7 @@ implements ConditionalElementListener {
                 }
                 contentList.addAll(returnedList);
                 if (!returnedList.isEmpty()) {
-                    if (((ListElement) ListUtil.getLast(returnedList))
-                            .isForcedBreak()) {
+                    if (ListUtil.getLast(returnedList).isForcedBreak()) {
                         // a descendant of this block has break-after
                         if (curLM.isFinished()) {
                             // there is no other content in this block;
@@ -597,7 +595,7 @@ implements ConditionalElementListener {
                             setFinished(true);
                         }
 
-                        returnedList = new LinkedList();
+                        returnedList = new LinkedList<>();
                         wrapPositionElements(contentList, returnList);
 
                         return returnList;
@@ -634,7 +632,7 @@ implements ConditionalElementListener {
                     childLC.clearKeepWithPreviousPending();
                 }
                 if (returnedList.size() == 1
-                        && ((ListElement) returnedList.get(0)).isForcedBreak()) {
+                        && returnedList.get(0).isForcedBreak()) {
                     // a descendant of this block has break-before
                     /*
                      * if (returnList.size() == 0) { // the first child (or its
@@ -646,7 +644,7 @@ implements ConditionalElementListener {
 
                     // "wrap" the Position inside each element
                     // moving the elements from contentList to returnList
-                    returnedList = new LinkedList();
+                    returnedList = new LinkedList<>();
                     wrapPositionElements(contentList, returnList);
 
                     return returnList;
@@ -662,8 +660,7 @@ implements ConditionalElementListener {
                         // empty blocks)
                         continue;
                     }
-                    if (((ListElement) ListUtil.getLast(returnedList))
-                            .isForcedBreak()) {
+                    if (ListUtil.getLast(returnedList).isForcedBreak()) {
                         // a descendant of this block has break-after
                         if (curLM.isFinished()) {
                             // there is no other content in this block;
@@ -672,7 +669,7 @@ implements ConditionalElementListener {
                             setFinished(true);
                         }
 
-                        returnedList = new LinkedList();
+                        returnedList = new LinkedList<>();
                         wrapPositionElements(contentList, returnList);
 
                         return returnList;
@@ -685,7 +682,7 @@ implements ConditionalElementListener {
                 prevLM = curLM;
             }
 
-            returnedList = new LinkedList();
+            returnedList = new LinkedList<>();
             wrapPositionElements(contentList, returnList);
 
         } else {
@@ -711,8 +708,8 @@ implements ConditionalElementListener {
         return true;
     }
 
-    private List getNextKnuthElementsAbsolute(final LayoutContext context,
-            final int alignment) {
+    private List<ListElement> getNextKnuthElementsAbsolute(
+            final LayoutContext context, final int alignment) {
         this.autoHeight = false;
 
         final boolean bpDirectionChanges = blockProgressionDirectionChanges();
@@ -863,7 +860,7 @@ implements ConditionalElementListener {
             }
             updateRelDims(0, 0, false);
         }
-        final List returnList = new LinkedList();
+        final List<ListElement> returnList = new LinkedList<>();
         if (!breaker.isEmpty()) {
             final Position bcPosition = new BlockContainerPosition(this,
                     breaker);
@@ -929,7 +926,7 @@ implements ConditionalElementListener {
 
         /** {@inheritDoc} */
         @Override
-        protected void observeElementList(final List elementList) {
+        protected void observeElementList(final List<ListElement> elementList) {
             ElementListObserver.observe(elementList, "block-container",
                     this.bclm.getBlockContainerFO().getId());
         }
@@ -949,8 +946,8 @@ implements ConditionalElementListener {
         }
 
         public int getDifferenceOfFirstPart() {
-            final PageBreakPosition pbp = (PageBreakPosition) this.deferredAlg
-                    .getPageBreaks().getFirst();
+            final PageBreakPosition pbp = this.deferredAlg.getPageBreaks()
+                    .getFirst();
             return pbp.difference;
         }
 
@@ -958,7 +955,7 @@ implements ConditionalElementListener {
             return !isEmpty()
                     && (this.deferredAlg.getPageBreaks().size() > 1 || this.deferredAlg.totalWidth
                             - this.deferredAlg.totalShrink > this.deferredAlg
-                            .getLineWidth());
+                                .getLineWidth());
         }
 
         public int getOverflowAmount() {
@@ -980,10 +977,10 @@ implements ConditionalElementListener {
         }
 
         @Override
-        protected List getNextKnuthElements(final LayoutContext context,
-                final int alignment) {
+        protected List<ListElement> getNextKnuthElements(
+                final LayoutContext context, final int alignment) {
             LayoutManager curLM; // currently active LM
-            final List returnList = new LinkedList();
+            final List<ListElement> returnList = new LinkedList<>();
 
             while ((curLM = getChildLM()) != null) {
                 final LayoutContext childLC = new LayoutContext(0);
@@ -991,7 +988,7 @@ implements ConditionalElementListener {
                 childLC.setRefIPD(context.getRefIPD());
                 childLC.setWritingMode(getBlockContainerFO().getWritingMode());
 
-                List returnedList = null;
+                List<ListElement> returnedList = null;
                 if (!curLM.isFinished()) {
                     returnedList = curLM.getNextKnuthElements(childLC,
                             alignment);
@@ -1103,7 +1100,7 @@ implements ConditionalElementListener {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final List positionList = new LinkedList();
+        final List<Position> positionList = new LinkedList<>();
         Position pos;
         boolean bSpaceBefore = false;
         boolean bSpaceAfter = false;
@@ -1180,7 +1177,7 @@ implements ConditionalElementListener {
                 // // the last item inside positionList is a Position;
                 // // this means that the paragraph has been split
                 // // between consecutive pages
-                final List splitList = new LinkedList();
+                final List<KnuthElement> splitList = new LinkedList<>();
                 int splitLength = 0;
                 final int iFirst = ((MappingPosition) positionList.get(0))
                         .getFirstIndex();
@@ -1188,7 +1185,7 @@ implements ConditionalElementListener {
                         .getLast(positionList)).getLastIndex();
                 // copy from storedList to splitList all the elements from
                 // iFirst to iLast
-                final ListIterator storedListIterator = this.storedList
+                final ListIterator<ListElement> storedListIterator = this.storedList
                         .listIterator(iFirst);
                 while (storedListIterator.nextIndex() <= iLast) {
                     final KnuthElement element = (KnuthElement) storedListIterator
@@ -1215,7 +1212,7 @@ implements ConditionalElementListener {
                             this).getSpace();
                     this.foBlockSpaceAfter = new SpaceVal(getBlockContainerFO()
                             .getCommonMarginBlock().spaceAfter, this)
-                    .getSpace();
+                            .getSpace();
                     this.adjustedSpaceBefore = (neededUnits(splitLength
                             + this.foBlockSpaceBefore.getMin()
                             + this.foBlockSpaceAfter.getMin())
@@ -1345,7 +1342,7 @@ implements ConditionalElementListener {
             // Set up dimensions
             // Must get dimensions from parent area
             /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.referenceArea);
+                    .getParentArea(this.referenceArea);
             // int referenceIPD = parentArea.getIPD();
             this.referenceArea.setIPD(this.relDims.ipd);
             // Get reference IPD from parentArea

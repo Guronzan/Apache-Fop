@@ -72,8 +72,7 @@ final class TextAttributesConverter {
      * @param props
      *            list of FO properites, which are to be converted
      */
-    public static RtfAttributes convertAttributes(final Block fobj)
-            throws FOPException {
+    public static RtfAttributes convertAttributes(final Block fobj) {
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrFont(fobj.getCommonFont(), attrib);
         attrFontColor(fobj.getColor(), attrib);
@@ -94,7 +93,7 @@ final class TextAttributesConverter {
      *            list of FO properites, which are to be converted
      */
     public static RtfAttributes convertBlockContainerAttributes(
-            final BlockContainer fobj) throws FOPException {
+            final BlockContainer fobj) {
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrBackgroundColor(fobj.getCommonBorderPaddingBackground(), attrib);
         attrBlockMargin(fobj.getCommonMarginBlock(), attrib);
@@ -110,8 +109,7 @@ final class TextAttributesConverter {
      * @param fobj
      *            FObj whose properties are to be converted
      */
-    public static RtfAttributes convertCharacterAttributes(final FOText fobj)
-            throws FOPException {
+    public static RtfAttributes convertCharacterAttributes(final FOText fobj) {
 
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrFont(fobj.getCommonFont(), attrib);
@@ -127,8 +125,7 @@ final class TextAttributesConverter {
      * @param fobj
      *            FObj whose properties are to be converted
      */
-    public static RtfAttributes convertCharacterAttributes(final PageNumber fobj)
-            throws FOPException {
+    public static RtfAttributes convertCharacterAttributes(final PageNumber fobj) {
 
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrFont(fobj.getCommonFont(), attrib);
@@ -143,8 +140,7 @@ final class TextAttributesConverter {
      * @param fobj
      *            FObj whose properties are to be converted
      */
-    public static RtfAttributes convertCharacterAttributes(final Inline fobj)
-            throws FOPException {
+    public static RtfAttributes convertCharacterAttributes(final Inline fobj) {
 
         final FOPRtfAttributes attrib = new FOPRtfAttributes();
         attrFont(fobj.getCommonFont(), attrib);

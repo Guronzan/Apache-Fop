@@ -63,22 +63,22 @@ public class TraitSetter {
         iBP = bpProps.getPadding(CommonBorderPaddingBackground.START,
                 bNotFirst, context);
         if (iBP > 0) {
-            area.addTrait(Trait.PADDING_START, (iBP));
+            area.addTrait(Trait.PADDING_START, iBP);
         }
         iBP = bpProps.getPadding(CommonBorderPaddingBackground.END, bNotLast,
                 context);
         if (iBP > 0) {
-            area.addTrait(Trait.PADDING_END, (iBP));
+            area.addTrait(Trait.PADDING_END, iBP);
         }
         iBP = bpProps.getPadding(CommonBorderPaddingBackground.BEFORE, false,
                 context);
         if (iBP > 0) {
-            area.addTrait(Trait.PADDING_BEFORE, (iBP));
+            area.addTrait(Trait.PADDING_BEFORE, iBP);
         }
         iBP = bpProps.getPadding(CommonBorderPaddingBackground.AFTER, false,
                 context);
         if (iBP > 0) {
-            area.addTrait(Trait.PADDING_AFTER, (iBP));
+            area.addTrait(Trait.PADDING_AFTER, iBP);
         }
 
         addBorderTrait(area, bpProps, bNotFirst,
@@ -111,7 +111,7 @@ public class TraitSetter {
     private static void addBorderTrait(final Area area,
             final CommonBorderPaddingBackground bpProps,
             final boolean bDiscard, final int iSide, final int mode,
-            final Object oTrait) {
+            final Integer oTrait) {
         final int iBP = bpProps.getBorderWidth(iSide, bDiscard);
         if (iBP > 0) {
             area.addTrait(
@@ -276,25 +276,25 @@ public class TraitSetter {
         int padding = bordProps.getPadding(
                 CommonBorderPaddingBackground.BEFORE, discardBefore, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_BEFORE, new java.lang.Integer(padding));
+            area.addTrait(Trait.PADDING_BEFORE, new Integer(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.AFTER,
                 discardAfter, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_AFTER, new java.lang.Integer(padding));
+            area.addTrait(Trait.PADDING_AFTER, new Integer(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.START,
                 discardStart, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_START, new java.lang.Integer(padding));
+            area.addTrait(Trait.PADDING_START, new Integer(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.END,
                 discardEnd, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_END, new java.lang.Integer(padding));
+            area.addTrait(Trait.PADDING_END, new Integer(padding));
         }
 
     }
@@ -532,22 +532,22 @@ public class TraitSetter {
             final CommonBorderPaddingBackground bpProps, final int startIndent,
             final int endIndent, final PercentBaseContext context) {
         if (startIndent != 0) {
-            area.addTrait(Trait.START_INDENT, (startIndent));
+            area.addTrait(Trait.START_INDENT, startIndent);
         }
 
         final int spaceStart = startIndent - bpProps.getBorderStartWidth(false)
                 - bpProps.getPaddingStart(false, context);
         if (spaceStart != 0) {
-            area.addTrait(Trait.SPACE_START, (spaceStart));
+            area.addTrait(Trait.SPACE_START, spaceStart);
         }
 
         if (endIndent != 0) {
-            area.addTrait(Trait.END_INDENT, (endIndent));
+            area.addTrait(Trait.END_INDENT, endIndent);
         }
         final int spaceEnd = endIndent - bpProps.getBorderEndWidth(false)
                 - bpProps.getPaddingEnd(false, context);
         if (spaceEnd != 0) {
-            area.addTrait(Trait.SPACE_END, (spaceEnd));
+            area.addTrait(Trait.SPACE_END, spaceEnd);
         }
     }
 
@@ -621,7 +621,7 @@ public class TraitSetter {
             final Integer spaceTrait, final MinOptMax space, final double adjust) {
         final int effectiveSpace = getEffectiveSpace(adjust, space);
         if (effectiveSpace != 0) {
-            area.addTrait(spaceTrait, (effectiveSpace));
+            area.addTrait(spaceTrait, effectiveSpace);
         }
     }
 
@@ -654,7 +654,7 @@ public class TraitSetter {
      */
     public static void addFontTraits(final Area area, final Font font) {
         area.addTrait(Trait.FONT, font.getFontTriplet());
-        area.addTrait(Trait.FONT_SIZE, (font.getFontSize()));
+        area.addTrait(Trait.FONT_SIZE, font.getFontSize());
     }
 
     /**

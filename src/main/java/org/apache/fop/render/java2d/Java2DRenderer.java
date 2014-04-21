@@ -35,12 +35,10 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
-import java.awt.print.PrinterException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -51,11 +49,11 @@ import org.apache.fop.ResourceEventProducer;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.FopFactoryConfigurator;
+import org.apache.fop.area.Area;
 import org.apache.fop.area.CTM;
 import org.apache.fop.area.PageViewport;
 import org.apache.fop.area.Trait;
 import org.apache.fop.area.inline.Image;
-import org.apache.fop.area.inline.InlineArea;
 import org.apache.fop.area.inline.Leader;
 import org.apache.fop.area.inline.SpaceArea;
 import org.apache.fop.area.inline.TextArea;
@@ -83,6 +81,7 @@ import org.apache.xmlgraphics.image.loader.impl.ImageGraphics2D;
 import org.apache.xmlgraphics.image.loader.impl.ImageRendered;
 import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * The <code>Java2DRenderer</code> class provides the abstract technical
@@ -110,7 +109,7 @@ import org.apache.xmlgraphics.image.loader.util.ImageUtil;
  */
 @Slf4j
 public abstract class Java2DRenderer extends
-AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
+        AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
 
     /**
      * Rendering Options key for the controlling the transparent page background
@@ -193,7 +192,7 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
                 new InstalledFontCollection(graphics2D),
                 new ConfiguredFontCollection(getFontResolver(), getFontList()) };
         this.userAgent.getFactory().getFontManager()
-        .setup(getFontInfo(), fontCollections);
+                .setup(getFontInfo(), fontCollections);
     }
 
     /** {@inheritDoc} */
@@ -226,7 +225,7 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @throws IOException
      */
     @Override
@@ -517,9 +516,9 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
 
     /** {@inheritDoc} */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<Java2DGraphicsState> breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
-        final List breakOutList = new ArrayList<>();
+        final List<Java2DGraphicsState> breakOutList = new ArrayList<>();
         while (!this.stateStack.isEmpty()) {
             breakOutList.add(0, this.state);
             // We only pop, we don't dispose, because we can use the instances
@@ -831,9 +830,7 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
 
         float textCursor = 0;
 
-        final Iterator iter = text.getChildAreas().iterator();
-        while (iter.hasNext()) {
-            final InlineArea child = (InlineArea) iter.next();
+        for (final Area child : text.getChildAreas()) {
             if (child instanceof WordArea) {
                 final WordArea word = (WordArea) child;
                 final String s = word.getWord();
@@ -869,7 +866,7 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
                         + 2
                         * text.getTextLetterSpaceAdjust() : 0;
 
-                textCursor += (font.getCharWidth(sp) + tws) / 1000f;
+                        textCursor += (font.getCharWidth(sp) + tws) / 1000f;
             } else {
                 throw new IllegalStateException("Unsupported child element: "
                         + child);
@@ -992,13 +989,13 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
     }
 
     private static final ImageFlavor[] FLAVOURS = new ImageFlavor[] {
-        ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
-        ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
+            ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
+            ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
 
     /** {@inheritDoc} */
     @Override
     protected void drawImage(String uri, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
 
         final int x = this.currentIPPosition + (int) Math.round(pos.getX());
         final int y = this.currentBPPosition + (int) Math.round(pos.getY());
@@ -1011,7 +1008,8 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
             final ImageSessionContext sessionContext = getUserAgent()
                     .getImageSessionContext();
             info = manager.getImageInfo(uri, sessionContext);
-            final Map hints = ImageUtil.getDefaultHints(sessionContext);
+            final Map<Object, Object> hints = ImageUtil
+                    .getDefaultHints(sessionContext);
             final org.apache.xmlgraphics.image.loader.Image img = manager
                     .getImage(info, FLAVOURS, hints, sessionContext);
             if (img instanceof ImageGraphics2D) {
@@ -1062,7 +1060,8 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
     /** {@inheritDoc} */
     @Override
     protected RendererContext createRendererContext(final int x, final int y,
-            final int width, final int height, final Map foreignAttributes) {
+            final int width, final int height,
+            final Map<QName, String> foreignAttributes) {
         final RendererContext context = super.createRendererContext(x, y,
                 width, height, foreignAttributes);
         context.setProperty(Java2DRendererContextConstants.JAVA2D_STATE,
@@ -1073,7 +1072,7 @@ AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
     /** {@inheritDoc} */
     @Override
     public int print(final Graphics g, final PageFormat pageFormat,
-            final int pageIndex) throws PrinterException {
+            final int pageIndex) {
         if (pageIndex >= getNumberOfPages()) {
             return NO_SUCH_PAGE;
         }

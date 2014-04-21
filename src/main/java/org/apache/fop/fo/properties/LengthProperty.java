@@ -29,8 +29,7 @@ import org.apache.xmlgraphics.util.UnitConv;
 /**
  * Superclass for properties wrapping a Length value.
  */
-public abstract class LengthProperty extends Property implements Length,
-Numeric {
+public abstract class LengthProperty extends Property implements Length {
 
     /**
      * Inner class for making instances of LengthProperty
@@ -51,7 +50,7 @@ Numeric {
         @Override
         public Property convertProperty(final Property p,
                 final PropertyList propertyList, final FObj fo)
-                        throws PropertyException {
+                throws PropertyException {
             if (p instanceof EnumProperty) {
                 return new EnumLength(p);
             }
@@ -64,7 +63,7 @@ Numeric {
                         .getSourceResolution();
                 return FixedLength.getInstance(
                         p.getNumeric().getNumericValue(), "px", UnitConv.IN2PT
-                        / resolution);
+                                / resolution);
             }
             final Length val = p.getLength();
             if (val != null) {

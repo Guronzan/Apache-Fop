@@ -25,14 +25,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.fo.Constants;
+import org.apache.fop.fo.flow.Marker;
 import org.apache.fop.fo.pagination.SimplePageMaster;
 
 /**
@@ -44,7 +45,7 @@ import org.apache.fop.fo.pagination.SimplePageMaster;
  */
 @Slf4j
 public class PageViewport extends AreaTreeObject implements Resolvable,
-Cloneable {
+        Cloneable {
 
     private Page page;
     private final Rectangle viewArea;
@@ -67,22 +68,22 @@ Cloneable {
     // private Map idReferences = null;
 
     // set of IDs that appear first (or exclusively) on this page:
-    private final Set<String> idFirsts = new java.util.HashSet<String>();
+    private final Set<String> idFirsts = new java.util.HashSet<>();
 
     // this keeps a list of currently unresolved areas or extensions
     // once an idref is resolved it is removed
     // when this is empty the page can be rendered
-    private Map<String, List> unresolvedIDRefs = new java.util.HashMap<String, List>();
+    private Map<String, List<Resolvable>> unresolvedIDRefs = new java.util.HashMap<>();
 
-    private Map<String, List> pendingResolved = null;
+    private Map<String, List<PageViewport>> pendingResolved = null;
 
     // hashmap of markers for this page
     // start and end are added by the fo that contains the markers
-    private Map markerFirstStart = null;
-    private Map markerLastStart = null;
-    private Map markerFirstAny = null;
-    private Map markerLastEnd = null;
-    private Map markerLastAny = null;
+    private Map<String, Marker> markerFirstStart = null;
+    private Map<String, Marker> markerLastStart = null;
+    private Map<String, Marker> markerFirstAny = null;
+    private Map<String, Marker> markerLastEnd = null;
+    private Map<String, Marker> markerLastAny = null;
 
     /**
      * Create a page viewport.
@@ -299,11 +300,11 @@ Cloneable {
      */
     public void addUnresolvedIDRef(final String idref, final Resolvable res) {
         if (this.unresolvedIDRefs == null) {
-            this.unresolvedIDRefs = new HashMap<String, List>();
+            this.unresolvedIDRefs = new HashMap<>();
         }
         List<Resolvable> list = this.unresolvedIDRefs.get(idref);
         if (list == null) {
-            list = new ArrayList<Resolvable>();
+            list = new ArrayList<>();
             this.unresolvedIDRefs.put(idref, list);
         }
         list.add(res);
@@ -335,18 +336,18 @@ Cloneable {
      * {@inheritDoc}
      */
     @Override
-    public void resolveIDRef(final String id, final List pages) {
+    public void resolveIDRef(final String id, final List<PageViewport> pages) {
         if (this.page == null) {
             if (this.pendingResolved == null) {
-                this.pendingResolved = new HashMap<String, List>();
+                this.pendingResolved = new HashMap<>();
             }
             this.pendingResolved.put(id, pages);
         } else {
             if (this.unresolvedIDRefs != null) {
-                final List todo = this.unresolvedIDRefs.get(id);
+                final List<Resolvable> todo = this.unresolvedIDRefs.get(id);
                 if (todo != null) {
                     for (int count = 0; count < todo.size(); count++) {
-                        final Resolvable res = (Resolvable) todo.get(count);
+                        final Resolvable res = todo.get(count);
                         res.resolveIDRef(id, pages);
                     }
                 }
@@ -381,8 +382,8 @@ Cloneable {
      * @param islast
      *            if the area being added has is-last trait
      */
-    public void addMarkers(final Map marks, final boolean starting,
-            final boolean isfirst, final boolean islast) {
+    public void addMarkers(final Map<String, Marker> marks,
+            final boolean starting, final boolean isfirst, final boolean islast) {
 
         if (marks == null) {
             return;
@@ -397,24 +398,24 @@ Cloneable {
         if (starting) {
             if (isfirst) {
                 if (this.markerFirstStart == null) {
-                    this.markerFirstStart = new HashMap();
+                    this.markerFirstStart = new HashMap<>();
                 }
                 if (this.markerFirstAny == null) {
-                    this.markerFirstAny = new HashMap();
+                    this.markerFirstAny = new HashMap<>();
                 }
                 // first on page: only put in new values, leave current
-                for (final Iterator iter = marks.keySet().iterator(); iter
-                        .hasNext();) {
-                    final Object key = iter.next();
+                for (final Entry<String, Marker> entry : marks.entrySet()) {
+                    final String key = entry.getKey();
+                    final Marker value = entry.getValue();
                     if (!this.markerFirstStart.containsKey(key)) {
-                        this.markerFirstStart.put(key, marks.get(key));
+                        this.markerFirstStart.put(key, value);
                         if (log.isTraceEnabled()) {
                             log.trace("page " + this.pageNumberString + ": "
                                     + "Adding marker " + key + " to FirstStart");
                         }
                     }
                     if (!this.markerFirstAny.containsKey(key)) {
-                        this.markerFirstAny.put(key, marks.get(key));
+                        this.markerFirstAny.put(key, value);
                         if (log.isTraceEnabled()) {
                             log.trace("page " + this.pageNumberString + ": "
                                     + "Adding marker " + key + " to FirstAny");
@@ -422,7 +423,7 @@ Cloneable {
                     }
                 }
                 if (this.markerLastStart == null) {
-                    this.markerLastStart = new HashMap();
+                    this.markerLastStart = new HashMap<>();
                 }
                 // last on page: replace all
                 this.markerLastStart.putAll(marks);
@@ -432,14 +433,14 @@ Cloneable {
                 }
             } else {
                 if (this.markerFirstAny == null) {
-                    this.markerFirstAny = new HashMap();
+                    this.markerFirstAny = new HashMap<>();
                 }
                 // first on page: only put in new values, leave current
-                for (final Iterator iter = marks.keySet().iterator(); iter
-                        .hasNext();) {
-                    final Object key = iter.next();
+                for (final Entry<String, Marker> entry : marks.entrySet()) {
+                    final String key = entry.getKey();
+                    final Marker value = entry.getValue();
                     if (!this.markerFirstAny.containsKey(key)) {
-                        this.markerFirstAny.put(key, marks.get(key));
+                        this.markerFirstAny.put(key, value);
                         if (log.isTraceEnabled()) {
                             log.trace("page " + this.pageNumberString + ": "
                                     + "Adding marker " + key + " to FirstAny");
@@ -451,7 +452,7 @@ Cloneable {
             // at the end of the area, register is-last and any areas
             if (islast) {
                 if (this.markerLastEnd == null) {
-                    this.markerLastEnd = new HashMap();
+                    this.markerLastEnd = new HashMap<>();
                 }
                 // last on page: replace all
                 this.markerLastEnd.putAll(marks);
@@ -461,7 +462,7 @@ Cloneable {
                 }
             }
             if (this.markerLastAny == null) {
-                this.markerLastAny = new HashMap();
+                this.markerLastAny = new HashMap<>();
             }
             // last on page: replace all
             this.markerLastAny.putAll(marks);
@@ -482,8 +483,8 @@ Cloneable {
      *            the position to retrieve
      * @return Object the marker found or null
      */
-    public Object getMarker(final String name, final int pos) {
-        Object mark = null;
+    public Marker getMarker(final String name, final int pos) {
+        Marker mark = null;
         String posName = null;
         switch (pos) {
         case Constants.EN_FSWP:
@@ -535,11 +536,11 @@ Cloneable {
     /** Dumps the current marker data to the logger. */
     public void dumpMarkers() {
         if (log.isTraceEnabled()) {
-            log.trace("FirstAny: " + this.markerFirstAny);
-            log.trace("FirstStart: " + this.markerFirstStart);
-            log.trace("LastAny: " + this.markerLastAny);
-            log.trace("LastEnd: " + this.markerLastEnd);
-            log.trace("LastStart: " + this.markerLastStart);
+            log.trace("FirstAny: {}", this.markerFirstAny);
+            log.trace("FirstStart: {}", this.markerFirstStart);
+            log.trace("LastAny: {}", this.markerLastAny);
+            log.trace("LastEnd: {}", this.markerLastEnd);
+            log.trace("LastStart: {}", this.markerLastStart);
         }
     }
 
@@ -573,7 +574,7 @@ Cloneable {
      *             if an I/O error occurred while loading the page
      */
     public void loadPage(final ObjectInputStream in) throws IOException,
-    ClassNotFoundException {
+            ClassNotFoundException {
         this.page = (Page) in.readObject();
         this.unresolvedIDRefs = this.page.getUnresolvedReferences();
         if (this.unresolvedIDRefs != null && this.pendingResolved != null) {

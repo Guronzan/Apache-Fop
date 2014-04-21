@@ -55,7 +55,7 @@ public class MultiByteFont extends CIDFont {
             uniqueCounter++;
             if (uniqueCounter > 99999 || uniqueCounter < 0) {
                 uniqueCounter = 0; // We need maximum 5 character then we start
-                                   // again
+                // again
             }
         }
         final DecimalFormat counterFormat = new DecimalFormat("00000");
@@ -105,7 +105,7 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Sets the CIDType.
-     * 
+     *
      * @param cidType
      *            The cidType to set
      */
@@ -167,7 +167,7 @@ public class MultiByteFont extends CIDFont {
     /**
      * Returns the glyph index for a Unicode character. The method returns 0 if
      * there's no such glyph in the character map.
-     * 
+     *
      * @param c
      *            the Unicode character index
      * @return the glyph index (or 0 if the glyph is not available)
@@ -211,7 +211,7 @@ public class MultiByteFont extends CIDFont {
     /**
      * Sets the array of BFEntry instances which constitutes the Unicode to
      * glyph index map for a font. ("BF" means "base font")
-     * 
+     *
      * @param entries
      *            the Unicode to glyph index map
      */
@@ -221,7 +221,7 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Sets the defaultWidth.
-     * 
+     *
      * @param defaultWidth
      *            The defaultWidth to set
      */
@@ -231,7 +231,7 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Returns the TrueType Collection Name.
-     * 
+     *
      * @return the TrueType Collection Name
      */
     public String getTTCName() {
@@ -240,7 +240,7 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Sets the the TrueType Collection Name.
-     * 
+     *
      * @param ttcName
      *            the TrueType Collection Name
      */
@@ -250,7 +250,7 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Sets the width array.
-     * 
+     *
      * @param wds
      *            array of widths.
      */
@@ -260,10 +260,10 @@ public class MultiByteFont extends CIDFont {
 
     /**
      * Returns a Map of used Glyphs.
-     * 
+     *
      * @return Map Map of used Glyphs
      */
-    public Map getUsedGlyphs() {
+    public Map<Integer, Integer> getUsedGlyphs() {
         return this.subset.getSubsetGlyphs();
     }
 

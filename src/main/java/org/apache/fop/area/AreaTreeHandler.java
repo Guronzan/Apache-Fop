@@ -98,7 +98,7 @@ public class AreaTreeHandler extends FOEventHandler {
      */
     public AreaTreeHandler(final FOUserAgent userAgent,
             final String outputFormat, final OutputStream stream)
-                    throws FOPException {
+            throws FOPException {
         super(userAgent);
 
         setupModel(userAgent, outputFormat, stream);
@@ -130,7 +130,7 @@ public class AreaTreeHandler extends FOEventHandler {
      */
     protected void setupModel(final FOUserAgent userAgent,
             final String outputFormat, final OutputStream stream)
-                    throws FOPException {
+            throws FOPException {
         if (userAgent.isConserveMemoryPolicyEnabled()) {
             this.model = new CachedRenderPagesModel(userAgent, outputFormat,
                     this.fontInfo, stream);
@@ -310,11 +310,11 @@ public class AreaTreeHandler extends FOEventHandler {
         finishPrevPageSequence(null);
         // process fox:destination elements
         if (this.rootFObj != null) {
-            final List destinationList = this.rootFObj.getDestinationList();
+            final List<Destination> destinationList = this.rootFObj
+                    .getDestinationList();
             if (destinationList != null) {
-                while (destinationList.size() > 0) {
-                    final Destination destination = (Destination) destinationList
-                            .remove(0);
+                while (!destinationList.isEmpty()) {
+                    final Destination destination = destinationList.remove(0);
                     final DestinationData destinationData = new DestinationData(
                             destination);
                     addOffDocumentItem(destinationData);
@@ -352,7 +352,7 @@ public class AreaTreeHandler extends FOEventHandler {
             final Resolvable res = (Resolvable) odi;
             final String[] ids = res.getIDRefs();
             for (final String id : ids) {
-                final List pageVPList = this.idTracker
+                final List<PageViewport> pageVPList = this.idTracker
                         .getPageViewportsContainingID(id);
                 if (pageVPList != null) {
                     res.resolveIDRef(id, pageVPList);
@@ -360,7 +360,7 @@ public class AreaTreeHandler extends FOEventHandler {
                     final AreaEventProducer eventProducer = AreaEventProducer.Provider
                             .get(getUserAgent().getEventBroadcaster());
                     eventProducer
-                    .unresolvedIDReference(this, odi.getName(), id);
+                            .unresolvedIDReference(this, odi.getName(), id);
                     this.idTracker.addUnresolvedIDRef(id, res);
                 }
             }

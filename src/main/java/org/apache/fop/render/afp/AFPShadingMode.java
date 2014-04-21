@@ -19,7 +19,6 @@
 
 package org.apache.fop.render.afp;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /** Enumeration class for the AFP shading mode. */
@@ -36,7 +35,7 @@ public final class AFPShadingMode implements Serializable {
 
     /**
      * Constructor to add a new named item.
-     * 
+     *
      * @param name
      *            Name of the item.
      */
@@ -51,7 +50,7 @@ public final class AFPShadingMode implements Serializable {
 
     /**
      * Returns the enumeration/singleton object based on its name.
-     * 
+     *
      * @param name
      *            the name of the enumeration value
      * @return the enumeration object
@@ -67,7 +66,7 @@ public final class AFPShadingMode implements Serializable {
         }
     }
 
-    private Object readResolve() throws ObjectStreamException {
+    private Object readResolve() {
         return valueOf(getName());
     }
 

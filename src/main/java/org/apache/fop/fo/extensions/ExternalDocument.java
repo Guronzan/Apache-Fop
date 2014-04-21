@@ -89,7 +89,7 @@ GraphicsProperties {
     }
 
     @Override
-    protected void startOfNode() throws FOPException {
+    protected void startOfNode() throws ValidationException {
         super.startOfNode();
         getFOEventHandler().startExternalDocument(this);
     }

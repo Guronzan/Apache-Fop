@@ -79,7 +79,7 @@ public class EventModelParser {
     private static class Handler extends DefaultHandler {
 
         private final EventModel model;
-        private final Stack<XMLizable> objectStack = new Stack<XMLizable>();
+        private final Stack<XMLizable> objectStack = new Stack<>();
 
         public Handler(final EventModel model) {
             this.model = model;
@@ -89,7 +89,7 @@ public class EventModelParser {
         @Override
         public void startElement(final String uri, final String localName,
                 final String qName, final Attributes attributes)
-                        throws SAXException {
+                throws SAXException {
             try {
                 if ("event-model".equals(localName)) {
                     if (this.objectStack.size() > 0) {

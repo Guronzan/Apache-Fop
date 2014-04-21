@@ -58,7 +58,6 @@ import org.apache.fop.afp.modca.PageObject;
 import org.apache.fop.afp.modca.ResourceObject;
 import org.apache.fop.afp.util.DefaultFOPResourceAccessor;
 import org.apache.fop.afp.util.ResourceAccessor;
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.area.CTM;
 import org.apache.fop.area.OffDocumentExtensionAttachment;
@@ -93,6 +92,7 @@ import org.apache.xmlgraphics.image.loader.ImageManager;
 import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
 import org.apache.xmlgraphics.ps.ImageEncodingHelper;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * This is an implementation of a FOP Renderer that renders areas to AFP.
@@ -215,7 +215,11 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
         super.setUserAgent(agent);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException
+     */
     @Override
     public void startRenderer(final OutputStream outputStream)
             throws IOException {
@@ -375,10 +379,13 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
         return baseTransform;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IOException
+     */
     @Override
-    public void renderPage(final PageViewport pageViewport) throws IOException,
-            FOPException {
+    public void renderPage(final PageViewport pageViewport) throws IOException {
         this.paintingState.clear();
 
         final Rectangle2D bounds = pageViewport.getViewArea();
@@ -454,7 +461,8 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
     /** {@inheritDoc} */
     @Override
     protected RendererContext createRendererContext(final int x, final int y,
-            final int width, final int height, final Map foreignAttributes) {
+            final int width, final int height,
+            final Map<QName, String> foreignAttributes) {
         RendererContext context;
         context = super.createRendererContext(x, y, width, height,
                 foreignAttributes);
@@ -481,7 +489,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
     /** {@inheritDoc} */
     @Override
     public void drawImage(String uri, final Rectangle2D pos,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         uri = URISpecification.getURL(uri);
         this.paintingState.setImageUri(uri);
 
@@ -512,7 +520,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
                 info = manager.getImageInfo(uri, sessionContext);
 
                 // Only now fully load/prepare the image
-                final Map<String, Object> hints = ImageUtil
+                final Map<Object, Object> hints = ImageUtil
                         .getDefaultHints(sessionContext);
 
                 final boolean nativeImagesSupported = this.paintingState

@@ -51,7 +51,7 @@ import org.apache.xmlgraphics.image.writer.MultiImageWriter;
  */
 @Slf4j
 public abstract class AbstractBitmapDocumentHandler extends
-AbstractBinaryWritingIFDocumentHandler {
+        AbstractBinaryWritingIFDocumentHandler {
 
     /**
      * Rendering Options key for the controlling the required bitmap size to
@@ -109,7 +109,8 @@ AbstractBinaryWritingIFDocumentHandler {
                 .round(context.getUserAgent().getTargetResolution());
         getSettings().getWriterParams().setResolution(dpi);
 
-        final Map renderingOptions = getUserAgent().getRendererOptions();
+        final Map<String, Object> renderingOptions = getUserAgent()
+                .getRendererOptions();
         setTargetBitmapSize((Dimension) renderingOptions
                 .get(TARGET_BITMAP_SIZE));
     }
@@ -151,7 +152,11 @@ AbstractBinaryWritingIFDocumentHandler {
 
     // ----------------------------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void startDocument() throws IFException {
         super.startDocument();
@@ -179,10 +184,14 @@ AbstractBinaryWritingIFDocumentHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void endDocumentHeader() throws IFException {
+    public void endDocumentHeader() {
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void endDocument() throws IFException {
         try {
@@ -199,28 +208,27 @@ AbstractBinaryWritingIFDocumentHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void startPageSequence(final String id) throws IFException {
+    public void startPageSequence(final String id) {
         // nop
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endPageSequence() throws IFException {
+    public void endPageSequence() {
         // nop
     }
 
     /** {@inheritDoc} */
     @Override
     public void startPage(final int index, final String name,
-            final String pageMasterName, final Dimension size)
-                    throws IFException {
+            final String pageMasterName, final Dimension size) {
         this.pageCount++;
         this.currentPageDimensions = new Dimension(size);
     }
 
     /** {@inheritDoc} */
     @Override
-    public IFPainter startPageContent() throws IFException {
+    public IFPainter startPageContent() {
         int bitmapWidth;
         int bitmapHeight;
         double scale;
@@ -318,7 +326,11 @@ AbstractBinaryWritingIFDocumentHandler {
                 .getBufferedImageType());
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws IFException
+     */
     @Override
     public void endPageContent() throws IFException {
         try {
@@ -332,7 +344,7 @@ AbstractBinaryWritingIFDocumentHandler {
                     break;
                 default:
                     final OutputStream out = this.multiFileUtil
-                            .createOutputStream(this.pageCount - 1);
+                    .createOutputStream(this.pageCount - 1);
                     if (out == null) {
                         final BitmapRendererEventProducer eventProducer = BitmapRendererEventProducer.Provider
                                 .get(getUserAgent().getEventBroadcaster());
@@ -358,14 +370,13 @@ AbstractBinaryWritingIFDocumentHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void endPage() throws IFException {
+    public void endPage() {
         this.currentPageDimensions = null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void handleExtensionObject(final Object extension)
-            throws IFException {
+    public void handleExtensionObject(final Object extension) {
         log.debug("Don't know how to handle extension object. Ignoring: "
                 + extension + " (" + extension.getClass().getName() + ")");
     }

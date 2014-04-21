@@ -22,7 +22,7 @@ package org.apache.fop.render.pdf;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.fop.pdf.PDFAction;
@@ -32,7 +32,6 @@ import org.apache.fop.pdf.PDFGoTo;
 import org.apache.fop.pdf.PDFLink;
 import org.apache.fop.pdf.PDFOutline;
 import org.apache.fop.render.intermediate.IFDocumentNavigationHandler;
-import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.extensions.AbstractAction;
 import org.apache.fop.render.intermediate.extensions.Bookmark;
 import org.apache.fop.render.intermediate.extensions.BookmarkTree;
@@ -47,12 +46,12 @@ import org.apache.fop.render.pdf.PDFDocumentHandler.PageReference;
  * output.
  */
 public class PDFDocumentNavigationHandler implements
-IFDocumentNavigationHandler {
+        IFDocumentNavigationHandler {
 
     private final PDFDocumentHandler documentHandler;
 
-    private final Map incompleteActions = new java.util.HashMap();
-    private final Map completeActions = new java.util.HashMap();
+    private final Map<String, PDFAction> incompleteActions = new HashMap<>();
+    private final Map<String, PDFAction> completeActions = new HashMap<>();
 
     /**
      * Default constructor.
@@ -71,8 +70,7 @@ IFDocumentNavigationHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void renderNamedDestination(final NamedDestination destination)
-            throws IFException {
+    public void renderNamedDestination(final NamedDestination destination) {
         final PDFAction action = getAction(destination.getAction());
         getPDFDoc().getFactory().makeDestination(destination.getName(),
                 action.makeReference());
@@ -80,10 +78,8 @@ IFDocumentNavigationHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void renderBookmarkTree(final BookmarkTree tree) throws IFException {
-        final Iterator iter = tree.getBookmarks().iterator();
-        while (iter.hasNext()) {
-            final Bookmark b = (Bookmark) iter.next();
+    public void renderBookmarkTree(final BookmarkTree tree) {
+        for (final Bookmark b : tree.getBookmarks()) {
             renderBookmark(b, null);
         }
     }
@@ -95,18 +91,16 @@ IFDocumentNavigationHandler {
         final PDFAction action = getAction(bookmark.getAction());
         final String actionRef = action != null ? action.makeReference()
                 .toString() : null;
-                final PDFOutline pdfOutline = getPDFDoc().getFactory().makeOutline(
-                        parent, bookmark.getTitle(), actionRef, bookmark.isShown());
-                final Iterator iter = bookmark.getChildBookmarks().iterator();
-                while (iter.hasNext()) {
-                    final Bookmark b = (Bookmark) iter.next();
-                    renderBookmark(b, pdfOutline);
-                }
+        final PDFOutline pdfOutline = getPDFDoc().getFactory().makeOutline(
+                parent, bookmark.getTitle(), actionRef, bookmark.isShown());
+        for (final Bookmark b : bookmark.getChildBookmarks()) {
+            renderBookmark(b, pdfOutline);
+        }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void renderLink(final Link link) throws IFException {
+    public void renderLink(final Link link) {
         final Rectangle targetRect = link.getTargetRect();
         final int pageHeight = this.documentHandler.currentPageRef
                 .getPageDimension().height;
@@ -124,7 +118,7 @@ IFDocumentNavigationHandler {
             if (this.documentHandler.getUserAgent().isAccessibilityEnabled()
                     && ptr != null && ptr.length() > 0) {
                 this.documentHandler.getLogicalStructureHandler()
-                .addLinkContentItem(pdfLink, ptr);
+                        .addLinkContentItem(pdfLink, ptr);
             }
             this.documentHandler.currentPage.addAnnotation(pdfLink);
         }
@@ -138,11 +132,10 @@ IFDocumentNavigationHandler {
 
     /** {@inheritDoc} */
     @Override
-    public void addResolvedAction(final AbstractAction action)
-            throws IFException {
+    public void addResolvedAction(final AbstractAction action) {
         assert action.isComplete();
-        final PDFAction pdfAction = (PDFAction) this.incompleteActions
-                .remove(action.getID());
+        final PDFAction pdfAction = this.incompleteActions.remove(action
+                .getID());
         if (pdfAction == null) {
             getAction(action);
         } else if (pdfAction instanceof PDFGoTo) {
@@ -159,12 +152,11 @@ IFDocumentNavigationHandler {
         if (action == null) {
             return null;
         }
-        PDFAction pdfAction = (PDFAction) this.completeActions.get(action
-                .getID());
+        PDFAction pdfAction = this.completeActions.get(action.getID());
         if (pdfAction != null) {
             return pdfAction;
         } else if (action instanceof GoToXYAction) {
-            pdfAction = (PDFAction) this.incompleteActions.get(action.getID());
+            pdfAction = this.incompleteActions.get(action.getID());
             if (pdfAction != null) {
                 return pdfAction;
             } else {

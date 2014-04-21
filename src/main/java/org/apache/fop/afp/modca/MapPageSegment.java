@@ -22,6 +22,7 @@ package org.apache.fop.afp.modca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public class MapPageSegment extends AbstractAFPObject {
 
     private Set<String> getPageSegments() {
         if (this.pageSegments == null) {
-            this.pageSegments = new java.util.HashSet<String>();
+            this.pageSegments = new HashSet<>();
         }
         return this.pageSegments;
     }

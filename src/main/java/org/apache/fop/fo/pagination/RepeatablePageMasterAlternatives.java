@@ -20,6 +20,7 @@
 package org.apache.fop.fo.pagination;
 
 // Java
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,7 +52,7 @@ SubSequenceSpecifier {
 
     private int numberConsumed = 0;
 
-    private List conditionalPageMasterRefs;
+    private List<ConditionalPageMasterReference> conditionalPageMasterRefs;
     private boolean hasPagePositionLast = false;
     private boolean hasPagePositionOnly = false;
 
@@ -73,8 +74,8 @@ SubSequenceSpecifier {
 
     /** {@inheritDoc} */
     @Override
-    protected void startOfNode() throws FOPException {
-        this.conditionalPageMasterRefs = new java.util.ArrayList();
+    protected void startOfNode() {
+        this.conditionalPageMasterRefs = new ArrayList<>();
 
         assert this.parent.getName().equals("fo:page-sequence-master"); // Validation
         // by
@@ -139,9 +140,7 @@ SubSequenceSpecifier {
             this.numberConsumed++;
         }
 
-        for (int i = 0; i < this.conditionalPageMasterRefs.size(); ++i) {
-            final ConditionalPageMasterReference cpmr = (ConditionalPageMasterReference) this.conditionalPageMasterRefs
-                    .get(i);
+        for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
             if (cpmr.isValid(isOddPage, isFirstPage, isLastPage, isBlankPage)) {
                 return cpmr.getMasterReference();
             }

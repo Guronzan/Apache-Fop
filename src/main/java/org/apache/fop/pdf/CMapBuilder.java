@@ -54,7 +54,7 @@ public class CMapBuilder {
         writeUseCMap();
     }
 
-    protected void writePreStream() throws IOException {
+    protected void writePreStream() {
         // writer.write("/Type /CMap\n");
         // writer.write(sysInfo.toPDFString());
         // writer.write("/CMapName /" + name + EOL);
@@ -132,6 +132,9 @@ public class CMapBuilder {
         this.writer.write("endcidrange\n");
     }
 
+    /**
+     * @throws IOException
+     */
     protected void writeBFEntries() throws IOException {
         // writer.write("1 beginbfrange\n");
         // writer.write("<0020> <0100> <0000>\n");
