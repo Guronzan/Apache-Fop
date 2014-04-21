@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class PageProvider implements Constants {
     private final int startPageOfPageSequence;
     private int startPageOfCurrentElementList;
     private int startColumnOfCurrentElementList;
-    private final List cachedPages = new java.util.ArrayList();
+    private final List<Page> cachedPages = new ArrayList<>();
 
     private int lastPageIndex = -1;
     private int indexOfCachedLastPage = -1;
@@ -333,7 +334,7 @@ public class PageProvider implements Constants {
             }
             cacheNextPage(index, isBlank, isLastPage);
         }
-        Page page = (Page) this.cachedPages.get(intIndex);
+        Page page = this.cachedPages.get(intIndex);
         boolean replace = false;
         if (page.getPageViewport().isBlank() != isBlank) {
             log.debug("blank condition doesn't match. Replacing PageViewport.");

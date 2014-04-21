@@ -26,7 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +46,7 @@ import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFPainter;
 import org.apache.fop.render.ps.extensions.PSCommentAfter;
 import org.apache.fop.render.ps.extensions.PSCommentBefore;
+import org.apache.fop.render.ps.extensions.PSExtensionAttachment;
 import org.apache.fop.render.ps.extensions.PSSetPageDevice;
 import org.apache.fop.render.ps.extensions.PSSetupCode;
 import org.apache.xmlgraphics.java2d.Dimension2DDouble;
@@ -85,18 +89,18 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     /**
      * Used to temporarily store PSSetupCode instance until they can be written.
      */
-    private List setupCodeList;
+    private List<PSSetupCode> setupCodeList;
 
     /** This is a cache of PSResource instances of all fonts defined */
     private FontResourceCache fontResources;
     /** This is a map of PSResource instances of all forms (key: uri) */
-    private Map formResources;
+    private Map<String, PSResource> formResources;
 
     /** encapsulation of dictionary used in setpagedevice instruction **/
     private PSPageDeviceDictionary pageDeviceDictionary;
 
     /** This is a collection holding all document header comments */
-    private final Collection[] comments = new Collection[3];
+    private final Collection<PSExtensionAttachment>[] comments = new Collection[3];
     private static final int COMMENT_DOCUMENT_HEADER = 0;
     private static final int COMMENT_DOCUMENT_TRAILER = 1;
     private static final int COMMENT_PAGE_TRAILER = 2;
@@ -179,9 +183,9 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
         this.gen.writeDSCComment(DSCConstants.CREATOR,
                 new String[] { getUserAgent().getProducer() });
         this.gen.writeDSCComment(DSCConstants.CREATION_DATE,
-                new Object[] { new java.util.Date() });
-        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL, (
-                this.gen.getPSLevel()));
+                new Object[] { new Date() });
+        this.gen.writeDSCComment(DSCConstants.LANGUAGE_LEVEL,
+                this.gen.getPSLevel());
         this.gen.writeDSCComment(DSCConstants.PAGES,
                 new Object[] { DSCConstants.ATEND });
         this.gen.writeDSCComment(DSCConstants.BBOX, DSCConstants.ATEND);
@@ -238,12 +242,11 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             // Write trailer
             this.gen.writeDSCComment(DSCConstants.TRAILER);
             writeExtensions(COMMENT_DOCUMENT_TRAILER);
-            this.gen.writeDSCComment(DSCConstants.PAGES, (
-                    this.currentPageNumber));
+            this.gen.writeDSCComment(DSCConstants.PAGES, this.currentPageNumber);
             new DSCCommentBoundingBox(this.documentBoundingBox)
-            .generate(this.gen);
+                    .generate(this.gen);
             new DSCCommentHiResBoundingBox(this.documentBoundingBox)
-            .generate(this.gen);
+                    .generate(this.gen);
             this.gen.getResourceTracker().writeResources(false, this.gen);
             this.gen.writeDSCComment(DSCConstants.EOF);
             this.gen.flush();
@@ -314,7 +317,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     @Override
     public void startPage(final int index, final String name,
             final String pageMasterName, final Dimension size)
-                    throws IFException {
+            throws IFException {
         try {
             if (this.currentPageNumber == 0) {
                 // writeHeader();
@@ -326,12 +329,12 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             this.gen.getResourceTracker().notifyResourceUsageOnPage(
                     PSProcSets.STD_PROCSET);
             this.gen.writeDSCComment(DSCConstants.PAGE, new Object[] { name,
-                    (this.currentPageNumber) });
+                    this.currentPageNumber });
 
             final double pageWidth = size.width / 1000.0;
             final double pageHeight = size.height / 1000.0;
             boolean rotate = false;
-            final List pageSizes = new java.util.ArrayList();
+            final List<Long> pageSizes = new ArrayList<>();
             if (this.psUtil.isAutoRotateLandscape() && pageHeight < pageWidth) {
                 rotate = true;
                 pageSizes.add(new Long(Math.round(pageHeight)));
@@ -368,7 +371,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
              * } } } }
              */
 
-            final Integer zero = (0);
+            final Integer zero = 0;
             final Rectangle2D pageBoundingBox = new Rectangle2D.Double();
             if (rotate) {
                 pageBoundingBox.setRect(0, 0, pageHeight, pageWidth);
@@ -377,7 +380,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
                         new Long(Math.round(pageWidth)) });
                 this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                         new Object[] { zero, zero, new Double(pageHeight),
-                        new Double(pageWidth) });
+                                new Double(pageWidth) });
                 this.gen.writeDSCComment(DSCConstants.PAGE_ORIENTATION,
                         "Landscape");
             } else {
@@ -387,7 +390,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
                         new Long(Math.round(pageHeight)) });
                 this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                         new Object[] { zero, zero, new Double(pageWidth),
-                        new Double(pageHeight) });
+                                new Double(pageHeight) });
                 if (this.psUtil.isAutoRotateLandscape()) {
                     this.gen.writeDSCComment(DSCConstants.PAGE_ORIENTATION,
                             "Portrait");
@@ -449,7 +452,7 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     }
 
     private void writeExtensions(final int which) throws IOException {
-        final Collection extensions = this.comments[which];
+        final Collection<PSExtensionAttachment> extensions = this.comments[which];
         if (extensions != null) {
             PSRenderingUtil.writeEnclosedExtensionAttachments(this.gen,
                     extensions);
@@ -525,10 +528,10 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
                     // different place
                     // than the "before comments".
                     if (this.setupCodeList == null) {
-                        this.setupCodeList = new java.util.ArrayList();
+                        this.setupCodeList = new ArrayList<>();
                     }
                     if (!this.setupCodeList.contains(extension)) {
-                        this.setupCodeList.add(extension);
+                        this.setupCodeList.add((PSSetupCode) extension);
                     }
                 }
             } else if (extension instanceof PSSetPageDevice) {
@@ -556,17 +559,18 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
                             (PSCommentBefore) extension);
                 } else {
                     if (this.comments[COMMENT_DOCUMENT_HEADER] == null) {
-                        this.comments[COMMENT_DOCUMENT_HEADER] = new java.util.ArrayList();
+                        this.comments[COMMENT_DOCUMENT_HEADER] = new ArrayList<>();
                     }
-                    this.comments[COMMENT_DOCUMENT_HEADER].add(extension);
+                    this.comments[COMMENT_DOCUMENT_HEADER]
+                            .add((PSCommentBefore) extension);
                 }
             } else if (extension instanceof PSCommentAfter) {
                 final int targetCollection = inPage() ? COMMENT_PAGE_TRAILER
                         : COMMENT_DOCUMENT_TRAILER;
                 if (this.comments[targetCollection] == null) {
-                    this.comments[targetCollection] = new java.util.ArrayList();
+                    this.comments[targetCollection] = new ArrayList<>();
                 }
-                this.comments[targetCollection].add(extension);
+                this.comments[targetCollection].add((PSCommentAfter) extension);
             }
         } catch (final IOException ioe) {
             throw new IFException("I/O error in handleExtensionObject()", ioe);
@@ -596,9 +600,9 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             throw new IllegalArgumentException("uri must not be empty or null");
         }
         if (this.formResources == null) {
-            this.formResources = new java.util.HashMap();
+            this.formResources = new HashMap<>();
         }
-        PSResource form = (PSResource) this.formResources.get(uri);
+        PSResource form = this.formResources.get(uri);
         if (form == null) {
             form = new PSImageFormResource(this.formResources.size() + 1, uri);
             this.formResources.put(uri, form);

@@ -35,7 +35,7 @@ public class PDFPages extends PDFObject {
     /**
      * the /Page objects
      */
-    protected List kids = new ArrayList();
+    protected List<String> kids = new ArrayList<>();
 
     /**
      * the number of /Page objects
@@ -84,7 +84,7 @@ public class PDFPages extends PDFObject {
             if (this.kids.get(idx) != null) {
                 throw new IllegalStateException(
                         "A page already exists at index " + idx
-                        + " (zero-based).");
+                                + " (zero-based).");
             }
             this.kids.set(idx, page.referencePDF());
         } else {
@@ -116,7 +116,7 @@ public class PDFPages extends PDFObject {
     public String toPDFString() {
         final StringBuilder sb = new StringBuilder(64);
         sb.append(getObjectID()).append("<< /Type /Pages\n/Count ")
-        .append(getCount()).append("\n/Kids [");
+                .append(getCount()).append("\n/Kids [");
         for (int i = 0; i < this.kids.size(); ++i) {
             final Object kid = this.kids.get(i);
             if (kid == null) {

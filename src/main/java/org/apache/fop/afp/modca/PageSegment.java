@@ -21,6 +21,7 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ import java.util.List;
  */
 public class PageSegment extends AbstractNamedAFPObject {
 
-    private List/* <AbstractAFPObject> */objects = null;
+    private List<AbstractAFPObject> objects = null;
 
     /**
      * Main constructor
@@ -47,9 +48,9 @@ public class PageSegment extends AbstractNamedAFPObject {
      *
      * @return a list of objects contained within this page segment
      */
-    public List/* <AbstractAFPObject> */getObjects() {
+    public List<AbstractAFPObject> getObjects() {
         if (this.objects == null) {
-            this.objects = new java.util.ArrayList();
+            this.objects = new ArrayList<>();
         }
         return this.objects;
     }

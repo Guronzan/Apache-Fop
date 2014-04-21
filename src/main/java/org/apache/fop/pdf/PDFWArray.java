@@ -19,6 +19,7 @@
 
 package org.apache.fop.pdf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class PDFWArray {
     /**
      * The metrics
      */
-    private final List entries = new java.util.ArrayList();
+    private final List<Object> entries = new ArrayList<>();
 
     /**
      * Default constructor

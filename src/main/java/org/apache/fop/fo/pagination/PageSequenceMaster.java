@@ -20,6 +20,7 @@
 package org.apache.fop.fo.pagination;
 
 // Java
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.apps.FOPException;
@@ -79,7 +80,7 @@ public class PageSequenceMaster extends FObj {
     /** {@inheritDoc} */
     @Override
     protected void startOfNode() throws FOPException {
-        this.subSequenceSpecifiers = new java.util.ArrayList();
+        this.subSequenceSpecifiers = new ArrayList<>();
         this.layoutMasterSet = this.parent.getRoot().getLayoutMasterSet();
         this.layoutMasterSet.addPageSequenceMaster(this.masterName, this);
     }
@@ -130,7 +131,7 @@ public class PageSequenceMaster extends FObj {
         this.currentSubSequenceNumber++;
         if (this.currentSubSequenceNumber >= 0
                 && this.currentSubSequenceNumber < this.subSequenceSpecifiers
-                .size()) {
+                        .size()) {
             return (SubSequenceSpecifier) this.subSequenceSpecifiers
                     .get(this.currentSubSequenceNumber);
         }
@@ -146,7 +147,7 @@ public class PageSequenceMaster extends FObj {
         if (this.subSequenceSpecifiers != null) {
             for (int i = 0; i < this.subSequenceSpecifiers.size(); ++i) {
                 ((SubSequenceSpecifier) this.subSequenceSpecifiers.get(i))
-                .reset();
+                        .reset();
             }
         }
     }
