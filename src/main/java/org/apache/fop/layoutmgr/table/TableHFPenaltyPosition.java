@@ -21,39 +21,41 @@ package org.apache.fop.layoutmgr.table;
 
 import java.util.List;
 
-import lombok.ToString;
-
 import org.apache.fop.layoutmgr.LayoutManager;
-import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 
 /**
- * This class represents a Position specific to TableContentLayoutManager. Used
- * for table headers and footers at breaks.
+ * This class represents a Position specific to TableContentLayoutManager. Used for table
+ * headers and footers at breaks.
  */
-// TODO ToString via lombok
-@ToString
 class TableHFPenaltyPosition extends Position {
 
     /** Element list for the header */
-    protected List<ListElement> headerElements;
+    protected List headerElements;
     /** Element list for the footer */
-    protected List<ListElement> footerElements;
+    protected List footerElements;
 
     /**
      * Creates a new TableHFPenaltyPosition
-     *
-     * @param lm
-     *            applicable layout manager
+     * @param lm applicable layout manager
      */
-    protected TableHFPenaltyPosition(final LayoutManager lm) {
+    protected TableHFPenaltyPosition(LayoutManager lm) {
         super(lm);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean generatesAreas() {
         return true;
     }
 
+    public String toString() {
+        StringBuffer sb = new StringBuffer("TableHFPenaltyPosition:");
+        sb.append(getIndex()).append("(");
+        sb.append("header:");
+        sb.append(headerElements);
+        sb.append(", footer:");
+        sb.append(footerElements);
+        sb.append(")");
+        return sb.toString();
+    }
 }

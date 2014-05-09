@@ -22,6 +22,7 @@ package org.apache.fop.afp.goca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.fop.afp.Completable;
@@ -32,12 +33,12 @@ import org.apache.fop.afp.modca.AbstractNamedAFPObject;
 /**
  * A base container of prepared structured AFP objects
  */
-public abstract class AbstractGraphicsDrawingOrderContainer extends
-AbstractNamedAFPObject implements StructuredData, Completable,
-Startable {
+public abstract class AbstractGraphicsDrawingOrderContainer extends AbstractNamedAFPObject
+implements StructuredData, Completable, Startable {
 
     /** list of objects contained within this container */
-    protected List<StructuredData> objects = new java.util.ArrayList<>();
+    protected List/*<StructuredDataObject>*/ objects
+        = new java.util.ArrayList/*<StructuredDataObject>*/();
 
     /** object is complete */
     private boolean complete = false;
@@ -54,45 +55,38 @@ Startable {
     /**
      * Named constructor
      *
-     * @param name
-     *            the name of the container
+     * @param name the name of the container
      */
-    protected AbstractGraphicsDrawingOrderContainer(final String name) {
+    protected AbstractGraphicsDrawingOrderContainer(String name) {
         super(name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) {
+    protected void writeStart(OutputStream os) throws IOException {
         setStarted(true);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
-        writeObjects(this.objects, os);
+    protected void writeContent(OutputStream os) throws IOException {
+        writeObjects(objects, os);
     }
 
     /**
      * Adds a given graphics object to this container
      *
-     * @param object
-     *            the structured data object
+     * @param object the structured data object
      */
-    public void addObject(final StructuredData object) {
-        this.objects.add(object);
+    public void addObject(StructuredData object) {
+        objects.add(object);
     }
 
     /**
      * Adds all the contents of a given graphics container to this container
      *
-     * @param graphicsContainer
-     *            a graphics container
+     * @param graphicsContainer a graphics container
      */
-    public void addAll(
-            final AbstractGraphicsDrawingOrderContainer graphicsContainer) {
-        final Collection<StructuredData> objects = graphicsContainer
-                .getObjects();
+    public void addAll(AbstractGraphicsDrawingOrderContainer graphicsContainer) {
+        Collection/*<StructuredDataObject>*/ objects = graphicsContainer.getObjects();
         objects.addAll(objects);
     }
 
@@ -101,7 +95,7 @@ Startable {
      *
      * @return all the objects in this container
      */
-    private Collection<StructuredData> getObjects() {
+    private Collection getObjects() {
         return this.objects;
     }
 
@@ -111,11 +105,11 @@ Startable {
      * @return the last drawing order from this container or null if empty
      */
     public StructuredData removeLast() {
-        final int lastIndex = this.objects.size() - 1;
+        int lastIndex = objects.size() - 1;
         StructuredData object = null;
         if (lastIndex > -1) {
-            object = this.objects.get(lastIndex);
-            this.objects.remove(lastIndex);
+            object = (StructuredData)objects.get(lastIndex);
+            objects.remove(lastIndex);
         }
         return object;
     }
@@ -123,44 +117,42 @@ Startable {
     /**
      * Returns the current data length
      *
-     * @return the current data length of this container including all enclosed
-     *         objects (and their containers)
+     * @return the current data length of this container including
+     * all enclosed objects (and their containers)
      */
-    @Override
     public int getDataLength() {
         int dataLen = 0;
-        for (final StructuredData data : this.objects) {
-            dataLen += data.getDataLength();
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            dataLen += ((StructuredData)it.next()).getDataLength();
         }
         return dataLen;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setComplete(final boolean complete) {
-        for (final StructuredData data : this.objects) {
-            if (data instanceof Completable) {
-                ((Completable) data).setComplete(true);
+    public void setComplete(boolean complete) {
+        Iterator it = objects.iterator();
+        while (it.hasNext()) {
+            Object object = it.next();
+            if (object instanceof Completable) {
+                ((Completable)object).setComplete(true);
             }
         }
         this.complete = true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isComplete() {
         return this.complete;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isStarted() {
         return this.started;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setStarted(final boolean started) {
+    public void setStarted(boolean started) {
         this.started = started;
     }
 }

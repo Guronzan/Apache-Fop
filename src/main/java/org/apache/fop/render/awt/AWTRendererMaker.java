@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AWTRendererMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AWTRendererMaker.java 1237582 2012-01-30 09:49:22Z mehdi $ */
 
 package org.apache.fop.render.awt;
 
@@ -29,22 +29,20 @@ import org.apache.fop.render.Renderer;
  */
 public class AWTRendererMaker extends AbstractRendererMaker {
 
-    private static final String[] MIMES = new String[] { MimeConstants.MIME_FOP_AWT_PREVIEW };
+    private static final String[] MIMES = new String[] {MimeConstants.MIME_FOP_AWT_PREVIEW};
+
 
     /** {@inheritDoc} */
-    @Override
-    public Renderer makeRenderer(final FOUserAgent ua) {
-        return new AWTRenderer();
+    public Renderer makeRenderer(FOUserAgent ua) {
+        return new AWTRenderer(ua);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean needsOutputStream() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

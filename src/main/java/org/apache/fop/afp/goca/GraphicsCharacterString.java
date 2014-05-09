@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsCharacterString.java 828678 2009-10-22 13:20:53Z acumiskey $ */
+/* $Id: GraphicsCharacterString.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.CharacterCodingException;
 
-import org.apache.fop.afp.AFPConstants;
+import org.apache.fop.afp.fonts.CharacterSet;
 
 /**
  * A GOCA graphics string
@@ -34,59 +35,45 @@ public class GraphicsCharacterString extends AbstractGraphicsCoord {
     protected static final int MAX_STR_LEN = 255;
 
     /** the string to draw */
-    protected final String str;
+    private final String str;
+
+    /**
+     * The character set encoding to use
+     */
+    private final CharacterSet charSet;
 
     /**
      * Constructor (absolute positioning)
      *
-     * @param str
-     *            the character string
-     * @param x
-     *            the x coordinate
-     * @param y
-     *            the y coordinate
+     * @param str the character string
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param charSet the character set
      */
-    public GraphicsCharacterString(final String str, final int x, final int y) {
+    public GraphicsCharacterString(String str, int x, int y, CharacterSet charSet) {
         super(x, y);
         this.str = truncate(str, MAX_STR_LEN);
-    }
-
-    /**
-     * Constructor (relative positioning)
-     *
-     * @param str
-     *            the character string
-     * @param x
-     *            the x coordinate
-     * @param y
-     *            the y coordinate
-     */
-    public GraphicsCharacterString(final String str) {
-        super(null);
-        this.str = truncate(str, MAX_STR_LEN);
+        this.charSet = charSet;
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         if (isRelative()) {
-            return (byte) 0x83;
+            return (byte)0x83;
         } else {
-            return (byte) 0xC3;
+            return (byte)0xC3;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
-        return super.getDataLength() + this.str.length();
+        return super.getDataLength() + str.length();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
-        final byte[] strData = getStringAsBytes();
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
+        byte[] strData = getStringAsBytes();
         System.arraycopy(strData, 0, data, 6, strData.length);
         os.write(data);
     }
@@ -95,16 +82,17 @@ public class GraphicsCharacterString extends AbstractGraphicsCoord {
      * Returns the text string as an encoded byte array
      *
      * @return the text string as an encoded byte array
+     * @throws UnsupportedEncodingException, CharacterCodingException
      */
-    private byte[] getStringAsBytes() throws UnsupportedEncodingException {
-        return this.str.getBytes(AFPConstants.EBCIDIC_ENCODING);
+    private byte[] getStringAsBytes() throws UnsupportedEncodingException,
+            CharacterCodingException {
+        return charSet.encodeChars(str).getBytes();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return "GraphicsCharacterString{"
-                + (this.coords != null ? "x=" + this.coords[0] + ", y="
-                        + this.coords[1] : "") + "str='" + this.str + "'" + "}";
+            + (coords != null ? "x=" + coords[0] + ", y=" + coords[1] : "")
+            + "str='" + str + "'" + "}";
     }
 }

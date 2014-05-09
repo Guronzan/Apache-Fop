@@ -21,7 +21,7 @@ package org.apache.fop.cli;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.util.List;
+import java.util.Vector;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.sax.SAXResult;
@@ -41,51 +41,41 @@ public class IFInputHandler extends InputHandler {
 
     /**
      * Constructor for XML->XSLT->intermediate XML input
-     * 
-     * @param xmlfile
-     *            XML file
-     * @param xsltfile
-     *            XSLT file
-     * @param params
-     *            List of command-line parameters (name, value, name, value,
-     *            ...) for XSL stylesheet, null if none
+     * @param xmlfile XML file
+     * @param xsltfile XSLT file
+     * @param params Vector of command-line parameters (name, value,
+     *      name, value, ...) for XSL stylesheet, null if none
      */
-    public IFInputHandler(final File xmlfile, final File xsltfile,
-            final List params) {
+    public IFInputHandler(File xmlfile, File xsltfile, Vector params) {
         super(xmlfile, xsltfile, params);
     }
 
     /**
      * Constructor for intermediate input
-     * 
-     * @param iffile
-     *            the file to read the intermediate format document from.
+     * @param iffile the file to read the intermediate format document from.
      */
-    public IFInputHandler(final File iffile) {
+    public IFInputHandler(File iffile) {
         super(iffile);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void renderTo(final FOUserAgent userAgent,
-            final String outputFormat, final OutputStream out)
-            throws FOPException {
-        final IFDocumentHandler documentHandler = userAgent.getFactory()
-                .getRendererFactory()
-                .createDocumentHandler(userAgent, outputFormat);
+    public void renderTo(FOUserAgent userAgent, String outputFormat, OutputStream out)
+                throws FOPException {
+        IFDocumentHandler documentHandler
+            = userAgent.getFactory().getRendererFactory().createDocumentHandler(
+                    userAgent, outputFormat);
         try {
             documentHandler.setResult(new StreamResult(out));
             IFUtil.setupFonts(documentHandler);
 
-            // Create IF parser
-            final IFParser parser = new IFParser();
+            //Create IF parser
+            IFParser parser = new IFParser();
 
             // Resulting SAX events are sent to the parser
-            final Result res = new SAXResult(parser.getContentHandler(
-                    documentHandler, userAgent));
+            Result res = new SAXResult(parser.getContentHandler(documentHandler, userAgent));
 
             transformTo(res);
-        } catch (final IFException ife) {
+        } catch (IFException ife) {
             throw new FOPException(ife);
         }
     }

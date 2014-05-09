@@ -15,24 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: RegionViewport.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RegionViewport.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.area;
 
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.TreeMap;
+
+import org.apache.fop.traits.WritingModeTraitsGetter;
 
 /**
- * Region Viewport area. This object represents the region-viewport-area. It has
- * a region-reference-area as its child. These areas are described in the
- * fo:region-body description in the XSL Recommendation.
+ * Region Viewport area.
+ * This object represents the region-viewport-area.  It has a
+ * region-reference-area as its child.  These areas are described
+ * in the fo:region-body description in the XSL Recommendation.
  */
-public class RegionViewport extends Area implements Cloneable {
-    /**
-     *
-     */
+public class RegionViewport extends Area implements Viewport {
+
     private static final long serialVersionUID = 505781815165102572L;
+
     // this rectangle is relative to the page
     private RegionReference regionReference;
     private Rectangle2D viewArea;
@@ -41,10 +44,9 @@ public class RegionViewport extends Area implements Cloneable {
     /**
      * Create a new region-viewport-area
      *
-     * @param viewArea
-     *            the view area of this viewport
+     * @param viewArea the view area of this viewport
      */
-    public RegionViewport(final Rectangle2D viewArea) {
+    public RegionViewport(Rectangle2D viewArea) {
         this.viewArea = viewArea;
         addTrait(Trait.IS_VIEWPORT_AREA, Boolean.TRUE);
     }
@@ -52,11 +54,10 @@ public class RegionViewport extends Area implements Cloneable {
     /**
      * Set the region-reference-area for this region viewport.
      *
-     * @param reg
-     *            the child region-reference-area inside this viewport
+     * @param reg the child region-reference-area inside this viewport
      */
-    public void setRegionReference(final RegionReference reg) {
-        this.regionReference = reg;
+    public void setRegionReference(RegionReference reg) {
+        regionReference = reg;
     }
 
     /**
@@ -65,22 +66,30 @@ public class RegionViewport extends Area implements Cloneable {
      * @return the child region-reference-area inside this viewport
      */
     public RegionReference getRegionReference() {
-        return this.regionReference;
+        return regionReference;
     }
 
     /**
      * Set the clipping for this region viewport.
      *
-     * @param c
-     *            the clipping value
+     * @param c the clipping value
      */
-    public void setClip(final boolean c) {
-        this.clip = c;
+    public void setClip(boolean c) {
+        clip = c;
     }
 
-    /** @return true if the viewport should be clipped. */
-    public boolean isClip() {
+    /** {@inheritDoc} */
+    public boolean hasClip() {
         return this.clip;
+    }
+
+    /** {@inheritDoc} */
+    public Rectangle getClipRectangle() {
+        if (clip) {
+            return new Rectangle(getIPD(), getBPD());
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -89,46 +98,47 @@ public class RegionViewport extends Area implements Cloneable {
      * @return the viewport rectangle area
      */
     public Rectangle2D getViewArea() {
-        return this.viewArea;
+        return viewArea;
     }
 
-    private void writeObject(final java.io.ObjectOutputStream out)
-            throws IOException {
-        out.writeFloat((float) this.viewArea.getX());
-        out.writeFloat((float) this.viewArea.getY());
-        out.writeFloat((float) this.viewArea.getWidth());
-        out.writeFloat((float) this.viewArea.getHeight());
-        out.writeBoolean(this.clip);
-        out.writeObject(this.props);
-        out.writeObject(this.regionReference);
+    private void writeObject(java.io.ObjectOutputStream out)
+    throws IOException {
+        out.writeFloat((float) viewArea.getX());
+        out.writeFloat((float) viewArea.getY());
+        out.writeFloat((float) viewArea.getWidth());
+        out.writeFloat((float) viewArea.getHeight());
+        out.writeBoolean(clip);
+        out.writeObject((TreeMap)traits);
+        out.writeObject(regionReference);
     }
 
-    private void readObject(final java.io.ObjectInputStream in)
+    private void readObject(java.io.ObjectInputStream in)
             throws IOException, ClassNotFoundException {
-        this.viewArea = new Rectangle2D.Float(in.readFloat(), in.readFloat(),
-                in.readFloat(), in.readFloat());
-        this.clip = in.readBoolean();
-        this.props = (HashMap) in.readObject();
+        viewArea = new Rectangle2D.Float(in.readFloat(), in.readFloat(),
+                                         in.readFloat(), in.readFloat());
+        clip = in.readBoolean();
+        traits = (TreeMap)in.readObject();
         setRegionReference((RegionReference) in.readObject());
     }
 
-    /**
-     * Clone this region viewport. Used when creating a copy from the page
-     * master.
-     *
-     * @return a new copy of this region viewport
-     */
-    @Override
-    public Object clone() {
-        final RegionViewport rv = new RegionViewport(
-                (Rectangle2D) this.viewArea.clone());
-        rv.regionReference = (RegionReference) this.regionReference.clone();
-        if (this.props != null) {
-            rv.props = new HashMap<>(this.props);
-        }
-        if (this.foreignAttributes != null) {
-            rv.foreignAttributes = new HashMap<>(this.foreignAttributes);
-        }
+    /** {@inheritDoc} */
+    public Object clone() throws CloneNotSupportedException {
+        RegionViewport rv = (RegionViewport) super.clone();
+        rv.regionReference = (RegionReference) regionReference.clone();
+        rv.viewArea = (Rectangle2D) viewArea.clone();
         return rv;
     }
+
+    /**
+     * Sets the writing mode traits for the region reference of
+     * this region viewport
+     * @param wmtg a WM traits getter
+     */
+    public void setWritingModeTraits(WritingModeTraitsGetter wmtg) {
+        if (regionReference != null) {
+            regionReference.setWritingModeTraits(wmtg);
+        }
+    }
+
 }
+

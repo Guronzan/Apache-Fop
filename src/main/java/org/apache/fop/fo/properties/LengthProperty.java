@@ -15,21 +15,23 @@
  * limitations under the License.
  */
 
-/* $Id: LengthProperty.java 766492 2009-04-19 17:54:06Z adelmelle $ */
+/* $Id: LengthProperty.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
+
+import org.apache.xmlgraphics.util.UnitConv;
 
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.Numeric;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
-import org.apache.xmlgraphics.util.UnitConv;
 
 /**
  * Superclass for properties wrapping a Length value.
  */
-public abstract class LengthProperty extends Property implements Length {
+public abstract class LengthProperty extends Property
+    implements Length, Numeric {
 
     /**
      * Inner class for making instances of LengthProperty
@@ -39,18 +41,17 @@ public abstract class LengthProperty extends Property implements Length {
         /**
          * Constructor
          *
-         * @param propId
-         *            the id of the property for which a Maker should be created
+         * @param propId the id of the property for which a Maker should be created
          */
-        public Maker(final int propId) {
+        public Maker(int propId) {
             super(propId);
         }
 
         /** {@inheritDoc} */
         @Override
-        public Property convertProperty(final Property p,
-                final PropertyList propertyList, final FObj fo)
-                throws PropertyException {
+        public Property convertProperty(Property p,
+                                        PropertyList propertyList,
+                                        FObj fo) throws PropertyException {
             if (p instanceof EnumProperty) {
                 return new EnumLength(p);
             }
@@ -58,14 +59,13 @@ public abstract class LengthProperty extends Property implements Length {
                 return p;
             }
             if (p instanceof NumberProperty) {
-                // Assume pixels (like in HTML) when there's no unit
-                final float resolution = propertyList.getFObj().getUserAgent()
-                        .getSourceResolution();
+                //Assume pixels (like in HTML) when there's no unit
+                float resolution = propertyList.getFObj().getUserAgent().getSourceResolution();
                 return FixedLength.getInstance(
-                        p.getNumeric().getNumericValue(), "px", UnitConv.IN2PT
-                                / resolution);
+                        p.getNumeric().getNumericValue(), "px",
+                        UnitConv.IN2PT / resolution);
             }
-            final Length val = p.getLength();
+            Length val = p.getLength();
             if (val != null) {
                 return (Property) val;
             }
@@ -76,7 +76,6 @@ public abstract class LengthProperty extends Property implements Length {
     }
 
     /** @return the numeric dimension. Length always a dimension of 1 */
-    @Override
     public int getDimension() {
         return 1;
     }
@@ -100,3 +99,4 @@ public abstract class LengthProperty extends Property implements Length {
     }
 
 }
+

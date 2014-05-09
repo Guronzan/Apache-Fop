@@ -15,17 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: RegionAfter.java 757256 2009-03-22 21:08:48Z adelmelle $ */
+/* $Id: RegionAfter.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.pagination;
 
-// Java
 import java.awt.Rectangle;
 
 import org.apache.fop.datatypes.FODimension;
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.datatypes.PercentBaseContext;
-// FOP
+import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
 
 /**
@@ -35,65 +34,62 @@ import org.apache.fop.fo.FONode;
 public class RegionAfter extends RegionBA {
 
     /**
-     * Create a RegionAfter instance that is a child of the given parent
-     * {@link FONode}.
-     * 
-     * @param parent
-     *            the {@link FONode} that is to be the parent
+     * Create a RegionAfter instance that is a child of the
+     * given parent {@link FONode}.
+     * @param parent    the {@link FONode} that is to be the parent
      */
-    public RegionAfter(final FONode parent) {
+    public RegionAfter(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Rectangle getViewportRectangle(final FODimension reldims,
-            final SimplePageMaster spm) {
-        /*
-         * Special rules apply to resolving extent as values are resolved
-         * relative to the page size and reference orientation.
+    public Rectangle getViewportRectangle (FODimension reldims) {
+        /* Special rules apply to resolving extent as values are resolved relative
+         * to the page size and reference orientation.
          */
-        final PercentBaseContext pageWidthContext = getPageWidthContext(LengthBase.CUSTOM_BASE);
-        final PercentBaseContext pageHeightContext = getPageHeightContext(LengthBase.CUSTOM_BASE);
+        PercentBaseContext pageWidthContext = getPageWidthContext(LengthBase.CUSTOM_BASE);
+        PercentBaseContext pageHeightContext = getPageHeightContext(LengthBase.CUSTOM_BASE);
         PercentBaseContext neighbourContext;
         Rectangle vpRect;
-        if (spm.getWritingMode() == EN_LR_TB
-                || spm.getWritingMode() == EN_RL_TB) {
-            neighbourContext = pageWidthContext;
-            vpRect = new Rectangle(0, reldims.bpd
-                    - getExtent().getValue(pageHeightContext), reldims.ipd,
-                    getExtent().getValue(pageHeightContext));
-        } else {
+
+        // [TBD] WRITING MODE ALERT
+        switch ( getWritingMode().getEnumValue() ) {
+        case Constants.EN_TB_LR:
+        case Constants.EN_TB_RL:
             neighbourContext = pageHeightContext;
-            vpRect = new Rectangle(0, reldims.bpd
-                    - getExtent().getValue(pageWidthContext), getExtent()
-                    .getValue(pageWidthContext), reldims.ipd);
+            vpRect = new Rectangle(0, reldims.bpd - getExtent().getValue(pageWidthContext),
+                                   getExtent().getValue(pageWidthContext), reldims.ipd);
+            break;
+        case Constants.EN_LR_TB:
+        case Constants.EN_RL_TB:
+        default:
+            neighbourContext = pageWidthContext;
+            vpRect = new Rectangle(0, reldims.bpd - getExtent().getValue(pageHeightContext),
+                                   reldims.ipd, getExtent().getValue(pageHeightContext));
+            break;
         }
         if (getPrecedence() == EN_FALSE) {
-            adjustIPD(vpRect, spm.getWritingMode(), neighbourContext);
+            adjustIPD(vpRect, layoutMaster.getWritingMode(), neighbourContext);
         }
         return vpRect;
     }
 
     /** {@inheritDoc} */
-    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-after";
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "region-after";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_AFTER}
      */
-    @Override
     public int getNameId() {
         return FO_REGION_AFTER;
     }
 }
+

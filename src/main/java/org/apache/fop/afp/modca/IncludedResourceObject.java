@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IncludedResourceObject.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: IncludedResourceObject.java 1005350 2010-10-07 07:41:48Z jeremias $ */
 
 package org.apache.fop.afp.modca;
 
@@ -25,41 +25,37 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import org.apache.commons.io.IOUtils;
+
+import org.apache.fop.afp.util.AFPResourceUtil;
 import org.apache.fop.afp.util.ResourceAccessor;
 
+
 /**
- * Encapsulates an included resource object that is loaded from an external
- * file.
+ * Encapsulates an included resource object that is loaded from an external file.
  */
 public class IncludedResourceObject extends AbstractNamedAFPObject {
 
-    private final ResourceAccessor resourceAccessor;
-    private final URI uri;
+    private ResourceAccessor resourceAccessor;
+    private URI uri;
 
     /**
      * Main constructor.
-     * 
-     * @param name
-     *            the name of the included resource
-     * @param resourceAccessor
-     *            the resource accessor to load the external file with
-     * @param uri
-     *            the URI of the external file
+     * @param name the name of the included resource
+     * @param resourceAccessor the resource accessor to load the external file with
+     * @param uri the URI of the external file
      */
-    public IncludedResourceObject(final String name,
-            final ResourceAccessor resourceAccessor, final URI uri) {
+    public IncludedResourceObject(String name,
+            ResourceAccessor resourceAccessor, URI uri) {
         super(name);
         this.resourceAccessor = resourceAccessor;
         this.uri = uri;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final InputStream in = this.resourceAccessor
-                .createInputStream(this.uri);
+    public void writeToStream(OutputStream os) throws IOException {
+        InputStream in = resourceAccessor.createInputStream(this.uri);
         try {
-            IOUtils.copy(in, os);
+            AFPResourceUtil.copyResourceFile(in, os);
         } finally {
             IOUtils.closeQuietly(in);
         }

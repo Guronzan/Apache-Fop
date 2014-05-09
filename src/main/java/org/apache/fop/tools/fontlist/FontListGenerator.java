@@ -19,16 +19,12 @@
 
 package org.apache.fop.tools.fontlist;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -46,77 +42,69 @@ import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 public class FontListGenerator {
 
     /**
-     * List all fonts configured for a particular output format (identified by
-     * MIME type). The sorted map returned looks like this:
+     * List all fonts configured for a particular output format (identified by MIME type).
+     * The sorted map returned looks like this:
      * <code>SortedMap&lt;String/font-family, List&lt;{@link FontSpec}&gt;&gt;</code>
-     *
-     * @param fopFactory
-     *            the FOP factory (already configured)
-     * @param mime
-     *            the MIME type identified the selected output format
-     * @param listener
-     *            a font event listener to catch any font-related errors while
-     *            listing fonts
+     * @param fopFactory the FOP factory (already configured)
+     * @param mime the MIME type identified the selected output format
+     * @param listener a font event listener to catch any font-related errors while listing fonts
      * @return the map of font families
-     * @throws FOPException
-     *             if an error occurs setting up the fonts
+     * @throws FOPException if an error occurs setting up the fonts
      */
-    public SortedMap<String, List<FontSpec>> listFonts(
-            final FopFactory fopFactory, final String mime,
-            final FontEventListener listener) throws FOPException {
-        final FontInfo fontInfo = setupFonts(fopFactory, mime, listener);
-        return buildFamilyMap(fontInfo);
+    public SortedMap listFonts(FopFactory fopFactory, String mime, FontEventListener listener)
+            throws FOPException {
+        FontInfo fontInfo = setupFonts(fopFactory, mime, listener);
+        SortedMap fontFamilies = buildFamilyMap(fontInfo);
+        return fontFamilies;
     }
 
-    private FontInfo setupFonts(final FopFactory fopFactory, final String mime,
-            final FontEventListener listener) throws FOPException {
-        final FOUserAgent userAgent = fopFactory.newFOUserAgent();
+    private FontInfo setupFonts(FopFactory fopFactory, String mime, FontEventListener listener)
+                throws FOPException {
+        FOUserAgent userAgent = fopFactory.newFOUserAgent();
 
-        // The document handler is only instantiated to get access to its
-        // configurator!
-        final IFDocumentHandler documentHandler = fopFactory
-                .getRendererFactory().createDocumentHandler(userAgent, mime);
-        final IFDocumentHandlerConfigurator configurator = documentHandler
-                .getConfigurator();
+        //The document handler is only instantiated to get access to its configurator!
+        IFDocumentHandler documentHandler
+            = fopFactory.getRendererFactory().createDocumentHandler(userAgent, mime);
+        IFDocumentHandlerConfigurator configurator = documentHandler.getConfigurator();
 
-        final FontInfo fontInfo = new FontInfo();
+        FontInfo fontInfo = new FontInfo();
         configurator.setupFontInfo(documentHandler, fontInfo);
         return fontInfo;
     }
 
-    private SortedMap<String, List<FontSpec>> buildFamilyMap(
-            final FontInfo fontInfo) {
-        final Map<String, FontMetrics> fonts = fontInfo.getFonts();
-        final Set<String> keyBag = new HashSet<>(fonts.keySet());
+    private SortedMap buildFamilyMap(FontInfo fontInfo) {
+        Map fonts = fontInfo.getFonts();
+        Set keyBag = new java.util.HashSet(fonts.keySet());
 
-        final Map<String, FontSpec> keys = new HashMap<>();
-        final SortedMap<String, List<FontSpec>> fontFamilies = new TreeMap<>();
+        Map keys = new java.util.HashMap();
+        SortedMap fontFamilies = new java.util.TreeMap();
+        //SortedMap<String/font-family, List<FontSpec>>
 
-        for (final Entry<FontTriplet, String> entry : fontInfo
-                .getFontTriplets().entrySet()) {
-            final FontTriplet triplet = entry.getKey();
-            final String key = entry.getValue();
+        Iterator iter = fontInfo.getFontTriplets().entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry)iter.next();
+            FontTriplet triplet = (FontTriplet)entry.getKey();
+            String key = (String)entry.getValue();
             FontSpec container;
             if (keyBag.contains(key)) {
                 keyBag.remove(key);
 
-                final FontMetrics metrics = fonts.get(key);
+                FontMetrics metrics = (FontMetrics)fonts.get(key);
 
                 container = new FontSpec(key, metrics);
                 container.addFamilyNames(metrics.getFamilyNames());
                 keys.put(key, container);
-                final String firstFamilyName = container.getFamilyNames()
-                        .first();
-                List<FontSpec> containers = fontFamilies.get(firstFamilyName);
+                String firstFamilyName = (String)container.getFamilyNames().first();
+                List containers = (List)fontFamilies.get(firstFamilyName);
                 if (containers == null) {
-                    containers = new ArrayList<>();
+                    containers = new java.util.ArrayList();
                     fontFamilies.put(firstFamilyName, containers);
                 }
                 containers.add(container);
                 Collections.sort(containers);
 
             } else {
-                container = keys.get(key);
+                container = (FontSpec)keys.get(key);
             }
             container.addTriplet(triplet);
         }

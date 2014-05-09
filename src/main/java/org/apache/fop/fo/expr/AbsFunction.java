@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbsFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AbsFunction.java 1328963 2012-04-22 20:09:42Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
@@ -27,28 +27,14 @@ import org.apache.fop.fo.properties.Property;
  */
 public class AbsFunction extends FunctionBase {
 
-    /**
-     * @return 1 (the number of arguments required for the abs function)
-     */
-    @Override
-    public int nbArgs() {
+    /** {@inheritDoc} */
+    public int getRequiredArgsCount() {
         return 1;
     }
 
-    /**
-     * @param args
-     *            array of arguments to be evaluated, the first of which should
-     *            be a numeric value
-     * @param propInfo
-     *            the PropertyInfo object to be evaluated
-     * @return the absolute value of the input
-     * @throws PropertyException
-     *             for non-numeric input
-     */
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo propInfo)
-            throws PropertyException {
-        final Numeric num = args[0].getNumeric();
+    /** {@inheritDoc} */
+    public Property eval(Property[] args, PropertyInfo propInfo) throws PropertyException {
+        Numeric num = args[0].getNumeric();
         if (num == null) {
             throw new PropertyException("Non numeric operand to abs function");
         }
@@ -57,3 +43,4 @@ public class AbsFunction extends FunctionBase {
     }
 
 }
+

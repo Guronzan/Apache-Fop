@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: ColumnSetup.java 681307 2008-07-31 09:06:10Z jeremias $ */
+/* $Id: ColumnSetup.java 1328515 2012-04-20 21:26:43Z gadams $ */
 
 package org.apache.fop.layoutmgr.table;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.PercentBaseContext;
@@ -33,127 +33,135 @@ import org.apache.fop.fo.expr.RelativeNumericProperty;
 import org.apache.fop.fo.flow.table.Table;
 import org.apache.fop.fo.flow.table.TableColumn;
 import org.apache.fop.fo.properties.TableColLength;
+import org.apache.fop.traits.Direction;
+import org.apache.fop.traits.WritingModeTraits;
+import org.apache.fop.traits.WritingModeTraitsGetter;
 
 /**
  * Class holding a number of columns making up the column setup of a row.
  */
-@Slf4j
 public class ColumnSetup {
 
-    private final Table table;
-    private final List<TableColumn> columns = new ArrayList<>();
-    private final List<Object> colWidths = new ArrayList<>();
+    /** Logger **/
+    private static Log log = LogFactory.getLog(ColumnSetup.class);
+
+    private Table table;
+    private WritingModeTraitsGetter wmTraits;
+    private List columns = new java.util.ArrayList();
+    private List colWidths = new java.util.ArrayList();
 
     private int maxColIndexReferenced = 0;
 
     /**
      * Main Constructor.
-     *
-     * @param table
-     *            the table to construct this column setup for
+     * @param table the table to construct this column setup for
      */
-    public ColumnSetup(final Table table) {
+    public ColumnSetup(Table table) {
+        assert table != null;
         this.table = table;
+        this.wmTraits = WritingModeTraits.getWritingModeTraitsGetter ( table );
         prepareColumns();
         initializeColumnWidths();
     }
 
     private void prepareColumns() {
-        final List<TableColumn> rawCols = this.table.getColumns();
+        List rawCols = table.getColumns();
         if (rawCols != null) {
             int colnum = 1;
-            final ListIterator<TableColumn> iter = rawCols.listIterator();
+            ListIterator iter = rawCols.listIterator();
             while (iter.hasNext()) {
-                final TableColumn col = iter.next();
+                TableColumn col = (TableColumn)iter.next();
                 if (col == null) {
                     continue;
                 }
                 colnum = col.getColumnNumber();
-                for (int i = 0; i < col.getNumberColumnsRepeated(); ++i) {
-                    while (colnum > this.columns.size()) {
-                        this.columns.add(null);
+                for (int i = 0; i < col.getNumberColumnsRepeated(); i++) {
+                    while (colnum > columns.size()) {
+                        columns.add(null);
                     }
-                    this.columns.set(colnum - 1, col);
+                    columns.set(colnum - 1, col);
                     colnum++;
                 }
             }
-            // Post-processing the list (looking for gaps)
-            // TODO The following block could possibly be removed
+            //Post-processing the list (looking for gaps)
+            //TODO The following block could possibly be removed
             int pos = 1;
-            final ListIterator<TableColumn> ppIter = this.columns
-                    .listIterator();
+            ListIterator ppIter = columns.listIterator();
             while (ppIter.hasNext()) {
-                final TableColumn col = ppIter.next();
+                TableColumn col = (TableColumn)ppIter.next();
                 if (col == null) {
-                    assert false; // Gaps are filled earlier by
-                    // fo.flow.table.Table.finalizeColumns()
-                    // log.error("Found a gap in the table-columns at position "
-                    // + pos);
+                    assert false; //Gaps are filled earlier by fo.flow.table.Table.finalizeColumns()
+                    //log.error("Found a gap in the table-columns at position " + pos);
                 }
-                ++pos;
+                pos++;
             }
         }
     }
 
     /**
-     * Returns a column. If the index of the column is bigger than the number of
-     * explicitly defined columns the last column is returned.
-     *
-     * @param index
-     *            index of the column (1 is the first column)
+     * Returns a column. If the index of the column is bigger than the number of explicitly
+     * defined columns the last column is returned.
+     * @param index index of the column (1 is the first column)
      * @return the requested column
      */
-    public TableColumn getColumn(final int index) {
-        final int size = this.columns.size();
+    public TableColumn getColumn(int index) {
+        int size = columns.size();
         if (index > size) {
-            if (index > this.maxColIndexReferenced) {
-                this.maxColIndexReferenced = index;
-                final TableColumn col = getColumn(1);
+            if (index > maxColIndexReferenced) {
+                maxColIndexReferenced = index;
+                TableColumn col = getColumn(1);
                 if (!(size == 1 && col.isImplicitColumn())) {
-                    assert false; // TODO Seems to be removable as this is now
-                    // done in the FO tree
-                    log.warn(FONode
-                            .decorateWithContextInfo(
-                                    "There are fewer table-columns than are needed. "
-                                            + "Column "
-                                            + index
-                                            + " was accessed, but only "
-                                            + size
-                                            + " columns have been defined. "
-                                            + "The last defined column will be reused.",
-                                            this.table));
-                    if (!this.table.isAutoLayout()) {
+                    assert false; //TODO Seems to be removable as this is now done in the FO tree
+                    log.warn(FONode.decorateWithContextInfo(
+                            "There are fewer table-columns than are needed. "
+                            + "Column " + index + " was accessed, but only "
+                            + size + " columns have been defined. "
+                            + "The last defined column will be reused."
+                        , table));
+                    if (!table.isAutoLayout()) {
                         log.warn("Please note that according XSL-FO 1.0 (7.26.9) says that "
                                 + "the 'column-width' property must be specified for every "
                                 + "column, unless the automatic table layout is used.");
                     }
                 }
             }
-            return this.columns.get(size - 1);
+            return (TableColumn) columns.get(size - 1);
         } else {
-            return this.columns.get(index - 1);
+            return (TableColumn) columns.get(index - 1);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return this.columns.toString();
+        return columns.toString();
     }
 
     /** @return the number of columns in the setup. */
     public int getColumnCount() {
-        if (this.maxColIndexReferenced > this.columns.size()) {
-            return this.maxColIndexReferenced;
+        if (maxColIndexReferenced > columns.size()) {
+            return maxColIndexReferenced;
         } else {
-            return this.columns.size();
+            return columns.size();
         }
-    }
+   }
 
     /** @return an Iterator over all columns */
-    public Iterator<TableColumn> iterator() {
+    public Iterator iterator() {
         return this.columns.iterator();
     }
+
+    /*
+    private void createColumnsFromFirstRow() {
+        //TODO Create oldColumns from first row here
+        //--> rule 2 in "fixed table layout", see CSS2, 17.5.2
+        //Alternative: extend oldColumns on-the-fly, but in this case we need the
+        //new property evaluation context so proportional-column-width() works
+        //correctly.
+        if (columns.size() == 0) {
+            this.columns.add(table.getDefaultColumn());
+        }
+    }
+    */
 
     /**
      * Initializes the column's widths
@@ -164,25 +172,24 @@ public class ColumnSetup {
         TableColumn col;
         Length colWidth;
 
-        for (int i = this.columns.size(); --i >= 0;) {
-            if (this.columns.get(i) != null) {
-                col = this.columns.get(i);
+        for (int i = columns.size(); --i >= 0;) {
+            if (columns.get(i) != null) {
+                col = (TableColumn) columns.get(i);
                 colWidth = col.getColumnWidth();
-                this.colWidths.add(0, colWidth);
+                colWidths.add(0, colWidth);
             }
         }
-        this.colWidths.add(0, null);
+        colWidths.add(0, null);
     }
 
     /**
      * Works out the base unit for resolving proportional-column-width()
      * [p-c-w(x) = x * base_unit_ipd]
      *
-     * @param tlm
-     *            the TableLayoutManager
+     * @param tlm   the TableLayoutManager
      * @return the computed base unit (in millipoint)
      */
-    protected double computeTableUnit(final TableLayoutManager tlm) {
+    protected double computeTableUnit(TableLayoutManager tlm) {
         return computeTableUnit(tlm, tlm.getContentAreaIPD());
     }
 
@@ -190,39 +197,34 @@ public class ColumnSetup {
      * Works out the base unit for resolving proportional-column-width()
      * [p-c-w(x) = x * base_unit_ipd]
      *
-     * @param percentBaseContext
-     *            the percent base context for relative values
-     * @param contentAreaIPD
-     *            the IPD of the available content area
+     * @param percentBaseContext the percent base context for relative values
+     * @param contentAreaIPD the IPD of the available content area
      * @return the computed base unit (in millipoints)
      */
-    public float computeTableUnit(final PercentBaseContext percentBaseContext,
-            final int contentAreaIPD) {
+    public float computeTableUnit(PercentBaseContext percentBaseContext, int contentAreaIPD) {
 
         int sumCols = 0;
         float factors = 0;
         float unit = 0;
 
-        /*
-         * calculate the total width (specified absolute/percentages), and work
-         * out the total number of factors to use to distribute the remaining
-         * space (if any)
+        /* calculate the total width (specified absolute/percentages),
+         * and work out the total number of factors to use to distribute
+         * the remaining space (if any)
          */
-        for (final Object object : this.colWidths) {
-            final Length colWidth = (Length) object;
+        for (Iterator i = colWidths.iterator(); i.hasNext();) {
+            Length colWidth = (Length) i.next();
             if (colWidth != null) {
                 sumCols += colWidth.getValue(percentBaseContext);
                 if (colWidth instanceof RelativeNumericProperty) {
-                    factors += ((RelativeNumericProperty) colWidth)
-                            .getTableUnits();
+                    factors += ((RelativeNumericProperty) colWidth).getTableUnits();
                 } else if (colWidth instanceof TableColLength) {
                     factors += ((TableColLength) colWidth).getTableUnits();
                 }
             }
         }
 
-        /*
-         * distribute the remaining space over the accumulated factors (if any)
+        /* distribute the remaining space over the accumulated
+         * factors (if any)
          */
         if (factors > 0) {
             if (sumCols < contentAreaIPD) {
@@ -236,24 +238,58 @@ public class ColumnSetup {
     }
 
     /**
-     * @param col
-     *            column index (1 is first column)
-     * @param context
-     *            the context for percentage based calculations
+     * Determine the X offset of the indicated column, where this
+     * offset denotes the left edge of the column irrespective of writing
+     * mode. If writing mode's column progression direction is right-to-left,
+     * then the first column is the right-most column and the last column is
+     * the left-most column; otherwise, the first column is the left-most
+     * column.
+     * @param col column index (1 is first column)
+     * @param nrColSpan number columns spanned (for calculating offset in rtl mode)
+     * @param context the context for percentage based calculations
      * @return the X offset of the requested column
      */
-    public int getXOffset(final int col, final PercentBaseContext context) {
+    public int getXOffset(int col, int nrColSpan, PercentBaseContext context) {
+        // TODO handle vertical WMs [GA]
+        if ( (wmTraits != null) && (wmTraits.getColumnProgressionDirection() == Direction.RL) ) {
+            return getXOffsetRTL(col, nrColSpan, context);
+        } else {
+            return getXOffsetLTR(col, context);
+        }
+    }
+
+    /*
+     * Determine x offset by summing widths of columns to left of specified
+     * column; i.e., those columns whose column numbers are greater than the
+     * specified column number.
+     */
+    private int getXOffsetRTL(int col, int nrColSpan, PercentBaseContext context) {
+        int xoffset = 0;
+        for (int i = (col + nrColSpan - 1), nc = colWidths.size(); ++i < nc;) {
+            int effCol = i;
+            if (colWidths.get(effCol) != null) {
+                xoffset += ((Length) colWidths.get(effCol)).getValue(context);
+            }
+        }
+        return xoffset;
+    }
+
+    /*
+     * Determine x offset by summing widths of columns to left of specified
+     * column; i.e., those columns whose column numbers are less than the
+     * specified column number.
+     */
+    private int getXOffsetLTR(int col, PercentBaseContext context) {
         int xoffset = 0;
         for (int i = col; --i >= 0;) {
             int effCol;
-            if (i < this.colWidths.size()) {
+            if (i < colWidths.size()) {
                 effCol = i;
             } else {
-                effCol = this.colWidths.size() - 1;
+                effCol = colWidths.size() - 1;
             }
-            if (this.colWidths.get(effCol) != null) {
-                xoffset += ((Length) this.colWidths.get(effCol))
-                        .getValue(context);
+            if (colWidths.get(effCol) != null) {
+                xoffset += ((Length) colWidths.get(effCol)).getValue(context);
             }
         }
         return xoffset;
@@ -261,21 +297,18 @@ public class ColumnSetup {
 
     /**
      * Calculates the sum of all column widths.
-     *
-     * @param context
-     *            the context for percentage based calculations
+     * @param context the context for percentage based calculations
      * @return the requested sum in millipoints
      */
-    public int getSumOfColumnWidths(final PercentBaseContext context) {
+    public int getSumOfColumnWidths(PercentBaseContext context) {
         int sum = 0;
-        for (int i = 1, c = getColumnCount(); i <= c; ++i) {
+        for (int i = 1, c = getColumnCount(); i <= c; i++) {
             int effIndex = i;
-            if (i >= this.colWidths.size()) {
-                effIndex = this.colWidths.size() - 1;
+            if (i >= colWidths.size()) {
+                effIndex = colWidths.size() - 1;
             }
-            if (this.colWidths.get(effIndex) != null) {
-                sum += ((Length) this.colWidths.get(effIndex))
-                        .getValue(context);
+            if (colWidths.get(effIndex) != null) {
+                sum += ((Length) colWidths.get(effIndex)).getValue(context);
             }
         }
         return sum;

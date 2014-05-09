@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFGraphicsDevice.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFGraphicsDevice.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.svg;
 
@@ -24,9 +24,10 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 
 /**
- * This implements the GraphicsDevice interface as appropriate for a
- * PDFGraphics2D. This is quite simple since we only have one
- * GraphicsConfiguration for now (this might change in the future I suppose).
+ * This implements the GraphicsDevice interface as appropriate for
+ * a PDFGraphics2D.  This is quite simple since we only have one
+ * GraphicsConfiguration for now (this might change in the future
+ * I suppose).
  */
 class PDFGraphicsDevice extends GraphicsDevice {
 
@@ -38,24 +39,21 @@ class PDFGraphicsDevice extends GraphicsDevice {
     /**
      * Create a new PDF graphics device.
      *
-     * @param The
-     *            gc we should reference
+     * @param gc The graphics configuration we should reference
      */
-    PDFGraphicsDevice(final PDFGraphicsConfiguration gc) {
+    PDFGraphicsDevice(PDFGraphicsConfiguration gc) {
         this.gc = gc;
     }
 
     /**
      * Ignore template and return the only config we have
      *
-     * @param gct
-     *            the template configuration
+     * @param gct the template configuration
      * @return the best configuration which is the only one
      */
-    @Override
     public GraphicsConfiguration getBestConfiguration(
-            final GraphicsConfigTemplate gct) {
-        return this.gc;
+      GraphicsConfigTemplate gct) {
+        return gc;
     }
 
     /**
@@ -63,9 +61,8 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return an array containing the one graphics configuration
      */
-    @Override
     public GraphicsConfiguration[] getConfigurations() {
-        return new GraphicsConfiguration[] { this.gc };
+        return new GraphicsConfiguration[] {gc};
     }
 
     /**
@@ -73,9 +70,8 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the graphics configuration that created this object
      */
-    @Override
     public GraphicsConfiguration getDefaultConfiguration() {
-        return this.gc;
+        return gc;
     }
 
     /**
@@ -83,7 +79,6 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the ID string for this device, uses toString
      */
-    @Override
     public String getIDstring() {
         return toString();
     }
@@ -93,9 +88,9 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the type which is always printer
      */
-    @Override
     public int getType() {
         return GraphicsDevice.TYPE_PRINTER;
     }
 
 }
+

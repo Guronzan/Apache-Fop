@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ListItemLabel.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ListItemLabel.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.flow;
 
@@ -31,40 +31,35 @@ public class ListItemLabel extends AbstractListItemPart {
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public ListItemLabel(final FONode parent) {
+    public ListItemLabel(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
-        getFOEventHandler().startListLabel();
+        getFOEventHandler().startListLabel(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
-        getFOEventHandler().endListLabel();
+        getFOEventHandler().endListLabel(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "list-item-label";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM_LABEL}
      */
-    @Override
     public int getNameId() {
         return FO_LIST_ITEM_LABEL;
     }
 }
+

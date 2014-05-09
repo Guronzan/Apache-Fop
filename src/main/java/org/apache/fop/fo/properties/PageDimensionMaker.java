@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-/* $Id: PageDimensionMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PageDimensionMaker.java 992386 2010-09-03 17:26:28Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FObj;
@@ -30,67 +28,71 @@ import org.apache.fop.fo.expr.PropertyException;
  * Custom Maker for page-height / page-width
  *
  */
-@Slf4j
 public class PageDimensionMaker extends LengthProperty.Maker {
 
     /**
      * Constructor
      *
-     * @param propId
-     *            the property Id
+     * @param propId    the property Id
      */
-    public PageDimensionMaker(final int propId) {
+    public PageDimensionMaker(int propId) {
         super(propId);
     }
 
     /**
-     * Check the value of the page-width / page-height property. Return the
-     * default or user-defined fallback in case the value was specified as
-     * "auto"
-     *
+     * Check the value of the page-width / page-height property.
+     * Return the default or user-defined fallback in case the value
+     * was specified as "auto"
+     * @param subpropId  The subproperty id of the property being retrieved.
+     *        Is 0 when retrieving a base property.
+     * @param propertyList The PropertyList object being built for this FO.
+     * @param tryInherit true if inherited properties should be examined.
+     * @param tryDefault true if the default value should be returned.
+     * @return the property
+     * @throws PropertyException if a property exception occurs
      * @see PropertyMaker#get(int, PropertyList, boolean, boolean)
      */
-    @Override
-    public Property get(final int subpropId, final PropertyList propertyList,
-            final boolean tryInherit, final boolean tryDefault)
+    public Property get(int subpropId, PropertyList propertyList,
+                        boolean tryInherit, boolean tryDefault)
             throws PropertyException {
 
-        final Property p = super.get(0, propertyList, tryInherit, tryDefault);
-        final FObj fo = propertyList.getFObj();
-        final String fallbackValue = this.propId == Constants.PR_PAGE_HEIGHT ? fo
-                .getUserAgent().getPageHeight() : fo.getUserAgent()
-                .getPageWidth();
+        Property p = super.get(0, propertyList, tryInherit, tryDefault);
+        FObj fo = propertyList.getFObj();
+        String fallbackValue = (propId == Constants.PR_PAGE_HEIGHT)
+            ? fo.getUserAgent().getPageHeight()
+                    : fo.getUserAgent().getPageWidth();
 
         if (p.getEnum() == Constants.EN_INDEFINITE) {
-            final int otherId = this.propId == Constants.PR_PAGE_HEIGHT ? Constants.PR_PAGE_WIDTH
-                            : Constants.PR_PAGE_HEIGHT;
-            final int writingMode = propertyList.get(Constants.PR_WRITING_MODE)
-                            .getEnum();
-            final int refOrientation = propertyList
-                            .get(Constants.PR_REFERENCE_ORIENTATION).getNumeric()
-                            .getValue();
+            int otherId = (propId == Constants.PR_PAGE_HEIGHT)
+                ? Constants.PR_PAGE_WIDTH : Constants.PR_PAGE_HEIGHT;
+            int writingMode = propertyList.get(Constants.PR_WRITING_MODE).getEnum();
+            int refOrientation = propertyList.get(Constants.PR_REFERENCE_ORIENTATION)
+                        .getNumeric().getValue();
             if (propertyList.getExplicit(otherId) != null
                     && propertyList.getExplicit(otherId).getEnum() == Constants.EN_INDEFINITE) {
-                // both set to "indefinite":
-                // determine which one of the two defines the dimension
-                // in block-progression-direction, and set the other to
-                // "auto"
-                if (writingMode != Constants.EN_TB_RL
-                        && (refOrientation == 0 || refOrientation == 180 || refOrientation == -180)
-                                || writingMode == Constants.EN_TB_RL
-                                && (refOrientation == 90 || refOrientation == 270 || refOrientation == -270)) {
-                    // set page-width to "auto" = use the fallback from
-                            // FOUserAgent
-                    if (this.propId == Constants.PR_PAGE_WIDTH) {
-                        log.warn("Both page-width and page-height set to "
+                //both set to "indefinite":
+                //determine which one of the two defines the dimension
+                //in block-progression-direction, and set the other to
+                //"auto"
+                if ((writingMode != Constants.EN_TB_RL
+                        && (refOrientation == 0
+                                || refOrientation == 180
+                                || refOrientation == -180))
+                     || (writingMode == Constants.EN_TB_RL
+                             && (refOrientation == 90
+                                     || refOrientation == 270
+                                     || refOrientation == -270))) {
+                    //set page-width to "auto" = use the fallback from FOUserAgent
+                    if (propId == Constants.PR_PAGE_WIDTH) {
+                        Property.log.warn("Both page-width and page-height set to "
                                 + "\"indefinite\". Forcing page-width to \"auto\"");
                         return make(propertyList, fallbackValue, fo);
                     }
                 } else {
-                    // set page-height to "auto" = use fallback from FOUserAgent
-                    log.warn("Both page-width and page-height set to "
+                    //set page-height to "auto" = use fallback from FOUserAgent
+                    Property.log.warn("Both page-width and page-height set to "
                             + "\"indefinite\". Forcing page-height to \"auto\"");
-                    if (this.propId == Constants.PR_PAGE_HEIGHT) {
+                    if (propId == Constants.PR_PAGE_HEIGHT) {
                         return make(propertyList, fallbackValue, fo);
                     }
                 }

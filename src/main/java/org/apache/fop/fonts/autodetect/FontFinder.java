@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: FontFinder.java 756471 2009-03-20 14:08:04Z acumiskey $ */
+/* $Id: FontFinder.java 1039502 2010-11-26 18:37:40Z spepping $ */
 
 package org.apache.fop.fonts.autodetect;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
- * Implementers provide find method for searching native operating system for
- * available fonts.
- * 
- * @param <T>
+ * Implementers provide find method for searching native operating system
+ * for available fonts.
  */
-public interface FontFinder<T> {
+public interface FontFinder {
 
     /**
      * Finds a list of font files.
      *
-     * @return list of font files. List&lt;URL&gt; in the case of the
-     *         FontFinder, and List&lt;File&gt; in the case of the
-     *         FonrDirFinders.
+     * @return list of font files.
      * @throws IOException
      *             In case of an I/O problem
      */
-    List<T> find() throws IOException;
+    List<URL> find() throws IOException;
 
 }

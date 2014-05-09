@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: UnsupportedOperationExceptionFactory.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: UnsupportedOperationExceptionFactory.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.events;
 
@@ -29,17 +29,14 @@ import org.apache.fop.events.EventExceptionManager.ExceptionFactory;
 public class UnsupportedOperationExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
-    @Override
-    public Throwable createException(final Event event) {
-        final String msg = EventFormatter.format(event, Locale.ENGLISH);
-        final UnsupportedOperationException ex = new UnsupportedOperationException(
-                msg);
+    public Throwable createException(Event event) {
+        String msg = EventFormatter.format(event, Locale.ENGLISH);
+        UnsupportedOperationException ex = new UnsupportedOperationException(msg);
         return ex;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Class getExceptionClass() {
+    public Class<UnsupportedOperationException> getExceptionClass() {
         return UnsupportedOperationException.class;
     }
 

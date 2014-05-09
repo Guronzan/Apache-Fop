@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-/* $Id: PSRendererContextConstants.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PSRendererContextConstants.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.ps;
 
 import org.apache.fop.render.RendererContextConstants;
 
 /**
- * Defines a number of standard constants (keys) for use by the RendererContext
- * class.
+ * Defines a number of standard constants (keys) for use by the RendererContext class.
  */
 public interface PSRendererContextConstants extends RendererContextConstants {
 
     /** The PostScript generator that is being used to drawn into. */
-    public static final String PS_GENERATOR = "psGenerator";
+    String PS_GENERATOR = "psGenerator";
 
     /** The font information for the PostScript renderer. */
-    public static final String PS_FONT_INFO = "psFontInfo";
+    String PS_FONT_INFO = "psFontInfo";
 
 }

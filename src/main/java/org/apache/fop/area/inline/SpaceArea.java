@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-/* $Id: SpaceArea.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: SpaceArea.java 1293736 2012-02-26 02:29:01Z gadams $ */
+
 package org.apache.fop.area.inline;
 
 /**
@@ -23,15 +24,12 @@ package org.apache.fop.area.inline;
  */
 public class SpaceArea extends InlineArea {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 2218803009825411416L;
 
     /**
      * The space for this space area
      */
-    protected String space;
+    protected char space;
 
     /**
      * Is this space adjustable?
@@ -40,29 +38,25 @@ public class SpaceArea extends InlineArea {
 
     /**
      * Create a space area
-     * 
-     * @param s
-     *            the space character
-     * @param o
-     *            the offset for the next area
-     * @param a
-     *            is this space adjustable?
+     * @param space the space character
+     * @param blockProgressionOffset the offset for the next area
+     * @param adjustable is this space adjustable?
+     * @param bidiLevel the bidirectional embedding level (or -1 if not defined)
      */
-    public SpaceArea(final char s, final int o, final boolean a) {
-        this.space = new String() + s;
-        this.offset = o;
-        this.isAdjustable = a;
+    public SpaceArea(int blockProgressionOffset, int bidiLevel, char space, boolean adjustable) {
+        super ( blockProgressionOffset, bidiLevel );
+        this.space = space;
+        this.isAdjustable = adjustable;
     }
 
-    /**
-     * @return Returns the space.
-     */
+    /** @return Returns the space. */
     public String getSpace() {
-        return new String(this.space);
+        return String.valueOf(space);
     }
 
     /** @return true if the space is adjustable (WRT word-space processing) */
     public boolean isAdjustable() {
         return this.isAdjustable;
     }
+
 }

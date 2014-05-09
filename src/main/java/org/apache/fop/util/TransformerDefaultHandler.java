@@ -33,15 +33,15 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class TransformerDefaultHandler extends DefaultHandler2 {
 
-    private final TransformerHandler transformerHandler;
+    private TransformerHandler transformerHandler;
 
     /**
      * Creates a new instance delegating to the given TransformerHandler object.
      *
-     * @param transformerHandler
-     *            the object to which all the method calls will be delegated
+     * @param transformerHandler the object to which all the method calls will
+     * be delegated
      */
-    public TransformerDefaultHandler(final TransformerHandler transformerHandler) {
+    public TransformerDefaultHandler(TransformerHandler transformerHandler) {
         this.transformerHandler = transformerHandler;
     }
 
@@ -51,140 +51,110 @@ public class TransformerDefaultHandler extends DefaultHandler2 {
      * @return the object to which all method calls are delegated
      */
     public TransformerHandler getTransformerHandler() {
-        return this.transformerHandler;
+        return transformerHandler;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setDocumentLocator(final Locator locator) {
-        this.transformerHandler.setDocumentLocator(locator);
+    public void setDocumentLocator(Locator locator) {
+        transformerHandler.setDocumentLocator(locator);
     }
 
     /** {@inheritDoc} */
-    @Override
     public void startDocument() throws SAXException {
-        this.transformerHandler.startDocument();
+        transformerHandler.startDocument();
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endDocument() throws SAXException {
-        this.transformerHandler.endDocument();
+        transformerHandler.endDocument();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPrefixMapping(final String prefix, final String uri)
+    public void startPrefixMapping(String prefix, String uri) throws SAXException {
+        transformerHandler.startPrefixMapping(prefix, uri);
+    }
+
+    /** {@inheritDoc} */
+    public void endPrefixMapping(String string) throws SAXException {
+        transformerHandler.endPrefixMapping(string);
+    }
+
+    /** {@inheritDoc} */
+    public void startElement(String uri, String localName, String qName, Attributes attrs)
             throws SAXException {
-        this.transformerHandler.startPrefixMapping(prefix, uri);
+        AttributesImpl ai = new AttributesImpl(attrs);
+        transformerHandler.startElement(uri, localName, qName, ai);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPrefixMapping(final String string) throws SAXException {
-        this.transformerHandler.endPrefixMapping(string);
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        transformerHandler.endElement(uri, localName, qName);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startElement(final String uri, final String localName,
-            final String qName, final Attributes attrs) throws SAXException {
-        final AttributesImpl ai = new AttributesImpl(attrs);
-        this.transformerHandler.startElement(uri, localName, qName, ai);
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        transformerHandler.characters(ch, start, length);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endElement(final String uri, final String localName,
-            final String qName) throws SAXException {
-        this.transformerHandler.endElement(uri, localName, qName);
+    public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
+        transformerHandler.ignorableWhitespace(ch, start, length);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void characters(final char[] ch, final int start, final int length)
-            throws SAXException {
-        this.transformerHandler.characters(ch, start, length);
+    public void processingInstruction(String target, String data) throws SAXException {
+        transformerHandler.processingInstruction(target, data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void ignorableWhitespace(final char[] ch, final int start,
-            final int length) throws SAXException {
-        this.transformerHandler.ignorableWhitespace(ch, start, length);
+    public void skippedEntity(String name) throws SAXException {
+        transformerHandler.skippedEntity(name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void processingInstruction(final String target, final String data)
-            throws SAXException {
-        this.transformerHandler.processingInstruction(target, data);
+    public void notationDecl(String name, String publicId, String systemId) throws SAXException {
+        transformerHandler.notationDecl(name, publicId, systemId);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void skippedEntity(final String name) throws SAXException {
-        this.transformerHandler.skippedEntity(name);
+    public void unparsedEntityDecl(String name, String publicId, String systemId,
+            String notationName) throws SAXException {
+        transformerHandler.unparsedEntityDecl(name, publicId, systemId, notationName);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void notationDecl(final String name, final String publicId,
-            final String systemId) throws SAXException {
-        this.transformerHandler.notationDecl(name, publicId, systemId);
+    public void startDTD(String name, String pid, String lid) throws SAXException {
+        transformerHandler.startDTD(name, pid, lid);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void unparsedEntityDecl(final String name, final String publicId,
-            final String systemId, final String notationName)
-                    throws SAXException {
-        this.transformerHandler.unparsedEntityDecl(name, publicId, systemId,
-                notationName);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void startDTD(final String name, final String pid, final String lid)
-            throws SAXException {
-        this.transformerHandler.startDTD(name, pid, lid);
-    }
-
-    /** {@inheritDoc} */
-    @Override
     public void endDTD() throws SAXException {
-        this.transformerHandler.endDTD();
+        transformerHandler.endDTD();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startEntity(final String name) throws SAXException {
-        this.transformerHandler.startEntity(name);
+    public void startEntity(String name) throws SAXException {
+        transformerHandler.startEntity(name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endEntity(final String name) throws SAXException {
-        this.transformerHandler.endEntity(name);
+    public void endEntity(String name) throws SAXException {
+        transformerHandler.endEntity(name);
     }
 
     /** {@inheritDoc} */
-    @Override
     public void startCDATA() throws SAXException {
-        this.transformerHandler.startCDATA();
+        transformerHandler.startCDATA();
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endCDATA() throws SAXException {
-        this.transformerHandler.endCDATA();
+        transformerHandler.endCDATA();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void comment(final char[] charArray, final int start,
-            final int length) throws SAXException {
-        this.transformerHandler.comment(charArray, start, length);
+    public void comment(char[] charArray, int start, int length) throws SAXException {
+        transformerHandler.comment(charArray, start, length);
     }
 
 }

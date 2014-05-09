@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PageChangeEvent.java 952770 2010-06-08 19:01:56Z jeremias $ */
+/* $Id: PageChangeEvent.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.render.awt.viewer;
 
@@ -27,25 +27,18 @@ import java.util.EventObject;
  */
 public class PageChangeEvent extends EventObject {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -5969283475959932887L;
-    private final int oldPage;
-    private final int newPage;
+
+    private int oldPage;
+    private int newPage;
 
     /**
      * Creates an new page change event.
-     * 
-     * @param panel
-     *            the preview panel the event is produced for.
-     * @param oldPage
-     *            the old page (zero based)
-     * @param newPage
-     *            the new page (zero based)
+     * @param panel the preview panel the event is produced for.
+     * @param oldPage the old page (zero based)
+     * @param newPage the new page (zero based)
      */
-    public PageChangeEvent(final PreviewPanel panel, final int oldPage,
-            final int newPage) {
+    public PageChangeEvent(PreviewPanel panel, int oldPage, int newPage) {
         super(panel);
         this.oldPage = oldPage;
         this.newPage = newPage;
@@ -53,20 +46,18 @@ public class PageChangeEvent extends EventObject {
 
     /**
      * Returns the new page.
-     * 
      * @return the new page (zero based)
      */
     public int getNewPage() {
-        return this.newPage;
+        return newPage;
     }
 
     /**
      * Returns the old page.
-     * 
      * @return the old page (zero based)
      */
     public int getOldPage() {
-        return this.oldPage;
+        return oldPage;
     }
 
 }

@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-/* $Id: Command.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Command.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.awt.viewer;
 
-//Java
 import java.awt.event.ActionEvent;
 import java.net.URL;
 
@@ -27,53 +26,45 @@ import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 
 /**
- * This class represents UI-commands, which can be used as menu or toolbar items<br>
- * . When the <code>Command</code> object receives action event, that object's
- * <code>doit</code> method is invoked. <code>doit</code> method by default does
- * nothing and the class customer have to override it to implement any action
- * handling logic. Originally contributed by: Juergen Verwohlt:
- * Juergen.Verwohlt@jcatalog.com, Rainer Steinkuhle:
- * Rainer.Steinkuhle@jcatalog.com, Stanislav Gorkhover:
- * Stanislav.Gorkhover@jcatalog.com
+ * This class represents UI-commands, which can be used as menu or toolbar
+ * items<br>.
+ * When the <code>Command</code> object receives action event, that object's
+ * <code>doit</code> method is invoked. <code>doit</code> method by default
+ * does nothing and the class customer have to override it to implement
+ * any action handling logic.
+ * Originally contributed by:
+ * Juergen Verwohlt: Juergen.Verwohlt@jcatalog.com,
+ * Rainer Steinkuhle: Rainer.Steinkuhle@jcatalog.com,
+ * Stanislav Gorkhover: Stanislav.Gorkhover@jcatalog.com
  */
 public class Command extends AbstractAction {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 7921355625784386217L;
     private static final String IMAGE_DIR = "images/";
 
     /**
-     * Creates <code>Command</code> object with a given name and sets the name
-     * as a tooltip text. No associated icon image.
-     *
-     * @param name
-     *            of the command
-     * @param mnemonic
-     *            A Key
+     * Creates <code>Command</code> object with a given name and
+     * sets the name as a tooltip text. No associated icon image.
+     * @param name of the command
+     * @param mnemonic A Key
      */
-    public Command(final String name, final int mnemonic) {
+    public Command(String name, int mnemonic) {
         super(name);
         putValue(SHORT_DESCRIPTION, name);
         if (mnemonic > 0) {
-            putValue(MNEMONIC_KEY, (mnemonic));
+            putValue(MNEMONIC_KEY, new Integer(mnemonic));
         }
     }
 
     /**
-     * Creates <code>Command</code> object with a given name, the same tooltip
-     * text and icon image if appropriate image file is found.
-     *
-     * @param name
-     *            name of the command
-     * @param iconName
-     *            name of the icon
+     * Creates <code>Command</code> object with a given name, the same
+     * tooltip text and icon image if appropriate image file is found.
+     * @param name name of the command
+     * @param iconName name of the icon
      */
-    public Command(final String name, final String iconName) {
+    public Command(String name, String iconName) {
         super(name);
         putValue(SHORT_DESCRIPTION, name);
-        final URL url = getClass().getResource(IMAGE_DIR + iconName + ".gif");
+        URL url = getClass().getResource(IMAGE_DIR + iconName + ".gif");
         if (url != null) {
             putValue(SMALL_ICON, new ImageIcon(url));
         }
@@ -82,8 +73,7 @@ public class Command extends AbstractAction {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void actionPerformed(final ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         doit();
     }
 
@@ -91,6 +81,7 @@ public class Command extends AbstractAction {
      * Action handler, have to be overrided by subclasses.
      */
     public void doit() {
-        // Do nothing
+        //Do nothing
     }
 }
+

@@ -15,59 +15,54 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractFOPBridgeContext.java 766594 2009-04-20 06:50:59Z jeremias $ */
+/* $Id: AbstractFOPBridgeContext.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.svg;
 
 import java.awt.geom.AffineTransform;
 import java.lang.reflect.Constructor;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.batik.bridge.Bridge;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.UserAgent;
-import org.apache.fop.fonts.FontInfo;
+
 import org.apache.xmlgraphics.image.loader.ImageManager;
 import org.apache.xmlgraphics.image.loader.ImageSessionContext;
+
+import org.apache.fop.fonts.FontInfo;
 
 /**
  * A FOP base implementation of a Batik BridgeContext.
  */
-@Slf4j
 public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
-    /** The font list. */
+    /** the font list */
     protected final FontInfo fontInfo;
-
+    /** image manager */
     protected final ImageManager imageManager;
+    /** image session context */
     protected final ImageSessionContext imageSessionContext;
-
+    /** link transform */
     protected final AffineTransform linkTransform;
 
     /**
      * Constructs a new bridge context.
-     *
-     * @param userAgent
-     *            the user agent
-     * @param loader
-     *            the Document Loader to use for referenced documents.
-     * @param fontInfo
-     *            the font list for the text painter, may be null in which case
-     *            text is painted as shapes
-     * @param imageManager
-     *            an image manager
-     * @param imageSessionContext
-     *            an image session context
-     * @param linkTransform
-     *            AffineTransform to properly place links, may be null
+     * @param userAgent the user agent
+     * @param loader the Document Loader to use for referenced documents.
+     * @param fontInfo the font list for the text painter, may be null
+     *                 in which case text is painted as shapes
+     * @param imageManager an image manager
+     * @param imageSessionContext an image session context
+     * @param linkTransform AffineTransform to properly place links,
+     *                      may be null
      */
-    public AbstractFOPBridgeContext(final UserAgent userAgent,
-            final DocumentLoader loader, final FontInfo fontInfo,
-            final ImageManager imageManager,
-            final ImageSessionContext imageSessionContext,
-            final AffineTransform linkTransform) {
+    public AbstractFOPBridgeContext(UserAgent userAgent,
+                            DocumentLoader loader,
+                            FontInfo fontInfo,
+                            ImageManager imageManager,
+                            ImageSessionContext imageSessionContext,
+                            AffineTransform linkTransform) {
         super(userAgent, loader);
         this.fontInfo = fontInfo;
         this.imageManager = imageManager;
@@ -77,23 +72,19 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Constructs a new bridge context.
-     *
-     * @param userAgent
-     *            the user agent
-     * @param fontInfo
-     *            the font list for the text painter, may be null in which case
-     *            text is painted as shapes
-     * @param imageManager
-     *            an image manager
-     * @param imageSessionContext
-     *            an image session context
-     * @param linkTransform
-     *            AffineTransform to properly place links, may be null
+     * @param userAgent the user agent
+     * @param fontInfo the font list for the text painter, may be null
+     *                 in which case text is painted as shapes
+     * @param imageManager an image manager
+     * @param imageSessionContext an image session context
+     * @param linkTransform AffineTransform to properly place links,
+     *                      may be null
      */
-    public AbstractFOPBridgeContext(final UserAgent userAgent,
-            final FontInfo fontInfo, final ImageManager imageManager,
-            final ImageSessionContext imageSessionContext,
-            final AffineTransform linkTransform) {
+    public AbstractFOPBridgeContext(UserAgent userAgent,
+                            FontInfo fontInfo,
+                            ImageManager imageManager,
+                            ImageSessionContext imageSessionContext,
+                            AffineTransform linkTransform) {
         super(userAgent);
         this.fontInfo = fontInfo;
         this.imageManager = imageManager;
@@ -103,26 +94,21 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Constructs a new bridge context.
-     *
-     * @param userAgent
-     *            the user agent
-     * @param fontInfo
-     *            the font list for the text painter, may be null in which case
-     *            text is painted as shapes
-     * @param imageManager
-     *            an image manager
-     * @param imageSessionContext
-     *            an image session context
+     * @param userAgent the user agent
+     * @param fontInfo the font list for the text painter, may be null
+     *                 in which case text is painted as shapes
+     * @param imageManager an image manager
+     * @param imageSessionContext an image session context
      */
-    public AbstractFOPBridgeContext(final UserAgent userAgent,
-            final FontInfo fontInfo, final ImageManager imageManager,
-            final ImageSessionContext imageSessionContext) {
+    public AbstractFOPBridgeContext(UserAgent userAgent,
+                            FontInfo fontInfo,
+                            ImageManager imageManager,
+                            ImageSessionContext imageSessionContext) {
         this(userAgent, fontInfo, imageManager, imageSessionContext, null);
     }
 
     /**
      * Returns the ImageManager to be used by the ImageElementBridge.
-     *
      * @return the image manager
      */
     public ImageManager getImageManager() {
@@ -131,33 +117,32 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Returns the ImageSessionContext to be used by the ImageElementBridge.
-     *
      * @return the image session context
      */
     public ImageSessionContext getImageSessionContext() {
         return this.imageSessionContext;
     }
 
-    protected void putElementBridgeConditional(final String className,
-            final String testFor) {
+    /**
+     * @param className name of bridge class to load and construct
+     * @param testFor class name to test for presence
+     */
+    protected void putElementBridgeConditional(String className, String testFor) {
         try {
             Class.forName(testFor);
-            // if we get here the test class is available
+            //if we get here the test class is available
 
-            final Class clazz = Class.forName(className);
-            final Constructor constructor = clazz
-                    .getConstructor(new Class[] { FontInfo.class });
-            putBridge((Bridge) constructor
-                    .newInstance(new Object[] { this.fontInfo }));
-        } catch (final Exception e) {
-            // simply ignore (bridges instantiated over this method are
-            // optional)
-            log.error("Exception", e);
+            Class clazz = Class.forName(className);
+            Constructor constructor = clazz.getConstructor(new Class[] {FontInfo.class});
+            putBridge((Bridge)constructor.newInstance(new Object[] {fontInfo}));
+        } catch (Throwable t) {
+            //simply ignore (bridges instantiated over this method are optional)
         }
     }
 
     // Make sure any 'sub bridge contexts' also have our bridges.
-    // TODO There's no matching method in the super-class here
+    //TODO There's no matching method in the super-class here
+    /** @return new bridge context */
     public abstract BridgeContext createBridgeContext();
 
 }

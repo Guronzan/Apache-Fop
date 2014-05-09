@@ -20,8 +20,8 @@
 package org.apache.fop.render;
 
 //Java
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.fop.apps.FOUserAgent;
 
@@ -36,17 +36,15 @@ public class RendererContext {
     private final AbstractRenderer renderer;
     private FOUserAgent userAgent;
 
-    private final Map<String, Object> props = new java.util.HashMap<>();
+    private final Map/*<String,Object>*/ props = new java.util.HashMap/*<String,Object>*/();
 
     /**
      * Constructor for this class. It takes a MIME type as parameter.
      *
-     * @param renderer
-     *            the current renderer
-     * @param mime
-     *            the MIME type of the output that's generated.
+     * @param renderer the current renderer
+     * @param mime the MIME type of the output that's generated.
      */
-    public RendererContext(final AbstractRenderer renderer, final String mime) {
+    public RendererContext(AbstractRenderer renderer, String mime) {
         this.renderer = renderer;
         this.mime = mime;
     }
@@ -55,89 +53,83 @@ public class RendererContext {
      * @return Returns the renderer.
      */
     public AbstractRenderer getRenderer() {
-        return this.renderer;
+        return renderer;
     }
 
     /**
      * Returns the MIME type associated with this RendererContext.
      *
-     * @return The MIME type (ex. application/pdf)
+     * @return   The MIME type (ex. application/pdf)
      */
     public String getMimeType() {
-        return this.mime;
+        return mime;
     }
 
     /**
      * Sets the user agent.
      *
-     * @param ua
-     *            The user agent
+     * @param ua  The user agent
      */
-    public void setUserAgent(final FOUserAgent ua) {
-        this.userAgent = ua;
+    public void setUserAgent(FOUserAgent ua) {
+        userAgent = ua;
     }
 
     /**
      * Returns the user agent.
      *
-     * @return The user agent
+     * @return   The user agent
      */
     public FOUserAgent getUserAgent() {
-        return this.userAgent;
+        return userAgent;
     }
 
     /**
      * Sets a property on the RendererContext.
      *
-     * @param name
-     *            The key of the property
-     * @param val
-     *            The value of the property
+     * @param name  The key of the property
+     * @param val   The value of the property
      */
-    public void setProperty(final String name, final Object val) {
-        this.props.put(name, val);
+    public void setProperty(String name, Object val) {
+        props.put(name, val);
     }
 
     /**
      * Returns a property from the RendererContext.
      *
-     * @param prop
-     *            The key of the property to return.
-     * @return The requested value, <code>null</code> if it doesn't exist.
+     * @param prop  The key of the property to return.
+     * @return      The requested value, <code>null</code> if it doesn't exist.
      */
-    public Object getProperty(final String prop) {
-        return this.props.get(prop);
+    public Object getProperty(String prop) {
+        return props.get(prop);
     }
 
     /**
      * Wrap the render context to allow easier access to its values.
      *
-     * @param context
-     *            the renderer context
+     * @param context the renderer context
      * @return the generic renderer context wrapper
      */
-    public static RendererContextWrapper wrapRendererContext(
-            final RendererContext context) {
-        final RendererContextWrapper wrapper = new RendererContextWrapper(
-                context);
+    public static RendererContextWrapper wrapRendererContext(RendererContext context) {
+        RendererContextWrapper wrapper = new RendererContextWrapper(context);
         return wrapper;
     }
 
     /** {@inheritDoc} **/
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("RendererContext{\n");
-        for (final Entry<String, Object> entry : this.props.entrySet()) {
-            sb.append("\t").append(entry.getKey()).append("=")
-                    .append(entry.getValue()).append("\n");
+        StringBuffer stringBuffer = new StringBuffer("RendererContext{\n");
+        Iterator it = props.keySet().iterator();
+        while (it.hasNext()) {
+            String key = (String)it.next();
+            Object value = props.get(key);
+            stringBuffer.append("\t" + key + "=" + value + "\n");
         }
-        sb.append("}");
-        return sb.toString();
+        stringBuffer.append("}");
+        return stringBuffer.toString();
     }
 
     /**
-     * Base class for a wrapper around RendererContext to access its properties
-     * in a type-safe, renderer-specific way.
+     * Base class for a wrapper around RendererContext to access its properties in a type-safe,
+     * renderer-specific way.
      */
     public static class RendererContextWrapper {
 
@@ -146,58 +138,54 @@ public class RendererContext {
 
         /**
          * Main constructor
-         *
-         * @param context
-         *            the RendererContent instance
+         * @param context the RendererContent instance
          */
-        public RendererContextWrapper(final RendererContext context) {
+        public RendererContextWrapper(RendererContext context) {
             this.context = context;
         }
 
         /** @return the user agent */
         public FOUserAgent getUserAgent() {
-            return this.context.getUserAgent();
+            return context.getUserAgent();
         }
 
         /** @return the currentXPosition */
         public int getCurrentXPosition() {
-            return ((Integer) this.context
-                    .getProperty(RendererContextConstants.XPOS)).intValue();
+            return ((Integer)context.getProperty(RendererContextConstants.XPOS)).intValue();
         }
 
         /** @return the currentYPosition */
         public int getCurrentYPosition() {
-            return ((Integer) this.context
-                    .getProperty(RendererContextConstants.YPOS)).intValue();
+            return ((Integer)context.getProperty(RendererContextConstants.YPOS)).intValue();
         }
 
         /** @return the width of the image */
         public int getWidth() {
-            return ((Integer) this.context
-                    .getProperty(RendererContextConstants.WIDTH)).intValue();
+            return ((Integer)context.getProperty(RendererContextConstants.WIDTH)).intValue();
         }
 
         /** @return the height of the image */
         public int getHeight() {
-            return ((Integer) this.context
-                    .getProperty(RendererContextConstants.HEIGHT)).intValue();
+            return ((Integer)context.getProperty(RendererContextConstants.HEIGHT)).intValue();
         }
 
         /** @return the foreign attributes */
         public Map getForeignAttributes() {
-            return (Map) this.context
-                    .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
+            return (Map)context.getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         }
 
         /** {@inheritDoc} */
-        @Override
         public String toString() {
-            return "RendererContextWrapper{" + "userAgent=" + getUserAgent()
-                    + "x=" + getCurrentXPosition() + "y="
-                    + getCurrentYPosition() + "width=" + getWidth() + "height="
-                    + getHeight() + "foreignAttributes="
-                    + getForeignAttributes() + "}";
+            return "RendererContextWrapper{"
+                + "userAgent=" + getUserAgent()
+                + "x=" + getCurrentXPosition()
+                + "y=" + getCurrentYPosition()
+                + "width=" + getWidth()
+                + "height=" + getHeight()
+                + "foreignAttributes=" + getForeignAttributes()
+            + "}";
 
         }
     }
 }
+

@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractNamedAFPObject.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AbstractNamedAFPObject.java 1151452 2011-07-27 12:50:12Z phancock $ */
 
 package org.apache.fop.afp.modca;
 
 import java.io.UnsupportedEncodingException;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.afp.AFPConstants;
 
 /**
- * This is the base class for all named data stream objects. A named data stream
- * object has an 8 byte EBCIDIC name.
+ * This is the base class for all named data stream objects.
+ * A named data stream object has an 8 byte EBCIDIC name.
  */
-@Slf4j
-public abstract class AbstractNamedAFPObject extends
-AbstractTripletStructuredObject {
+public abstract class AbstractNamedAFPObject extends AbstractTripletStructuredObject {
 
     private static final int DEFAULT_NAME_LENGTH = 8;
 
@@ -47,13 +43,12 @@ AbstractTripletStructuredObject {
     }
 
     /**
-     * Constructor for the ActiveEnvironmentGroup, this takes a name parameter
-     * which should be 8 characters long.
+     * Constructor for the ActiveEnvironmentGroup, this takes a
+     * name parameter which should be 8 characters long.
      *
-     * @param name
-     *            the object name
+     * @param name the object name
      */
-    protected AbstractNamedAFPObject(final String name) {
+    protected AbstractNamedAFPObject(String name) {
         this.name = name;
     }
 
@@ -72,35 +67,33 @@ AbstractTripletStructuredObject {
      * @return the name as a byte array in EBCIDIC encoding
      */
     public byte[] getNameBytes() {
-        final int afpNameLen = getNameLength();
-        final int nameLen = this.name.length();
+        int afpNameLen = getNameLength();
+        int nameLen = name.length();
         if (nameLen < afpNameLen) {
-            this.name = (this.name + "       ").substring(0, afpNameLen);
-        } else if (this.name.length() > afpNameLen) {
-            final String truncatedName = this.name.substring(nameLen
-                    - afpNameLen, nameLen);
-            log.warn("Constructor:: name '" + this.name + "'"
-                    + " truncated to " + afpNameLen + " chars" + " ('"
-                    + truncatedName + "')");
-            this.name = truncatedName;
+            name = (name + "       ").substring(0, afpNameLen);
+        } else if (name.length() > afpNameLen) {
+            String truncatedName = name.substring(nameLen - afpNameLen, nameLen);
+            LOG.warn("Constructor:: name '" + name + "'"
+                    + " truncated to " + afpNameLen + " chars"
+                    + " ('" + truncatedName + "')");
+            name = truncatedName;
         }
         byte[] nameBytes = null;
         try {
-            nameBytes = this.name.getBytes(AFPConstants.EBCIDIC_ENCODING);
-        } catch (final UnsupportedEncodingException usee) {
-            nameBytes = this.name.getBytes();
-            log.warn("Constructor:: UnsupportedEncodingException translating the name "
-                    + this.name);
+            nameBytes = name.getBytes(AFPConstants.EBCIDIC_ENCODING);
+        } catch (UnsupportedEncodingException usee) {
+            nameBytes = name.getBytes();
+            LOG.warn(
+                "Constructor:: UnsupportedEncodingException translating the name "
+                + name);
         }
         return nameBytes;
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected void copySF(final byte[] data, final byte type,
-            final byte category) {
+    protected void copySF(byte[] data, byte type, byte category) {
         super.copySF(data, type, category);
-        final byte[] nameData = getNameBytes();
+        byte[] nameData = getNameBytes();
         System.arraycopy(nameData, 0, data, 9, nameData.length);
     }
 
@@ -116,15 +109,13 @@ AbstractTripletStructuredObject {
     /**
      * Sets the name of this object
      *
-     * @param name
-     *            the object name
+     * @param name the object name
      */
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return getName();
     }

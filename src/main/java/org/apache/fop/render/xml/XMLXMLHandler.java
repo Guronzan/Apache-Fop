@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: XMLXMLHandler.java 557337 2007-07-18 17:37:14Z adelmelle $ */
+/* $Id: XMLXMLHandler.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.xml;
+
+import org.xml.sax.ContentHandler;
 
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.XMLHandler;
 import org.apache.fop.util.DOM2SAX;
-import org.xml.sax.ContentHandler;
 
 /**
  * XML handler for the XML renderer.
@@ -34,25 +35,22 @@ public class XMLXMLHandler implements XMLHandler {
     public static final String HANDLER = "handler";
 
     /** {@inheritDoc} */
-    @Override
-    public void handleXML(final RendererContext context,
-            final org.w3c.dom.Document doc, final String ns) throws Exception {
-        final ContentHandler handler = (ContentHandler) context
-                .getProperty(HANDLER);
+    public void handleXML(RendererContext context,
+                org.w3c.dom.Document doc, String ns) throws Exception {
+        ContentHandler handler = (ContentHandler) context.getProperty(HANDLER);
 
         new DOM2SAX(handler).writeDocument(doc, true);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean supportsRenderer(final Renderer renderer) {
-        return renderer instanceof XMLRenderer;
+    public boolean supportsRenderer(Renderer renderer) {
+        return (renderer instanceof XMLRenderer);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNamespace() {
-        return null; // Handle all XML content
+        return null; //Handle all XML content
     }
 
 }
+

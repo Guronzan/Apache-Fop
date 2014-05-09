@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfParagraphContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfParagraphContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,18 +29,16 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Interface for RtfElements that can contain RtfParagraphs
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Interface for RtfElements that can contain RtfParagraphs.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public interface IRtfParagraphContainer {
     /**
      * Close current paragraph, if any, and start a new one with default
      * attributes.
-     * 
-     * @throws IOException
-     *             for I/O problems.
+     * @throws IOException for I/O problems.
      * @return new paragraph object
      */
     RtfParagraph newParagraph() throws IOException;
@@ -48,13 +46,10 @@ public interface IRtfParagraphContainer {
     /**
      * Close current paragraph, if any, and start a new one with specified
      * attributes
-     * 
-     * @param attr
-     *            attributes for new paragraph
+     * @param attr attributes for new paragraph
      * @return new paragraph object
-     * @throws IOException
-     *             for I/O problems.
+     * @throws IOException for I/O problems.
      */
-    RtfParagraph newParagraph(final RtfAttributes attr) throws IOException;
+    RtfParagraph newParagraph(RtfAttributes attr) throws IOException;
 
 }

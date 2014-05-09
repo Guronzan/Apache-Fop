@@ -25,12 +25,11 @@ import java.io.OutputStream;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * The Presentation Environment Control structured field specifies parameters
- * that affect the rendering of presentation data and the appearance that is to
- * be assumed by the presentation device.
+ * The Presentation Environment Control structured field specifies parameters that
+ * affect the rendering of presentation data and the appearance that is to be assumed
+ * by the presentation device.
  */
-public class PresentationEnvironmentControl extends
-        AbstractTripletStructuredObject {
+public class PresentationEnvironmentControl extends AbstractTripletStructuredObject {
 
     /**
      * Main constructor
@@ -39,15 +38,14 @@ public class PresentationEnvironmentControl extends
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[11];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[11];
         copySF(data, Type.CONTROL, Category.DOCUMENT);
-        final int tripletDataLen = getTripletDataLength();
-        final byte[] len = BinaryUtils.convert(10 + tripletDataLen);
+        int tripletDataLen = getTripletDataLength();
+        byte[] len = BinaryUtils.convert(10 + tripletDataLen);
         data[1] = len[0];
         data[2] = len[1];
-        data[9] = 0x00; // Reserved; must be zero
+        data[9] = 0x00;  // Reserved; must be zero
         data[10] = 0x00; // Reserved; must be zero
 
         os.write(data);
@@ -55,45 +53,46 @@ public class PresentationEnvironmentControl extends
         writeTriplets(os);
     }
 
-    // /**
-    // * Sets the object offset
-    // */
-    // public void setObjectOffset() {
-    // addTriplet(new ObjectOffsetTriplet());
-    // }
-    //
-    // /**
-    // * Sets the rendering intent
-    // */
-    // public void setRenderingIntent() {
-    // addTriplet(new RenderingIntentTriplet());
-    // }
-    //
-    // /**
-    // * Sets the device appearance
-    // */
-    // public void setDeviceAppearance() {
-    // addTriplet(new DeviceAppearanceTriplet());
-    // }
+//  /**
+//  * Sets the object offset
+//  */
+// public void setObjectOffset() {
+//     addTriplet(new ObjectOffsetTriplet());
+// }
+//
+// /**
+//  * Sets the rendering intent
+//  */
+// public void setRenderingIntent() {
+//     addTriplet(new RenderingIntentTriplet());
+// }
+//
+// /**
+//  * Sets the device appearance
+//  */
+// public void setDeviceAppearance() {
+//     addTriplet(new DeviceAppearanceTriplet());
+// }
+
 
     // TODO
-    // private class DeviceAppearanceTriplet extends AbstractTriplet {
-    // public DeviceAppearanceTriplet() {
-    // super(AbstractTriplet.DEVICE_APPEARANCE);
-    // }
-    // }
+//    private class DeviceAppearanceTriplet extends AbstractTriplet {
+//        public DeviceAppearanceTriplet() {
+//            super(AbstractTriplet.DEVICE_APPEARANCE);
+//        }
+//    }
 
     // TODO
-    // private class RenderingIntentTriplet extends AbstractTriplet {
-    // public RenderingIntentTriplet() {
-    // super(AbstractTriplet.RENDERING_INTENT);
-    // }
-    // }
+//    private class RenderingIntentTriplet extends AbstractTriplet {
+//        public RenderingIntentTriplet() {
+//            super(AbstractTriplet.RENDERING_INTENT);
+//        }
+//    }
 
     // TODO
-    // private class ObjectOffsetTriplet extends AbstractTriplet {
-    // public ObjectOffsetTriplet() {
-    // super(AbstractTriplet.OBJECT_OFFSET);
-    // }
-    // }
+//    private class ObjectOffsetTriplet extends AbstractTriplet {
+//        public ObjectOffsetTriplet() {
+//            super(AbstractTriplet.OBJECT_OFFSET);
+//        }
+//    }
 }

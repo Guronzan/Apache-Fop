@@ -21,6 +21,7 @@ package org.apache.fop.fo.properties;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.expr.PropertyException;
 
 /**
  * A shorthand parser for the font shorthand property
@@ -30,10 +31,11 @@ public class FontShorthandParser extends GenericShorthandParser {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Property getValueForProperty(final int propId,
-            final Property property, final PropertyMaker maker,
-            final PropertyList propertyList) {
+    public Property getValueForProperty(int propId,
+                                               Property property,
+                                               PropertyMaker maker,
+                                               PropertyList propertyList)
+                    throws PropertyException {
 
         int index = -1;
         Property newProp;
@@ -57,9 +59,9 @@ public class FontShorthandParser extends GenericShorthandParser {
             index = 5;
             break;
         default:
-            // nop
+            //nop
         }
-        newProp = property.getList().get(index);
+        newProp = (Property) property.getList().get(index);
         return newProp;
     }
 }

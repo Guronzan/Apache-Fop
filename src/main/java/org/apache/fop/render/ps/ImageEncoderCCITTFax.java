@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageEncoderCCITTFax.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ImageEncoderCCITTFax.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.ps;
 
@@ -36,39 +36,35 @@ public class ImageEncoderCCITTFax implements ImageEncoder {
 
     /**
      * Main constructor.
-     * 
-     * @param ccitt
-     *            the CCITT encoded image
+     * @param ccitt the CCITT encoded image
      */
-    public ImageEncoderCCITTFax(final ImageRawCCITTFax ccitt) {
+    public ImageEncoderCCITTFax(ImageRawCCITTFax ccitt) {
         this.ccitt = ccitt;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeTo(final OutputStream out) throws IOException {
-        this.ccitt.writeTo(out);
+    public void writeTo(OutputStream out) throws IOException {
+        ccitt.writeTo(out);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getImplicitFilter() {
-        final PSDictionary dict = new PSDictionary();
-        dict.put("/Columns", (this.ccitt.getSize().getWidthPx()));
-        final int compression = this.ccitt.getCompression();
+        PSDictionary dict = new PSDictionary();
+        dict.put("/Columns", new Integer(ccitt.getSize().getWidthPx()));
+        int compression = ccitt.getCompression();
         switch (compression) {
-        case TIFFImage.COMP_FAX_G3_1D:
-            dict.put("/K", (0));
+        case TIFFImage.COMP_FAX_G3_1D :
+            dict.put("/K", new Integer(0));
             break;
-        case TIFFImage.COMP_FAX_G3_2D:
-            dict.put("/K", (1));
+        case TIFFImage.COMP_FAX_G3_2D :
+            dict.put("/K", new Integer(1));
             break;
-        case TIFFImage.COMP_FAX_G4_2D:
-            dict.put("/K", (-1));
+        case TIFFImage.COMP_FAX_G4_2D :
+            dict.put("/K", new Integer(-1));
             break;
         default:
-            throw new IllegalStateException("Invalid compression scheme: "
-                    + compression);
+            throw new IllegalStateException(
+                    "Invalid compression scheme: " + compression);
         }
 
         return dict.toString() + " /CCITTFaxDecode";

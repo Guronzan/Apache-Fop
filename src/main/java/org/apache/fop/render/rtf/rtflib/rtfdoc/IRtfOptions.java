@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfOptions.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfOptions.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -31,17 +31,14 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 public interface IRtfOptions {
     /**
-     * Sets the compression rate for the external graphic in percent.
-     * 
-     * @param percent
-     *            Compression rate
+     * Sets  the compression rate for the external graphic in percent.
+     * @param percent Compression rate
      */
-    void setRtfExternalGraphicCompressionRate(final int percent);
+    void setRtfExternalGraphicCompressionRate (int percent);
 
     /**
-     * Gets the compression rate for the external graphic in percent.
-     * 
+     * Gets  the compression rate for the external graphic in percent.
      * @return Compression rate
      */
-    int getRtfExternalGraphicCompressionRate();
+    int getRtfExternalGraphicCompressionRate ();
 }

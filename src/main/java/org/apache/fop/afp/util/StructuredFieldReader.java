@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: StructuredFieldReader.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: StructuredFieldReader.java 1005350 2010-10-07 07:41:48Z jeremias $ */
 
 package org.apache.fop.afp.util;
 
@@ -24,12 +24,12 @@ import java.io.InputStream;
 
 /**
  * A helper class to read structured fields from a MO:DCA document. Each
- * component of a mixed object document is explicitly defined and delimited in
- * the data. This is accomplished through the use of MO:DCA data structures,
+ * component of a mixed object document is explicitly defined and delimited
+ * in the data. This is accomplished through the use of MO:DCA data structures,
  * called structured fields. Structured fields are used to envelop document
- * components and to provide commands and information to applications using the
- * data. Structured fields may contain one or more parameters. Each parameter
- * provides one value from a set of values defined by the architecture.
+ * components and to provide commands and information to applications using
+ * the data. Structured fields may contain one or more parameters. Each
+ * parameter provides one value from a set of values defined by the architecture.
  * <p/>
  * MO:DCA structured fields consist of two parts: an introducer that identifies
  * the length and type of the structured field, and data that provides the
@@ -47,92 +47,34 @@ public class StructuredFieldReader {
 
     /**
      * The constructor for the StructuredFieldReader
-     * 
-     * @param inputStream
-     *            the input stream to process
+     * @param inputStream the input stream to process
      */
-    public StructuredFieldReader(final InputStream inputStream) {
+    public StructuredFieldReader(InputStream inputStream) {
         this.inputStream = inputStream;
     }
 
     /**
-     * Get the next structured field as identified by the identifer parameter
-     * (this must be a valid MO:DCA structured field.
-     * 
-     * @param identifier
-     *            the three byte identifier
-     * @throws IOException
-     *             if an I/O exception occurred
+     * Get the next structured field as identified by the identifier
+     * parameter (this must be a valid MO:DCA structured field).
+     * Note: The returned data does not include the field length and identifier!
+     * @param identifier the three byte identifier
+     * @throws IOException if an I/O exception occurred
      * @return the next structured field or null when there are no more
      */
-    public byte[] getNext(final byte[] identifier) throws IOException {
+    public byte[] getNext(byte[] identifier) throws IOException {
 
-        int bufferPointer = 0;
-        final byte[] bufferData = new byte[identifier.length + 2];
-        for (int x = 0; x < identifier.length; x++) {
-            bufferData[x] = 0x00;
+        byte[] bytes = AFPResourceUtil.getNext(identifier, this.inputStream);
+
+        if (bytes != null) {
+            //Users of this class expect the field data without length and identifier
+            int srcPos = 2 + identifier.length;
+            byte[] tmp = new byte[bytes.length - srcPos];
+            System.arraycopy(bytes, srcPos, tmp, 0, tmp.length);
+            bytes = tmp;
         }
 
-        int c;
-        while ((c = this.inputStream.read()) > -1) {
+        return bytes;
 
-            bufferData[bufferPointer] = (byte) c;
-
-            // Check the last characters in the buffer
-            int index = 0;
-            boolean found = true;
-
-            for (int i = identifier.length - 1; i > -1; i--) {
-
-                int p = bufferPointer - index;
-                if (p < 0) {
-                    p = bufferData.length + p;
-                }
-
-                index++;
-
-                if (identifier[i] != bufferData[p]) {
-                    found = false;
-                    break;
-                }
-
-            }
-
-            if (found) {
-
-                final byte[] length = new byte[2];
-
-                int a = bufferPointer - identifier.length;
-                if (a < 0) {
-                    a = bufferData.length + a;
-                }
-
-                int b = bufferPointer - identifier.length - 1;
-                if (b < 0) {
-                    b = bufferData.length + b;
-                }
-
-                length[0] = bufferData[b];
-                length[1] = bufferData[a];
-
-                final int reclength = ((length[0] & 0xFF) << 8)
-                        + (length[1] & 0xFF) - identifier.length - 2;
-
-                final byte[] retval = new byte[reclength];
-
-                this.inputStream.read(retval, 0, reclength);
-
-                return retval;
-
-            }
-
-            bufferPointer++;
-            if (bufferPointer >= bufferData.length) {
-                bufferPointer = 0;
-            }
-
-        }
-
-        return null;
     }
+
 }

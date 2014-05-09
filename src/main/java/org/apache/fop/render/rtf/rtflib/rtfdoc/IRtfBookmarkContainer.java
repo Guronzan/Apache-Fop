@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfBookmarkContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfBookmarkContainer.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,20 +29,18 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * RTF Bookmark container interface.
- * 
- * @author <a href="mailto:a.putz@skynamics.com">Andreas Putz</a>
+ * <p>RTF Bookmark container interface.</p>
+ *
+ * <p>This work was authored by Andreas Putz (a.putz@skynamics.com).</p>
  */
 public interface IRtfBookmarkContainer {
 
     /**
      * Create a new RTF bookmark.
-     * 
-     * @param bookmark
-     *            Name of the bookmark
+     * @param bookmark Name of the bookmark
      * @return RTF bookmark
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    RtfBookmark newBookmark(final String bookmark) throws IOException;
+    RtfBookmark newBookmark (String bookmark) throws IOException;
 }
+

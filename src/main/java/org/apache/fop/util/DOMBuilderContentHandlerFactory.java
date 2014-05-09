@@ -31,50 +31,44 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 
 /**
- * ContentHandlerFactory which constructs ContentHandlers that build DOM
- * Documents.
+ * ContentHandlerFactory which constructs ContentHandlers that build DOM Documents.
  */
 public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
 
-    private static SAXTransformerFactory tFactory = (SAXTransformerFactory) SAXTransformerFactory
-            .newInstance();
+    private static SAXTransformerFactory tFactory
+            = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
 
-    private final String namespaceURI;
-    private final DOMImplementation domImplementation;
+    private String namespaceURI;
+    private DOMImplementation domImplementation;
 
     /**
      * Main Constructor
-     *
-     * @param namespaceURI
-     *            the main namespace URI for the DOM to be parsed
-     * @param domImplementation
-     *            the DOMImplementation to use for build the DOM
+     * @param namespaceURI the main namespace URI for the DOM to be parsed
+     * @param domImplementation the DOMImplementation to use for build the DOM
      */
-    public DOMBuilderContentHandlerFactory(final String namespaceURI,
-            final DOMImplementation domImplementation) {
+    public DOMBuilderContentHandlerFactory(String namespaceURI,
+                DOMImplementation domImplementation) {
         this.namespaceURI = namespaceURI;
         this.domImplementation = domImplementation;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedNamespaces() {
-        return new String[] { this.namespaceURI };
+        return new String[] {namespaceURI};
     }
 
     /** {@inheritDoc} */
-    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new Handler();
     }
 
-    private class Handler extends DelegatingContentHandler implements
-            ContentHandlerFactory.ObjectSource {
+    private class Handler extends DelegatingContentHandler
+                implements ContentHandlerFactory.ObjectSource {
 
         private Document doc;
         private ObjectBuiltListener obListener;
 
-        public Handler() {
+        public Handler() throws SAXException {
             super();
         }
 
@@ -85,7 +79,6 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
         public Object getObject() {
             return getDocument();
         }
@@ -93,19 +86,16 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void setObjectBuiltListener(final ObjectBuiltListener listener) {
+        public void setObjectBuiltListener(ObjectBuiltListener listener) {
             this.obListener = listener;
         }
 
         /**
          * {@inheritDoc}
          */
-        @Override
         public void startDocument() throws SAXException {
-            // Suppress startDocument() call if doc has not been set, yet. It
-            // will be done later.
-            if (this.doc != null) {
+            //Suppress startDocument() call if doc has not been set, yet. It will be done later.
+            if (doc != null) {
                 super.startDocument();
             }
         }
@@ -113,25 +103,19 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public void startElement(final String uri, final String localName,
-                final String qName, final Attributes atts) throws SAXException {
-            if (this.doc == null) {
+        public void startElement(String uri, String localName, String qName, Attributes atts)
+                    throws SAXException {
+            if (doc == null) {
                 TransformerHandler handler;
                 try {
                     handler = tFactory.newTransformerHandler();
-                } catch (final TransformerConfigurationException e) {
-                    throw new SAXException(
-                            "Error creating a new TransformerHandler", e);
+                } catch (TransformerConfigurationException e) {
+                    throw new SAXException("Error creating a new TransformerHandler", e);
                 }
-                this.doc = DOMBuilderContentHandlerFactory.this.domImplementation
-                        .createDocument(
-                                DOMBuilderContentHandlerFactory.this.namespaceURI,
-                                qName, null);
-                // It's easier to work with an empty document, so remove the
-                // root element
-                this.doc.removeChild(this.doc.getDocumentElement());
-                handler.setResult(new DOMResult(this.doc));
+                doc = domImplementation.createDocument(namespaceURI, qName, null);
+                //It's easier to work with an empty document, so remove the root element
+                doc.removeChild(doc.getDocumentElement());
+                handler.setResult(new DOMResult(doc));
                 setDelegateContentHandler(handler);
                 setDelegateLexicalHandler(handler);
                 setDelegateDTDHandler(handler);
@@ -143,11 +127,10 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
-        @Override
         public void endDocument() throws SAXException {
             super.endDocument();
-            if (this.obListener != null) {
-                this.obListener.notifyObjectBuilt(getObject());
+            if (obListener != null) {
+                obListener.notifyObjectBuilt(getObject());
             }
         }
 

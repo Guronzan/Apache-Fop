@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: LayoutException.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LayoutException.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.layoutmgr;
 
@@ -26,53 +26,45 @@ import org.apache.fop.events.EventExceptionManager.ExceptionFactory;
 import org.apache.fop.events.EventFormatter;
 
 /**
- * Exception thrown by FOP if an unrecoverable layout error occurs. An example:
- * An area overflows a viewport that has overflow="error-if-overflow".
+ * Exception thrown by FOP if an unrecoverable layout error occurs. An example: An area overflows
+ * a viewport that has overflow="error-if-overflow".
  *
- * @todo Discuss if this should become a checked exception.
+ * TODO Discuss if this should become a checked exception.
  */
 public class LayoutException extends RuntimeException {
 
     private static final long serialVersionUID = 5157080040923740433L;
 
     private String localizedMessage;
-    private final LayoutManager layoutManager;
+    private LayoutManager layoutManager;
 
     /**
      * Constructs a new layout exception with the specified detail message.
-     * 
-     * @param message
-     *            the detail message.
+     * @param message the detail message.
      */
-    public LayoutException(final String message) {
+    public LayoutException(String message) {
         this(message, null);
     }
 
     /**
      * Constructs a new layout exception with the specified detail message.
-     * 
-     * @param message
-     *            the detail message
-     * @param lm
-     *            the layout manager that throws the exception
+     * @param message the detail message
+     * @param lm the layout manager that throws the exception
      */
-    public LayoutException(final String message, final LayoutManager lm) {
+    public LayoutException(String message, LayoutManager lm) {
         super(message);
         this.layoutManager = lm;
     }
 
     /**
      * Sets the localized message for this exception.
-     * 
-     * @param msg
-     *            the localized message
+     * @param msg the localized message
      */
-    public void setLocalizedMessage(final String msg) {
+    public void setLocalizedMessage(String msg) {
         this.localizedMessage = msg;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalizedMessage() {
         if (this.localizedMessage != null) {
             return this.localizedMessage;
@@ -83,7 +75,6 @@ public class LayoutException extends RuntimeException {
 
     /**
      * Returns the layout manager that detected the problem.
-     * 
      * @return the layout manager (or null)
      */
     public LayoutManager getLayoutManager() {
@@ -94,13 +85,11 @@ public class LayoutException extends RuntimeException {
     public static class LayoutExceptionFactory implements ExceptionFactory {
 
         /** {@inheritDoc} */
-        @Override
-        public Throwable createException(final Event event) {
-            final Object source = event.getSource();
-            final LayoutManager lm = source instanceof LayoutManager ? (LayoutManager) source
-                    : null;
-            final String msg = EventFormatter.format(event, Locale.ENGLISH);
-            final LayoutException ex = new LayoutException(msg, lm);
+        public Throwable createException(Event event) {
+            Object source = event.getSource();
+            LayoutManager lm = (source instanceof LayoutManager) ? (LayoutManager)source : null;
+            String msg = EventFormatter.format(event, Locale.ENGLISH);
+            LayoutException ex = new LayoutException(msg, lm);
             if (!Locale.ENGLISH.equals(Locale.getDefault())) {
                 ex.setLocalizedMessage(EventFormatter.format(event));
             }
@@ -108,8 +97,7 @@ public class LayoutException extends RuntimeException {
         }
 
         /** {@inheritDoc} */
-        @Override
-        public Class getExceptionClass() {
+        public Class<LayoutException> getExceptionClass() {
             return LayoutException.class;
         }
 

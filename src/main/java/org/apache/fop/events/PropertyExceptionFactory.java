@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PropertyExceptionFactory.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PropertyExceptionFactory.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.events;
 
@@ -30,10 +30,9 @@ import org.apache.fop.fo.expr.PropertyException;
 public class PropertyExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
-    @Override
-    public Throwable createException(final Event event) {
-        final String msg = EventFormatter.format(event, Locale.ENGLISH);
-        final PropertyException ex = new PropertyException(msg);
+    public Throwable createException(Event event) {
+        String msg = EventFormatter.format(event, Locale.ENGLISH);
+        PropertyException ex = new PropertyException(msg);
         if (!Locale.ENGLISH.equals(Locale.getDefault())) {
             ex.setLocalizedMessage(EventFormatter.format(event));
         }
@@ -41,8 +40,7 @@ public class PropertyExceptionFactory implements ExceptionFactory {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Class getExceptionClass() {
+    public Class<PropertyException> getExceptionClass() {
         return PropertyException.class;
     }
 

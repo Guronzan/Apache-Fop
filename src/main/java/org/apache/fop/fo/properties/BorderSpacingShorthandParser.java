@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BorderSpacingShorthandParser.java 627367 2008-02-13 12:03:30Z maxberger $ */
+/* $Id: BorderSpacingShorthandParser.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.properties;
 
@@ -29,18 +29,18 @@ import org.apache.fop.fo.expr.PropertyException;
  */
 public class BorderSpacingShorthandParser extends GenericShorthandParser {
 
-    @Override
-    protected Property convertValueForProperty(final int propId,
-            final Property property, final PropertyMaker maker,
-            final PropertyList propertyList) throws PropertyException {
-        final List lst = property.getList();
+    /** {@inheritDoc} */
+    protected Property convertValueForProperty(int propId, Property property,
+            PropertyMaker maker, PropertyList propertyList)
+            throws PropertyException {
+        List lst = property.getList();
         if (lst != null) {
             if (lst.size() == 1) {
-                final Property len = (Property) lst.get(0);
+                Property len = (Property)lst.get(0);
                 return new LengthPairProperty(len);
             } else if (lst.size() == 2) {
-                final Property ipd = (Property) lst.get(0);
-                final Property bpd = (Property) lst.get(1);
+                Property ipd = (Property)lst.get(0);
+                Property bpd = (Property)lst.get(1);
                 return new LengthPairProperty(ipd, bpd);
             }
         }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PCLEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: PCLEventProducer.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.pcl;
 
@@ -28,35 +28,30 @@ import org.apache.fop.events.EventProducer;
 public interface PCLEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static PCLEventProducer get(final EventBroadcaster broadcaster) {
-            return (PCLEventProducer) broadcaster
-                    .getEventProducerFor(PCLEventProducer.class);
+        public static PCLEventProducer get(EventBroadcaster broadcaster) {
+            return (PCLEventProducer)broadcaster.getEventProducerFor(
+                    PCLEventProducer.class);
         }
     }
 
     /**
      * Paper type could not be determined. Falling back to another.
-     * 
-     * @param source
-     *            the event source
-     * @param pageWidth
-     *            the page width (in millipoints)
-     * @param pageHeight
-     *            the page height (in millipoints)
-     * @param fallbackPaper
-     *            the paper type that will be used instead
+     * @param source the event source
+     * @param pageWidth the page width (in millipoints)
+     * @param pageHeight the page height (in millipoints)
+     * @param fallbackPaper the paper type that will be used instead
      * @event.severity WARN
      */
-    void paperTypeUnavailable(final Object source, final long pageWidth,
-            final long pageHeight, final String fallbackPaper);
+    void paperTypeUnavailable(Object source, long pageWidth, long pageHeight, String fallbackPaper);
 
 }

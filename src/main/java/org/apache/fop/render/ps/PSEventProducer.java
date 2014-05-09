@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PSEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: PSEventProducer.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.ps;
 
@@ -28,33 +28,36 @@ import org.apache.fop.events.EventProducer;
 public interface PSEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static PSEventProducer get(final EventBroadcaster broadcaster) {
-            return (PSEventProducer) broadcaster
-                    .getEventProducerFor(PSEventProducer.class);
+        public static PSEventProducer get(EventBroadcaster broadcaster) {
+            return (PSEventProducer)broadcaster.getEventProducerFor(
+                    PSEventProducer.class);
         }
     }
 
     /**
      * A PostScript dictionary could not be parsed.
-     * 
-     * @param source
-     *            the event source
-     * @param content
-     *            the PostScript content
-     * @param e
-     *            the original exception
+     * @param source the event source
+     * @param content the PostScript content
+     * @param e the original exception
      * @event.severity ERROR
      */
-    void postscriptDictionaryParseError(final Object source,
-            final String content, final Exception e);
+    void postscriptDictionaryParseError(Object source, String content, Exception e);
 
+    /**
+     * PostScript Level 3 features are necessary.
+     *
+     * @param source the event source
+     * @event.severity FATAL
+     */
+    void postscriptLevel3Needed(Object source);
 }

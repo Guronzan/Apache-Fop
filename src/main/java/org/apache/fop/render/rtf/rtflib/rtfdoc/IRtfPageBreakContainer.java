@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfPageBreakContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfPageBreakContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,17 +29,14 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Interface for RtfElements that can contain RtfPageBreaks
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Interface for RtfElements that can contain RtfPageBreaks.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public interface IRtfPageBreakContainer {
-    /**
-     * add a page break
-     * 
-     * @throws IOException
-     *             for I/O problems
+    /** add a page break
+     * @throws IOException for I/O problems
      */
     void newPageBreak() throws IOException;
 }

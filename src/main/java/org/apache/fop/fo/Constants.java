@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-/* $Id: Constants.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: Constants.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo;
 
 /**
- * Definition of constants used throughout FOP. There are sets of constants
- * describing:
+ * Definition of constants used throughout FOP.
+ * There are sets of constants describing:
  * <ul>
  * <li>Input and output formats</li>
  * <li>Formatting objects (<em>FO_XXX</em>)</li>
  * <li>Formatting properties (<em>PR_XXX</em>)</li>
- * <li>Enumerated values used in formatting properties (<em>EN_XXX</em>)</li>
+ * <li>Enumerated values used in formatting properties and traits (<em>EN_XXX</em>)</li>
  * </ul>
  */
 public interface Constants {
@@ -204,18 +204,18 @@ public interface Constants {
 
     // Masks
     /**
-     * For compound properties the property constant value is shifted by this
-     * amount. The low order bits hold the constant for the component property.
+     * For compound properties the property constant value is shifted by this amount.
+     * The low order bits hold the constant for the component property.
      */
     int COMPOUND_SHIFT = 9;
     /**
-     * Mask that when applied to a compound property returns the constant of the
-     * component property.
+     * Mask that when applied to a compound property returns the constant of
+     * the component property.
      */
     int PROPERTY_MASK = (1 << COMPOUND_SHIFT) - 1;
     /**
-     * Mask that when applied to a compound property returns the constant of the
-     * compound property.
+     * Mask that when applied to a compound property returns the constant of
+     * the compound property.
      */
     int COMPOUND_MASK = ~PROPERTY_MASK;
     /** Number of compund properties defined */
@@ -762,31 +762,31 @@ public interface Constants {
     int PR_Z_INDEX = 269;
     /** Property constant - FOP proprietary: Custom extension for line alignment */
     int PR_X_BLOCK_PROGRESSION_UNIT = 270;
-    /**
-     * Property constant - FOP proprietary: limit for widow content in lists and
-     * tables
-     */
+    /** Property constant - FOP proprietary: limit for widow content in lists and tables */
     int PR_X_WIDOW_CONTENT_LIMIT = 271;
-    /**
-     * Property constant - FOP proprietary: limit for orphan content in lists
-     * and tables
-     */
+    /** Property constant - FOP proprietary: limit for orphan content in lists and tables */
     int PR_X_ORPHAN_CONTENT_LIMIT = 272;
     /**
      * Property constant - FOP proprietary: disable balancing of columns in
      * multi-column layouts.
      */
     int PR_X_DISABLE_COLUMN_BALANCING = 273;
-    /** Property constant - FOP proprietary: FOP internal use for accessibility */
-    int PR_X_PTR = 274;
     /**
      * Property constant - FOP proprietary: alternative text for e-g and i-f-o.
      * Used for accessibility.
      */
-    int PR_X_ALT_TEXT = 275;
+    int PR_X_ALT_TEXT = 274;
+    /** Property constant - FOP proprietary prototype (in XSL-FO 2.0 Requirements) */
+    int PR_X_XML_BASE = 275;
+    /**
+     * Property constant - FOP proprietary extension (see NumberConverter) used
+     * to perform additional control over number conversion when generating page
+     * numbers.
+     */
+    int PR_X_NUMBER_CONVERSION_FEATURES = 276;
 
     /** Number of property constants defined */
-    int PROPERTY_COUNT = 275;
+    int PROPERTY_COUNT = 276;
 
     // compound property constants
 
@@ -1186,15 +1186,9 @@ public interface Constants {
     int EN_STATUS_BAR = 185;
     /** Enumeration constant -- for page-position, XSL 1.1 */
     int EN_ONLY = 186;
-    /**
-     * Enumeration constant -- for instream-foreign-object and external-graphic,
-     * XSL 1.1
-     */
+    /** Enumeration constant -- for instream-foreign-object and external-graphic, XSL 1.1 */
     int EN_SCALE_DOWN_TO_FIT = 187;
-    /**
-     * Enumeration constant -- for instream-foreign-object and external-graphic,
-     * XSL 1.1
-     */
+    /** Enumeration constant -- for instream-foreign-object and external-graphic, XSL 1.1 */
     int EN_SCALE_UP_TO_FIT = 188;
     /** Enumeration constant -- for fo:basic-link show-destination */
     int EN_REPLACE = 189;
@@ -1220,6 +1214,16 @@ public interface Constants {
     int EN_NO_LINK = 199;
     /** Enumeration constant -- XSL 1.1 */
     int EN_ALTERNATE = 200;
+    /** Enumeration constant -- for *-direction traits */
+    int EN_LR = 201; // left to right
+    /** Enumeration constant -- for *-direction traits */
+    int EN_RL = 202; // right to left
+    /** Enumeration constant -- for *-direction traits */
+    int EN_TB = 203; // top to bottom
+    /** Enumeration constant -- for *-direction traits */
+    int EN_BT = 204; // bottom to top
+    /** Enumeration constant */
+    int EN_TB_LR = 205; // for top-to-bottom, left-to-right writing mode
     /** Number of enumeration constants defined */
-    int ENUM_COUNT = 200;
+    int ENUM_COUNT = 205;
 }

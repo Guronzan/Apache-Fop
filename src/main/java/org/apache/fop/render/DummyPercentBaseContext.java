@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: DummyPercentBaseContext.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: DummyPercentBaseContext.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render;
 
@@ -34,7 +34,6 @@ public final class DummyPercentBaseContext implements PercentBaseContext {
 
     /**
      * Returns an instance of this dummy implementation
-     * 
      * @return an instance of this dummy implementation
      */
     public static DummyPercentBaseContext getInstance() {
@@ -42,8 +41,7 @@ public final class DummyPercentBaseContext implements PercentBaseContext {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int getBaseLength(final int lengthBase, final FObj fo) {
+    public int getBaseLength(int lengthBase, FObj fo) {
         return 0;
     }
 }

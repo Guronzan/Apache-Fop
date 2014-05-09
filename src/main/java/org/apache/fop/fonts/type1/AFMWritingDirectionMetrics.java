@@ -31,77 +31,65 @@ public class AFMWritingDirectionMetrics {
 
     /**
      * Returns the UnderlinePosition value.
-     * 
      * @return the underlinePosition
      */
     public Number getUnderlinePosition() {
-        return this.underlinePosition;
+        return underlinePosition;
     }
 
     /**
      * Sets the UnderlinePosition value.
-     * 
-     * @param underlinePosition
-     *            the underlinePosition to set
+     * @param underlinePosition the underlinePosition to set
      */
-    public void setUnderlinePosition(final Number underlinePosition) {
+    public void setUnderlinePosition(Number underlinePosition) {
         this.underlinePosition = underlinePosition;
     }
 
     /**
      * Returns the UnderlineThickness value.
-     * 
      * @return the underlineThickness
      */
     public Number getUnderlineThickness() {
-        return this.underlineThickness;
+        return underlineThickness;
     }
 
     /**
      * Sets the UnderlineThickness value.
-     * 
-     * @param underlineThickness
-     *            the underlineThickness to set
+     * @param underlineThickness the underlineThickness to set
      */
-    public void setUnderlineThickness(final Number underlineThickness) {
+    public void setUnderlineThickness(Number underlineThickness) {
         this.underlineThickness = underlineThickness;
     }
 
     /**
      * Returns the ItalicAngle value.
-     * 
      * @return the italicAngle
      */
     public double getItalicAngle() {
-        return this.italicAngle;
+        return italicAngle;
     }
 
     /**
      * Sets the ItalicAngle value.
-     * 
-     * @param italicAngle
-     *            the italicAngle to set
+     * @param italicAngle the italicAngle to set
      */
-    public void setItalicAngle(final double italicAngle) {
+    public void setItalicAngle(double italicAngle) {
         this.italicAngle = italicAngle;
     }
 
     /**
      * Returns the IsFixedPitch value.
-     * 
      * @return the isFixedPitch
      */
     public boolean isFixedPitch() {
-        return this.isFixedPitch;
+        return isFixedPitch;
     }
 
     /**
      * Set the IsFixedPitch value.
-     * 
-     * @param value
-     *            the isFixedPitch to set
+     * @param value the isFixedPitch to set
      */
-    public void setFixedPitch(final boolean value) {
+    public void setFixedPitch(boolean value) {
         this.isFixedPitch = value;
     }
 

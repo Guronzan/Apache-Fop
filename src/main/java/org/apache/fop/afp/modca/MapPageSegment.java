@@ -15,27 +15,23 @@
  * limitations under the License.
  */
 
-/* $Id: MapPageSegment.java 738453 2009-01-28 11:10:51Z jeremias $ */
+/* $Id: MapPageSegment.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.afp.AFPConstants;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * The Map Page Segment structured field identifies page segments that are
- * required to present a page on a physical medium.
+ * The Map Page Segment structured field identifies page segments that are required to present
+ * a page on a physical medium.
  */
-@Slf4j
 public class MapPageSegment extends AbstractAFPObject {
 
     private static final int MAX_SIZE = 127;
@@ -43,7 +39,7 @@ public class MapPageSegment extends AbstractAFPObject {
     /**
      * The collection of page segments (maximum of 127 stored as String)
      */
-    private Set<String> pageSegments = null;
+    private Set pageSegments = null;
 
     /**
      * Constructor for the Map Page Overlay
@@ -51,40 +47,35 @@ public class MapPageSegment extends AbstractAFPObject {
     public MapPageSegment() {
     }
 
-    private Set<String> getPageSegments() {
-        if (this.pageSegments == null) {
-            this.pageSegments = new HashSet<>();
+    private Set getPageSegments() {
+        if (pageSegments == null) {
+            this.pageSegments = new java.util.HashSet();
         }
         return this.pageSegments;
     }
 
     /**
      * Add a page segment to to the map page segment object.
-     *
-     * @param name
-     *            the name of the page segment.
-     * @throws MaximumSizeExceededException
-     *             if the maximum size is reached
+     * @param name the name of the page segment.
+     * @throws MaximumSizeExceededException if the maximum size is reached
      */
-    public void addPageSegment(final String name)
-            throws MaximumSizeExceededException {
+    public void addPageSegment(String name) throws MaximumSizeExceededException {
         if (getPageSegments().size() > MAX_SIZE) {
             throw new MaximumSizeExceededException();
         }
         if (name.length() > 8) {
-            throw new IllegalArgumentException("The name of page segment "
-                    + name + " must not be longer than 8 characters");
+            throw new IllegalArgumentException("The name of page segment " + name
+                + " must not be longer than 8 characters");
         }
-        if (log.isDebugEnabled()) {
-            log.debug("addPageSegment():: adding page segment " + name);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("addPageSegment():: adding page segment " + name);
         }
         getPageSegments().add(name);
     }
 
     /**
-     * Indicates whether this object already contains the maximum number of page
-     * segments.
-     *
+     * Indicates whether this object already contains the maximum number of
+     * page segments.
      * @return true if the object is full
      */
     public boolean isFull() {
@@ -92,19 +83,17 @@ public class MapPageSegment extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final int count = getPageSegments().size();
-        final byte groupLength = 0x0C;
-        final int groupsLength = count * groupLength;
+    public void writeToStream(OutputStream os) throws IOException {
+        int count = getPageSegments().size();
+        byte groupLength = 0x0C;
+        int groupsLength = count * groupLength;
 
-        final byte[] data = new byte[groupsLength + 12 + 1];
+        byte[] data = new byte[groupsLength + 12 + 1];
 
         data[0] = 0x5A;
 
         // Set the total record length
-        final byte[] rl1 = BinaryUtils.convert(data.length - 1, 2); // Ignore
-        // the
+        byte[] rl1 = BinaryUtils.convert(data.length - 1, 2); //Ignore the
         // first byte in
         // the length
         data[1] = rl1[0];
@@ -126,18 +115,17 @@ public class MapPageSegment extends AbstractAFPObject {
 
         int pos = 13;
 
-        final Iterator<String> iter = this.pageSegments.iterator();
+        Iterator iter = this.pageSegments.iterator();
         while (iter.hasNext()) {
             pos += 4;
 
-            final String name = iter.next();
+            String name = (String)iter.next();
             try {
-                final byte[] nameBytes = name
-                        .getBytes(AFPConstants.EBCIDIC_ENCODING);
+                byte[] nameBytes = name.getBytes(AFPConstants.EBCIDIC_ENCODING);
                 System.arraycopy(nameBytes, 0, data, pos, nameBytes.length);
-            } catch (final UnsupportedEncodingException usee) {
-                log.error("UnsupportedEncodingException translating the name "
-                        + name);
+            } catch (UnsupportedEncodingException usee) {
+                LOG.error("UnsupportedEncodingException translating the name "
+                    + name);
             }
             pos += 8;
         }

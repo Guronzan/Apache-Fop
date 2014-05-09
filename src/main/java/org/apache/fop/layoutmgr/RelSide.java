@@ -31,15 +31,13 @@ public final class RelSide {
     /** the end side */
     public static final RelSide END = new RelSide("end");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     * 
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private RelSide(final String name) {
+    private RelSide(String name) {
         this.name = name;
     }
 
@@ -49,9 +47,8 @@ public final class RelSide {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "RelSide:" + this.name;
+        return "RelSide:" + name;
     }
 
 }

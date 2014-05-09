@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BatikExtensionElementMapping.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BatikExtensionElementMapping.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.svg;
 
@@ -23,18 +23,17 @@ import java.util.HashMap;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.batik.util.XMLResourceDescriptor;
-import org.apache.fop.fo.ElementMapping;
-import org.apache.fop.fo.FONode;
 import org.w3c.dom.DOMImplementation;
 
+import org.apache.batik.util.XMLResourceDescriptor;
+
+import org.apache.fop.fo.ElementMapping;
+import org.apache.fop.fo.FONode;
+
 /**
- * This Element Mapping is for Batik SVG Extension elements of the
- * http://xml.apache.org/batik/ext namespace.
+ * This Element Mapping is for Batik SVG Extension elements
+ * of the http://xml.apache.org/batik/ext namespace.
  */
-@Slf4j
 public class BatikExtensionElementMapping extends ElementMapping {
 
     /** Namespace URI for Batik extension elements */
@@ -44,63 +43,58 @@ public class BatikExtensionElementMapping extends ElementMapping {
 
     /** Main constructor. */
     public BatikExtensionElementMapping() {
-        this.namespaceURI = URI;
+        namespaceURI = URI;
     }
 
     /** {@inheritDoc} */
-    @Override
     public DOMImplementation getDOMImplementation() {
-        return null; // no DOMImplementation necessary here
+        return null; //no DOMImplementation necessary here
     }
 
     /**
-     * Returns the fully qualified classname of an XML parser for Batik classes
-     * that apparently need it (error messages, perhaps)
-     *
+     * Returns the fully qualified classname of an XML parser for
+     * Batik classes that apparently need it (error messages, perhaps)
      * @return an XML parser classname
      */
-    private final String getAParserClassName() {
+    private String getAParserClassName() {
         try {
-            // TODO Remove when Batik uses JAXP instead of SAX directly.
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
+            //TODO Remove when Batik uses JAXP instead of SAX directly.
+            SAXParserFactory factory = SAXParserFactory.newInstance();
             return factory.newSAXParser().getXMLReader().getClass().getName();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
-    @Override
+    /** initialize mapping */
     protected void initialize() {
-        if (this.foObjs == null && this.batikAvail) {
+        if (foObjs == null && batikAvail) {
             // this sets the parser that will be used
             // by default (SVGBrokenLinkProvider)
             // normally the user agent value is used
             try {
-                XMLResourceDescriptor
-                .setXMLParserClassName(getAParserClassName());
+                XMLResourceDescriptor.setXMLParserClassName(
+                  getAParserClassName());
 
-                this.foObjs = new HashMap<>();
-                this.foObjs.put("batik", new SE());
-                this.foObjs.put(DEFAULT, new SVGMaker());
-            } catch (final Exception e) {
-                log.error("Exception", e);
+                foObjs = new HashMap<String, Maker>();
+                foObjs.put("batik", new SE());
+                foObjs.put(DEFAULT, new SVGMaker());
+            } catch (Throwable t) {
                 // if the classes are not available
                 // the DISPLAY is not checked
-                this.batikAvail = false;
+                batikAvail = false;
             }
         }
     }
 
     static class SVGMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new SVGObj(parent);
         }
     }
 
     static class SE extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new SVGElement(parent);
         }
     }

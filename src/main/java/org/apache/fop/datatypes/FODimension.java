@@ -15,39 +15,47 @@
  * limitations under the License.
  */
 
-/* $Id: FODimension.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FODimension.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.datatypes;
 
 /**
- * This datatype hold a pair of resolved lengths, specifiying the dimensions in
+ * This datatype hold a pair of resolved lengths,
+ * specifiying the dimensions in
  * both inline and block-progression-directions.
  */
 public class FODimension {
 
     /** distance (in millipoints) on the inline-progression-direction */
-    public int ipd;
+    public int ipd; // CSOK: VisibilityModifier
     /** distance (in millipoints) on the block-progression-direction */
-    public int bpd;
+    public int bpd; // CSOK: VisibilityModifier
 
     /**
      * Constructor
-     * 
-     * @param ipd
-     *            length (in millipoints) of the inline-progression-direction
-     * @param bpd
-     *            length (in millipoints) of the block-progression-direction
+     * @param ipd length (in millipoints) of the inline-progression-direction
+     * @param bpd length (in millipoints) of the block-progression-direction
      */
-    public FODimension(final int ipd, final int bpd) {
+    public FODimension(int ipd, int bpd) {
         this.ipd = ipd;
         this.bpd = bpd;
     }
 
-    @Override
+    /** @return ipd */
+    public int getIPD() {
+        return ipd;
+    }
+
+    /** @return bpd */
+    public int getBPD() {
+        return bpd;
+    }
+
+    /** {@inheritDoc} */
     public String toString() {
-        final StringBuilder sb = new StringBuilder(super.toString());
-        sb.append(" {ipd=").append(Integer.toString(this.ipd));
-        sb.append(", bpd=").append(Integer.toString(this.bpd));
+        StringBuffer sb = new StringBuffer(super.toString());
+        sb.append(" {ipd=").append(Integer.toString(ipd));
+        sb.append(", bpd=").append(Integer.toString(bpd));
         sb.append("}");
         return sb.toString();
     }

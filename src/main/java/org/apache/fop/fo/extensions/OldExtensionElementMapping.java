@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: OldExtensionElementMapping.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: OldExtensionElementMapping.java 1055034 2011-01-04 13:36:10Z spepping $ */
 
 package org.apache.fop.fo.extensions;
 
@@ -36,18 +36,17 @@ public class OldExtensionElementMapping extends ElementMapping {
      * Constructor.
      */
     public OldExtensionElementMapping() {
-        this.namespaceURI = URI;
+        namespaceURI = URI;
     }
 
     /**
      * Initialize the data structures.
      */
-    @Override
     protected void initialize() {
-        if (this.foObjs == null) {
-            this.foObjs = new HashMap<>();
-            this.foObjs.put("outline", new UnknownXMLObj.Maker(URI));
-            this.foObjs.put("label", new UnknownXMLObj.Maker(URI));
+        if (foObjs == null) {
+            foObjs = new HashMap<String, Maker>();
+            foObjs.put("outline", new UnknownXMLObj.Maker(URI));
+            foObjs.put("label", new UnknownXMLObj.Maker(URI));
         }
     }
 }

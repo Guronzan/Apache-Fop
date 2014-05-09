@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PresentationTextDescriptor.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PresentationTextDescriptor.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -31,42 +31,40 @@ import org.apache.fop.afp.util.BinaryUtils;
  * conditions. Initial values not provided are defaulted by the controlling
  * environment or the receiving device.
  *
- * The Presentation Text Descriptor provides the following initial values: -
- * Unit base - Xp-units per unit base - Yp-units per unit base - Xp-extent of
- * the presentation space - Yp-extent of the presentation space - Initial text
- * conditions.
+ * The Presentation Text Descriptor provides the following initial values:
+ * - Unit base
+ * - Xp-units per unit base
+ * - Yp-units per unit base
+ * - Xp-extent of the presentation space
+ * - Yp-extent of the presentation space
+ * - Initial text conditions.
  *
  * The initial text conditions are values provided by the Presentation Text
- * Descriptor to initialize the modal parameters of the control sequences. Modal
- * control sequences typically are characterized by the word set in the name of
- * the control sequence. Modal parameters are identified as such in their
- * semantic descriptions.
+ * Descriptor to initialize the modal parameters of the control sequences.
+ * Modal control sequences typically are characterized by the word set in
+ * the name of the control sequence. Modal parameters are identified as such
+ * in their semantic descriptions.
  *
  */
 public class PresentationTextDescriptor extends AbstractDescriptor {
 
     /**
-     * Constructor a PresentationTextDescriptor for the specified width and
-     * height.
+     * Constructor a PresentationTextDescriptor for the specified
+     * width and height.
      *
-     * @param width
-     *            The width of the page.
-     * @param height
-     *            The height of the page.
-     * @param widthRes
-     *            The width resolution of the page.
-     * @param heightRes
-     *            The height resolution of the page.
+     * @param width The width of the page.
+     * @param height The height of the page.
+     * @param widthRes The width resolution of the page.
+     * @param heightRes The height resolution of the page.
      */
-    public PresentationTextDescriptor(final int width, final int height,
-            final int widthRes, final int heightRes) {
+    public PresentationTextDescriptor(int width, int height,
+            int widthRes, int heightRes) {
         super(width, height, widthRes, heightRes);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[23];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[23];
 
         copySF(data, Type.MIGRATION, Category.PRESENTATION_TEXT);
 
@@ -76,20 +74,20 @@ public class PresentationTextDescriptor extends AbstractDescriptor {
         data[9] = 0x00;
         data[10] = 0x00;
 
-        final byte[] xdpi = BinaryUtils.convert(this.widthRes * 10, 2);
+        byte[] xdpi = BinaryUtils.convert(widthRes * 10, 2);
         data[11] = xdpi[0]; // xdpi
         data[12] = xdpi[1];
 
-        final byte[] ydpi = BinaryUtils.convert(this.heightRes * 10, 2);
+        byte[] ydpi = BinaryUtils.convert(heightRes * 10, 2);
         data[13] = ydpi[0]; // ydpi
         data[14] = ydpi[1];
 
-        final byte[] x = BinaryUtils.convert(this.width, 3);
+        byte[] x = BinaryUtils.convert(width, 3);
         data[15] = x[0];
         data[16] = x[1];
         data[17] = x[2];
 
-        final byte[] y = BinaryUtils.convert(this.height, 3);
+        byte[] y = BinaryUtils.convert(height, 3);
         data[18] = y[0];
         data[19] = y[1];
         data[20] = y[2];

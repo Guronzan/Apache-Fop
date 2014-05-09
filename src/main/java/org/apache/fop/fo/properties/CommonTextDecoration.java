@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: CommonTextDecoration.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CommonTextDecoration.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.properties;
 
 import java.awt.Color;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -33,11 +34,11 @@ import org.apache.fop.fo.expr.PropertyException;
  */
 public class CommonTextDecoration {
 
-    // using a bit-mask here
-    private static final int UNDERLINE = 1;
-    private static final int OVERLINE = 2;
+    //using a bit-mask here
+    private static final int UNDERLINE    = 1;
+    private static final int OVERLINE     = 2;
     private static final int LINE_THROUGH = 4;
-    private static final int BLINK = 8;
+    private static final int BLINK        = 8;
 
     private int decoration;
     private Color underColor;
@@ -52,39 +53,34 @@ public class CommonTextDecoration {
 
     /**
      * Creates a CommonTextDecoration object from a property list.
-     * 
-     * @param pList
-     *            the property list to build the object for
-     * @return a CommonTextDecoration object or null if the obj would only have
-     *         default values
-     * @throws PropertyException
-     *             if there's a problem while processing the property
+     * @param pList the property list to build the object for
+     * @return a CommonTextDecoration object or null if the obj would only have default values
+     * @throws PropertyException if there's a problem while processing the property
      */
-    public static CommonTextDecoration createFromPropertyList(
-            final PropertyList pList) throws PropertyException {
+    public static CommonTextDecoration createFromPropertyList(PropertyList pList)
+                throws PropertyException {
         return calcTextDecoration(pList);
     }
 
-    private static CommonTextDecoration calcTextDecoration(
-            final PropertyList pList) throws PropertyException {
+    private static CommonTextDecoration calcTextDecoration(PropertyList pList)
+                throws PropertyException {
         CommonTextDecoration deco = null;
-        final PropertyList parentList = pList.getParentPropertyList();
+        PropertyList parentList = pList.getParentPropertyList();
         if (parentList != null) {
-            // Parent is checked first
+            //Parent is checked first
             deco = calcTextDecoration(parentList);
         }
-        // For rules, see XSL 1.0, chapters 5.5.6 and 7.16.4
-        final Property textDecoProp = pList
-                .getExplicit(Constants.PR_TEXT_DECORATION);
+        //For rules, see XSL 1.0, chapters 5.5.6 and 7.16.4
+        Property textDecoProp = pList.getExplicit(Constants.PR_TEXT_DECORATION);
         if (textDecoProp != null) {
-            final List list = textDecoProp.getList();
-            final Iterator i = list.iterator();
+            List list = textDecoProp.getList();
+            Iterator i = list.iterator();
             while (i.hasNext()) {
-                final Property prop = (Property) i.next();
-                final int propEnum = prop.getEnum();
-                final FOUserAgent ua = pList == null ? null
-                                : pList.getFObj() == null ? null : pList.getFObj()
-                                .getUserAgent();
+                Property prop = (Property)i.next();
+                int propEnum = prop.getEnum();
+                FOUserAgent ua = (pList == null)
+                        ? null
+                        : (pList.getFObj() == null ? null : pList.getFObj().getUserAgent());
                 if (propEnum == Constants.EN_NONE) {
                     if (deco != null) {
                         deco.decoration = 0;
@@ -95,13 +91,11 @@ public class CommonTextDecoration {
                         deco = new CommonTextDecoration();
                     }
                     deco.decoration |= UNDERLINE;
-                    deco.underColor = pList.get(Constants.PR_COLOR)
-                            .getColor(ua);
+                    deco.underColor = pList.get(Constants.PR_COLOR).getColor(ua);
                 } else if (propEnum == Constants.EN_NO_UNDERLINE) {
                     if (deco != null) {
                         deco.decoration &= OVERLINE | LINE_THROUGH | BLINK;
-                        deco.underColor = pList.get(Constants.PR_COLOR)
-                                .getColor(ua);
+                        deco.underColor = pList.get(Constants.PR_COLOR).getColor(ua);
                     }
                 } else if (propEnum == Constants.EN_OVERLINE) {
                     if (deco == null) {
@@ -112,21 +106,18 @@ public class CommonTextDecoration {
                 } else if (propEnum == Constants.EN_NO_OVERLINE) {
                     if (deco != null) {
                         deco.decoration &= UNDERLINE | LINE_THROUGH | BLINK;
-                        deco.overColor = pList.get(Constants.PR_COLOR)
-                                .getColor(ua);
+                        deco.overColor = pList.get(Constants.PR_COLOR).getColor(ua);
                     }
                 } else if (propEnum == Constants.EN_LINE_THROUGH) {
                     if (deco == null) {
                         deco = new CommonTextDecoration();
                     }
                     deco.decoration |= LINE_THROUGH;
-                    deco.throughColor = pList.get(Constants.PR_COLOR).getColor(
-                            ua);
+                    deco.throughColor = pList.get(Constants.PR_COLOR).getColor(ua);
                 } else if (propEnum == Constants.EN_NO_LINE_THROUGH) {
                     if (deco != null) {
                         deco.decoration &= UNDERLINE | OVERLINE | BLINK;
-                        deco.throughColor = pList.get(Constants.PR_COLOR)
-                                .getColor(ua);
+                        deco.throughColor = pList.get(Constants.PR_COLOR).getColor(ua);
                     }
                 } else if (propEnum == Constants.EN_BLINK) {
                     if (deco == null) {
@@ -138,8 +129,7 @@ public class CommonTextDecoration {
                         deco.decoration &= UNDERLINE | OVERLINE | LINE_THROUGH;
                     }
                 } else {
-                    throw new PropertyException("Illegal value encountered: "
-                            + prop.getString());
+                    throw new PropertyException("Illegal value encountered: " + prop.getString());
                 }
             }
         }

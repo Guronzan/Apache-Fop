@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: CommonHyphenation.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CommonHyphenation.java 1304264 2012-03-23 10:26:13Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.PropertyList;
@@ -28,48 +29,52 @@ import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.Typeface;
 
 /**
- * Store all common hyphenation properties. See Sec. 7.9 of the XSL-FO Standard.
+ * Store all common hyphenation properties.
+ * See Sec. 7.9 of the XSL-FO Standard.
  * Public "structure" allows direct member access.
  */
-@Slf4j
 public final class CommonHyphenation {
 
-    private static final PropertyCache cache = new PropertyCache(
-            CommonHyphenation.class);
+    /** Logger */
+    private static final Log LOG = LogFactory.getLog(CommonHyphenation.class);
+
+    private static final PropertyCache<CommonHyphenation> CACHE =
+            new PropertyCache<CommonHyphenation>();
 
     private int hash = 0;
 
     /** The "language" property */
-    public final StringProperty language;
+    public final StringProperty language;                       // CSOK: VisibilityModifier
 
     /** The "country" property */
-    public final StringProperty country;
+    public final StringProperty country;                        // CSOK: VisibilityModifier
 
     /** The "script" property */
-    public final StringProperty script;
+    public final StringProperty script;                         // CSOK: VisibilityModifier
 
     /** The "hyphenate" property */
-    public final EnumProperty hyphenate;
+    public final EnumProperty hyphenate;                        // CSOK: VisibilityModifier
 
     /** The "hyphenation-character" property */
-    public final CharacterProperty hyphenationCharacter;
+    public final CharacterProperty hyphenationCharacter;        // CSOK: VisibilityModifier
 
     /** The "hyphenation-push-character-count" property */
-    public final NumberProperty hyphenationPushCharacterCount;
+    public final NumberProperty hyphenationPushCharacterCount;  // CSOK: VisibilityModifier
 
-    /** The "hyphenation-remain-character-count" property */
-    public final NumberProperty hyphenationRemainCharacterCount;
+    /** The "hyphenation-remain-character-count" property*/
+    public final NumberProperty hyphenationRemainCharacterCount; // CSOK: VisibilityModifier
 
     /**
      * Construct a CommonHyphenation object holding the given properties
      *
      */
-    private CommonHyphenation(final StringProperty language,
-            final StringProperty country, final StringProperty script,
-            final EnumProperty hyphenate,
-            final CharacterProperty hyphenationCharacter,
-            final NumberProperty hyphenationPushCharacterCount,
-            final NumberProperty hyphenationRemainCharacterCount) {
+    private CommonHyphenation(StringProperty language,
+                              StringProperty country,
+                              StringProperty script,
+                              EnumProperty hyphenate,
+                              CharacterProperty hyphenationCharacter,
+                              NumberProperty hyphenationPushCharacterCount,
+                              NumberProperty hyphenationRemainCharacterCount) {
         this.language = language;
         this.country = country;
         this.script = script;
@@ -83,51 +88,52 @@ public final class CommonHyphenation {
      * Gets the canonical <code>CommonHyphenation</code> instance corresponding
      * to the values of the related properties present on the given
      * <code>PropertyList</code>
-     *
-     * @param propertyList
-     *            the <code>PropertyList</code>
+     * @param propertyList  the <code>PropertyList</code>
+     * @return a common hyphenation instance
+     * @throws PropertyException if a a property exception occurs
      */
-    public static CommonHyphenation getInstance(final PropertyList propertyList)
+    public static CommonHyphenation getInstance(PropertyList propertyList)
             throws PropertyException {
-        final StringProperty language = (StringProperty) propertyList
-                .get(Constants.PR_LANGUAGE);
-        final StringProperty country = (StringProperty) propertyList
-                .get(Constants.PR_COUNTRY);
-        final StringProperty script = (StringProperty) propertyList
-                .get(Constants.PR_SCRIPT);
-        final EnumProperty hyphenate = (EnumProperty) propertyList
-                .get(Constants.PR_HYPHENATE);
-        final CharacterProperty hyphenationCharacter = (CharacterProperty) propertyList
-                .get(Constants.PR_HYPHENATION_CHARACTER);
-        final NumberProperty hyphenationPushCharacterCount = (NumberProperty) propertyList
-                .get(Constants.PR_HYPHENATION_PUSH_CHARACTER_COUNT);
-        final NumberProperty hyphenationRemainCharacterCount = (NumberProperty) propertyList
-                .get(Constants.PR_HYPHENATION_REMAIN_CHARACTER_COUNT);
+        StringProperty language
+            = (StringProperty) propertyList.get(Constants.PR_LANGUAGE);
+        StringProperty country
+            = (StringProperty) propertyList.get(Constants.PR_COUNTRY);
+        StringProperty script
+            = (StringProperty) propertyList.get(Constants.PR_SCRIPT);
+        EnumProperty hyphenate
+            = (EnumProperty) propertyList.get(Constants.PR_HYPHENATE);
+        CharacterProperty hyphenationCharacter
+            = (CharacterProperty) propertyList.get(Constants.PR_HYPHENATION_CHARACTER);
+        NumberProperty hyphenationPushCharacterCount
+            = (NumberProperty) propertyList.get(Constants.PR_HYPHENATION_PUSH_CHARACTER_COUNT);
+        NumberProperty hyphenationRemainCharacterCount
+            = (NumberProperty) propertyList.get(Constants.PR_HYPHENATION_REMAIN_CHARACTER_COUNT);
 
-        final CommonHyphenation instance = new CommonHyphenation(language,
-                country, script, hyphenate, hyphenationCharacter,
-                hyphenationPushCharacterCount, hyphenationRemainCharacterCount);
+        CommonHyphenation instance = new CommonHyphenation(
+                                language,
+                                country,
+                                script,
+                                hyphenate,
+                                hyphenationCharacter,
+                                hyphenationPushCharacterCount,
+                                hyphenationRemainCharacterCount);
 
-        return cache.fetch(instance);
-
+        return CACHE.fetch(instance);
     }
 
     private static final char HYPHEN_MINUS = '-';
     private static final char MINUS_SIGN = '\u2212';
 
     /**
-     * Returns the effective hyphenation character for a font. The hyphenation
-     * character specified in XSL-FO may be substituted if it's not available in
-     * the font.
-     *
-     * @param font
-     *            the font
+     * Returns the effective hyphenation character for a font. The hyphenation character specified
+     * in XSL-FO may be substituted if it's not available in the font.
+     * @param font the font
      * @return the effective hyphenation character.
      */
-    public char getHyphChar(final org.apache.fop.fonts.Font font) {
-        final char hyphChar = this.hyphenationCharacter.getCharacter();
+    public char getHyphChar(org.apache.fop.fonts.Font font) {
+        char hyphChar = hyphenationCharacter.getCharacter();
         if (font.hasChar(hyphChar)) {
-            return hyphChar; // short-cut
+            return hyphChar; //short-cut
         }
         char effHyphChar = hyphChar;
         boolean warn = false;
@@ -136,36 +142,33 @@ public final class CommonHyphenation {
             warn = true;
         } else if (font.hasChar(MINUS_SIGN)) {
             effHyphChar = MINUS_SIGN;
-            final FontMetrics metrics = font.getFontMetrics();
+            FontMetrics metrics = font.getFontMetrics();
             if (metrics instanceof Typeface) {
-                final Typeface typeface = (Typeface) metrics;
+                Typeface typeface = (Typeface)metrics;
                 if ("SymbolEncoding".equals(typeface.getEncodingName())) {
-                    // SymbolEncoding doesn't have HYPHEN_MINUS, so replace by
-                    // MINUS_SIGN
+                    //SymbolEncoding doesn't have HYPHEN_MINUS, so replace by MINUS_SIGN
                 } else {
-                    // only warn if the encoding is not SymbolEncoding
+                    //only warn if the encoding is not SymbolEncoding
                     warn = true;
                 }
             }
         } else {
             effHyphChar = ' ';
-            final FontMetrics metrics = font.getFontMetrics();
+            FontMetrics metrics = font.getFontMetrics();
             if (metrics instanceof Typeface) {
-                final Typeface typeface = (Typeface) metrics;
+                Typeface typeface = (Typeface)metrics;
                 if ("ZapfDingbatsEncoding".equals(typeface.getEncodingName())) {
-                    // ZapfDingbatsEncoding doesn't have HYPHEN_MINUS, so
-                    // replace by ' '
+                    //ZapfDingbatsEncoding doesn't have HYPHEN_MINUS, so replace by ' '
                 } else {
-                    // only warn if the encoding is not ZapfDingbatsEncoding
+                    //only warn if the encoding is not ZapfDingbatsEncoding
                     warn = true;
                 }
             }
         }
         if (warn) {
-            log.warn("Substituted specified hyphenation character (0x"
+            LOG.warn("Substituted specified hyphenation character (0x"
                     + Integer.toHexString(hyphChar)
-                    + ") with 0x"
-                    + Integer.toHexString(effHyphChar)
+                    + ") with 0x" + Integer.toHexString(effHyphChar)
                     + " because the font doesn't have the specified hyphenation character: "
                     + font.getFontTriplet());
         }
@@ -174,60 +177,49 @@ public final class CommonHyphenation {
 
     /**
      * Returns the IPD for the hyphenation character for a font.
-     *
-     * @param font
-     *            the font
+     * @param font the font
      * @return the IPD in millipoints for the hyphenation character.
      */
-    public int getHyphIPD(final org.apache.fop.fonts.Font font) {
-        final char hyphChar = getHyphChar(font);
+    public int getHyphIPD(org.apache.fop.fonts.Font font) {
+        char hyphChar = getHyphChar(font);
         return font.getCharWidth(hyphChar);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
         if (obj instanceof CommonHyphenation) {
-            final CommonHyphenation ch = (CommonHyphenation) obj;
-            return ch.language == this.language
+            CommonHyphenation ch = (CommonHyphenation) obj;
+            return (ch.language == this.language
                     && ch.country == this.country
                     && ch.script == this.script
                     && ch.hyphenate == this.hyphenate
                     && ch.hyphenationCharacter == this.hyphenationCharacter
                     && ch.hyphenationPushCharacterCount == this.hyphenationPushCharacterCount
-                    && ch.hyphenationRemainCharacterCount == this.hyphenationRemainCharacterCount;
+                    && ch.hyphenationRemainCharacterCount == this.hyphenationRemainCharacterCount);
         }
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         if (this.hash == 0) {
             int hash = 17;
+            hash = 37 * hash + (language == null ? 0 : language.hashCode());
+            hash = 37 * hash + (script == null ? 0 : script.hashCode());
+            hash = 37 * hash + (country == null ? 0 : country.hashCode());
+            hash = 37 * hash + (hyphenate == null ? 0 : hyphenate.hashCode());
             hash = 37 * hash
-                    + (this.language == null ? 0 : this.language.hashCode());
+                + (hyphenationCharacter == null
+                   ? 0 : hyphenationCharacter.hashCode());
             hash = 37 * hash
-                    + (this.script == null ? 0 : this.script.hashCode());
+                + (hyphenationPushCharacterCount == null
+                 ? 0 : hyphenationPushCharacterCount.hashCode());
             hash = 37 * hash
-                    + (this.country == null ? 0 : this.country.hashCode());
-            hash = 37 * hash
-                    + (this.hyphenate == null ? 0 : this.hyphenate.hashCode());
-            hash = 37
-                    * hash
-                    + (this.hyphenationCharacter == null ? 0
-                            : this.hyphenationCharacter.hashCode());
-            hash = 37
-                    * hash
-                    + (this.hyphenationPushCharacterCount == null ? 0
-                            : this.hyphenationPushCharacterCount.hashCode());
-            hash = 37
-                    * hash
-                    + (this.hyphenationRemainCharacterCount == null ? 0
-                            : this.hyphenationRemainCharacterCount.hashCode());
+                + (hyphenationRemainCharacterCount == null
+                 ? 0 : hyphenationRemainCharacterCount.hashCode());
             this.hash = hash;
         }
         return this.hash;

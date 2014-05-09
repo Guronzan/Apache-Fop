@@ -15,27 +15,34 @@
  * limitations under the License.
  */
 
-/* $Id: ListItem.java 681307 2008-07-31 09:06:10Z jeremias $ */
+/* $Id: ListItem.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
+import java.util.Stack;
+
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.properties.BreakPropertySet;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonMarginBlock;
 import org.apache.fop.fo.properties.KeepProperty;
-import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href=http://www.w3.org/TR/xsl/#fo_list-item">
  * <code>fo:list-item</code></a> object.
  */
-public class ListItem extends FObj implements BreakPropertySet {
+public class ListItem extends FObj implements BreakPropertySet, CommonAccessibilityHolder {
     // The value of properties relevant for fo:list-item.
+    private CommonAccessibility commonAccessibility;
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     private CommonMarginBlock commonMarginBlock;
     private int breakAfter;
@@ -44,11 +51,10 @@ public class ListItem extends FObj implements BreakPropertySet {
     private KeepProperty keepWithNext;
     private KeepProperty keepWithPrevious;
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
-    // private CommonAural commonAural;
-    // private CommonRelativePosition commonRelativePosition;
-    // private int intrusionDisplace;
-    // private int relativeAlign;
+    //     private CommonAural commonAural;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private int intrusionDisplace;
+    //     private int relativeAlign;
     // End of property values
 
     private ListItemLabel label = null;
@@ -57,64 +63,58 @@ public class ListItem extends FObj implements BreakPropertySet {
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public ListItem(final FONode parent) {
+    public ListItem(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
-        this.commonMarginBlock = pList.getMarginBlockProps();
-        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
-        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
+        commonMarginBlock = pList.getMarginBlockProps();
+        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startListItem(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (this.label == null || this.body == null) {
+        if (label == null || body == null) {
             missingChildElementError("marker* (list-item-label,list-item-body)");
         }
         getFOEventHandler().endListItem(this);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: marker* (list-item-label,list-item-body)
+     * {@inheritDoc}
+     * <br>XSL Content Model: marker* (list-item-label,list-item-body)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+        throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("marker")) {
-                if (this.label != null) {
+                if (label != null) {
                     nodesOutOfOrderError(loc, "fo:marker", "fo:list-item-label");
                 }
             } else if (localName.equals("list-item-label")) {
-                if (this.label != null) {
+                if (label != null) {
                     tooManyNodesError(loc, "fo:list-item-label");
                 }
             } else if (localName.equals("list-item-body")) {
-                if (this.label == null) {
-                    nodesOutOfOrderError(loc, "fo:list-item-label",
-                            "fo:list-item-body");
-                } else if (this.body != null) {
+                if (label == null) {
+                    nodesOutOfOrderError(loc, "fo:list-item-label", "fo:list-item-body");
+                } else if (body != null) {
                     tooManyNodesError(loc, "fo:list-item-body");
                 }
             } else {
@@ -125,85 +125,98 @@ public class ListItem extends FObj implements BreakPropertySet {
 
     /**
      * {@inheritDoc}
-     *
-     * @todo see if can/should rely on base class for this (i.e., add to
-     *       childNodes instead)
+     * TODO see if can/should rely on base class for this
+     *    (i.e., add to childNodes instead)
      */
-    @Override
-    public void addChildNode(final FONode child) {
-        final int nameId = child.getNameId();
+    public void addChildNode(FONode child) {
+        int nameId = child.getNameId();
 
         if (nameId == FO_LIST_ITEM_LABEL) {
-            this.label = (ListItemLabel) child;
+            label = (ListItemLabel) child;
         } else if (nameId == FO_LIST_ITEM_BODY) {
-            this.body = (ListItemBody) child;
+            body = (ListItemBody) child;
         } else if (nameId == FO_MARKER) {
             addMarker((Marker) child);
         }
     }
 
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
+    }
+
     /** @return the {@link CommonMarginBlock} */
     public CommonMarginBlock getCommonMarginBlock() {
-        return this.commonMarginBlock;
+        return commonMarginBlock;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
     /** @return the "break-after" property */
-    @Override
     public int getBreakAfter() {
-        return this.breakAfter;
+        return breakAfter;
     }
 
     /** @return the "break-before" property */
-    @Override
     public int getBreakBefore() {
-        return this.breakBefore;
+        return breakBefore;
     }
 
     /** @return the "keep-with-next" property */
     public KeepProperty getKeepWithNext() {
-        return this.keepWithNext;
+        return keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property */
+    /** @return the "keep-with-previous" property  */
     public KeepProperty getKeepWithPrevious() {
-        return this.keepWithPrevious;
+        return keepWithPrevious;
     }
 
-    /** @return the "keep-together" property */
+    /** @return the "keep-together" property  */
     public KeepProperty getKeepTogether() {
-        return this.keepTogether;
+        return keepTogether;
     }
 
     /** @return the label of the list item */
     public ListItemLabel getLabel() {
-        return this.label;
+        return label;
     }
 
     /**
      * @return the body of the list item
      */
     public ListItemBody getBody() {
-        return this.body;
+        return body;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "list-item";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM}
      */
-    @Override
     public int getNameId() {
         return FO_LIST_ITEM;
     }
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        ListItemLabel label = getLabel();
+        if ( label != null ) {
+            ranges = label.collectDelimitedTextRanges ( ranges );
+        }
+        ListItemBody body = getBody();
+        if ( body != null ) {
+            ranges = body.collectDelimitedTextRanges ( ranges );
+        }
+        return ranges;
+    }
+
 }
+

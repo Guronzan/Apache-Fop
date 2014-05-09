@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RendererEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: RendererEventProducer.java 1137566 2011-06-20 09:51:42Z phancock $ */
 
 package org.apache.fop.render;
 
@@ -30,30 +30,34 @@ import org.apache.fop.events.EventProducer;
 public interface RendererEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static RendererEventProducer get(
-                final EventBroadcaster broadcaster) {
-            return (RendererEventProducer) broadcaster
-                    .getEventProducerFor(RendererEventProducer.class);
+        public static RendererEventProducer get(EventBroadcaster broadcaster) {
+            return (RendererEventProducer)broadcaster.getEventProducerFor(
+                    RendererEventProducer.class);
         }
     }
 
     /**
      * I/O error while writing target file.
-     * 
-     * @param source
-     *            the event source
-     * @param ioe
-     *            the original I/O error
+     * @param source the event source
+     * @param ioe the original I/O error
      * @event.severity ERROR
      */
-    void ioError(final Object source, final IOException ioe);
+    void ioError(Object source, IOException ioe);
+
+    /**
+     * Triggered at the end of page rendering.
+     * @param source the event source
+     * @param number the page number
+     */
+    void endPage(Object source, int number);
 }

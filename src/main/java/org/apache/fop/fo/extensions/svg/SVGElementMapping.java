@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: SVGElementMapping.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: SVGElementMapping.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.svg;
 
@@ -23,92 +23,91 @@ import java.util.HashMap;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.DOMImplementation;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.XMLResourceDescriptor;
+
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
-import org.w3c.dom.DOMImplementation;
 
 /**
- * Setup the SVG element mapping. This adds the svg element mappings used to
- * create the objects that create the SVG Document.
+ * Setup the SVG element mapping.
+ * This adds the svg element mappings used to create the objects
+ * that create the SVG Document.
  */
-@Slf4j
 public class SVGElementMapping extends ElementMapping {
 
     /** the SVG namespace */
     public static final String URI = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
+    /** logging instance */
+    protected Log log = LogFactory.getLog(SVGElementMapping.class);
+
     private boolean batikAvailable = true;
 
     /** Main constructor. */
     public SVGElementMapping() {
-        this.namespaceURI = URI;
+        namespaceURI = URI;
     }
 
     /** {@inheritDoc} */
-    @Override
     public DOMImplementation getDOMImplementation() {
         return SVGDOMImplementation.getDOMImplementation();
     }
 
     /**
-     * Returns the fully qualified classname of an XML parser for Batik classes
-     * that apparently need it (error messages, perhaps)
-     *
+     * Returns the fully qualified classname of an XML parser for
+     * Batik classes that apparently need it (error messages, perhaps)
      * @return an XML parser classname
      */
     private String getAParserClassName() {
         try {
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
+            SAXParserFactory factory = SAXParserFactory.newInstance();
             return factory.newSAXParser().getXMLReader().getClass().getName();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void initialize() {
-        if (this.foObjs == null && this.batikAvailable) {
+        if (foObjs == null && batikAvailable) {
             // this sets the parser that will be used
             // by default (SVGBrokenLinkProvider)
             // normally the user agent value is used
             try {
-                XMLResourceDescriptor
-                        .setXMLParserClassName(getAParserClassName());
+                XMLResourceDescriptor.setXMLParserClassName(
+                  getAParserClassName());
 
-                this.foObjs = new HashMap<>();
-                this.foObjs.put("svg", new SE());
-                this.foObjs.put(DEFAULT, new SVGMaker());
-            } catch (final Exception e) {
-                log.error("Error while initializing the Batik SVG extensions",
-                        e);
+                foObjs = new HashMap<String, Maker>();
+                foObjs.put("svg", new SE());
+                foObjs.put(DEFAULT, new SVGMaker());
+            } catch (Throwable t) {
+                log.error("Error while initializing the Batik SVG extensions", t);
                 // if the classes are not available
                 // the DISPLAY is not checked
-                this.batikAvailable = false;
+                batikAvailable = false;
             }
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getStandardPrefix() {
         return "svg";
     }
 
     static class SVGMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new SVGObj(parent);
         }
     }
 
     static class SE extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new SVGElement(parent);
         }
     }

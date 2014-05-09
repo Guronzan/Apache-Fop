@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPAttribute.java 824686 2009-10-13 10:52:29Z vhennebert $ */
+/* $Id: AFPAttribute.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.afp.extensions;
 
@@ -24,10 +24,10 @@ import org.apache.fop.fo.properties.Property;
 import org.apache.fop.fo.properties.StringProperty;
 
 /**
- * This class extends the org.apache.fop.fo.StringProperty.Maker inner class in
- * order to provide a static property maker. The object facilitates extraction
- * of attributes from formatted objects based on the static list as defined in
- * the AFPElementMapping implementation.
+ * This class extends the org.apache.fop.fo.StringProperty.Maker inner class
+ * in order to provide a static property maker. The object facilitates
+ * extraction of attributes from formatted objects based on the static list
+ * as defined in the AFPElementMapping implementation.
  * <p/>
  */
 public class AFPAttribute extends StringProperty.Maker {
@@ -39,27 +39,22 @@ public class AFPAttribute extends StringProperty.Maker {
 
     /**
      * Constructor for the AFPAttribute.
-     * 
-     * @param name
-     *            The attribute name
+     * @param name The attribute name
      */
-    protected AFPAttribute(final String name) {
+    protected AFPAttribute(String name) {
         super(0);
-        this.property = null;
+        property = null;
     }
 
     /**
      * Overide the make method to return the property object
-     * 
-     * @param propertyList
-     *            the property list from which to make the property
+     * @param propertyList the property list from which to make the property
      * @return property The property object.
      */
-    @Override
-    public Property make(final PropertyList propertyList) {
-        if (this.property == null) {
-            this.property = make(propertyList, "", propertyList.getParentFObj());
+    public Property make(PropertyList propertyList) {
+        if (property == null) {
+            property = make(propertyList, "", propertyList.getParentFObj());
         }
-        return this.property;
+        return property;
     }
 }

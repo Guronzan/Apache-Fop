@@ -15,59 +15,58 @@
  * limitations under the License.
  */
 
-/* $Id: LineDataInfoProducer.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: LineDataInfoProducer.java 985571 2010-08-14 19:28:26Z jeremias $ */
 
 package org.apache.fop.afp.ptoca;
 
 import java.io.IOException;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.afp.AFPLineDataInfo;
 
 /**
- * {@link PtocaProducer} implementation that interprets {@link AFPLineDataInfo}
- * objects.
+ * {@link PtocaProducer} implementation that interprets {@link AFPLineDataInfo} objects.
  */
-@Slf4j
 public class LineDataInfoProducer implements PtocaProducer, PtocaConstants {
 
-    private final AFPLineDataInfo lineDataInfo;
+    /** Static logging instance */
+    private static final Log LOG = LogFactory.getLog(LineDataInfoProducer.class);
+
+    private AFPLineDataInfo lineDataInfo;
 
     /**
      * Main constructor.
-     *
-     * @param lineDataInfo
-     *            the info object
+     * @param lineDataInfo the info object
      */
-    public LineDataInfoProducer(final AFPLineDataInfo lineDataInfo) {
+    public LineDataInfoProducer(AFPLineDataInfo lineDataInfo) {
         this.lineDataInfo = lineDataInfo;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void produce(final PtocaBuilder builder) throws IOException {
-        builder.setTextOrientation(this.lineDataInfo.getRotation());
-        final int x1 = ensurePositive(this.lineDataInfo.getX1());
-        final int y1 = ensurePositive(this.lineDataInfo.getY1());
+    public void produce(PtocaBuilder builder) throws IOException {
+        builder.setTextOrientation(lineDataInfo.getRotation());
+        int x1 = ensurePositive(lineDataInfo.getX1());
+        int y1 = ensurePositive(lineDataInfo.getY1());
         builder.absoluteMoveBaseline(y1);
         builder.absoluteMoveInline(x1);
-        builder.setExtendedTextColor(this.lineDataInfo.getColor());
+        builder.setExtendedTextColor(lineDataInfo.getColor());
 
-        final int x2 = ensurePositive(this.lineDataInfo.getX2());
-        final int y2 = ensurePositive(this.lineDataInfo.getY2());
-        final int thickness = this.lineDataInfo.getThickness();
+        int x2 = ensurePositive(lineDataInfo.getX2());
+        int y2 = ensurePositive(lineDataInfo.getY2());
+        int thickness = lineDataInfo.getThickness();
         if (y1 == y2) {
             builder.drawIaxisRule(x2 - x1, thickness);
         } else if (x1 == x2) {
             builder.drawBaxisRule(y2 - y1, thickness);
         } else {
-            log.error("Invalid axis rule: unable to draw line");
+            LOG.error("Invalid axis rule: unable to draw line");
             return;
         }
     }
 
-    private static int ensurePositive(final int value) {
+    private static int ensurePositive(int value) {
         if (value < 0) {
             return 0;
         }

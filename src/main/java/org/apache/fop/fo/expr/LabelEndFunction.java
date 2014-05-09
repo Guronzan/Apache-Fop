@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: LabelEndFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LabelEndFunction.java 1328963 2012-04-22 20:09:42Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
@@ -34,54 +34,35 @@ import org.apache.fop.fo.properties.Property;
  */
 public class LabelEndFunction extends FunctionBase {
 
-    /**
-     * @return 0 (the number of arguments required for the label-end function)
-     */
-    @Override
-    public int nbArgs() {
+    /** {@inheritDoc} */
+    public int getRequiredArgsCount() {
         return 0;
     }
 
-    /**
-     *
-     * @param args
-     *            array of arguments for the function (none are needed, but
-     *            required for the Function interface)
-     * @param pInfo
-     *            PropertyInfo object for the function
-     * @return the calculated label-end value for the list
-     * @throws PropertyException
-     *             if called from outside of an fo:list-item
-     */
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo pInfo)
-            throws PropertyException {
+    /** {@inheritDoc} */
+    public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
 
-        final Length distance = pInfo.getPropertyList()
-                .get(Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS)
-                .getLength();
-        final Length separation = pInfo.getPropertyList()
-                .getNearestSpecified(Constants.PR_PROVISIONAL_LABEL_SEPARATION)
-                .getLength();
+        Length distance = pInfo.getPropertyList().get(
+                Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS).getLength();
+        Length separation = pInfo.getPropertyList().getNearestSpecified(
+                Constants.PR_PROVISIONAL_LABEL_SEPARATION).getLength();
 
         PropertyList pList = pInfo.getPropertyList();
         while (pList != null && !(pList.getFObj() instanceof ListItem)) {
             pList = pList.getParentPropertyList();
         }
         if (pList == null) {
-            throw new PropertyException(
-                    "label-end() called from outside an fo:list-item");
+            throw new PropertyException("label-end() called from outside an fo:list-item");
         }
-        final Length startIndent = pList.get(Constants.PR_START_INDENT)
-                .getLength();
+        Length startIndent = pList.get(Constants.PR_START_INDENT).getLength();
 
-        final LengthBase base = new LengthBase(pInfo.getPropertyList(),
-                LengthBase.CONTAINING_REFAREA_WIDTH);
-        final PercentLength refWidth = new PercentLength(1.0, base);
+        LengthBase base = new LengthBase(pInfo.getPropertyList(),
+                                         LengthBase.CONTAINING_REFAREA_WIDTH);
+        PercentLength refWidth = new PercentLength(1.0, base);
 
         Numeric labelEnd = distance;
         labelEnd = NumericOp.addition(labelEnd, startIndent);
-        // TODO add start-intrusion-adjustment
+        //TODO add start-intrusion-adjustment
         labelEnd = NumericOp.subtraction(labelEnd, separation);
 
         labelEnd = NumericOp.subtraction(refWidth, labelEnd);

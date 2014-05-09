@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-/* $Id: Anchor.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Anchor.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.area.inline;
 
 /**
- * Anchor area for footnote or float. Not sure if this is needed.
+ * Anchor area for footnote or float.
+ * Not sure if this is needed.
  */
 public class Anchor extends InlineArea {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 5227798744787823499L;
 
     // has a keep with adjacent area
     // has reference to associated footnote or float out-of-line area
 
 }
+

@@ -15,29 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: AFPExtensionHandlerFactory.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AFPExtensionHandlerFactory.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.afp.extensions;
 
-import org.apache.fop.util.ContentHandlerFactory;
 import org.xml.sax.ContentHandler;
 
+import org.apache.fop.util.ContentHandlerFactory;
+
 /**
- * Factory for the ContentHandler that handles serialized AFPPageSetup
- * instances.
+ * Factory for the ContentHandler that handles serialized AFPPageSetup instances.
  */
 public class AFPExtensionHandlerFactory implements ContentHandlerFactory {
 
-    private static final String[] NAMESPACES = new String[] { AFPPageSetup.CATEGORY };
+    private static final String[] NAMESPACES = new String[] {AFPPageSetup.CATEGORY};
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
-    @Override
     public ContentHandler createContentHandler() {
         return new AFPExtensionHandler();
     }

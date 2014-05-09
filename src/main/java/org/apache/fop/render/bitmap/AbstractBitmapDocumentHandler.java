@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractBitmapDocumentHandler.java 821064 2009-10-02 15:41:31Z jeremias $ */
+/* $Id: AbstractBitmapDocumentHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.bitmap;
 
@@ -28,36 +28,37 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.xmlgraphics.image.writer.ImageWriter;
+import org.apache.xmlgraphics.image.writer.ImageWriterRegistry;
+import org.apache.xmlgraphics.image.writer.MultiImageWriter;
+
 import org.apache.fop.apps.FopFactoryConfigurator;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.render.intermediate.AbstractBinaryWritingIFDocumentHandler;
 import org.apache.fop.render.intermediate.IFContext;
-import org.apache.fop.render.intermediate.IFDocumentHandler;
 import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFPainter;
 import org.apache.fop.render.java2d.Java2DPainter;
 import org.apache.fop.render.java2d.Java2DUtil;
-import org.apache.xmlgraphics.image.writer.ImageWriter;
-import org.apache.xmlgraphics.image.writer.ImageWriterRegistry;
-import org.apache.xmlgraphics.image.writer.MultiImageWriter;
 
 /**
- * Abstract {@link IFDocumentHandler} implementation for producing bitmap
- * images.
+ * Abstract {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation
+ * for producing bitmap images.
  */
-@Slf4j
-public abstract class AbstractBitmapDocumentHandler extends
-        AbstractBinaryWritingIFDocumentHandler {
+public abstract class AbstractBitmapDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
+
+    /** logging instance */
+    private static Log log = LogFactory.getLog(AbstractBitmapDocumentHandler.class);
 
     /**
-     * Rendering Options key for the controlling the required bitmap size to
-     * create. This is used to create thumbnails, for example. If used, the
-     * target resolution is ignored. Value type: java.awt.Dimension (size in
-     * pixels)
+     * Rendering Options key for the controlling the required bitmap size to create.
+     * This is used to create thumbnails, for example. If used, the target resolution is ignored.
+     * Value type: java.awt.Dimension (size in pixels)
      */
     public static final String TARGET_BITMAP_SIZE = "target-bitmap-size";
 
@@ -71,9 +72,9 @@ public abstract class AbstractBitmapDocumentHandler extends
     private Dimension currentPageDimensions;
     private BufferedImage currentImage;
 
-    private final BitmapRenderingSettings bitmapSettings = new BitmapRenderingSettings();
+    private BitmapRenderingSettings bitmapSettings = new BitmapRenderingSettings();
 
-    private final double scaleFactor = 1.0;
+    private double scaleFactor = 1.0;
     private Dimension targetBitmapSize;
 
     /**
@@ -83,45 +84,36 @@ public abstract class AbstractBitmapDocumentHandler extends
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean supportsPagesOutOfOrder() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public abstract String getMimeType();
 
     /**
      * Returns the default file extension for the supported image type.
-     *
      * @return the default file extension (ex. "png")
      */
     public abstract String getDefaultExtension();
 
     /** {@inheritDoc} */
-    @Override
-    public void setContext(final IFContext context) {
+    public void setContext(IFContext context) {
         super.setContext(context);
 
-        // Set target resolution
-        final int dpi = Math
-                .round(context.getUserAgent().getTargetResolution());
+        //Set target resolution
+        int dpi = Math.round(context.getUserAgent().getTargetResolution());
         getSettings().getWriterParams().setResolution(dpi);
 
-        final Map<String, Object> renderingOptions = getUserAgent()
-                .getRendererOptions();
-        setTargetBitmapSize((Dimension) renderingOptions
-                .get(TARGET_BITMAP_SIZE));
+        Map renderingOptions = getUserAgent().getRendererOptions();
+        setTargetBitmapSize((Dimension)renderingOptions.get(TARGET_BITMAP_SIZE));
     }
 
     /** {@inheritDoc} */
-    @Override
     public abstract IFDocumentHandlerConfigurator getConfigurator();
 
     /**
      * Returns the settings for bitmap rendering.
-     *
      * @return the settings object
      */
     public BitmapRenderingSettings getSettings() {
@@ -129,70 +121,53 @@ public abstract class AbstractBitmapDocumentHandler extends
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setDefaultFontInfo(final FontInfo fontInfo) {
-        final FontInfo fi = Java2DUtil.buildDefaultJava2DBasedFontInfo(
-                fontInfo, getUserAgent());
+    public void setDefaultFontInfo(FontInfo fontInfo) {
+        FontInfo fi = Java2DUtil.buildDefaultJava2DBasedFontInfo(fontInfo, getUserAgent());
         setFontInfo(fi);
     }
 
     /**
-     * Sets the target bitmap size (in pixels) of the bitmap that should be
-     * produced. Normally, the bitmap size is calculated automatically based on
-     * the page size and the target resolution. But for example, if you want to
-     * create thumbnails or small preview bitmaps from pages it is more
-     * practical (and efficient) to set the required bitmap size.
-     *
-     * @param size
-     *            the target bitmap size (in pixels)
+     * Sets the target bitmap size (in pixels) of the bitmap that should be produced. Normally,
+     * the bitmap size is calculated automatically based on the page size and the target
+     * resolution. But for example, if you want to create thumbnails or small preview bitmaps
+     * from pages it is more practical (and efficient) to set the required bitmap size.
+     * @param size the target bitmap size (in pixels)
      */
-    public void setTargetBitmapSize(final Dimension size) {
+    public void setTargetBitmapSize(Dimension size) {
         this.targetBitmapSize = size;
     }
 
-    // ----------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void startDocument() throws IFException {
         super.startDocument();
         try {
             // Creates writer
-            this.imageWriter = ImageWriterRegistry.getInstance().getWriterFor(
-                    getMimeType());
+            this.imageWriter = ImageWriterRegistry.getInstance().getWriterFor(getMimeType());
             if (this.imageWriter == null) {
-                final BitmapRendererEventProducer eventProducer = BitmapRendererEventProducer.Provider
-                        .get(getUserAgent().getEventBroadcaster());
+                BitmapRendererEventProducer eventProducer
+                    = BitmapRendererEventProducer.Provider.get(
+                            getUserAgent().getEventBroadcaster());
                 eventProducer.noImageWriterFound(this, getMimeType());
             }
             if (this.imageWriter.supportsMultiImageWriter()) {
-                this.multiImageWriter = this.imageWriter
-                        .createMultiImageWriter(this.outputStream);
+                this.multiImageWriter = this.imageWriter.createMultiImageWriter(outputStream);
             } else {
-                this.multiFileUtil = new MultiFileRenderingUtil(
-                        getDefaultExtension(), getUserAgent().getOutputFile());
+                this.multiFileUtil = new MultiFileRenderingUtil(getDefaultExtension(),
+                        getUserAgent().getOutputFile());
             }
             this.pageCount = 0;
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IFException("I/O error in startDocument()", e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endDocumentHeader() {
+    public void endDocumentHeader() throws IFException {
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endDocument() throws IFException {
         try {
             if (this.multiImageWriter != null) {
@@ -200,75 +175,67 @@ public abstract class AbstractBitmapDocumentHandler extends
             }
             this.multiImageWriter = null;
             this.imageWriter = null;
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endDocument()", ioe);
         }
         super.endDocument();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageSequence(final String id) {
-        // nop
+    public void startPageSequence(String id) throws IFException {
+        //nop
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPageSequence() {
-        // nop
+    public void endPageSequence() throws IFException {
+        //nop
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPage(final int index, final String name,
-            final String pageMasterName, final Dimension size) {
+    public void startPage(int index, String name, String pageMasterName, Dimension size)
+                throws IFException {
         this.pageCount++;
         this.currentPageDimensions = new Dimension(size);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public IFPainter startPageContent() {
+    public IFPainter startPageContent() throws IFException {
         int bitmapWidth;
         int bitmapHeight;
         double scale;
         Point2D offset = null;
-        if (this.targetBitmapSize != null) {
-            // Fit the generated page proportionally into the given rectangle
-            // (in pixels)
-            final double scale2w = 1000 * this.targetBitmapSize.width
-                    / this.currentPageDimensions.getWidth();
-            final double scale2h = 1000 * this.targetBitmapSize.height
-                    / this.currentPageDimensions.getHeight();
-            bitmapWidth = this.targetBitmapSize.width;
-            bitmapHeight = this.targetBitmapSize.height;
+        if (targetBitmapSize != null) {
+            //Fit the generated page proportionally into the given rectangle (in pixels)
+            double scale2w = 1000 * targetBitmapSize.width
+                / this.currentPageDimensions.getWidth();
+            double scale2h = 1000 * targetBitmapSize.height
+                / this.currentPageDimensions.getHeight();
+            bitmapWidth = targetBitmapSize.width;
+            bitmapHeight = targetBitmapSize.height;
 
-            // Centering the page in the given bitmap
+            //Centering the page in the given bitmap
             offset = new Point2D.Double();
             if (scale2w < scale2h) {
                 scale = scale2w;
-                final double h = this.currentPageDimensions.height * scale
-                        / 1000;
+                double h = this.currentPageDimensions.height * scale / 1000;
                 offset.setLocation(0, (bitmapHeight - h) / 2.0);
             } else {
                 scale = scale2h;
-                final double w = this.currentPageDimensions.width * scale
-                        / 1000;
+                double w = this.currentPageDimensions.width * scale / 1000;
                 offset.setLocation((bitmapWidth - w) / 2.0, 0);
             }
         } else {
-            // Normal case: just scale according to the target resolution
-            scale = this.scaleFactor * getUserAgent().getTargetResolution()
-                    / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
-            bitmapWidth = (int) (this.currentPageDimensions.width * scale
-                    / 1000f + 0.5f);
-            bitmapHeight = (int) (this.currentPageDimensions.height * scale
-                    / 1000f + 0.5f);
+            //Normal case: just scale according to the target resolution
+            scale = scaleFactor
+                * getUserAgent().getTargetResolution()
+                / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
+            bitmapWidth = (int) ((this.currentPageDimensions.width * scale / 1000f) + 0.5f);
+            bitmapHeight = (int) ((this.currentPageDimensions.height * scale / 1000f) + 0.5f);
         }
 
-        // Set up bitmap to paint on
+        //Set up bitmap to paint on
         this.currentImage = createBufferedImage(bitmapWidth, bitmapHeight);
-        final Graphics2D graphics2D = this.currentImage.createGraphics();
+        Graphics2D graphics2D = this.currentImage.createGraphics();
 
         // draw page background
         if (!getSettings().hasTransparentPageBackground()) {
@@ -277,7 +244,7 @@ public abstract class AbstractBitmapDocumentHandler extends
             graphics2D.fillRect(0, 0, bitmapWidth, bitmapHeight);
         }
 
-        // Set rendering hints
+        //Set rendering hints
         graphics2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         if (getSettings().isAntiAliasingEnabled()
@@ -302,7 +269,7 @@ public abstract class AbstractBitmapDocumentHandler extends
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
                 RenderingHints.VALUE_STROKE_PURE);
 
-        // Set up initial coordinate system for the page
+        //Set up initial coordinate system for the page
         if (offset != null) {
             graphics2D.translate(offset.getX(), offset.getY());
         }
@@ -313,45 +280,37 @@ public abstract class AbstractBitmapDocumentHandler extends
 
     /**
      * Creates a new BufferedImage.
-     *
-     * @param bitmapWidth
-     *            the desired width in pixels
-     * @param bitmapHeight
-     *            the desired height in pixels
+     * @param bitmapWidth the desired width in pixels
+     * @param bitmapHeight the desired height in pixels
      * @return the new BufferedImage instance
      */
-    protected BufferedImage createBufferedImage(final int bitmapWidth,
-            final int bitmapHeight) {
-        return new BufferedImage(bitmapWidth, bitmapHeight, getSettings()
-                .getBufferedImageType());
+    protected BufferedImage createBufferedImage(int bitmapWidth, int bitmapHeight) {
+        return new BufferedImage(bitmapWidth, bitmapHeight, getSettings().getBufferedImageType());
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endPageContent() throws IFException {
         try {
             if (this.multiImageWriter == null) {
                 switch (this.pageCount) {
                 case 1:
-                    this.imageWriter.writeImage(this.currentImage,
-                            this.outputStream, getSettings().getWriterParams());
+                    this.imageWriter.writeImage(
+                            this.currentImage, this.outputStream,
+                            getSettings().getWriterParams());
                     IOUtils.closeQuietly(this.outputStream);
                     this.outputStream = null;
                     break;
                 default:
-                    final OutputStream out = this.multiFileUtil
-                    .createOutputStream(this.pageCount - 1);
+                    OutputStream out = this.multiFileUtil.createOutputStream(this.pageCount - 1);
                     if (out == null) {
-                        final BitmapRendererEventProducer eventProducer = BitmapRendererEventProducer.Provider
-                                .get(getUserAgent().getEventBroadcaster());
+                        BitmapRendererEventProducer eventProducer
+                            = BitmapRendererEventProducer.Provider.get(
+                                    getUserAgent().getEventBroadcaster());
                         eventProducer.stoppingAfterFirstPageNoFilename(this);
                     } else {
                         try {
-                            this.imageWriter.writeImage(this.currentImage, out,
+                            this.imageWriter.writeImage(
+                                    this.currentImage, out,
                                     getSettings().getWriterParams());
                         } finally {
                             IOUtils.closeQuietly(out);
@@ -363,22 +322,20 @@ public abstract class AbstractBitmapDocumentHandler extends
                         getSettings().getWriterParams());
             }
             this.currentImage = null;
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error while encoding BufferedImage", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPage() {
+    public void endPage() throws IFException {
         this.currentPageDimensions = null;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void handleExtensionObject(final Object extension) {
+    public void handleExtensionObject(Object extension) throws IFException {
         log.debug("Don't know how to handle extension object. Ignoring: "
-                + extension + " (" + extension.getClass().getName() + ")");
+                    + extension + " (" + extension.getClass().getName() + ")");
     }
 
 }

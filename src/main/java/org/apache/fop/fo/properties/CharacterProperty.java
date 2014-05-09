@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: CharacterProperty.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CharacterProperty.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
 
@@ -24,6 +24,8 @@ import org.apache.fop.fo.PropertyList;
 
 /**
  * Superclass for properties that wrap a character value
+ * TODO convert character value to int in order to denote unicode scalar value
+ * instead of a single UTF-16 code element
  */
 public final class CharacterProperty extends Property {
 
@@ -33,53 +35,53 @@ public final class CharacterProperty extends Property {
     public static class Maker extends PropertyMaker {
 
         /**
-         * @param propId
-         *            the id of the property for which a Maker should be created
+         * @param propId the id of the property for which a Maker should be created
          */
-        public Maker(final int propId) {
+        public Maker(int propId) {
             super(propId);
         }
 
-        @Override
-        public Property make(final PropertyList propertyList,
-                final String value, final FObj fo) {
-            final char c = value.charAt(0);
+        /** {@inheritDoc} */
+        public Property make(PropertyList propertyList, String value,
+                             FObj fo) {
+            char c = value.charAt(0);
             return CharacterProperty.getInstance(c);
         }
 
     }
 
     /** cache containing all canonical CharacterProperty instances */
-    private static final PropertyCache cache = new PropertyCache(
-            CharacterProperty.class);
+    private static final PropertyCache<CharacterProperty> CACHE
+            = new PropertyCache<CharacterProperty>();
 
     private final char character;
 
     /**
-     * @param character
-     *            character value to be wrapped in this property
+     * @param character character value to be wrapped in this property
      */
-    private CharacterProperty(final char character) {
+    private CharacterProperty(char character) {
         this.character = character;
     }
 
-    public static CharacterProperty getInstance(final char character) {
-        return (CharacterProperty) cache
-                .fetch(new CharacterProperty(character));
+    /**
+     * Get character property instance for character.
+     * @param character the character
+     * @return the character property instance
+     */
+    public static CharacterProperty getInstance(char character) {
+        return CACHE.fetch(new CharacterProperty(character));
     }
 
     /**
      * @return this.character cast as an Object
      */
-    @Override
     public Object getObject() {
-        return Character.valueOf(this.character);
+        return new Character(character);
     }
 
     /**
      * @return this.character
      */
-    @Override
     public char getCharacter() {
         return this.character;
     }
@@ -87,29 +89,22 @@ public final class CharacterProperty extends Property {
     /**
      * @return this.character cast as a String
      */
-    @Override
     public String getString() {
-        return Character.valueOf(this.character).toString();
+        return new Character(character).toString();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj instanceof CharacterProperty) {
-            return ((CharacterProperty) obj).character == this.character;
+            return (character == ((CharacterProperty) obj).character);
         } else {
             return false;
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int hashCode() {
-        return this.character;
+        return character;
     }
 
 }

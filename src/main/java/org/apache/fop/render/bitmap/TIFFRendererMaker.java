@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: TIFFRendererMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TIFFRendererMaker.java 1237582 2012-01-30 09:49:22Z mehdi $ */
 
 package org.apache.fop.render.bitmap;
 
@@ -30,28 +30,24 @@ import org.apache.fop.render.RendererConfigurator;
  */
 public class TIFFRendererMaker extends AbstractRendererMaker {
 
-    private static final String[] MIMES = new String[] { MimeConstants.MIME_TIFF };
+    private static final String[] MIMES = new String[] {MimeConstants.MIME_TIFF};
 
     /** {@inheritDoc} */
-    @Override
-    public Renderer makeRenderer(final FOUserAgent userAgent) {
-        return new TIFFRenderer();
+    public Renderer makeRenderer(FOUserAgent userAgent) {
+        return new TIFFRenderer(userAgent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public RendererConfigurator getConfigurator(final FOUserAgent userAgent) {
+    public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
         return new TIFFRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

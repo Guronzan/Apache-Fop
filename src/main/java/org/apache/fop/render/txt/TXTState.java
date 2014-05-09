@@ -33,11 +33,11 @@ import org.apache.fop.area.CTM;
 public class TXTState {
 
     /** Keeps all coordinate transformation matrices during rendering. */
-    private final LinkedList stackCTM = new LinkedList<>();
+    private LinkedList stackCTM = new LinkedList();
 
     /**
-     * Current result coordinate transformation matrix. It's product of all
-     * matrices in order, saved in <code>stackCTM</code>.
+     * Current result coordinate transformation matrix. It's product of
+     * all matrices in order, saved in <code>stackCTM</code>.
      */
     private CTM resultCTM = new CTM();
 
@@ -48,22 +48,21 @@ public class TXTState {
     }
 
     /**
-     * Updates result coordinate transformation matrix (i.e.
-     * <code>resultCTM</code>), multipliing it by given matrix.
+     * Updates result coordinate transformation matrix
+     * (i.e. <code>resultCTM</code>), multipliing it by given matrix.
      *
-     * @param ctm
-     *            CTM
+     * @param ctm CTM
      */
-    private void updateResultCTM(final CTM ctm) {
-        this.resultCTM = this.resultCTM.multiply(ctm);
+    private void updateResultCTM(CTM ctm) {
+        resultCTM = resultCTM.multiply(ctm);
     }
 
     /**
      * Recalculate current result coordinate transformation matrix.
      */
     private void calcResultCTM() {
-        this.resultCTM = new CTM();
-        for (final Iterator i = this.stackCTM.iterator(); i.hasNext();) {
+        resultCTM = new CTM();
+        for (Iterator i = stackCTM.iterator(); i.hasNext();) {
             updateResultCTM((CTM) i.next());
         }
     }
@@ -72,11 +71,10 @@ public class TXTState {
      * Push the current coordinate transformation matrix onto the stack and
      * reevaluate <code>resultCTM</code>.
      *
-     * @param ctm
-     *            instance of CTM
+     * @param ctm  instance of CTM
      */
-    public void push(final CTM ctm) {
-        this.stackCTM.addLast(ctm);
+    public void push(CTM ctm) {
+        stackCTM.addLast(ctm);
         updateResultCTM(ctm);
     }
 
@@ -85,20 +83,19 @@ public class TXTState {
      * <code>resultCTM</code>.
      */
     public void pop() {
-        this.stackCTM.removeLast();
+        stackCTM.removeLast();
         calcResultCTM();
     }
 
     /**
-     * Modifies coordinate transformation matrix in such a way, so x-shift and
-     * y-shift will be transformed in text positions.
+     * Modifies coordinate transformation matrix in such a way, so
+     * x-shift and y-shift will be transformed in text positions.
      *
-     * @param ctm
-     *            CTM to modify
+     * @param ctm CTM to modify
      * @return instance of CTM
      */
-    public CTM refineCTM(final CTM ctm) {
-        final double[] da = ctm.toArray();
+    public CTM refineCTM(CTM ctm) {
+        double[] da = ctm.toArray();
         // refine x-shift
         da[4] = Helper.roundPosition((int) da[4], TXTRenderer.CHAR_WIDTH);
         // refine y-shift
@@ -110,15 +107,13 @@ public class TXTState {
     /**
      * Transforms <code>point</code> using <code>ctm</code>.
      *
-     * @param p
-     *            Point
-     * @param ctm
-     *            CTM
+     * @param p Point
+     * @param ctm CTM
      * @return transformed Point
      */
-    public Point transformPoint(final Point p, final CTM ctm) {
+    public Point transformPoint(Point p, CTM ctm) {
         Rectangle2D r = new Rectangle2D.Double(p.x, p.y, 0, 0);
-        final CTM nctm = refineCTM(ctm);
+        CTM nctm = refineCTM(ctm);
         r = nctm.transform(r);
         return new Point((int) r.getX(), (int) r.getY());
     }
@@ -126,20 +121,18 @@ public class TXTState {
     /**
      * Transforms point (x, y) using <code>resultCTM</code>.
      *
-     * @param x
-     *            x-coordinate
-     * @param y
-     *            y-coordinate
+     * @param x x-coordinate
+     * @param y y-coordinate
      * @return transformed Point
      */
-    public Point transformPoint(final int x, final int y) {
-        return transformPoint(new Point(x, y), this.resultCTM);
+    public Point transformPoint(int x, int y) {
+        return transformPoint(new Point(x, y), resultCTM);
     }
 
     /**
      * @return current result coordinate transformation matrix
      */
     public CTM getResultCTM() {
-        return this.resultCTM;
+        return resultCTM;
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfStructureException.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfStructureException.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.exceptions;
 
@@ -27,21 +27,16 @@ package org.apache.fop.render.rtf.rtflib.exceptions;
  */
 
 /**
- * Thrown when a method call would lead to an invalid RTF document structure.
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Thrown when a method call would lead to an invalid RTF document structure.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
-public class RtfStructureException extends RtfException {
+public class RtfStructureException
+extends RtfException {
     /**
-     *
+     * @param reason Description of reason for exception.
      */
-    private static final long serialVersionUID = -8552018114843453455L;
-
-    /**
-     * @param reason
-     *            Description of reason for exception.
-     */
-    public RtfStructureException(final String reason) {
+    public RtfStructureException(String reason) {
         super(reason);
     }
 }

@@ -15,103 +15,111 @@
  * limitations under the License.
  */
 
-/* $Id: TableAndCaption.java 681307 2008-07-31 09:06:10Z jeremias $ */
+/* $Id: TableAndCaption.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.flow.table;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
+import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_table-and-caption">
  * <code>fo:table-and-caption</code></a> property.
- * 
- * @todo needs implementation
+ * TODO needs implementation
  */
-public class TableAndCaption extends FObj /* implements BreakPropertySet */{
+public class TableAndCaption extends FObj implements CommonAccessibilityHolder {
+
+    private CommonAccessibility commonAccessibility;
+
     // The value of properties relevant for fo:table-and-caption.
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
-    // private CommonAural commonAural;
-    // private CommonBorderPaddingBackground commonBorderPaddingBackground;
-    // private CommonMarginBlock commonMarginBlock;
-    // private CommonRelativePosition commonRelativePosition;
-    // private int breakAfter;
-    // private int breakBefore;
-    // private int captionSide;
-    // private int intrusionDisplace;
-    // private KeepProperty keepTogether;
-    // private KeepProperty keepWithNext;
-    // private KeepProperty keepWithPrevious;
-    // private int textAlign;
+    //     private CommonAural commonAural;
+    //     private CommonBorderPaddingBackground commonBorderPaddingBackground;
+    //     private CommonMarginBlock commonMarginBlock;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private int breakAfter;
+    //     private int breakBefore;
+    //     private int captionSide;
+    //     private int intrusionDisplace;
+    //     private KeepProperty keepTogether;
+    //     private KeepProperty keepWithNext;
+    //     private KeepProperty keepWithPrevious;
+    //     private int textAlign;
     // End of property values
 
-    static boolean notImplementedWarningGiven = false;
+    static boolean notImplementedWarningGiven = false; // CSOK: VisibilityModifier
 
     /** used for FO validation */
     private boolean tableCaptionFound = false;
     private boolean tableFound = false;
 
     /**
-     * Create a TableAndCaption instance with the given {@link FONode} as
-     * parent.
-     * 
-     * @param parent
-     *            FONode that is the parent of this object
+     * Create a TableAndCaption instance with the given {@link FONode}
+     * as parent.
+     * @param parent FONode that is the parent of this object
      */
-    public TableAndCaption(final FONode parent) {
+    public TableAndCaption(FONode parent) {
         super(parent);
 
         if (!notImplementedWarningGiven) {
-            getFOValidationEventProducer().unimplementedFeature(this,
-                    getName(), "fo:table-and-caption", getLocator());
+            getFOValidationEventProducer().unimplementedFeature(this, getName(),
+                    "fo:table-and-caption", getLocator());
             notImplementedWarningGiven = true;
         }
     }
 
-    /**
-     * Make sure content model satisfied, if so then tell the FOEventHandler
-     * that we are at the end of the flow. {@inheritDoc}
-     */
     @Override
+    public void bind(PropertyList pList) throws FOPException {
+        super.bind(pList);
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+    }
+
+    /**
+     * Make sure content model satisfied, if so then tell the
+     * FOEventHandler that we are at the end of the flow.
+     * {@inheritDoc}
+     */
     protected void endOfNode() throws FOPException {
-        if (!this.tableFound) {
+        if (!tableFound) {
             missingChildElementError("marker* table-caption? table");
         }
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: marker* table-caption? table
+     * {@inheritDoc}
+     * <br>XSL Content Model: marker* table-caption? table
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
 
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("marker")) {
-                if (this.tableCaptionFound) {
+                if (tableCaptionFound) {
                     nodesOutOfOrderError(loc, "fo:marker", "fo:table-caption");
-                } else if (this.tableFound) {
+                } else if (tableFound) {
                     nodesOutOfOrderError(loc, "fo:marker", "fo:table");
                 }
             } else if (localName.equals("table-caption")) {
-                if (this.tableCaptionFound) {
+                if (tableCaptionFound) {
                     tooManyNodesError(loc, "fo:table-caption");
-                } else if (this.tableFound) {
+                } else if (tableFound) {
                     nodesOutOfOrderError(loc, "fo:table-caption", "fo:table");
                 } else {
-                    this.tableCaptionFound = true;
+                    tableCaptionFound = true;
                 }
             } else if (localName.equals("table")) {
-                if (this.tableFound) {
+                if (tableFound) {
                     tooManyNodesError(loc, "fo:table");
                 } else {
-                    this.tableFound = true;
+                    tableFound = true;
                 }
             } else {
                 invalidChildError(loc, nsURI, localName);
@@ -120,18 +128,22 @@ public class TableAndCaption extends FObj /* implements BreakPropertySet */{
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "table-and-caption";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_AND_CAPTION}
      */
-    @Override
     public int getNameId() {
         return FO_TABLE_AND_CAPTION;
     }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
+    }
+
 }
+

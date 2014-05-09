@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageDataDescriptor.java 829057 2009-10-23 13:33:18Z jeremias $ */
+/* $Id: ImageDataDescriptor.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp.modca;
 
@@ -29,72 +29,67 @@ import org.apache.fop.afp.util.BinaryUtils;
  */
 public class ImageDataDescriptor extends AbstractDescriptor {
 
+    /** function set fs10 */
     public static final byte FUNCTION_SET_FS10 = 0x0A;
+    /** function set fs11 */
     public static final byte FUNCTION_SET_FS11 = 0x0B;
+    /** function set fs45 */
     public static final byte FUNCTION_SET_FS45 = 45;
 
     private byte functionSet = FUNCTION_SET_FS11; // FCNSET = IOCA FS 11
 
     /**
-     * Constructor for a ImageDataDescriptor for the specified resolution, width
-     * and height.
+     * Constructor for a ImageDataDescriptor for the specified
+     * resolution, width and height.
      *
-     * @param width
-     *            The width of the image.
-     * @param height
-     *            The height of the height.
-     * @param widthRes
-     *            The horizontal resolution of the image.
-     * @param heightRes
-     *            The vertical resolution of the image.
+     * @param width The width of the image.
+     * @param height The height of the height.
+     * @param widthRes The horizontal resolution of the image.
+     * @param heightRes The vertical resolution of the image.
      */
-    public ImageDataDescriptor(final int width, final int height,
-            final int widthRes, final int heightRes) {
+    public ImageDataDescriptor(int width, int height, int widthRes, int heightRes) {
         super(width, height, widthRes, heightRes);
     }
 
     /**
      * Sets the IOCA function set to be used.
-     *
-     * @param functionSet
-     *            the function set (0x0A for FS 10, 0x0B for FS 11, etc.)
+     * @param functionSet the function set (0x0A for FS 10, 0x0B for FS 11, etc.)
      */
-    public void setFunctionSet(final byte functionSet) {
+    public void setFunctionSet(byte functionSet) {
         this.functionSet = functionSet;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[22];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[22];
         copySF(data, Type.DESCRIPTOR, Category.IMAGE);
 
         // SF length
-        final byte[] len = BinaryUtils.convert(data.length - 1, 2);
+        byte[] len = BinaryUtils.convert(data.length - 1, 2);
         data[1] = len[0];
         data[2] = len[1];
 
-        final byte[] x = BinaryUtils.convert(this.widthRes, 2);
+        byte[] x = BinaryUtils.convert(widthRes, 2);
         data[10] = x[0];
         data[11] = x[1];
 
-        final byte[] y = BinaryUtils.convert(this.heightRes, 2);
+        byte[] y = BinaryUtils.convert(heightRes, 2);
         data[12] = y[0];
         data[13] = y[1];
 
-        final byte[] w = BinaryUtils.convert(this.width, 2);
+        byte[] w = BinaryUtils.convert(width, 2);
         data[14] = w[0];
         data[15] = w[1];
 
-        final byte[] h = BinaryUtils.convert(this.height, 2);
+        byte[] h = BinaryUtils.convert(height, 2);
         data[16] = h[0];
         data[17] = h[1];
 
-        // IOCA Function Set Field
-        data[18] = (byte) 0xF7; // ID = Set IOCA Function Set
+        //IOCA Function Set Field
+        data[18] = (byte)0xF7; // ID = Set IOCA Function Set
         data[19] = 0x02; // Length
         data[20] = 0x01; // Category = Function set identifier
-        data[21] = this.functionSet;
+        data[21] = functionSet;
 
         os.write(data);
     }

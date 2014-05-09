@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfPageArea.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfPageArea.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,40 +30,39 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * @author Christopher Scott, scottc@westinghouse.com
+ * <p>Page area container.</p>
+ *
+ * <p>This work was authored by Christopher Scott (scottc@westinghouse.com).</p>
  */
-public class RtfPageArea extends RtfContainer {
+public class RtfPageArea
+extends RtfContainer {
     private RtfPage currentPage;
     private RtfNull nullChild;
     private RtfAttributes childAttributes;
 
     /** Create an RTF element as a child of given container */
-    RtfPageArea(final RtfFile f, final Writer w) throws IOException {
+    RtfPageArea(RtfFile f, Writer w) throws IOException {
         super(f, w);
     }
 
     /**
      * Close current Rtfpage if any and create a new one
-     * 
-     * @param attr
-     *            attributes for new RtfPage
+     * @param attr attributes for new RtfPage
      * @return new RtfPage
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    public RtfPage newPage(final RtfAttributes attr) throws IOException {
-        if (this.currentPage != null) {
-            this.currentPage.close();
+    public RtfPage newPage(RtfAttributes attr) throws IOException {
+        if (currentPage != null) {
+            currentPage.close();
         }
-        this.currentPage = new RtfPage(this, this.writer, attr);
+        currentPage = new RtfPage(this, writer, attr);
 
-        return this.currentPage;
+        return currentPage;
     }
 
     /**
      * @return true
      */
-    @Override
     protected boolean okToWriteRtf() {
         return true;
     }

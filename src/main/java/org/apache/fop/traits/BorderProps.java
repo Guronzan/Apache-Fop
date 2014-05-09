@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BorderProps.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: BorderProps.java 1069439 2011-02-10 15:58:57Z jeremias $ */
 
 package org.apache.fop.traits;
 
@@ -29,14 +29,13 @@ import org.apache.fop.fo.expr.PropertyException;
 import org.apache.fop.util.ColorUtil;
 
 /**
- * Border properties. Class to store border trait properties for the area tree.
+ * Border properties.
+ * Class to store border trait properties for the area tree.
  */
 public class BorderProps implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -886871454032189183L;
+
     /** Separate border model */
     public static final int SEPARATE = 0;
     /** Collapsing border model, for borders inside a table */
@@ -45,29 +44,22 @@ public class BorderProps implements Serializable {
     public static final int COLLAPSE_OUTER = 2;
 
     /** Border style (one of EN_*) */
-    public int style; // Enum for border style
+    public int style; // Enum for border style                  // CSOK: VisibilityModifier
     /** Border color */
-    public Color color;
+    public Color color;                                         // CSOK: VisibilityModifier
     /** Border width */
-    public int width;
+    public int width;                                           // CSOK: VisibilityModifier
     /** Border mode (one of SEPARATE, COLLAPSE_INNER and COLLAPSE_OUTER) */
-    public int mode;
+    public int mode;                                            // CSOK: VisibilityModifier
 
     /**
      * Constructs a new BorderProps instance.
-     * 
-     * @param style
-     *            border style (one of EN_*)
-     * @param width
-     *            border width
-     * @param color
-     *            border color
-     * @param mode
-     *            border mode ((one of SEPARATE, COLLAPSE_INNER and
-     *            COLLAPSE_OUTER)
+     * @param style border style (one of EN_*)
+     * @param width border width
+     * @param color border color
+     * @param mode border mode ((one of SEPARATE, COLLAPSE_INNER and COLLAPSE_OUTER)
      */
-    public BorderProps(final int style, final int width, final Color color,
-            final int mode) {
+    public BorderProps(int style, int width, Color color, int mode) {
         this.style = style;
         this.width = width;
         this.color = color;
@@ -76,29 +68,21 @@ public class BorderProps implements Serializable {
 
     /**
      * Constructs a new BorderProps instance.
-     * 
-     * @param style
-     *            border style (one of the XSL enum values for border style)
-     * @param width
-     *            border width
-     * @param color
-     *            border color
-     * @param mode
-     *            border mode ((one of SEPARATE, COLLAPSE_INNER and
-     *            COLLAPSE_OUTER)
+     * @param style border style (one of the XSL enum values for border style)
+     * @param width border width
+     * @param color border color
+     * @param mode border mode ((one of SEPARATE, COLLAPSE_INNER and COLLAPSE_OUTER)
      */
-    public BorderProps(final String style, final int width, final Color color,
-            final int mode) {
+    public BorderProps(String style, int width, Color color, int mode) {
         this(getConstantForStyle(style), width, color, mode);
     }
 
     /**
-     * @param bp
-     *            the border properties or null
+     * @param bp the border properties or null
      * @return the effective width of the clipped part of the border
      */
-    public static int getClippedWidth(final BorderProps bp) {
-        if (bp != null && bp.mode != SEPARATE) {
+    public static int getClippedWidth(BorderProps bp) {
+        if ((bp != null) && (bp.mode != SEPARATE)) {
             return bp.width / 2;
         } else {
             return 0;
@@ -106,10 +90,10 @@ public class BorderProps implements Serializable {
     }
 
     private String getStyleString() {
-        return BorderStyle.valueOf(this.style).getName();
+        return BorderStyle.valueOf(style).getName();
     }
 
-    private static int getConstantForStyle(final String style) {
+    private static int getConstantForStyle(String style) {
         return BorderStyle.valueOf(style).getEnumValue();
     }
 
@@ -121,48 +105,47 @@ public class BorderProps implements Serializable {
 
     /** {@inheritDoc} */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj == null) {
             return false;
         } else if (obj == this) {
             return true;
         } else {
             if (obj instanceof BorderProps) {
-                final BorderProps other = (BorderProps) obj;
-                return this.style == other.style
-                        && this.color.equals(other.color)
-                        && this.width == other.width && this.mode == other.mode;
+                BorderProps other = (BorderProps)obj;
+                return (style == other.style)
+                        && org.apache.xmlgraphics.java2d.color.ColorUtil.isSameColor(
+                                color, other.color)
+                        && width == other.width
+                        && mode == other.mode;
             }
         }
         return false;
     }
 
     /**
-     * Returns a BorderProps represtation of a string of the format as written
-     * by BorderProps.toString().
-     * 
-     * @param foUserAgent
-     *            FOP user agent caching ICC profiles
-     * @param s
-     *            the string
+     * Returns a BorderProps represtation of a string of the format as written by
+     * BorderProps.toString().
+     * @param foUserAgent FOP user agent caching ICC profiles
+     * @param s the string
      * @return a BorderProps instance
      */
-    public static BorderProps valueOf(final FOUserAgent foUserAgent, String s) {
+    public static BorderProps valueOf(FOUserAgent foUserAgent, String s) {
         if (s.startsWith("(") && s.endsWith(")")) {
             s = s.substring(1, s.length() - 1);
-            final Pattern pattern = Pattern.compile("([^,\\(]+(?:\\(.*\\))?)");
-            final Matcher m = pattern.matcher(s);
+            Pattern pattern = Pattern.compile("([^,\\(]+(?:\\(.*\\))?)");
+            Matcher m = pattern.matcher(s);
             boolean found;
             found = m.find();
-            final String style = m.group();
+            String style = m.group();
             found = m.find();
-            final String color = m.group();
+            String color = m.group();
             found = m.find();
-            final int width = Integer.parseInt(m.group());
+            int width = Integer.parseInt(m.group());
             int mode = SEPARATE;
             found = m.find();
             if (found) {
-                final String ms = m.group();
+                String ms = m.group();
                 if ("collapse-inner".equalsIgnoreCase(ms)) {
                     mode = COLLAPSE_INNER;
                 } else if ("collapse-outer".equalsIgnoreCase(ms)) {
@@ -172,30 +155,29 @@ public class BorderProps implements Serializable {
             Color c;
             try {
                 c = ColorUtil.parseColorString(foUserAgent, color);
-            } catch (final PropertyException e) {
+            } catch (PropertyException e) {
                 throw new IllegalArgumentException(e.getMessage());
             }
 
             return new BorderProps(style, width, c, mode);
         } else {
-            throw new IllegalArgumentException(
-                    "BorderProps must be surrounded by parentheses");
+            throw new IllegalArgumentException("BorderProps must be surrounded by parentheses");
         }
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        final StringBuilder sbuf = new StringBuilder();
+        StringBuffer sbuf = new StringBuffer();
         sbuf.append('(');
         sbuf.append(getStyleString());
         sbuf.append(',');
-        sbuf.append(ColorUtil.colorToString(this.color));
+        sbuf.append(ColorUtil.colorToString(color));
         sbuf.append(',');
-        sbuf.append(this.width);
-        if (this.mode != SEPARATE) {
+        sbuf.append(width);
+        if (mode != SEPARATE) {
             sbuf.append(',');
-            if (this.mode == COLLAPSE_INNER) {
+            if (mode == COLLAPSE_INNER) {
                 sbuf.append("collapse-inner");
             } else {
                 sbuf.append("collapse-outer");

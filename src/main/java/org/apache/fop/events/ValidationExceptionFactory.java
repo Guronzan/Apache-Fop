@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: ValidationExceptionFactory.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ValidationExceptionFactory.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.events;
 
 import java.util.Locale;
 
+import org.xml.sax.Locator;
+
 import org.apache.fop.events.EventExceptionManager.ExceptionFactory;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
 
 /**
  * Exception factory for {@link ValidationException}.
@@ -31,11 +32,10 @@ import org.xml.sax.Locator;
 public class ValidationExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
-    @Override
-    public Throwable createException(final Event event) {
-        final Locator loc = (Locator) event.getParam("loc");
-        final String msg = EventFormatter.format(event, Locale.ENGLISH);
-        final ValidationException ex = new ValidationException(msg, loc);
+    public Throwable createException(Event event) {
+        Locator loc = (Locator)event.getParam("loc");
+        String msg = EventFormatter.format(event, Locale.ENGLISH);
+        ValidationException ex = new ValidationException(msg, loc);
         if (!Locale.ENGLISH.equals(Locale.getDefault())) {
             ex.setLocalizedMessage(EventFormatter.format(event));
         }
@@ -43,9 +43,9 @@ public class ValidationExceptionFactory implements ExceptionFactory {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Class getExceptionClass() {
+    public Class<ValidationException> getExceptionClass() {
         return ValidationException.class;
     }
+
 
 }

@@ -30,24 +30,21 @@ import org.apache.fop.render.intermediate.IFDocumentHandler;
  */
 public class PNGDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
 
-    private static final String[] MIMES = new String[] { MimeConstants.MIME_PNG };
+    private static final String[] MIMES = new String[] {MimeConstants.MIME_PNG};
 
     /** {@inheritDoc} */
-    @Override
-    public IFDocumentHandler makeIFDocumentHandler(final FOUserAgent ua) {
-        final PNGDocumentHandler handler = new PNGDocumentHandler();
+    public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
+        PNGDocumentHandler handler = new PNGDocumentHandler();
         handler.setContext(new IFContext(ua));
         return handler;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

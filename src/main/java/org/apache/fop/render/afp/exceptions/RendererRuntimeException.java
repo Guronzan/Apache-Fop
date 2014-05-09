@@ -26,30 +26,20 @@ package org.apache.fop.render.afp.exceptions;
 public class RendererRuntimeException extends NestedRuntimeException {
 
     /**
-     *
-     */
-    private static final long serialVersionUID = 3737181018821940354L;
-
-    /**
      * Constructs a RendererRuntimeException with the specified message.
-     * 
-     * @param msg
-     *            the exception mesaage
+     * @param msg the exception mesaage
      */
-    public RendererRuntimeException(final String msg) {
+    public RendererRuntimeException(String msg) {
         super(msg);
     }
 
     /**
-     * Constructs a RendererRuntimeException with the specified message wrapping
-     * the underlying exception.
-     * 
-     * @param msg
-     *            the exception mesaage
-     * @param t
-     *            the underlying exception
+     * Constructs a RendererRuntimeException with the specified message
+     * wrapping the underlying exception.
+     * @param msg the exception mesaage
+     * @param t the underlying exception
      */
-    public RendererRuntimeException(final String msg, final Throwable t) {
+    public RendererRuntimeException(String msg, Throwable t) {
         super(msg, t);
     }
 

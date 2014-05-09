@@ -29,10 +29,10 @@ import java.util.LinkedList;
  */
 public class RtfSpaceManager {
     /** Stack for saving rtf block-level attributes. */
-    private final LinkedList blockAttributes = new LinkedList<>();
+    private LinkedList blockAttributes = new LinkedList();
 
     /** Stack for saving rtf inline-level attributes. */
-    private final LinkedList inlineAttributes = new LinkedList<>();
+    private LinkedList inlineAttributes = new LinkedList();
 
     /**
      * Keeps value of accumulated space in twips. For example if block has
@@ -54,8 +54,8 @@ public class RtfSpaceManager {
      * candidate presence.
      */
     public void stopUpdatingSpaceBefore() {
-        for (final Iterator it = this.blockAttributes.iterator(); it.hasNext();) {
-            final RtfSpaceSplitter splitter = (RtfSpaceSplitter) it.next();
+        for (Iterator it = blockAttributes.iterator(); it.hasNext();) {
+            RtfSpaceSplitter splitter = (RtfSpaceSplitter) it.next();
             if (splitter.isBeforeCadidateSet()) {
                 splitter.stopUpdatingSpaceBefore();
             }
@@ -65,12 +65,11 @@ public class RtfSpaceManager {
     /**
      * Set attributes as candidate for space attributes inheritance.
      *
-     * @param attrs
-     *            attributes to set
+     * @param attrs  attributes to set
      */
-    public void setCandidate(final RtfAttributes attrs) {
-        for (final Iterator it = this.blockAttributes.iterator(); it.hasNext();) {
-            final RtfSpaceSplitter splitter = (RtfSpaceSplitter) it.next();
+    public void setCandidate(RtfAttributes attrs) {
+        for (Iterator it = blockAttributes.iterator(); it.hasNext();) {
+            RtfSpaceSplitter splitter = (RtfSpaceSplitter) it.next();
             splitter.setSpaceBeforeCandidate(attrs);
             splitter.setSpaceAfterCandidate(attrs);
         }
@@ -80,17 +79,16 @@ public class RtfSpaceManager {
      * Builds RtfSpaceSplitter on <code>attrs</code> and adds it to the
      * block-level stack.
      *
-     * @param attrs
-     *            RtfAttribute to add
+     * @param attrs  RtfAttribute to add
      * @return instance of RtfSpaceSplitter
      */
-    public RtfSpaceSplitter pushRtfSpaceSplitter(final RtfAttributes attrs) {
+    public RtfSpaceSplitter pushRtfSpaceSplitter(RtfAttributes attrs) {
         RtfSpaceSplitter splitter;
-        splitter = new RtfSpaceSplitter(attrs, this.accumulatedSpace);
+        splitter = new RtfSpaceSplitter(attrs, accumulatedSpace);
         // set accumulatedSpace to 0, because now accumulatedSpace used
         // in splitter
-        this.accumulatedSpace = 0;
-        this.blockAttributes.addLast(splitter);
+        accumulatedSpace = 0;
+        blockAttributes.addLast(splitter);
         return splitter;
     }
 
@@ -98,29 +96,28 @@ public class RtfSpaceManager {
      * Removes RtfSpaceSplitter from top of block-level stack.
      */
     public void popRtfSpaceSplitter() {
-        if (!this.blockAttributes.isEmpty()) {
+        if (!blockAttributes.isEmpty()) {
             RtfSpaceSplitter splitter;
-            splitter = (RtfSpaceSplitter) this.blockAttributes.removeLast();
-            this.accumulatedSpace += splitter.flush();
+            splitter = (RtfSpaceSplitter) blockAttributes.removeLast();
+            accumulatedSpace += splitter.flush();
         }
     }
 
     /**
      * Pushes inline attributes to inline-level stack.
      *
-     * @param attrs
-     *            attributes to add
+     * @param attrs attributes to add
      */
-    public void pushInlineAttributes(final RtfAttributes attrs) {
-        this.inlineAttributes.addLast(attrs);
+    public void pushInlineAttributes(RtfAttributes attrs) {
+        inlineAttributes.addLast(attrs);
     }
 
     /**
      * Pops inline attributes from inline-level stack.
      */
     public void popInlineAttributes() {
-        if (!this.inlineAttributes.isEmpty()) {
-            this.inlineAttributes.removeLast();
+        if (!inlineAttributes.isEmpty()) {
+            inlineAttributes.removeLast();
         }
     }
 
@@ -130,6 +127,6 @@ public class RtfSpaceManager {
      * @return RtfAttributes from top of inline-level stack
      */
     public RtfAttributes getLastInlineAttribute() {
-        return (RtfAttributes) this.inlineAttributes.getLast();
+        return (RtfAttributes) inlineAttributes.getLast();
     }
 }

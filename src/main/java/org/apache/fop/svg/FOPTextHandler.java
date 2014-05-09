@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: FOPTextHandler.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: FOPTextHandler.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.svg;
 
-public interface FOPTextHandler extends
-        org.apache.xmlgraphics.java2d.TextHandler {
+/** an fop extension to text handler */
+public interface FOPTextHandler extends org.apache.xmlgraphics.java2d.TextHandler {
 
-    void setOverrideFont(final org.apache.fop.fonts.Font font);
+    /** @param font override font */
+    void setOverrideFont(org.apache.fop.fonts.Font font);
 
+    /** @return font info */
     org.apache.fop.fonts.FontInfo getFontInfo();
 }

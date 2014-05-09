@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfBeforeContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfBeforeContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -35,11 +35,9 @@ public interface IRtfBeforeContainer {
 
     /**
      *
-     * @param attrs
-     *            Attributes of new header
+     * @param attrs Attributes of new header
      * @return RtfBefore for new header object
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    RtfBefore newBefore(final RtfAttributes attrs) throws IOException;
+    RtfBefore newBefore(RtfAttributes attrs) throws IOException;
 }

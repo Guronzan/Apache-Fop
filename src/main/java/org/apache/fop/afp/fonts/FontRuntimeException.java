@@ -29,24 +29,19 @@ public class FontRuntimeException extends RuntimeException {
 
     /**
      * Constructs a FontRuntimeException with the specified message.
-     * 
-     * @param msg
-     *            the exception mesaage
+     * @param msg the exception mesaage
      */
-    public FontRuntimeException(final String msg) {
+    public FontRuntimeException(String msg) {
         super(msg);
     }
 
     /**
-     * Constructs a FontRuntimeException with the specified message wrapping the
-     * underlying exception.
-     * 
-     * @param msg
-     *            the exception mesaage
-     * @param t
-     *            the underlying exception
+     * Constructs a FontRuntimeException with the specified message
+     * wrapping the underlying exception.
+     * @param msg the exception mesaage
+     * @param t the underlying exception
      */
-    public FontRuntimeException(final String msg, final Throwable t) {
+    public FontRuntimeException(String msg, Throwable t) {
         super(msg, t);
     }
 

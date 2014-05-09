@@ -15,59 +15,54 @@
  * limitations under the License.
  */
 
-/* $Id: Declarations.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Declarations.java 1056926 2011-01-09 12:20:21Z adelmelle $ */
 
 package org.apache.fop.fo.pagination;
 
 // Java
-import java.util.HashMap;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_declarations">
  * <code>fo:declarations</code></a> object.
  *
- * A declarations formatting object holds a set of color-profiles and optionally
- * additional non-XSL namespace elements. The color-profiles are held in a
- * hashmap for use with color-profile references.
+ * A declarations formatting object holds a set of color-profiles
+ * and optionally additional non-XSL namespace elements.
+ * The color-profiles are held in a hashmap for use with color-profile
+ * references.
  */
-@Slf4j
 public class Declarations extends FObj {
 
     private Map<String, ColorProfile> colorProfiles = null;
 
     /**
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      */
-    public Declarations(final FONode parent) {
+    public Declarations(FONode parent) {
         super(parent);
         ((Root) parent).setDeclarations(this);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) {
+    public void bind(PropertyList pList) throws FOPException {
         // No properties defined for fo:declarations
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL 1.0: (color-profile)+ (and non-XSL NS nodes) <br>
-     * FOP/XSL 1.1: (color-profile)* (and non-XSL NS nodes)
+     * {@inheritDoc}
+     * <br>XSL 1.0: (color-profile)+ (and non-XSL NS nodes)
+     * <br>FOP/XSL 1.1: (color-profile)* (and non-XSL NS nodes)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (!localName.equals("color-profile")) {
                 invalidChildError(loc, nsURI, localName);
@@ -76,25 +71,21 @@ public class Declarations extends FObj {
     }
 
     /**
-     * At the end of this element sort out the children into a hashmap of color
-     * profiles and a list of extension attachments.
-     *
-     * @throws FOPException
-     *             if there's a problem during processing
+     * At the end of this element sort out the children into
+     * a hashmap of color profiles and a list of extension attachments.
+     * @throws FOPException if there's a problem during processing
      */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (this.firstChild != null) {
-            for (final FONodeIterator iter = getChildNodes(); iter.hasNext();) {
-                final FONode node = iter.nextNode();
+        if (firstChild != null) {
+            for (FONodeIterator iter = getChildNodes(); iter.hasNext();) {
+                FONode node = iter.nextNode();
                 if (node.getName().equals("fo:color-profile")) {
-                    final ColorProfile cp = (ColorProfile) node;
+                    ColorProfile cp = (ColorProfile)node;
                     if (!"".equals(cp.getColorProfileName())) {
                         addColorProfile(cp);
                     } else {
                         getFOValidationEventProducer().missingProperty(this,
-                                cp.getName(), "color-profile-name",
-                                this.locator);
+                                cp.getName(), "color-profile-name", locator);
                     }
                 } else {
                     log.debug("Ignoring element " + node.getName()
@@ -102,33 +93,30 @@ public class Declarations extends FObj {
                 }
             }
         }
-        this.firstChild = null;
+        firstChild = null;
     }
 
-    private void addColorProfile(final ColorProfile cp) {
-        if (this.colorProfiles == null) {
-            this.colorProfiles = new HashMap<>();
+    private void addColorProfile(ColorProfile cp) {
+        if (colorProfiles == null) {
+            colorProfiles = new java.util.HashMap<String, ColorProfile>();
         }
-        if (this.colorProfiles.get(cp.getColorProfileName()) != null) {
+        if (colorProfiles.get(cp.getColorProfileName()) != null) {
             // duplicate names
             getFOValidationEventProducer().colorProfileNameNotUnique(this,
-                    cp.getName(), cp.getColorProfileName(), this.locator);
+                    cp.getName(), cp.getColorProfileName(), locator);
         }
-        this.colorProfiles.put(cp.getColorProfileName(), cp);
+        colorProfiles.put(cp.getColorProfileName(), cp);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "declarations";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_DECLARATIONS}
      */
-    @Override
     public int getNameId() {
         return FO_DECLARATIONS;
     }
@@ -136,18 +124,18 @@ public class Declarations extends FObj {
     /**
      * Return ColorProfile with given name.
      *
-     * @param cpName
-     *            Name of ColorProfile, i.e. the value of the color-profile-name
-     *            attribute of the fo:color-profile element
-     * @return The org.apache.fop.fo.pagination.ColorProfile object associated
-     *         with this color-profile-name or null
+     * @param cpName Name of ColorProfile, i.e. the value of the color-profile-name attribute of
+     *               the fo:color-profile element
+     * @return The org.apache.fop.fo.pagination.ColorProfile object associated with this
+     *         color-profile-name or null
      */
-    public ColorProfile getColorProfile(final String cpName) {
+    public ColorProfile getColorProfile(String cpName) {
         ColorProfile profile = null;
         if (this.colorProfiles != null) {
             profile = this.colorProfiles.get(cpName);
         }
         return profile;
     }
+
 
 }

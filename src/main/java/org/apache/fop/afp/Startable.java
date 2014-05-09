@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Startable.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: Startable.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp;
 
@@ -27,10 +27,9 @@ public interface Startable {
     /**
      * Sets whether or not this object has started or not
      *
-     * @param complete
-     *            true if this object has started
+     * @param started true if this object has started
      */
-    void setStarted(final boolean started);
+    void setStarted(boolean started);
 
     /**
      * Returns true if this object has started

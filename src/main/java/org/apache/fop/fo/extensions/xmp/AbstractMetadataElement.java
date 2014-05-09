@@ -15,60 +15,56 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractMetadataElement.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AbstractMetadataElement.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.xmp;
+
+import org.apache.xmlgraphics.xmp.Metadata;
 
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.apache.fop.util.ContentHandlerFactory;
 import org.apache.fop.util.ContentHandlerFactory.ObjectBuiltListener;
-import org.apache.xmlgraphics.xmp.Metadata;
 
 /**
  * Abstract base class for the XMP and RDF root nodes.
  */
-public abstract class AbstractMetadataElement extends FONode implements
-        ObjectBuiltListener {
+public abstract class AbstractMetadataElement extends FONode implements ObjectBuiltListener {
 
     private XMPMetadata attachment;
 
     /**
      * Main constructor.
-     * 
-     * @param parent
-     *            the parent formatting object
+     * @param parent the parent formatting object
      */
-    public AbstractMetadataElement(final FONode parent) {
+    public AbstractMetadataElement(FONode parent) {
         super(parent);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public ContentHandlerFactory getContentHandlerFactory() {
         return new XMPContentHandlerFactory();
     }
 
     /** {@inheritDoc} */
-    @Override
     public ExtensionAttachment getExtensionAttachment() {
-        if (this.parent instanceof FObj) {
-            if (this.attachment == null) {
-                this.attachment = new XMPMetadata();
+        if (parent instanceof FObj) {
+            if (attachment == null) {
+                attachment = new XMPMetadata();
             }
-            return this.attachment;
+            return attachment;
         } else {
             return super.getExtensionAttachment();
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void notifyObjectBuilt(final Object obj) {
-        this.attachment.setMetadata((Metadata) obj);
+    public void notifyObjectBuilt(Object obj) {
+        attachment.setMetadata((Metadata)obj);
     }
+
 
 }

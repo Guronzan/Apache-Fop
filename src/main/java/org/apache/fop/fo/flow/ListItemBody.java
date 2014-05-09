@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ListItemBody.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ListItemBody.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.flow;
 
@@ -29,40 +29,35 @@ import org.apache.fop.fo.FONode;
 public class ListItemBody extends AbstractListItemPart {
 
     /**
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      */
-    public ListItemBody(final FONode parent) {
+    public ListItemBody(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
-        getFOEventHandler().startListBody();
+        getFOEventHandler().startListBody(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
-        getFOEventHandler().endListBody();
+        getFOEventHandler().endListBody(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "list-item-body";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM_BODY}
      */
-    @Override
     public int getNameId() {
         return FO_LIST_ITEM_BODY;
     }
 }
+

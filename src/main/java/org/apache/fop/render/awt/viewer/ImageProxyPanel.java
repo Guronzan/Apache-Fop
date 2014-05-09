@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageProxyPanel.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ImageProxyPanel.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.awt.viewer;
 
@@ -28,47 +28,38 @@ import java.lang.ref.SoftReference;
 
 import javax.swing.JPanel;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.render.awt.AWTRenderer;
 
 /**
- * Panel used to display a single page of a document. This is basically a
- * lazy-load display panel which gets the size of the image for layout purposes
- * but doesn't get the actual image data until needed. The image data is then
- * accessed via a soft reference, so it will be garbage collected when moving
- * through large documents.
+ * Panel used to display a single page of a document.
+ * This is basically a lazy-load display panel which
+ * gets the size of the image for layout purposes but
+ * doesn't get the actual image data until needed.
+ * The image data is then accessed via a soft reference,
+ * so it will be garbage collected when moving through
+ * large documents.
  */
-@Slf4j
 public class ImageProxyPanel extends JPanel {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -8828404053511562291L;
-
     /** The reference to the BufferedImage storing the page data */
-    private Reference<BufferedImage> imageRef;
+    private Reference imageRef;
 
     /** The maximum and preferred size of the panel */
     private Dimension size;
 
     /** The renderer. Shared with PreviewPanel and PreviewDialog. */
-    private final AWTRenderer renderer;
+    private AWTRenderer renderer;
 
     /** The page to be rendered. */
     private int page;
 
     /**
      * Panel constructor. Doesn't allocate anything until needed.
-     *
-     * @param renderer
-     *            the AWTRenderer instance to use for painting
-     * @param page
-     *            initial page number to show
+     * @param renderer the AWTRenderer instance to use for painting
+     * @param page initial page number to show
      */
-    public ImageProxyPanel(final AWTRenderer renderer, final int page) {
+    public ImageProxyPanel(AWTRenderer renderer, int page) {
         this.renderer = renderer;
         this.page = page;
         // Allows single panel to appear behind page display.
@@ -79,7 +70,6 @@ public class ImageProxyPanel extends JPanel {
     /**
      * @return the size of the page plus the border.
      */
-    @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
@@ -87,49 +77,43 @@ public class ImageProxyPanel extends JPanel {
     /**
      * @return the size of the page plus the border.
      */
-    @Override
     public Dimension getPreferredSize() {
-        if (this.size == null) {
+        if (size == null) {
             try {
-                final Insets insets = getInsets();
-                this.size = this.renderer.getPageImageSize(this.page);
-                this.size = new Dimension(this.size.width + insets.left
-                        + insets.right, this.size.height + insets.top
-                        + insets.bottom);
-            } catch (final FOPException fopEx) {
+                Insets insets = getInsets();
+                size = renderer.getPageImageSize(page);
+                size = new Dimension(size.width + insets.left + insets.right,
+                                                         size.height + insets.top + insets.bottom);
+            } catch (FOPException fopEx) {
                 // Arbitary size. Doesn't really matter what's returned here.
                 return new Dimension(10, 10);
             }
         }
-        return this.size;
+        return size;
     }
 
     /**
      * Sets the number of the page to be displayed and refreshes the display.
-     *
-     * @param pg
-     *            the page number
+     * @param pg the page number
      */
-    public void setPage(final int pg) {
-        if (this.page != pg) {
-            this.page = pg;
-            this.imageRef = null;
+    public void setPage(int pg) {
+        if (page != pg) {
+            page = pg;
+            imageRef = null;
             repaint();
         }
     }
 
     /**
-     * Gets the image data and paints it on screen. Will make calls to
-     * getPageImage as required.
-     *
-     * @param graphics
+     * Gets the image data and paints it on screen. Will make
+     * calls to getPageImage as required.
+     * @param graphics a graphics context
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see org.apache.fop.render.java2d.Java2DRenderer#getPageImage(int)
      */
-    @Override
-    public synchronized void paintComponent(final Graphics graphics) {
+    public synchronized void paintComponent(Graphics graphics) {
         try {
-            if (isOpaque()) { // paint background
+            if (isOpaque()) { //paint background
                 graphics.setColor(getBackground());
                 graphics.fillRect(0, 0, getWidth(), getHeight());
             }
@@ -137,20 +121,19 @@ public class ImageProxyPanel extends JPanel {
             super.paintComponent(graphics);
 
             BufferedImage image = null;
-            if (this.imageRef == null || this.imageRef.get() == null) {
-                image = this.renderer.getPageImage(this.page);
-                this.imageRef = new SoftReference<>(image);
+            if (imageRef == null || imageRef.get() == null) {
+                image = renderer.getPageImage(page);
+                imageRef = new SoftReference(image);
             } else {
-                image = this.imageRef.get();
+                image = (BufferedImage)imageRef.get();
             }
 
-            final int x = (getWidth() - image.getWidth()) / 2;
-            final int y = (getHeight() - image.getHeight()) / 2;
+            int x = (getWidth() - image.getWidth()) / 2;
+            int y = (getHeight() - image.getHeight()) / 2;
 
-            graphics.drawImage(image, x, y, image.getWidth(),
-                    image.getHeight(), null);
-        } catch (final FOPException fopEx) {
-            log.error("FOPException", fopEx);
+            graphics.drawImage(image, x, y, image.getWidth(), image.getHeight(), null);
+        } catch (FOPException fopEx) {
+            fopEx.printStackTrace();
         }
     }
 }

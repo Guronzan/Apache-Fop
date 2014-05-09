@@ -15,29 +15,35 @@
  * limitations under the License.
  */
 
-/* $Id: SinglePageMasterReference.java 698670 2008-09-24 17:45:51Z adelmelle $ */
+/* $Id: SinglePageMasterReference.java 1296104 2012-03-02 09:50:50Z phancock $ */
 
 package org.apache.fop.fo.pagination;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+import org.apache.fop.layoutmgr.BlockLevelEventProducer;
 
 /**
- * Class modelling the <a
- * href="http://www.w3.org/TR/xsl/#fo_single-page-master-reference">
- * <code>fo:single-page-master-reference</code></a> object. This is a reference
- * for a single page. It returns the master name only once until reset.
+ * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_single-page-master-reference">
+ * <code>fo:single-page-master-reference</code></a> object.
+ * This is a reference for a single page. It returns the
+ * master name only once until reset.
  */
-public class SinglePageMasterReference extends FObj implements
-        SubSequenceSpecifier {
+public class SinglePageMasterReference extends FObj
+    implements SubSequenceSpecifier {
 
     // The value of properties relevant for fo:single-page-master-reference.
     private String masterReference;
+
+    // The simple page master referenced
+    private SimplePageMaster master;
+
     // End of property values
 
     private static final int FIRST = 0;
@@ -46,69 +52,62 @@ public class SinglePageMasterReference extends FObj implements
     private int state;
 
     /**
-     * Creates a new SinglePageMasterReference instance that is a child of the
-     * given {@link FONode}.
-     *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * Creates a new SinglePageMasterReference instance that is
+     * a child of the given {@link FONode}.
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public SinglePageMasterReference(final FONode parent) {
+    public SinglePageMasterReference(FONode parent) {
         super(parent);
         this.state = FIRST;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        this.masterReference = pList.get(PR_MASTER_REFERENCE).getString();
+    public void bind(PropertyList pList) throws FOPException {
+        masterReference = pList.get(PR_MASTER_REFERENCE).getString();
 
-        if (this.masterReference == null || this.masterReference.equals("")) {
+        if (masterReference == null || masterReference.equals("")) {
             missingPropertyError("master-reference");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void startOfNode() {
-        final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
+    protected void startOfNode() throws FOPException {
+        PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) parent;
         pageSequenceMaster.addSubsequenceSpecifier(this);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: empty
+     * {@inheritDoc}
+     * <br>XSL Content Model: empty
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getNextPageMasterName(final boolean isOddPage,
-            final boolean isFirstPage, final boolean isLastPage,
-            final boolean isBlankPage) {
+    public SimplePageMaster getNextPageMaster(boolean isOddPage,
+                                        boolean isFirstPage,
+                                        boolean isLastPage,
+                                        boolean isBlankPage) {
         if (this.state == FIRST) {
             this.state = DONE;
-            return this.masterReference;
+            return master;
         } else {
             return null;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void reset() {
         this.state = FIRST;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean goToPrevious() {
-        if (this.state == FIRST) {
+        if (state == FIRST) {
             return false;
         } else {
             this.state = FIRST;
@@ -117,31 +116,53 @@ public class SinglePageMasterReference extends FObj implements
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean hasPagePositionLast() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean hasPagePositionOnly() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "single-page-master-reference";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_SINGLE_PAGE_MASTER_REFERENCE}
      */
-    @Override
     public int getNameId() {
         return FO_SINGLE_PAGE_MASTER_REFERENCE;
     }
 
+    /** {@inheritDoc} */
+    public void resolveReferences(LayoutMasterSet layoutMasterSet) throws ValidationException {
+        master = layoutMasterSet.getSimplePageMaster(masterReference);
+        if (master == null) {
+            BlockLevelEventProducer.Provider.get(
+                getUserAgent().getEventBroadcaster())
+                .noMatchingPageMaster(this, parent.getName(), masterReference, getLocator());
+        }
+    }
+
+    /** {@inheritDoc} */
+    public boolean canProcess(String flowName) {
+        assert master != null;
+        return master.getRegion(FO_REGION_BODY).getRegionName().equals(flowName);
+    }
+
+    /** {@inheritDoc} */
+    public boolean isInfinite() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
+    public boolean isReusable() {
+        return true;
+    }
+
 }
+

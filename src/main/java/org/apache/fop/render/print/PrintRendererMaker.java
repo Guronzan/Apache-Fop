@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PrintRendererMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PrintRendererMaker.java 1237582 2012-01-30 09:49:22Z mehdi $ */
 
 package org.apache.fop.render.print;
 
@@ -31,28 +31,24 @@ import org.apache.fop.render.RendererConfigurator;
  */
 public class PrintRendererMaker extends AbstractRendererMaker {
 
-    private static final String[] MIMES = new String[] { MimeConstants.MIME_FOP_PRINT };
+    private static final String[] MIMES = new String[] {MimeConstants.MIME_FOP_PRINT};
 
-    /** {@inheritDoc} */
-    @Override
-    public Renderer makeRenderer(final FOUserAgent userAgent) {
-        return new PrintRenderer();
+    /**{@inheritDoc} */
+    public Renderer makeRenderer(FOUserAgent userAgent) {
+        return new PrintRenderer(userAgent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public RendererConfigurator getConfigurator(final FOUserAgent userAgent) {
+    public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
         return new PrintRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean needsOutputStream() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

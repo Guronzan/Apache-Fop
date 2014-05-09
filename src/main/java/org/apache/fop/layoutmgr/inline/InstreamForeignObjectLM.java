@@ -35,20 +35,19 @@ public class InstreamForeignObjectLM extends AbstractGraphicsLayoutManager {
      * @param node
      *            the formatting object that creates this area
      */
-    public InstreamForeignObjectLM(final InstreamForeignObject node) {
+    public InstreamForeignObjectLM(InstreamForeignObject node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected Area getChildArea() {
-        final XMLObj child = ((InstreamForeignObject) this.fobj)
-                .getChildXMLObj();
+        XMLObj child = ((InstreamForeignObject) fobj).getChildXMLObj();
 
-        final org.w3c.dom.Document doc = child.getDOMDocument();
-        final String ns = child.getNamespaceURI();
+        org.w3c.dom.Document doc = child.getDOMDocument();
+        String ns = child.getNamespaceURI();
 
         return new ForeignObject(doc, ns);
     }
 
 }
+

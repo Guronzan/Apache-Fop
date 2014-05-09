@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractOutlineFont.java 946585 2010-05-20 09:52:27Z jeremias $ */
+/* $Id: AbstractOutlineFont.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.fonts;
 
@@ -37,7 +37,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param charSet
      *            the chracter set
      */
-    public AbstractOutlineFont(final String name, final CharacterSet charSet) {
+    public AbstractOutlineFont(String name, CharacterSet charSet) {
         super(name);
         this.charSet = charSet;
     }
@@ -48,37 +48,32 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @return the character set
      */
     public CharacterSet getCharacterSet() {
-        return this.charSet;
+        return charSet;
     }
 
     /**
      * Get the character set metrics.
-     * 
-     * @param size
-     *            ignored
+     * @param size ignored
      * @return the character set
      */
-    @Override
-    public CharacterSet getCharacterSet(final int size) {
-        return this.charSet;
+    public CharacterSet getCharacterSet(int size) {
+        return charSet;
     }
 
     /**
      * Get the first character in this font.
-     * 
      * @return the first character in this font
      */
     public int getFirstChar() {
-        return this.charSet.getFirstChar();
+        return charSet.getFirstChar();
     }
 
     /**
      * Get the last character in this font.
-     * 
      * @return the last character in this font
      */
     public int getLastChar() {
-        return this.charSet.getLastChar();
+        return charSet.getLastChar();
     }
 
     /**
@@ -86,25 +81,21 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * "x-height" (the height of the letter "x"), such as "d", "t", or "h". Also
      * used to denote the part of the letter extending above the x-height.
      *
-     * @param size
-     *            the font size (in mpt)
+     * @param size the font size (in mpt)
      * @return the ascender for the given size
      */
-    @Override
-    public int getAscender(final int size) {
-        return this.charSet.getAscender() * size;
+    public int getAscender(int size) {
+        return charSet.getAscender() * size;
     }
 
     /**
      * Obtains the height of capital letters for the specified point size.
      *
-     * @param size
-     *            the font size (in mpt)
+     * @param size the font size (in mpt)
      * @return the cap height for the given size
      */
-    @Override
-    public int getCapHeight(final int size) {
-        return this.charSet.getCapHeight() * size;
+    public int getCapHeight(int size) {
+        return charSet.getCapHeight() * size;
     }
 
     /**
@@ -112,52 +103,43 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * base line, such as "g", "j", or "p". Also used to denote the part of the
      * letter extending below the base line.
      *
-     * @param size
-     *            the font size (in mpt)
+     * @param size the font size (in mpt)
      * @return the descender for the given size
      */
-    @Override
-    public int getDescender(final int size) {
-        return this.charSet.getDescender() * size;
+    public int getDescender(int size) {
+        return charSet.getDescender() * size;
     }
 
     /**
      * The "x-height" (the height of the letter "x").
      *
-     * @param size
-     *            the font size (in mpt)
+     * @param size the font size (in mpt)
      * @return the x height for the given size
      */
-    @Override
-    public int getXHeight(final int size) {
-        return this.charSet.getXHeight() * size;
+    public int getXHeight(int size) {
+        return charSet.getXHeight() * size;
     }
 
     /**
      * Obtain the width of the character for the specified point size.
-     * 
-     * @param character
-     *            the character
-     * @param size
-     *            the font size (in mpt)
+     * @param character the character
+     * @param size the font size (in mpt)
      * @return the width of the character for the specified point size
      */
-    @Override
-    public int getWidth(final int character, final int size) {
-        return this.charSet.getWidth(toUnicodeCodepoint(character)) * size;
+    public int getWidth(int character, int size) {
+        return charSet.getWidth(toUnicodeCodepoint(character)) * size;
     }
 
     /**
      * Get the getWidth (in 1/1000ths of a point size) of all characters in this
      * character set.
      *
-     * @param size
-     *            the font size (in mpt)
+     * @param size the font size (in mpt)
      * @return the widths of all characters
      */
-    public int[] getWidths(final int size) {
-        final int[] widths = this.charSet.getWidths();
-        for (int i = 0; i < widths.length; ++i) {
+    public int[] getWidths(int size) {
+        int[] widths =  charSet.getWidths();
+        for (int i = 0; i < widths.length; i++) {
             widths[i] = widths[i] * size;
         }
         return widths;
@@ -169,33 +151,27 @@ public abstract class AbstractOutlineFont extends AFPFont {
      *
      * @return the widths of all characters
      */
-    @Override
     public int[] getWidths() {
         return getWidths(1000);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean hasChar(final char c) {
-        return this.charSet.hasChar(c);
+    public boolean hasChar(char c) {
+        return charSet.hasChar(c);
     }
 
     /**
      * Map a Unicode character to a code point in the font.
-     * 
-     * @param c
-     *            character to map
+     * @param c character to map
      * @return the mapped character
      */
-    @Override
-    public char mapChar(final char c) {
-        return this.charSet.mapChar(c);
+    public char mapChar(char c) {
+        return charSet.mapChar(c);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getEncodingName() {
-        return this.charSet.getEncoding();
+        return charSet.getEncoding();
     }
 
 }

@@ -15,60 +15,56 @@
  * limitations under the License.
  */
 
-/* $Id: XMPContentHandlerFactory.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: XMPContentHandlerFactory.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.xmp;
 
-import org.apache.fop.util.ContentHandlerFactory;
-import org.apache.xmlgraphics.xmp.XMPConstants;
-import org.apache.xmlgraphics.xmp.XMPHandler;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
+
+import org.apache.xmlgraphics.xmp.XMPConstants;
+import org.apache.xmlgraphics.xmp.XMPHandler;
+
+import org.apache.fop.util.ContentHandlerFactory;
 
 /**
  * ContentHandlerFactory for the XMP root element.
  */
 public class XMPContentHandlerFactory implements ContentHandlerFactory {
 
-    private static final String[] NAMESPACES = new String[] {
-            XMPConstants.XMP_NAMESPACE, XMPConstants.RDF_NAMESPACE };
+    private static final String[] NAMESPACES = new String[]
+                                         {XMPConstants.XMP_NAMESPACE, XMPConstants.RDF_NAMESPACE};
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
-    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new FOPXMPHandler();
     }
 
     /**
-     * Local subclass of XMPHandler that implements ObjectSource for FOP
-     * integration.
+     * Local subclass of XMPHandler that implements ObjectSource for FOP integration.
      */
     private class FOPXMPHandler extends XMPHandler implements ObjectSource {
 
         private ObjectBuiltListener obListener;
 
-        @Override
         public Object getObject() {
             return getMetadata();
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void setObjectBuiltListener(final ObjectBuiltListener listener) {
+        public void setObjectBuiltListener(ObjectBuiltListener listener) {
             this.obListener = listener;
         }
 
         /** {@inheritDoc} */
-        @Override
         public void endDocument() throws SAXException {
-            if (this.obListener != null) {
-                this.obListener.notifyObjectBuilt(getObject());
+            if (obListener != null) {
+                obListener.notifyObjectBuilt(getObject());
             }
         }
 

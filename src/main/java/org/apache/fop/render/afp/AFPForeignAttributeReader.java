@@ -15,25 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: AFPForeignAttributeReader.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPForeignAttributeReader.java 985571 2010-08-14 19:28:26Z jeremias $ */
 
 package org.apache.fop.render.afp;
 
 import java.io.File;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.xmlgraphics.util.QName;
 
 import org.apache.fop.afp.AFPResourceInfo;
 import org.apache.fop.afp.AFPResourceLevel;
 import org.apache.fop.render.afp.extensions.AFPElementMapping;
-import org.apache.xmlgraphics.util.QName;
 
 /**
  * Parses any AFP foreign attributes
  */
-@Slf4j
 public class AFPForeignAttributeReader {
+    private static final Log LOG = LogFactory.getLog("org.apache.xmlgraphics.afp");
 
     /** the resource-name attribute */
     public static final QName RESOURCE_NAME = new QName(
@@ -56,19 +58,17 @@ public class AFPForeignAttributeReader {
     /**
      * Returns the resource information
      *
-     * @param foreignAttributes
-     *            the foreign attributes
+     * @param foreignAttributes the foreign attributes
      * @return the resource information
      */
-    public AFPResourceInfo getResourceInfo(
-            final Map<QName, String> foreignAttributes) {
-        final AFPResourceInfo resourceInfo = new AFPResourceInfo();
+    public AFPResourceInfo getResourceInfo(Map/*<QName, String>*/ foreignAttributes) {
+        AFPResourceInfo resourceInfo = new AFPResourceInfo();
         if (foreignAttributes != null && !foreignAttributes.isEmpty()) {
-            final String resourceName = foreignAttributes.get(RESOURCE_NAME);
+            String resourceName = (String)foreignAttributes.get(RESOURCE_NAME);
             if (resourceName != null) {
                 resourceInfo.setName(resourceName);
             }
-            final AFPResourceLevel level = getResourceLevel(foreignAttributes);
+            AFPResourceLevel level = getResourceLevel(foreignAttributes);
             if (level != null) {
                 resourceInfo.setLevel(level);
             }
@@ -79,55 +79,47 @@ public class AFPForeignAttributeReader {
     /**
      * Returns the resource level
      *
-     * @param foreignAttributes
-     *            the foreign attributes
+     * @param foreignAttributes the foreign attributes
      * @return the resource level
      */
-    public AFPResourceLevel getResourceLevel(
-            final Map<QName, String> foreignAttributes) {
+    public AFPResourceLevel getResourceLevel(Map/*<QName, String>*/ foreignAttributes) {
         AFPResourceLevel resourceLevel = null;
         if (foreignAttributes != null && !foreignAttributes.isEmpty()) {
             if (foreignAttributes.containsKey(RESOURCE_LEVEL)) {
-                final String levelString = foreignAttributes
-                        .get(RESOURCE_LEVEL);
+                String levelString = (String)foreignAttributes.get(RESOURCE_LEVEL);
                 resourceLevel = AFPResourceLevel.valueOf(levelString);
                 // if external get resource group file attributes
                 if (resourceLevel != null && resourceLevel.isExternal()) {
-                    final String resourceGroupFile = foreignAttributes
-                            .get(RESOURCE_GROUP_FILE);
+                    String resourceGroupFile
+                        = (String)foreignAttributes.get(RESOURCE_GROUP_FILE);
                     if (resourceGroupFile == null) {
-                        final String msg = RESOURCE_GROUP_FILE
-                                + " not specified";
-                        log.error(msg);
+                        String msg = RESOURCE_GROUP_FILE + " not specified";
+                        LOG.error(msg);
                         throw new UnsupportedOperationException(msg);
                     }
-                    final File resourceExternalGroupFile = new File(
-                            resourceGroupFile);
-                    final SecurityManager security = System
-                            .getSecurityManager();
+                    File resourceExternalGroupFile = new File(resourceGroupFile);
+                    SecurityManager security = System.getSecurityManager();
                     try {
                         if (security != null) {
-                            security.checkWrite(resourceExternalGroupFile
-                                    .getPath());
+                            security.checkWrite(resourceExternalGroupFile.getPath());
                         }
-                    } catch (final SecurityException ex) {
-                        final String msg = "unable to gain write access to external resource file: "
-                                + resourceGroupFile;
-                        log.error(msg);
+                    } catch (SecurityException ex) {
+                        String msg = "unable to gain write access to external resource file: "
+                        + resourceGroupFile;
+                        LOG.error(msg);
                     }
 
                     try {
-                        final boolean exists = resourceExternalGroupFile
-                                .exists();
+                        boolean exists = resourceExternalGroupFile.exists();
                         if (exists) {
-                            log.warn("overwriting external resource file: {}",
-                                    resourceGroupFile);
+                            LOG.warn("overwriting external resource file: "
+                                    + resourceGroupFile);
                         }
                         resourceLevel.setExternalFilePath(resourceGroupFile);
-                    } catch (final SecurityException ex) {
-                        final String msg = "unable to gain read access to external resource file: "
-                                + resourceGroupFile;
-                        log.error(msg, ex);
+                    } catch (SecurityException ex) {
+                        String msg = "unable to gain read access to external resource file: "
+                            + resourceGroupFile;
+                        LOG.error(msg);
                     }
                 }
             }

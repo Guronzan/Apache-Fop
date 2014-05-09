@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-/* $Id: ExtensionObj.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ExtensionObj.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+
+import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FOEventHandler;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
 
 /**
  * Base class for pdf bookmark extension objects.
@@ -34,28 +36,30 @@ public abstract class ExtensionObj extends FObj {
     /**
      * Create a new extension object.
      *
-     * @param parent
-     *            the parent formatting object
+     * @param parent the parent formatting object
      */
-    public ExtensionObj(final FONode parent) {
+    public ExtensionObj(FONode parent) {
         super(parent);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList pList) {
-        // Empty
+    public void processNode(String elementName, Locator locator,
+                            Attributes attlist, PropertyList pList)
+        throws FOPException {
     }
 
     /**
      * Create a default property list for this element.
+     * @param parent the parent property list
+     * @param foEventHandler an event handler
+     * @return property list
+     * @throws FOPException in case of exception
      */
-    @Override
-    protected PropertyList createPropertyList(final PropertyList parent,
-            final FOEventHandler foEventHandler) {
+    protected PropertyList createPropertyList(PropertyList parent,
+                FOEventHandler foEventHandler) throws FOPException {
         return null;
     }
 }
+

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: VariableColRowGroupBuilder.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: VariableColRowGroupBuilder.java 1296405 2012-03-02 19:36:45Z gadams $ */
 
 package org.apache.fop.fo.flow.table;
 
@@ -25,111 +25,94 @@ import java.util.List;
 
 import org.apache.fop.fo.ValidationException;
 
+
 /**
- * A row group builder accommodating a variable number of columns. More
- * flexible, but less efficient.
+ * A row group builder accommodating a variable number of columns. More flexible, but less
+ * efficient.
  */
 class VariableColRowGroupBuilder extends RowGroupBuilder {
 
-    VariableColRowGroupBuilder(final Table t) {
+    VariableColRowGroupBuilder(Table t) {
         super(t);
     }
 
     /**
-     * Each event is recorded and will be played once the table is finished, and
-     * the final number of columns known.
+     * Each event is recorded and will be played once the table is finished, and the final
+     * number of columns known.
      */
-    private static interface Event {
+    private interface Event {
         /**
          * Plays this event
          *
-         * @param rowGroupBuilder
-         *            the delegate builder which will actually create the row
-         *            groups
-         * @throws ValidationException
-         *             if a row-spanning cell overflows its parent body
+         * @param rowGroupBuilder the delegate builder which will actually create the row
+         * groups
+         * @throws ValidationException if a row-spanning cell overflows its parent body
          */
-        void play(final RowGroupBuilder rowGroupBuilder)
-                throws ValidationException;
+        void play(RowGroupBuilder rowGroupBuilder) throws ValidationException;
     }
 
     /** The queue of events sent to this builder. */
-    private final List events = new LinkedList<>();
+    private List events = new LinkedList();
 
     /** {@inheritDoc} */
-    @Override
     void addTableCell(final TableCell cell) {
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder) {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.addTableCell(cell);
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void startTableRow(final TableRow tableRow) {
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder) {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.startTableRow(tableRow);
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTableRow() {
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder) {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.endTableRow();
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void endRow(final TablePart part) {
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder) {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.endRow(part);
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void startTablePart(final TablePart part) {
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder) {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.startTablePart(part);
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTablePart() throws ValidationException {
         // TODO catch the ValidationException sooner?
-        this.events.add(new Event() {
-            @Override
-            public void play(final RowGroupBuilder rowGroupBuilder)
-                    throws ValidationException {
+        events.add(new Event() {
+            public void play(RowGroupBuilder rowGroupBuilder) throws ValidationException {
                 rowGroupBuilder.endTablePart();
             }
         });
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTable() throws ValidationException {
-        final RowGroupBuilder delegate = new FixedColRowGroupBuilder(this.table);
-        for (final Iterator eventIter = this.events.iterator(); eventIter
-                .hasNext();) {
+        RowGroupBuilder delegate = new FixedColRowGroupBuilder(table);
+        for (Iterator eventIter = events.iterator(); eventIter.hasNext();) {
             ((Event) eventIter.next()).play(delegate);
         }
         delegate.endTable();

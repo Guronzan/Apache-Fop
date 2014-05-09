@@ -15,20 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: AFPIncludeFormMap.java 798207 2009-07-27 16:33:01Z jeremias $ */
+/* $Id: AFPIncludeFormMap.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.afp.extensions;
 
 import java.net.URI;
 
-import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * This extension allows to include an AFP form map resource. It is implemented
- * as an extension attachment ({@link ExtensionAttachment}).
+ * This extension allows to include an AFP form map resource. It is implemented as an extension
+ * attachment ({@link org.apache.fop.fo.extensions.ExtensionAttachment}).
  */
 public class AFPIncludeFormMap extends AFPExtensionAttachment {
 
@@ -51,7 +50,6 @@ public class AFPIncludeFormMap extends AFPExtensionAttachment {
 
     /**
      * Returns the URI of the form map.
-     * 
      * @return the form map URI
      */
     public URI getSrc() {
@@ -60,33 +58,28 @@ public class AFPIncludeFormMap extends AFPExtensionAttachment {
 
     /**
      * Sets the URI of the form map.
-     * 
-     * @param value
-     *            the form map URI
+     * @param value the form map URI
      */
-    public void setSrc(final URI value) {
+    public void setSrc(URI value) {
         this.src = value;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
-        if (this.name != null && this.name.length() > 0) {
-            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", this.name);
+    public void toSAX(ContentHandler handler) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
+        if (name != null && name.length() > 0) {
+            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", name);
         }
         if (this.src != null) {
-            atts.addAttribute(null, ATT_SRC, ATT_SRC, "CDATA",
-                    this.src.toASCIIString());
+            atts.addAttribute(null, ATT_SRC, ATT_SRC, "CDATA", this.src.toASCIIString());
         }
-        handler.startElement(CATEGORY, this.elementName, this.elementName, atts);
-        handler.endElement(CATEGORY, this.elementName, this.elementName);
+        handler.startElement(CATEGORY, elementName, elementName, atts);
+        handler.endElement(CATEGORY, elementName, elementName);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return getClass().getName() + "(element-name=" + getElementName()
-                + " name=" + getName() + " src=" + getSrc() + ")";
+            + " name=" + getName() + " src=" + getSrc() + ")";
     }
 }

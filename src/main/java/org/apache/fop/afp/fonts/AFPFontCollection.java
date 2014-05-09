@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPFontCollection.java 752133 2009-03-10 15:10:07Z jeremias $ */
+/* $Id: AFPFontCollection.java 1204579 2011-11-21 16:35:41Z mehdi $ */
 
 package org.apache.fop.afp.fonts;
 
@@ -33,63 +33,50 @@ import org.apache.fop.fonts.FontTriplet;
  */
 public class AFPFontCollection implements FontCollection {
 
-    private final EventBroadcaster eventBroadcaster;
+    private final AFPEventProducer eventProducer;
 
     private final List<AFPFontInfo> fontInfoList;
 
     /**
      * Main constructor
      *
-     * @param eventBroadcaster
-     *            the event broadcaster
-     * @param fontInfoList
-     *            the font info list
+     * @param eventBroadcaster the event broadcaster
+     * @param fontInfoList the font info list
      */
-    public AFPFontCollection(final EventBroadcaster eventBroadcaster,
-            final List<AFPFontInfo> fontInfoList) {
-        this.eventBroadcaster = eventBroadcaster;
+    public AFPFontCollection(EventBroadcaster eventBroadcaster, List<AFPFontInfo> fontInfoList) {
+        this.eventProducer = AFPEventProducer.Provider.get(eventBroadcaster);
         this.fontInfoList = fontInfoList;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int setup(final int start, final FontInfo fontInfo) {
+    public int setup(int start, FontInfo fontInfo) {
         int num = 1;
-        final AFPEventProducer eventProducer = AFPEventProducer.Provider
-                .get(this.eventBroadcaster);
-        if (this.fontInfoList != null && this.fontInfoList.size() > 0) {
-            for (final AFPFontInfo afpFontInfo : this.fontInfoList) {
-                final AFPFont afpFont = afpFontInfo.getAFPFont();
-                final List<FontTriplet> tripletList = afpFontInfo
-                        .getFontTriplets();
-                for (final FontTriplet triplet : tripletList) {
-                    fontInfo.addFontProperties("F" + num, triplet.getName(),
-                            triplet.getStyle(), triplet.getWeight());
+        if (fontInfoList != null && fontInfoList.size() > 0) {
+            for (AFPFontInfo afpFontInfo : fontInfoList) {
+                AFPFont afpFont = afpFontInfo.getAFPFont();
+                List<FontTriplet> tripletList = afpFontInfo.getFontTriplets();
+                for (FontTriplet triplet : tripletList) {
                     fontInfo.addMetrics("F" + num, afpFont);
+                    fontInfo.addFontProperties("F" + num,
+                            triplet.getName(), triplet.getStyle(), triplet.getWeight());
                     num++;
                 }
             }
-            checkDefaultFontAvailable(fontInfo, eventProducer,
-                    Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
-            checkDefaultFontAvailable(fontInfo, eventProducer,
-                    Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
-            checkDefaultFontAvailable(fontInfo, eventProducer,
-                    Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
-            checkDefaultFontAvailable(fontInfo, eventProducer,
-                    Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
+            checkDefaultFontAvailable(fontInfo, Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
+            checkDefaultFontAvailable(fontInfo, Font.STYLE_ITALIC, Font.WEIGHT_NORMAL);
+            checkDefaultFontAvailable(fontInfo, Font.STYLE_NORMAL, Font.WEIGHT_BOLD);
+            checkDefaultFontAvailable(fontInfo, Font.STYLE_ITALIC, Font.WEIGHT_BOLD);
         } else {
             eventProducer.warnDefaultFontSetup(this);
 
             // Go with a default base 12 configuration for AFP environments
-            final FontCollection base12FontCollection = new AFPBase12FontCollection();
+            FontCollection base12FontCollection = new AFPBase12FontCollection(eventProducer);
             num = base12FontCollection.setup(num, fontInfo);
         }
         return num;
     }
 
-    private void checkDefaultFontAvailable(final FontInfo fontInfo,
-            final AFPEventProducer eventProducer, final String style,
-            final int weight) {
+    private void checkDefaultFontAvailable(FontInfo fontInfo, String style, int weight) {
         if (!fontInfo.hasFont("any", style, weight)) {
             eventProducer.warnMissingDefaultFont(this, style, weight);
         }

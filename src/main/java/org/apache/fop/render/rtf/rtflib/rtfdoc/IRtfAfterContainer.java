@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfAfterContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfAfterContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -32,11 +32,9 @@ import java.io.IOException;
 public interface IRtfAfterContainer {
     /**
      *
-     * @param attrs
-     *            Attributes for new footer
+     * @param attrs Attributes for new footer
      * @return RtfAfter for footer
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    RtfAfter newAfter(final RtfAttributes attrs) throws IOException;
+    RtfAfter newAfter(RtfAttributes attrs) throws IOException;
 }

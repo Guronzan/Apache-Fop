@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: FontManager.java 821058 2009-10-02 15:31:14Z jeremias $ */
+/* $Id: FontManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fonts;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.fop.apps.FOPException;
 import org.apache.fop.fonts.FontTriplet.Matcher;
 import org.apache.fop.fonts.substitute.FontSubstitutions;
 
 // TODO: Refactor fonts package so major font activities (autodetection etc)
-// are all centrally managed and delegated from this class, also remove dependency on FopFactory
-// and start using POJO config/properties type classes
+// are all centrally managed and delegated from this class
 
 /**
- * The manager of fonts. The class holds a reference to the font cache and
- * information about font substitution, referenced fonts and similar.
+ * The manager of fonts. The class holds a reference to the font cache and information about
+ * font substitution, referenced fonts and similar.
  */
 public class FontManager {
     /** Use cache (record previously detected font triplet info) */
@@ -52,35 +53,32 @@ public class FontManager {
     /** Allows enabling kerning on the base 14 fonts, default is false */
     private boolean enableBase14Kerning = false;
 
-    /**
-     * FontTriplet matcher for fonts that shall be referenced rather than
-     * embedded.
-     */
+    /** FontTriplet matcher for fonts that shall be referenced rather than embedded. */
     private FontTriplet.Matcher referencedFontsMatcher;
+
+    /** Enables/disables the use of font caching */
+    private boolean useCache = DEFAULT_USE_CACHE;
+
+    /** Provides a font cache file path **/
+    private File cacheFile;
 
     /**
      * Main constructor
      */
     public FontManager() {
-        setUseCache(DEFAULT_USE_CACHE);
     }
 
     /**
      * Sets the font base URL.
-     *
-     * @param fontBase
-     *            font base URL
-     * @throws MalformedURLException
-     *             if there's a problem with a URL
+     * @param fontBase font base URL
+     * @throws MalformedURLException if there's a problem with a URL
      */
-    public void setFontBaseURL(final String fontBase)
-            throws MalformedURLException {
+    public void setFontBaseURL(String fontBase) throws MalformedURLException {
         this.fontBase = fontBase;
     }
 
     /**
      * Returns the font base URL.
-     *
      * @return the font base URL (or null if none was set)
      */
     public String getFontBaseURL() {
@@ -94,119 +92,178 @@ public class FontManager {
 
     /**
      * Controls whether kerning is activated on base 14 fonts.
-     *
-     * @param value
-     *            true if kerning should be activated
+     * @param value true if kerning should be activated
      */
-    public void setBase14KerningEnabled(final boolean value) {
+    public void setBase14KerningEnabled(boolean value) {
         this.enableBase14Kerning = value;
     }
 
     /**
      * Sets the font substitutions
-     *
-     * @param substitutions
-     *            font substitutions
+     * @param substitutions font substitutions
      */
-    public void setFontSubstitutions(final FontSubstitutions substitutions) {
+    public void setFontSubstitutions(FontSubstitutions substitutions) {
         this.fontSubstitutions = substitutions;
     }
 
     /**
      * Returns the font substitution catalog
-     *
      * @return the font substitution catalog
      */
     protected FontSubstitutions getFontSubstitutions() {
-        if (this.fontSubstitutions == null) {
+        if (fontSubstitutions == null) {
             this.fontSubstitutions = new FontSubstitutions();
         }
-        return this.fontSubstitutions;
+        return fontSubstitutions;
+    }
+
+    /**
+     * Sets the font cache file
+     * @param cacheFile the font cache file
+     */
+    public void setCacheFile(File cacheFile) {
+        this.cacheFile = cacheFile;
+    }
+
+    /**
+     * Returns the font cache file
+     * @return the font cache file
+     */
+    public File getCacheFile() {
+        if (cacheFile != null) {
+            return this.cacheFile;
+        }
+        return FontCache.getDefaultCacheFile(false);
     }
 
     /**
      * Whether or not to cache results of font triplet detection/auto-config
-     *
-     * @param useCache
-     *            use cache or not
+     * @param useCache use cache or not
      */
-    public void setUseCache(final boolean useCache) {
-        if (useCache) {
-            this.fontCache = FontCache.load();
-            if (this.fontCache == null) {
-                this.fontCache = new FontCache();
-            }
-        } else {
+    public void setUseCache(boolean useCache) {
+        this.useCache = useCache;
+        if (!useCache) {
             this.fontCache = null;
         }
     }
 
     /**
      * Cache results of font triplet detection/auto-config?
-     *
      * @return true if this font manager uses the cache
      */
     public boolean useCache() {
-        return this.fontCache != null;
+        return useCache;
     }
 
     /**
      * Returns the font cache instance used by this font manager.
-     *
      * @return the font cache
      */
     public FontCache getFontCache() {
-        return this.fontCache;
+        if (fontCache == null) {
+            if (useCache) {
+                if (cacheFile != null) {
+                    fontCache = FontCache.loadFrom(cacheFile);
+                } else {
+                    fontCache = FontCache.load();
+                }
+                if (fontCache == null) {
+                    fontCache = new FontCache();
+                }
+            }
+        }
+        return fontCache;
     }
 
     /**
-     * Sets up the fonts on a given FontInfo object. The fonts to setup are
-     * defined by an array of {@link FontCollection} objects.
+     * Saves the FontCache as necessary
      *
-     * @param fontInfo
-     *            the FontInfo object to set up
-     * @param fontCollections
-     *            the array of font collections/sources
+     * @throws FOPException fop exception
      */
-    public void setup(final FontInfo fontInfo,
-            final FontCollection[] fontCollections) {
+    public void saveCache() throws FOPException {
+        if (useCache) {
+            if (fontCache != null && fontCache.hasChanged()) {
+                if (cacheFile != null) {
+                    fontCache.saveTo(cacheFile);
+                } else {
+                    fontCache.save();
+                }
+            }
+        }
+    }
+
+    /**
+     * Deletes the current FontCache file
+     * @return Returns true if the font cache file was successfully deleted.
+     */
+    public boolean deleteCache() {
+        boolean deleted = false;
+        if (useCache) {
+            if (cacheFile != null) {
+                deleted = cacheFile.delete();
+            } else {
+                deleted = FontCache.getDefaultCacheFile(true).delete();
+            }
+        }
+        return deleted;
+    }
+
+    /**
+     * Sets up the fonts on a given FontInfo object. The fonts to setup are defined by an
+     * array of {@link FontCollection} objects.
+     * @param fontInfo the FontInfo object to set up
+     * @param fontCollections the array of font collections/sources
+     */
+    public void setup(FontInfo fontInfo, FontCollection[] fontCollections) {
         int startNum = 1;
 
-        for (final FontCollection fontCollection : fontCollections) {
-            startNum = fontCollection.setup(startNum, fontInfo);
+        for (int i = 0, c = fontCollections.length; i < c; i++) {
+            startNum = fontCollections[i].setup(startNum, fontInfo);
         }
         // Make any defined substitutions in the font info
         getFontSubstitutions().adjustFontInfo(fontInfo);
     }
 
-    /** @return a new FontResolver to be used by the font subsystem */
-    public static FontResolver createMinimalFontResolver() {
-        return new FontResolver() {
-
-            /** {@inheritDoc} */
-            @Override
-            public Source resolve(final String href) {
-                // Minimal functionality here
-                return new StreamSource(href);
-            }
-        };
+    /**
+     * Minimum implemenation of FontResolver.
+     */
+    public static class MinimalFontResolver implements FontResolver {
+        private boolean useComplexScriptFeatures;
+        MinimalFontResolver(boolean useComplexScriptFeatures) {
+            this.useComplexScriptFeatures = useComplexScriptFeatures;
+        }
+        /** {@inheritDoc} */
+        public Source resolve(String href) {
+            //Minimal functionality here
+            return new StreamSource(href);
+        }
+        /** {@inheritDoc} */
+        public boolean isComplexScriptFeaturesEnabled() {
+            return useComplexScriptFeatures;
+        }
     }
 
     /**
-     * Sets the {@link FontTriplet.Matcher} that can be used to identify the
-     * fonts that shall be referenced rather than embedded.
-     *
-     * @param matcher
-     *            the font triplet matcher
+     * Create minimal font resolver.
+     * @param useComplexScriptFeatures true if complex script features enabled
+     * @return a new FontResolver to be used by the font subsystem
      */
-    public void setReferencedFontsMatcher(final FontTriplet.Matcher matcher) {
+    public static FontResolver createMinimalFontResolver(boolean useComplexScriptFeatures) {
+        return new MinimalFontResolver ( useComplexScriptFeatures );
+    }
+
+    /**
+     * Sets the {@link FontTriplet.Matcher} that can be used to identify the fonts that shall
+     * be referenced rather than embedded.
+     * @param matcher the font triplet matcher
+     */
+    public void setReferencedFontsMatcher(FontTriplet.Matcher matcher) {
         this.referencedFontsMatcher = matcher;
     }
 
     /**
-     * Gets the {@link FontTriplet.Matcher} that can be used to identify the
-     * fonts that shall be referenced rather than embedded.
-     *
+     * Gets the {@link FontTriplet.Matcher} that can be used to identify the fonts that shall
+     * be referenced rather than embedded.
      * @return the font triplet matcher (or null if none is set)
      */
     public Matcher getReferencedFontsMatcher() {
@@ -214,32 +271,26 @@ public class FontManager {
     }
 
     /**
-     * Updates the referenced font list using the FontManager's referenced fonts
-     * matcher ({@link #getReferencedFontsMatcher()}).
-     *
-     * @param fontInfoList
-     *            a font info list
+     * Updates the referenced font list using the FontManager's referenced fonts matcher
+     * ({@link #getReferencedFontsMatcher()}).
+     * @param fontInfoList a font info list
      */
-    public void updateReferencedFonts(final List<EmbedFontInfo> fontInfoList) {
-        final Matcher matcher = getReferencedFontsMatcher();
+    public void updateReferencedFonts(List<EmbedFontInfo> fontInfoList) {
+        Matcher matcher = getReferencedFontsMatcher();
         updateReferencedFonts(fontInfoList, matcher);
     }
 
     /**
      * Updates the referenced font list.
-     *
-     * @param fontInfoList
-     *            a font info list
-     * @param matcher
-     *            the font triplet matcher to use
+     * @param fontInfoList a font info list
+     * @param matcher the font triplet matcher to use
      */
-    public void updateReferencedFonts(final List<EmbedFontInfo> fontInfoList,
-            final Matcher matcher) {
+    public void updateReferencedFonts(List<EmbedFontInfo> fontInfoList, Matcher matcher) {
         if (matcher == null) {
-            return; // No referenced fonts
+            return; //No referenced fonts
         }
-        for (final EmbedFontInfo fontInfo : fontInfoList) {
-            for (final FontTriplet triplet : fontInfo.getFontTriplets()) {
+        for (EmbedFontInfo fontInfo : fontInfoList) {
+            for (FontTriplet triplet : fontInfo.getFontTriplets()) {
                 if (matcher.matches(triplet)) {
                     fontInfo.setEmbedded(false);
                     break;

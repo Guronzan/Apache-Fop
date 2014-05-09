@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageHandler.java 820672 2009-10-01 14:48:27Z jeremias $ */
+/* $Id: ImageHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render;
 
@@ -23,7 +23,6 @@ import java.awt.Rectangle;
 import java.io.IOException;
 
 import org.apache.xmlgraphics.image.loader.Image;
-import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
 
 /**
  * This interface is a service provider interface for image handlers.
@@ -31,39 +30,29 @@ import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
 public interface ImageHandler extends ImageHandlerBase {
 
     /**
-     * Indicates whether the image handler is compatible with the indicated
-     * target represented by the rendering context object and with the image to
-     * be processed. The image is also passed as a parameter because a handler
-     * might not support every subtype of image that is presented. For example:
-     * in the case of {@link ImageXMLDOM}, the image might carry an SVG or some
-     * other XML format. One handler might only handle SVG but no other XML
-     * format.
-     * 
-     * @param targetContext
-     *            the target rendering context
-     * @param image
-     *            the image to be processed (or null if only to check based on
-     *            the rendering context)
-     * @return true if this handler is compatible with the target rendering
-     *         context
+     * Indicates whether the image handler is compatible with the indicated target represented
+     * by the rendering context object and with the image to be processed. The image is also
+     * passed as a parameter because a handler might not support every subtype of image that is
+     * presented. For example: in the case of
+     * {@link org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM}, the image might carry an SVG
+     * or some other XML format. One handler might only handle SVG but no other XML format.
+     * @param targetContext the target rendering context
+     * @param image the image to be processed (or null if only to check based on the rendering
+     *              context)
+     * @return true if this handler is compatible with the target rendering context
      */
-    boolean isCompatible(final RenderingContext targetContext, final Image image);
+    boolean isCompatible(RenderingContext targetContext, Image image);
 
     /**
-     * Handles the given {@link Image} instance painting it at the indicated
-     * position in the output format being generated.
-     * 
-     * @param context
-     *            the rendering context
-     * @param image
-     *            the image to be handled
-     * @param pos
-     *            the position and scaling of the image relative to the origin
-     *            point of the current viewport (in millipoints)
-     * @throws IOException
-     *             if an I/O error occurs
+     * Handles the given {@link Image} instance painting it at the indicated position in the
+     * output format being generated.
+     * @param context the rendering context
+     * @param image the image to be handled
+     * @param pos the position and scaling of the image relative to the origin point of the
+     *          current viewport (in millipoints)
+     * @throws IOException if an I/O error occurs
      */
-    void handleImage(final RenderingContext context, final Image image,
-            final Rectangle pos) throws IOException;
+    void handleImage(RenderingContext context, Image image,
+            Rectangle pos) throws IOException;
 
 }

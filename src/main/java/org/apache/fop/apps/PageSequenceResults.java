@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PageSequenceResults.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PageSequenceResults.java 1036809 2010-11-19 11:25:15Z spepping $ */
 
 package org.apache.fop.apps;
 
@@ -25,18 +25,16 @@ package org.apache.fop.apps;
  */
 public class PageSequenceResults {
 
-    private final String id;
-    private final int pageCount;
+    private String id;
+    private int pageCount;
 
     /**
      * Constructor for the PageSequenceResults object
      *
-     * @param id
-     *            ID of the page-sequence, if available
-     * @param pageCount
-     *            The number of resulting pages
+     * @param id         ID of the page-sequence, if available
+     * @param pageCount  The number of resulting pages
      */
-    public PageSequenceResults(final String id, final int pageCount) {
+    public PageSequenceResults(String id, int pageCount) {
         this.id = id;
         this.pageCount = pageCount;
     }
@@ -44,7 +42,7 @@ public class PageSequenceResults {
     /**
      * Gets the ID of the page-sequence if one was specified.
      *
-     * @return The ID
+     * @return   The ID
      */
     public String getID() {
         return this.id;
@@ -53,7 +51,7 @@ public class PageSequenceResults {
     /**
      * Gets the number of pages that resulted by processing the page-sequence.
      *
-     * @return The number of pages generated
+     * @return   The number of pages generated
      */
     public int getPageCount() {
         return this.pageCount;

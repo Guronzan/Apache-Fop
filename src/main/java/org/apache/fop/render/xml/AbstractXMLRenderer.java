@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractXMLRenderer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AbstractXMLRenderer.java 1237610 2012-01-30 11:46:13Z mehdi $ */
 
 package org.apache.fop.render.xml;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import lombok.extern.slf4j.Slf4j;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
+import org.xml.sax.helpers.AttributesImpl;
 
+import org.apache.xmlgraphics.util.QName;
+
+import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.area.BookmarkData;
 import org.apache.fop.area.OffDocumentExtensionAttachment;
 import org.apache.fop.area.OffDocumentItem;
@@ -40,15 +45,17 @@ import org.apache.fop.area.PageViewport;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.apache.fop.render.PrintRenderer;
 import org.apache.fop.render.RendererContext;
-import org.apache.xmlgraphics.util.QName;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.ext.LexicalHandler;
-import org.xml.sax.helpers.AttributesImpl;
 
-@Slf4j
+/** Abstract xml renderer base class. */
 public abstract class AbstractXMLRenderer extends PrintRenderer {
+
+    /**
+     * @param userAgent the user agent that contains configuration details. This cannot be null.
+     */
+    public AbstractXMLRenderer(FOUserAgent userAgent) {
+        super(userAgent);
+    }
+
     /** Main namespace in use. */
     public static final String NS = "";
 
@@ -67,45 +74,37 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
     /** The OutputStream to write the generated XML to. */
     protected OutputStream out;
 
+    /** The renderer context. */
     protected RendererContext context;
 
-    /**
-     * A list of ExtensionAttachements received through processOffDocumentItem()
-     */
-    protected List<ExtensionAttachment> extensionAttachments;
+    /** A list of ExtensionAttachements received through processOffDocumentItem() */
+    protected List extensionAttachments;
 
     /**
      * Handles SAXExceptions.
-     *
-     * @param saxe
-     *            the SAXException to handle
+     * @param saxe the SAXException to handle
      */
-    protected void handleSAXException(final SAXException saxe) {
+    protected void handleSAXException(SAXException saxe) {
         throw new RuntimeException(saxe.getMessage());
     }
 
     /**
      * Handles page extension attachments
-     *
-     * @param page
-     *            the page viewport
+     * @param page the page viewport
      */
-    protected void handlePageExtensionAttachments(final PageViewport page) {
+    protected void handlePageExtensionAttachments(PageViewport page) {
         handleExtensionAttachments(page.getExtensionAttachments());
     }
 
     /**
      * Writes a comment to the generated XML.
-     *
-     * @param comment
-     *            the comment
+     * @param comment the comment
      */
-    protected void comment(final String comment) {
-        if (this.handler instanceof LexicalHandler) {
+    protected void comment(String comment) {
+        if (handler instanceof LexicalHandler) {
             try {
-                ((LexicalHandler) this.handler).comment(comment.toCharArray(),
-                        0, comment.length());
-            } catch (final SAXException saxe) {
+                ((LexicalHandler) handler).comment(comment.toCharArray(), 0, comment.length());
+            } catch (SAXException saxe) {
                 handleSAXException(saxe);
             }
         }
@@ -113,144 +112,121 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Starts a new element (without attributes).
-     *
-     * @param tagName
-     *            tag name of the element
+     * @param tagName tag name of the element
      */
-    protected void startElement(final String tagName) {
+    protected void startElement(String tagName) {
         startElement(tagName, EMPTY_ATTS);
     }
 
     /**
      * Starts a new element.
-     *
-     * @param tagName
-     *            tag name of the element
-     * @param atts
-     *            attributes to add
+     * @param tagName tag name of the element
+     * @param atts attributes to add
      */
-    protected void startElement(final String tagName, final Attributes atts) {
+    protected void startElement(String tagName, Attributes atts) {
         try {
-            this.handler.startElement(NS, tagName, tagName, atts);
-        } catch (final SAXException saxe) {
+            handler.startElement(NS, tagName, tagName, atts);
+        } catch (SAXException saxe) {
             handleSAXException(saxe);
         }
     }
 
     /**
      * Ends an element.
-     *
-     * @param tagName
-     *            tag name of the element
+     * @param tagName tag name of the element
      */
-    protected void endElement(final String tagName) {
+    protected void endElement(String tagName) {
         try {
-            this.handler.endElement(NS, tagName, tagName);
-        } catch (final SAXException saxe) {
+            handler.endElement(NS, tagName, tagName);
+        } catch (SAXException saxe) {
             handleSAXException(saxe);
         }
     }
 
     /**
      * Sends plain text to the XML
-     *
-     * @param text
-     *            the text
+     * @param text the text
      */
-    protected void characters(final String text) {
+    protected void characters(String text) {
         try {
-            final char[] ca = text.toCharArray();
-            this.handler.characters(ca, 0, ca.length);
-        } catch (final SAXException saxe) {
+            char[] ca = text.toCharArray();
+            handler.characters(ca, 0, ca.length);
+        } catch (SAXException saxe) {
             handleSAXException(saxe);
         }
     }
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     *
-     * @param name
-     *            name of the attribute
-     * @param value
-     *            value of the attribute
+     * @param name name of the attribute
+     * @param value value of the attribute
      */
-    protected void addAttribute(final String name, final String value) {
-        this.atts.addAttribute(NS, name, name, CDATA, value);
+    protected void addAttribute(String name, String value) {
+        atts.addAttribute(NS, name, name, CDATA, value);
     }
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     *
-     * @param name
-     *            name of the attribute
-     * @param value
-     *            value of the attribute
+     * @param name name of the attribute
+     * @param value value of the attribute
      */
-    protected void addAttribute(final QName name, final String value) {
-        this.atts.addAttribute(name.getNamespaceURI(), name.getLocalName(),
-                name.getQName(), CDATA, value);
+    protected void addAttribute(QName name, String value) {
+        atts.addAttribute(name.getNamespaceURI(), name.getLocalName(), name.getQName(),
+                CDATA, value);
     }
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     *
-     * @param name
-     *            name of the attribute
-     * @param value
-     *            value of the attribute
+     * @param name name of the attribute
+     * @param value value of the attribute
      */
-    protected void addAttribute(final String name, final int value) {
+    protected void addAttribute(String name, int value) {
         addAttribute(name, Integer.toString(value));
     }
 
-    private String createString(final Rectangle2D rect) {
+    private String createString(Rectangle2D rect) {
         return "" + (int) rect.getX() + " " + (int) rect.getY() + " "
-                + (int) rect.getWidth() + " " + (int) rect.getHeight();
+                  + (int) rect.getWidth() + " " + (int) rect.getHeight();
     }
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     *
-     * @param name
-     *            name of the attribute
-     * @param rect
-     *            a Rectangle2D to format and use as attribute value
+     * @param name name of the attribute
+     * @param rect a Rectangle2D to format and use as attribute value
      */
-    protected void addAttribute(final String name, final Rectangle2D rect) {
+    protected void addAttribute(String name, Rectangle2D rect) {
         addAttribute(name, createString(rect));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startRenderer(final OutputStream outputStream) {
+    public void startRenderer(OutputStream outputStream)
+                throws IOException {
         if (this.handler == null) {
-            final SAXTransformerFactory factory = (SAXTransformerFactory) TransformerFactory
-                    .newInstance();
+            SAXTransformerFactory factory
+                = (SAXTransformerFactory)SAXTransformerFactory.newInstance();
             try {
-                final TransformerHandler transformerHandler = factory
-                        .newTransformerHandler();
+                TransformerHandler transformerHandler = factory.newTransformerHandler();
                 setContentHandler(transformerHandler);
-                final StreamResult res = new StreamResult(outputStream);
+                StreamResult res = new StreamResult(outputStream);
                 transformerHandler.setResult(res);
-            } catch (final TransformerConfigurationException tce) {
+            } catch (TransformerConfigurationException tce) {
                 throw new RuntimeException(tce.getMessage());
             }
             this.out = outputStream;
         }
 
         try {
-            this.handler.startDocument();
-        } catch (final SAXException saxe) {
+            handler.startDocument();
+        } catch (SAXException saxe) {
             handleSAXException(saxe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void stopRenderer() throws IOException {
         try {
-            this.handler.endDocument();
-        } catch (final SAXException saxe) {
+            handler.endDocument();
+        } catch (SAXException saxe) {
             handleSAXException(saxe);
         }
         if (this.out != null) {
@@ -259,57 +235,47 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void processOffDocumentItem(final OffDocumentItem oDI) {
+    public void processOffDocumentItem(OffDocumentItem oDI) {
         if (oDI instanceof BookmarkData) {
             renderBookmarkTree((BookmarkData) oDI);
         } else if (oDI instanceof OffDocumentExtensionAttachment) {
-            final ExtensionAttachment attachment = ((OffDocumentExtensionAttachment) oDI)
-                    .getAttachment();
-            if (this.extensionAttachments == null) {
-                this.extensionAttachments = new ArrayList<>();
+            ExtensionAttachment attachment = ((OffDocumentExtensionAttachment)oDI).getAttachment();
+            if (extensionAttachments == null) {
+                extensionAttachments = new java.util.ArrayList();
             }
-            this.extensionAttachments.add(attachment);
+            extensionAttachments.add(attachment);
         } else {
-            final String warn = "Ignoring OffDocumentItem: " + oDI;
+            String warn = "Ignoring OffDocumentItem: " + oDI;
             log.warn(warn);
         }
     }
 
-    /** {@inheritDoc} */
+    /** Handle document extension attachments. */
     protected void handleDocumentExtensionAttachments() {
-        if (this.extensionAttachments != null
-                && this.extensionAttachments.size() > 0) {
-            handleExtensionAttachments(this.extensionAttachments);
-            this.extensionAttachments.clear();
+        if (extensionAttachments != null && extensionAttachments.size() > 0) {
+            handleExtensionAttachments(extensionAttachments);
+            extensionAttachments.clear();
         }
     }
 
     /**
      * Sets an outside TransformerHandler to use instead of the default one
      * create in this class in startRenderer().
-     *
-     * @param handler
-     *            Overriding TransformerHandler
+     * @param handler Overriding TransformerHandler
      */
-    public void setContentHandler(final ContentHandler handler) {
+    public void setContentHandler(ContentHandler handler) {
         this.handler = handler;
     }
 
     /**
      * Handles a list of extension attachments
-     *
-     * @param attachments
-     *            a list of extension attachments
+     * @param attachments a list of extension attachments
      */
-    protected abstract void handleExtensionAttachments(
-            final List<ExtensionAttachment> attachments);
+    protected abstract void handleExtensionAttachments(List attachments);
 
     /**
      * Renders a bookmark tree
-     *
-     * @param odi
-     *            the bookmark data
+     * @param odi the bookmark data
      */
-    protected abstract void renderBookmarkTree(final BookmarkData odi);
+    protected abstract void renderBookmarkTree(BookmarkData odi);
 }

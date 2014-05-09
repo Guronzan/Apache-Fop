@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfBookmarkContainerImpl.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfBookmarkContainerImpl.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,82 +30,74 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * RTF Bookmark container implementation. Nearly all containers or elements can
- * have a bookmark, that is why the bookmark container is implemented as stand
- * alone.
- * 
- * @author <a href="mailto:a.putz@skynamics.com">Andreas Putz</a>
+ * <p>RTF Bookmark container implementation.
+ * Nearly all containers or elements can have a bookmark, that is why the bookmark container is
+ * implemented as stand alone.</p>
+ *
+ * <p>This work was authored by Andreas Putz (a.putz@skynamics.com).</p>
  */
-public class RtfBookmarkContainerImpl extends RtfContainer implements
-        IRtfBookmarkContainer {
-    // ////////////////////////////////////////////////
+public class RtfBookmarkContainerImpl extends RtfContainer implements IRtfBookmarkContainer {
+    //////////////////////////////////////////////////
     // @@ Members
-    // ////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
     /** Rtf bookmark */
     private RtfBookmark mBookmark = null;
 
-    // ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
     // @@ Construction
-    // ////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
     /**
-     * Constructor. Create an RTF container as a child of given container.
+     * Constructor.
+     * Create an RTF container as a child of given container.
      *
-     * @param parent
-     *            The parent container
-     * @param w
-     *            Writer
+     * @param parent The parent container
+     * @param w Writer
      *
-     * @exception IOException
-     *                On error
+     * @exception IOException On error
      */
-    RtfBookmarkContainerImpl(final RtfContainer parent, final Writer w)
-            throws IOException {
-        super(parent, w, null);
+    RtfBookmarkContainerImpl (RtfContainer parent, Writer w) throws IOException {
+        super (parent, w, null);
     }
 
     /**
-     * Constructor. Create an RTF container as a child of given container.
+     * Constructor.
+     * Create an RTF container as a child of given container.
      *
-     * @param parent
-     *            The parent container
-     * @param w
-     *            Writer
-     * @param attr
-     *            Rtf attributes
+     * @param parent The parent container
+     * @param w Writer
+     * @param attr Rtf attributes
      *
-     * @exception IOException
-     *                On error
+     * @exception IOException On error
      */
-    RtfBookmarkContainerImpl(final RtfContainer parent, final Writer w,
-            final RtfAttributes attr) throws IOException {
-        super(parent, w, attr);
+    RtfBookmarkContainerImpl (RtfContainer parent, Writer w, RtfAttributes attr) throws IOException
+    {
+        super (parent, w, attr);
     }
 
-    // ////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////
     // @@ Public methods
-    // ////////////////////////////////////////////////
+    //////////////////////////////////////////////////
 
     /**
      * Create a new RTF bookmark.
      *
-     * @param bookmark
-     *            Name of the bookmark
+     * @param bookmark Name of the bookmark
      *
      * @return RTF bookmark
      *
-     * @throws IOException
-     *             On eror
+     * @throws IOException On eror
      */
-    @Override
-    public RtfBookmark newBookmark(final String bookmark) throws IOException {
-        if (this.mBookmark != null) {
-            this.mBookmark.close();
+    public RtfBookmark newBookmark (String bookmark) throws IOException {
+        if (mBookmark != null) {
+            mBookmark.close ();
         }
 
-        this.mBookmark = new RtfBookmark(this, this.writer, bookmark);
+        mBookmark = new RtfBookmark (this, writer, bookmark);
 
-        return this.mBookmark;
+        return mBookmark;
     }
 }

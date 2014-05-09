@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfAfter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfAfter.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -31,23 +31,22 @@ import java.io.Writer;
 
 /** RtfContainer that encloses footers */
 public class RtfAfter extends RtfAfterBeforeBase {
-    /** RtfBefore attributes */
+    /**RtfBefore attributes*/
     public static final String FOOTER = "footer";
     /** String array of footer attributes */
-    public static final String[] FOOTER_ATTR = new String[] { FOOTER };
+    public static final String[] FOOTER_ATTR = new String[]{
+        FOOTER
+    };
 
-    RtfAfter(final RtfSection parent, final Writer w, final RtfAttributes attrs)
-            throws IOException {
+    RtfAfter(RtfSection parent, Writer w, RtfAttributes attrs) throws IOException {
         super(parent, w, attrs);
     }
 
     /**
      *
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    @Override
     protected void writeMyAttributes() throws IOException {
-        writeAttributes(this.attrib, FOOTER_ATTR);
+        writeAttributes(attrib, FOOTER_ATTR);
     }
 }

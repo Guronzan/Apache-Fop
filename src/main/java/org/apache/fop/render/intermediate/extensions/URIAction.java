@@ -15,34 +15,31 @@
  * limitations under the License.
  */
 
-/* $Id: URIAction.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: URIAction.java 1036809 2010-11-19 11:25:15Z spepping $ */
 
 package org.apache.fop.render.intermediate.extensions;
 
-import org.apache.fop.util.XMLConstants;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
-/**
- * Action class which represents a "URI" action, i.e. an action that will call
- * up an external resource identified by a URI.
- */
-public class URIAction extends AbstractAction implements
-        DocumentNavigationExtensionConstants {
+import org.apache.fop.util.XMLUtil;
 
-    private final String uri;
-    private final boolean newWindow;
+/**
+ * Action class which represents a "URI" action, i.e. an action that will call up an external
+ * resource identified by a URI.
+ */
+public class URIAction extends AbstractAction implements DocumentNavigationExtensionConstants {
+
+    private String uri;
+    private boolean newWindow;
 
     /**
      * Creates a new instance.
-     * 
-     * @param uri
-     *            the target URI
-     * @param newWindow
-     *            true if the link should be opened in a new window
+     * @param uri the target URI
+     * @param newWindow true if the link should be opened in a new window
      */
-    public URIAction(final String uri, final boolean newWindow) {
+    public URIAction(String uri, boolean newWindow) {
         if (uri == null) {
             throw new NullPointerException("uri must not be null");
         }
@@ -52,7 +49,6 @@ public class URIAction extends AbstractAction implements
 
     /**
      * Returns the target URI.
-     * 
      * @return the target URI
      */
     public String getURI() {
@@ -61,7 +57,6 @@ public class URIAction extends AbstractAction implements
 
     /**
      * Indicates whether the link shall be opened in a new window.
-     * 
      * @return true if a new window shall be opened
      */
     public boolean isNewWindow() {
@@ -69,15 +64,14 @@ public class URIAction extends AbstractAction implements
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean isSame(final AbstractAction other) {
+    public boolean isSame(AbstractAction other) {
         if (other == null) {
             throw new NullPointerException("other must not be null");
         }
         if (!(other instanceof URIAction)) {
             return false;
         }
-        final URIAction otherAction = (URIAction) other;
+        URIAction otherAction = (URIAction)other;
         if (!getURI().equals(otherAction.getURI())) {
             return false;
         }
@@ -88,27 +82,24 @@ public class URIAction extends AbstractAction implements
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getIDPrefix() {
         return "fop-" + GOTO_URI.getLocalName();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
+    public void toSAX(ContentHandler handler) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
         if (hasID()) {
-            atts.addAttribute(null, "id", "id", XMLConstants.CDATA, getID());
+            atts.addAttribute(null, "id", "id", XMLUtil.CDATA, getID());
         }
-        atts.addAttribute(null, "uri", "uri", XMLConstants.CDATA, getURI());
+        atts.addAttribute(null, "uri", "uri", XMLUtil.CDATA, getURI());
         if (isNewWindow()) {
-            atts.addAttribute(null, "show-destination", "show-destination",
-                    XMLConstants.CDATA, "new");
+            atts.addAttribute(null, "show-destination", "show-destination", XMLUtil.CDATA, "new");
         }
         handler.startElement(GOTO_URI.getNamespaceURI(),
                 GOTO_URI.getLocalName(), GOTO_URI.getQName(), atts);
-        handler.endElement(GOTO_URI.getNamespaceURI(), GOTO_URI.getLocalName(),
-                GOTO_URI.getQName());
+        handler.endElement(GOTO_URI.getNamespaceURI(),
+                GOTO_URI.getLocalName(), GOTO_URI.getQName());
     }
 
 }

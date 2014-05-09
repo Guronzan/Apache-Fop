@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IFContentHandler.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: IFContentHandler.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.intermediate;
 
@@ -24,75 +24,75 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
+/** intermediate format content handler */
 public class IFContentHandler implements ContentHandler {
 
-    @Override
-    public void characters(final char[] arg0, final int arg1, final int arg2)
-            throws SAXException {
+    /** {@inheritDoc} */
+    public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
+    /** {@inheritDoc} */
     public void endDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
-    public void endElement(final String arg0, final String arg1,
-            final String arg2) throws SAXException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void endPrefixMapping(final String arg0) throws SAXException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void ignorableWhitespace(final char[] arg0, final int arg1,
-            final int arg2) throws SAXException {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void processingInstruction(final String arg0, final String arg1)
+    /** {@inheritDoc} */
+    public void endElement(String arg0, String arg1, String arg2)
             throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
-    public void setDocumentLocator(final Locator arg0) {
+    /** {@inheritDoc} */
+    public void endPrefixMapping(String arg0) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
-    public void skippedEntity(final String arg0) throws SAXException {
+    /** {@inheritDoc} */
+    public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
+            throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
+    /** {@inheritDoc} */
+    public void processingInstruction(String arg0, String arg1)
+            throws SAXException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /** {@inheritDoc} */
+    public void setDocumentLocator(Locator arg0) {
+        // TODO Auto-generated method stub
+
+    }
+
+    /** {@inheritDoc} */
+    public void skippedEntity(String arg0) throws SAXException {
+        // TODO Auto-generated method stub
+
+    }
+
+    /** {@inheritDoc} */
     public void startDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
-    public void startElement(final String arg0, final String arg1,
-            final String arg2, final Attributes arg3) throws SAXException {
+    /** {@inheritDoc} */
+    public void startElement(String arg0, String arg1, String arg2,
+            Attributes arg3) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
-    @Override
-    public void startPrefixMapping(final String arg0, final String arg1)
+    /** {@inheritDoc} */
+    public void startPrefixMapping(String arg0, String arg1)
             throws SAXException {
         // TODO Auto-generated method stub
 

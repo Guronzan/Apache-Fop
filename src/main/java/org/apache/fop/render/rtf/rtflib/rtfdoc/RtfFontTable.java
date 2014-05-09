@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfFontTable.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfFontTable.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,26 +30,24 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * RTF font table
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
- * @author Andreas Putz a.putz@skynamics.com
+ * <p>RTF font table.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch)
+ * and Andreas Putz (a.putz@skynamics.com).</p>
  */
 
 class RtfFontTable extends RtfElement {
     /** Create an RTF header */
-    RtfFontTable(final RtfHeader h, final Writer w) throws IOException {
+    RtfFontTable(RtfHeader h, Writer w) throws IOException {
         super(h, w);
     }
 
     /** write our contents to m_writer. */
-    @Override
     protected void writeRtfContent() throws IOException {
-        RtfFontManager.getInstance().writeFonts((RtfHeader) this.parent);
+        RtfFontManager.getInstance ().writeFonts ((RtfHeader)parent);
     }
 
     /** true if this element would generate no "useful" RTF content */
-    @Override
     public boolean isEmpty() {
         return false;
     }

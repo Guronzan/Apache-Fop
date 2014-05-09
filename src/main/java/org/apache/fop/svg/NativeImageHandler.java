@@ -15,30 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: NativeImageHandler.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: NativeImageHandler.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.svg;
 
+/** native image handler */
 public interface NativeImageHandler {
 
     /**
-     * Add a natively handled image directly to the document. This is used by
-     * the ImageElementBridge to draw a natively handled image (like JPEG or
-     * CCITT images) directly into the document rather than converting the image
-     * into a bitmap and increasing the size.
+     * Add a natively handled image directly to the document.
+     * This is used by the ImageElementBridge to draw a natively handled image
+     * (like JPEG or CCITT images)
+     * directly into the document rather than converting the image into
+     * a bitmap and increasing the size.
      *
-     * @param image
-     *            the image to draw
-     * @param x
-     *            the x position
-     * @param y
-     *            the y position
-     * @param width
-     *            the width to draw the image
-     * @param height
-     *            the height to draw the image
+     * @param image the image to draw
+     * @param x the x position
+     * @param y the y position
+     * @param width the width to draw the image
+     * @param height the height to draw the image
      */
-    void addNativeImage(final org.apache.xmlgraphics.image.loader.Image image,
-            final float x, final float y, final float width, final float height);
+    void addNativeImage(org.apache.xmlgraphics.image.loader.Image image, float x, float y,
+                             float width, float height);
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ListItemLayoutManager.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: ListItemLayoutManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.layoutmgr.list;
 
@@ -24,7 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Block;
@@ -57,12 +58,14 @@ import org.apache.fop.traits.MinOptMax;
 import org.apache.fop.traits.SpaceVal;
 
 /**
- * LayoutManager for a list-item FO. The list item contains a list item label
- * and a list item body.
+ * LayoutManager for a list-item FO.
+ * The list item contains a list item label and a list item body.
  */
-@Slf4j
-public class ListItemLayoutManager extends BlockStackingLayoutManager implements
-ConditionalElementListener {
+public class ListItemLayoutManager extends BlockStackingLayoutManager
+                    implements ConditionalElementListener {
+
+    /** logging instance */
+    private static Log log = LogFactory.getLog(ListItemLayoutManager.class);
 
     private ListItemContentLayoutManager label;
     private ListItemContentLayoutManager body;
@@ -82,54 +85,48 @@ ConditionalElementListener {
     private Keep keepWithNextPendingOnLabel;
     private Keep keepWithNextPendingOnBody;
 
-    private int listItemHeight;
-
     private class ListItemPosition extends Position {
-        private final int iLabelFirstIndex;
-        private final int iLabelLastIndex;
-        private final int iBodyFirstIndex;
-        private final int iBodyLastIndex;
+        private int labelFirstIndex;
+        private int labelLastIndex;
+        private int bodyFirstIndex;
+        private int bodyLastIndex;
 
-        public ListItemPosition(final LayoutManager lm, final int labelFirst,
-                final int labelLast, final int bodyFirst, final int bodyLast) {
+        public ListItemPosition(LayoutManager lm, int labelFirst, int labelLast,
+                int bodyFirst, int bodyLast) {
             super(lm);
-            this.iLabelFirstIndex = labelFirst;
-            this.iLabelLastIndex = labelLast;
-            this.iBodyFirstIndex = bodyFirst;
-            this.iBodyLastIndex = bodyLast;
+            labelFirstIndex = labelFirst;
+            labelLastIndex = labelLast;
+            bodyFirstIndex = bodyFirst;
+            bodyLastIndex = bodyLast;
         }
 
         public int getLabelFirstIndex() {
-            return this.iLabelFirstIndex;
+            return labelFirstIndex;
         }
 
         public int getLabelLastIndex() {
-            return this.iLabelLastIndex;
+            return labelLastIndex;
         }
 
         public int getBodyFirstIndex() {
-            return this.iBodyFirstIndex;
+            return bodyFirstIndex;
         }
 
         public int getBodyLastIndex() {
-            return this.iBodyLastIndex;
+            return bodyLastIndex;
         }
 
         /** {@inheritDoc} */
-        @Override
         public boolean generatesAreas() {
             return true;
         }
 
         /** {@inheritDoc} */
-        @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("ListItemPosition:");
+            StringBuffer sb = new StringBuffer("ListItemPosition:");
             sb.append(getIndex()).append("(");
-            sb.append("label:").append(this.iLabelFirstIndex).append("-")
-            .append(this.iLabelLastIndex);
-            sb.append(" body:").append(this.iBodyFirstIndex).append("-")
-            .append(this.iBodyLastIndex);
+            sb.append("label:").append(labelFirstIndex).append("-").append(labelLastIndex);
+            sb.append(" body:").append(bodyFirstIndex).append("-").append(bodyLastIndex);
             sb.append(")");
             return sb.toString();
         }
@@ -137,11 +134,9 @@ ConditionalElementListener {
 
     /**
      * Create a new list item layout manager.
-     *
-     * @param node
-     *            list-item to create the layout manager for
+     * @param node list-item to create the layout manager for
      */
-    public ListItemLayoutManager(final ListItem node) {
+    public ListItemLayoutManager(ListItem node) {
         super(node);
         setLabel(node.getLabel());
         setBody(node.getBody());
@@ -149,47 +144,39 @@ ConditionalElementListener {
 
     /**
      * Convenience method.
-     *
      * @return the ListBlock node
      */
     protected ListItem getListItemFO() {
-        return (ListItem) this.fobj;
+        return (ListItem)fobj;
     }
 
     /**
      * Create a LM for the fo:list-item-label object
-     *
-     * @param node
-     *            the fo:list-item-label FO
+     * @param node the fo:list-item-label FO
      */
-    public void setLabel(final ListItemLabel node) {
-        this.label = new ListItemContentLayoutManager(node);
-        this.label.setParent(this);
+    public void setLabel(ListItemLabel node) {
+        label = new ListItemContentLayoutManager(node);
+        label.setParent(this);
     }
 
     /**
      * Create a LM for the fo:list-item-body object
-     *
-     * @param node
-     *            the fo:list-item-body FO
+     * @param node the fo:list-item-body FO
      */
-    public void setBody(final ListItemBody node) {
-        this.body = new ListItemContentLayoutManager(node);
-        this.body.setParent(this);
+    public void setBody(ListItemBody node) {
+        body = new ListItemContentLayoutManager(node);
+        body.setParent(this);
     }
 
     /** {@inheritDoc} */
     @Override
     public void initialize() {
-        this.foSpaceBefore = new SpaceVal(getListItemFO()
-                .getCommonMarginBlock().spaceBefore, this).getSpace();
-        this.foSpaceAfter = new SpaceVal(
-                getListItemFO().getCommonMarginBlock().spaceAfter, this)
-        .getSpace();
-        this.startIndent = getListItemFO().getCommonMarginBlock().startIndent
-                .getValue(this);
-        this.endIndent = getListItemFO().getCommonMarginBlock().endIndent
-                .getValue(this);
+        foSpaceBefore = new SpaceVal(
+                getListItemFO().getCommonMarginBlock().spaceBefore, this).getSpace();
+        foSpaceAfter = new SpaceVal(
+                getListItemFO().getCommonMarginBlock().spaceAfter, this).getSpace();
+        startIndent = getListItemFO().getCommonMarginBlock().startIndent.getValue(this);
+        endIndent = getListItemFO().getCommonMarginBlock().endIndent.getValue(this);
     }
 
     private void resetSpaces() {
@@ -203,74 +190,52 @@ ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List<ListElement> getNextKnuthElements(final LayoutContext context,
-            final int alignment) {
-        this.referenceIPD = context.getRefIPD();
+    public List getNextKnuthElements(LayoutContext context, int alignment) {
+        referenceIPD = context.getRefIPD();
         LayoutContext childLC;
 
-        final List<ListElement> returnList = new LinkedList<>();
+        List<ListElement> returnList = new LinkedList<ListElement>();
 
-        if (!this.breakBeforeServed) {
-            this.breakBeforeServed = true;
-            if (!context.suppressBreakBefore()) {
-                if (addKnuthElementsForBreakBefore(returnList, context)) {
-                    return returnList;
-                }
-            }
+        if (!breakBeforeServed(context, returnList)) {
+            return returnList;
         }
 
-        addKnuthElementsForSpaceBefore(returnList, alignment);
-
-        addKnuthElementsForBorderPaddingBefore(returnList,
-                !this.firstVisibleMarkServed);
-        this.firstVisibleMarkServed = true;
-
-        // Spaces, border and padding to be repeated at each break
-        addPendingMarks(context);
+        addFirstVisibleMarks(returnList, context, alignment);
 
         // label
-        childLC = new LayoutContext(0);
-        childLC.setRefIPD(context.getRefIPD());
-        this.label.initialize();
-        this.labelList = this.label.getNextKnuthElements(childLC, alignment);
+        childLC = makeChildLayoutContext(context);
+        label.initialize();
+        labelList = label.getNextKnuthElements(childLC, alignment);
 
-        // Space resolution as if the contents were placed in a new reference
-        // area
-        // (see 6.8.3, XSL 1.0, section on Constraints, last paragraph)
-        SpaceResolver.resolveElementList(this.labelList);
-        ElementListObserver.observe(this.labelList, "list-item-label",
-                this.label.getPartFO().getId());
+        //Space resolution as if the contents were placed in a new reference area
+        //(see 6.8.3, XSL 1.0, section on Constraints, last paragraph)
+        SpaceResolver.resolveElementList(labelList);
+        ElementListObserver.observe(labelList, "list-item-label", label.getPartFO().getId());
 
-        context.updateKeepWithPreviousPending(childLC
-                .getKeepWithPreviousPending());
+        context.updateKeepWithPreviousPending(childLC.getKeepWithPreviousPending());
         this.keepWithNextPendingOnLabel = childLC.getKeepWithNextPending();
 
         // body
-        childLC = new LayoutContext(0);
-        childLC.setRefIPD(context.getRefIPD());
-        this.body.initialize();
-        this.bodyList = this.body.getNextKnuthElements(childLC, alignment);
+        childLC = makeChildLayoutContext(context);
+        body.initialize();
+        bodyList = body.getNextKnuthElements(childLC, alignment);
 
-        // Space resolution as if the contents were placed in a new reference
-        // area
-        // (see 6.8.3, XSL 1.0, section on Constraints, last paragraph)
-        SpaceResolver.resolveElementList(this.bodyList);
-        ElementListObserver.observe(this.bodyList, "list-item-body", this.body
-                .getPartFO().getId());
+        //Space resolution as if the contents were placed in a new reference area
+        //(see 6.8.3, XSL 1.0, section on Constraints, last paragraph)
+        SpaceResolver.resolveElementList(bodyList);
+        ElementListObserver.observe(bodyList, "list-item-body", body.getPartFO().getId());
 
-        context.updateKeepWithPreviousPending(childLC
-                .getKeepWithPreviousPending());
+        context.updateKeepWithPreviousPending(childLC.getKeepWithPreviousPending());
         this.keepWithNextPendingOnBody = childLC.getKeepWithNextPending();
 
         // create a combined list
-        final List<ListElement> returnedList = getCombinedKnuthElementsForListItem(
-                this.labelList, this.bodyList, context);
+        List returnedList = getCombinedKnuthElementsForListItem(labelList, bodyList, context);
 
         // "wrap" the Position inside each element
         wrapPositionElements(returnedList, returnList, true);
 
-        addKnuthElementsForBorderPaddingAfter(returnList, true);
-        addKnuthElementsForSpaceAfter(returnList, alignment);
+        addLastVisibleMarks(returnList, context, alignment);
+
         addKnuthElementsForBreakAfter(returnList, context);
 
         context.updateKeepWithNextPending(this.keepWithNextPendingOnLabel);
@@ -283,109 +248,113 @@ ConditionalElementListener {
         return returnList;
     }
 
-    private List<ListElement> getCombinedKnuthElementsForListItem(
-            final List<ListElement> labelElements,
-            final List<ListElement> bodyElements, final LayoutContext context) {
-        // Copy elements to array lists to improve element access performance
-        final List[] elementLists = { new ArrayList<>(labelElements),
-                new ArrayList<>(bodyElements) };
-        final int[] fullHeights = {
-                ElementListUtils.calcContentLength(elementLists[0]),
-                ElementListUtils.calcContentLength(elementLists[1]) };
-        final int[] partialHeights = { 0, 0 };
-        final int[] start = { -1, -1 };
-        final int[] end = { -1, -1 };
+    /**
+     * Overridden to unconditionally add elements for space-before.
+     * {@inheritDoc}
+     */
+    @Override
+    protected void addFirstVisibleMarks(List<ListElement> elements,
+                                        LayoutContext context, int alignment) {
+        addKnuthElementsForSpaceBefore(elements, alignment);
+        addKnuthElementsForBorderPaddingBefore(elements, !firstVisibleMarkServed);
+        firstVisibleMarkServed = true;
+        //Spaces, border and padding to be repeated at each break
+        addPendingMarks(context);
+    }
 
-        final int totalHeight = Math.max(fullHeights[0], fullHeights[1]);
+    private List getCombinedKnuthElementsForListItem(List<ListElement> labelElements,
+            List<ListElement> bodyElements, LayoutContext context) {
+        // Copy elements to array lists to improve element access performance
+        List[] elementLists = {new ArrayList<ListElement>(labelElements),
+                               new ArrayList<ListElement>(bodyElements)};
+        int[] fullHeights = {ElementListUtils.calcContentLength(elementLists[0]),
+                ElementListUtils.calcContentLength(elementLists[1])};
+        int[] partialHeights = {0, 0};
+        int[] start = {-1, -1};
+        int[] end = {-1, -1};
+
+        int totalHeight = Math.max(fullHeights[0], fullHeights[1]);
         int step;
         int addedBoxHeight = 0;
         Keep keepWithNextActive = Keep.KEEP_AUTO;
 
-        final List<ListElement> returnList = new LinkedList<>();
+        LinkedList<ListElement> returnList = new LinkedList<ListElement>();
         while ((step = getNextStep(elementLists, start, end, partialHeights)) > 0) {
 
             if (end[0] + 1 == elementLists[0].size()) {
-                keepWithNextActive = keepWithNextActive
-                        .compare(this.keepWithNextPendingOnLabel);
+                keepWithNextActive = keepWithNextActive.compare(keepWithNextPendingOnLabel);
             }
             if (end[1] + 1 == elementLists[1].size()) {
-                keepWithNextActive = keepWithNextActive
-                        .compare(this.keepWithNextPendingOnBody);
+                keepWithNextActive = keepWithNextActive.compare(keepWithNextPendingOnBody);
             }
 
             // compute penalty height and box height
             int penaltyHeight = step
-                    + getMaxRemainingHeight(fullHeights, partialHeights)
-                    - totalHeight;
+                + getMaxRemainingHeight(fullHeights, partialHeights)
+                - totalHeight;
 
-            // Additional penalty height from penalties in the source lists
+            //Additional penalty height from penalties in the source lists
             int additionalPenaltyHeight = 0;
             int stepPenalty = 0;
-            KnuthElement endEl = (KnuthElement) elementLists[0].get(end[0]);
+            KnuthElement endEl = (KnuthElement)elementLists[0].get(end[0]);
             if (endEl instanceof KnuthPenalty) {
                 additionalPenaltyHeight = endEl.getWidth();
                 stepPenalty = Math.max(stepPenalty, endEl.getPenalty());
             }
-            endEl = (KnuthElement) elementLists[1].get(end[1]);
+            endEl = (KnuthElement)elementLists[1].get(end[1]);
             if (endEl instanceof KnuthPenalty) {
-                additionalPenaltyHeight = Math.max(additionalPenaltyHeight,
-                        endEl.getWidth());
+                additionalPenaltyHeight = Math.max(
+                        additionalPenaltyHeight, endEl.getWidth());
                 stepPenalty = Math.max(stepPenalty, endEl.getPenalty());
             }
 
-            final int boxHeight = step - addedBoxHeight - penaltyHeight;
-            penaltyHeight += additionalPenaltyHeight; // Add AFTER calculating
-            // boxHeight!
+            int boxHeight = step - addedBoxHeight - penaltyHeight;
+            penaltyHeight += additionalPenaltyHeight; //Add AFTER calculating boxHeight!
 
             // collect footnote information
-            // TODO this should really not be done like this. ListItemLM should
-            // remain as
+            // TODO this should really not be done like this. ListItemLM should remain as
             // footnote-agnostic as possible
             LinkedList<FootnoteBodyLayoutManager> footnoteList = null;
             ListElement el;
-            for (int i = 0; i < elementLists.length; ++i) {
+            for (int i = 0; i < elementLists.length; i++) {
                 for (int j = start[i]; j <= end[i]; j++) {
                     el = (ListElement) elementLists[i].get(j);
-                    if (el instanceof KnuthBlockBox
-                            && ((KnuthBlockBox) el).hasAnchors()) {
+                    if (el instanceof KnuthBlockBox && ((KnuthBlockBox) el).hasAnchors()) {
                         if (footnoteList == null) {
-                            footnoteList = new LinkedList<>();
+                            footnoteList = new LinkedList<FootnoteBodyLayoutManager>();
                         }
-                        footnoteList.addAll(((KnuthBlockBox) el)
-                                .getFootnoteBodyLMs());
+                        footnoteList.addAll(((KnuthBlockBox) el).getFootnoteBodyLMs());
                     }
                 }
             }
 
             // add the new elements
             addedBoxHeight += boxHeight;
-            final ListItemPosition stepPosition = new ListItemPosition(this,
+            ListItemPosition stepPosition = new ListItemPosition(this,
                     start[0], end[0], start[1], end[1]);
             if (footnoteList == null) {
                 returnList.add(new KnuthBox(boxHeight, stepPosition, false));
             } else {
-                returnList.add(new KnuthBlockBox(boxHeight, footnoteList,
-                        stepPosition, false));
+                returnList.add(new KnuthBlockBox(boxHeight, footnoteList, stepPosition, false));
             }
 
             if (addedBoxHeight < totalHeight) {
-                final Keep keep = keepWithNextActive.compare(getKeepTogether());
+                Keep keep = keepWithNextActive.compare(getKeepTogether());
                 int p = stepPenalty;
                 if (p > -KnuthElement.INFINITE) {
                     p = Math.max(p, keep.getPenalty());
                 }
-                returnList.add(new BreakElement(stepPosition, penaltyHeight, p,
-                        keep.getContext(), context));
+                returnList.add(new BreakElement(stepPosition, penaltyHeight, p, keep.getContext(),
+                        context));
             }
         }
 
         return returnList;
     }
 
-    private int getNextStep(final List[] elementLists, final int[] start,
-            final int[] end, final int[] partialHeights) {
+    private int getNextStep(List[] elementLists, int[] start, int[] end, int[] partialHeights) {
         // backup of partial heights
-        final int[] backupHeights = { partialHeights[0], partialHeights[1] };
+        int[] backupHeights = {partialHeights[0], partialHeights[1]};
 
         // set starting points
         start[0] = end[0] + 1;
@@ -393,22 +362,20 @@ ConditionalElementListener {
 
         // get next possible sequence for label and body
         int seqCount = 0;
-        for (int i = 0; i < start.length; ++i) {
+        for (int i = 0; i < start.length; i++) {
             while (end[i] + 1 < elementLists[i].size()) {
                 end[i]++;
-                final KnuthElement el = (KnuthElement) elementLists[i]
-                        .get(end[i]);
+                KnuthElement el = (KnuthElement)elementLists[i].get(end[i]);
                 if (el.isPenalty()) {
                     if (el.getPenalty() < KnuthElement.INFINITE) {
-                        // First legal break point
+                        //First legal break point
                         break;
                     }
                 } else if (el.isGlue()) {
                     if (end[i] > 0) {
-                        final KnuthElement prev = (KnuthElement) elementLists[i]
-                                .get(end[i] - 1);
+                        KnuthElement prev = (KnuthElement)elementLists[i].get(end[i] - 1);
                         if (prev.isBox()) {
-                            // Second legal break point
+                            //Second legal break point
                             break;
                         }
                     }
@@ -433,18 +400,16 @@ ConditionalElementListener {
             // this is the first step: choose the maximum increase, so that
             // the smallest area in the first page will contain at least
             // a label area and a body area
-            step = Math.max(end[0] >= start[0] ? partialHeights[0]
-                    : Integer.MIN_VALUE, end[1] >= start[1] ? partialHeights[1]
-                            : Integer.MIN_VALUE);
+            step = Math.max((end[0] >= start[0] ? partialHeights[0] : Integer.MIN_VALUE),
+                            (end[1] >= start[1] ? partialHeights[1] : Integer.MIN_VALUE));
         } else {
             // this is not the first step: choose the minimum increase
-            step = Math.min(end[0] >= start[0] ? partialHeights[0]
-                    : Integer.MAX_VALUE, end[1] >= start[1] ? partialHeights[1]
-                            : Integer.MAX_VALUE);
+            step = Math.min((end[0] >= start[0] ? partialHeights[0] : Integer.MAX_VALUE),
+                            (end[1] >= start[1] ? partialHeights[1] : Integer.MAX_VALUE));
         }
 
         // reset bigger-than-step sequences
-        for (int i = 0; i < partialHeights.length; ++i) {
+        for (int i = 0; i < partialHeights.length; i++) {
             if (partialHeights[i] > step) {
                 partialHeights[i] = backupHeights[i];
                 end[i] = start[i] - 1;
@@ -454,39 +419,24 @@ ConditionalElementListener {
         return step;
     }
 
-    private int getMaxRemainingHeight(final int[] fullHeights,
-            final int[] partialHeights) {
-        return Math.max(fullHeights[0] - partialHeights[0], fullHeights[1]
-                - partialHeights[1]);
+    private int getMaxRemainingHeight(int[] fullHeights, int[] partialHeights) {
+        return Math.max(fullHeights[0] - partialHeights[0],
+                        fullHeights[1] - partialHeights[1]);
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public List<ListElement> getChangedKnuthElements(
-            final List<ListElement> oldList, final int alignment) {
-        // log.debug(" LILM.getChanged> label");
+    public List getChangedKnuthElements(List oldList, int alignment) {
         // label
-        this.labelList = this.label.getChangedKnuthElements(this.labelList,
-                alignment);
+        labelList = label.getChangedKnuthElements(labelList, alignment);
 
-        // log.debug(" LILM.getChanged> body");
         // body
         // "unwrap" the Positions stored in the elements
-        final ListIterator<ListElement> oldListIterator = oldList
-                .listIterator();
+        ListIterator oldListIterator = oldList.listIterator();
         KnuthElement oldElement;
         while (oldListIterator.hasNext()) {
-            oldElement = (KnuthElement) oldListIterator.next();
-            final Position innerPosition = oldElement.getPosition()
-                    .getPosition();
-            // log.debug(" BLM> unwrapping: " + (oldElement.isBox()
-            // ? "box    " : (oldElement.isGlue() ? "glue   " : "penalty"))
-            // + " creato da " +
-            // oldElement.getLayoutManager().getClass().getName());
-            // log.debug(" BLM> unwrapping:         "
-            // + oldElement.getPosition().getClass().getName());
+            oldElement = (KnuthElement)oldListIterator.next();
+            Position innerPosition = oldElement.getPosition().getPosition();
             if (innerPosition != null) {
                 // oldElement was created by a descendant of this BlockLM
                 oldElement.setPosition(innerPosition);
@@ -498,17 +448,15 @@ ConditionalElementListener {
             }
         }
 
-        List<ListElement> returnedList = this.body.getChangedKnuthElements(
-                oldList, alignment);
+        List returnedList = body.getChangedKnuthElements(oldList, alignment);
         // "wrap" the Position inside each element
-        final List<ListElement> tempList = returnedList;
-        ListElement tempElement;
-        returnedList = new LinkedList<>();
-        final ListIterator<ListElement> listIter = tempList.listIterator();
+        List tempList = returnedList;
+        KnuthElement tempElement;
+        returnedList = new LinkedList();
+        ListIterator listIter = tempList.listIterator();
         while (listIter.hasNext()) {
-            tempElement = listIter.next();
-            tempElement.setPosition(new NonLeafPosition(this, tempElement
-                    .getPosition()));
+            tempElement = (KnuthElement)listIter.next();
+            tempElement.setPosition(new NonLeafPosition(this, tempElement.getPosition()));
             returnedList.add(tempElement);
         }
 
@@ -516,27 +464,24 @@ ConditionalElementListener {
     }
 
     /**
-     * Add the areas for the break points. This sets the offset of each cell as
-     * it is added.
+     * Add the areas for the break points.
      *
-     * @param parentIter
-     *            the position iterator
-     * @param layoutContext
-     *            the layout context for adding areas
+     * @param parentIter the position iterator
+     * @param layoutContext the layout context for adding areas
      */
     @Override
-    public void addAreas(final PositionIterator parentIter,
-            final LayoutContext layoutContext) {
+    public void addAreas(PositionIterator parentIter,
+                         LayoutContext layoutContext) {
         getParentArea(null);
 
         addId();
 
-        final LayoutContext lc = new LayoutContext(0);
+        LayoutContext lc = new LayoutContext(0);
         Position firstPos = null;
         Position lastPos = null;
 
         // "unwrap" the NonLeafPositions stored in parentIter
-        final LinkedList<Position> positionList = new LinkedList<>();
+        LinkedList<Position> positionList = new LinkedList<Position>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = parentIter.next();
@@ -556,148 +501,124 @@ ConditionalElementListener {
 
         // use the first and the last ListItemPosition to determine the
         // corresponding indexes in the original labelList and bodyList
-        final int labelFirstIndex = ((ListItemPosition) positionList.getFirst())
-                .getLabelFirstIndex();
-        final int labelLastIndex = ((ListItemPosition) positionList.getLast())
-                .getLabelLastIndex();
-        final int bodyFirstIndex = ((ListItemPosition) positionList.getFirst())
-                .getBodyFirstIndex();
-        final int bodyLastIndex = ((ListItemPosition) positionList.getLast())
-                .getBodyLastIndex();
+        int labelFirstIndex = ((ListItemPosition) positionList.getFirst()).getLabelFirstIndex();
+        int labelLastIndex = ((ListItemPosition) positionList.getLast()).getLabelLastIndex();
+        int bodyFirstIndex = ((ListItemPosition) positionList.getFirst()).getBodyFirstIndex();
+        int bodyLastIndex = ((ListItemPosition) positionList.getLast()).getBodyLastIndex();
 
-        // Determine previous break if any
-        int previousBreak = ElementListUtils.determinePreviousBreak(
-                this.labelList, labelFirstIndex);
-        SpaceResolver.performConditionalsNotification(this.labelList,
+        //Determine previous break if any (in item label list)
+        int previousBreak = ElementListUtils.determinePreviousBreak(labelList, labelFirstIndex);
+        SpaceResolver.performConditionalsNotification(labelList,
                 labelFirstIndex, labelLastIndex, previousBreak);
 
-        // Determine previous break if any
-        previousBreak = ElementListUtils.determinePreviousBreak(this.bodyList,
-                bodyFirstIndex);
-        SpaceResolver.performConditionalsNotification(this.bodyList,
+        //Determine previous break if any (in item body list)
+        previousBreak = ElementListUtils.determinePreviousBreak(bodyList, bodyFirstIndex);
+        SpaceResolver.performConditionalsNotification(bodyList,
                 bodyFirstIndex, bodyLastIndex, previousBreak);
 
         // add label areas
         if (labelFirstIndex <= labelLastIndex) {
-            final KnuthPossPosIter labelIter = new KnuthPossPosIter(
-                    this.labelList, labelFirstIndex, labelLastIndex + 1);
+            KnuthPossPosIter labelIter = new KnuthPossPosIter(labelList,
+                    labelFirstIndex, labelLastIndex + 1);
             lc.setFlags(LayoutContext.FIRST_AREA, layoutContext.isFirstArea());
             lc.setFlags(LayoutContext.LAST_AREA, layoutContext.isLastArea());
             // set the space adjustment ratio
             lc.setSpaceAdjust(layoutContext.getSpaceAdjust());
             // TO DO: use the right stack limit for the label
             lc.setStackLimitBP(layoutContext.getStackLimitBP());
-            this.label.addAreas(labelIter, lc);
+            label.addAreas(labelIter, lc);
         }
 
         // add body areas
         if (bodyFirstIndex <= bodyLastIndex) {
-            final KnuthPossPosIter bodyIter = new KnuthPossPosIter(
-                    this.bodyList, bodyFirstIndex, bodyLastIndex + 1);
+            KnuthPossPosIter bodyIter = new KnuthPossPosIter(bodyList,
+                    bodyFirstIndex, bodyLastIndex + 1);
             lc.setFlags(LayoutContext.FIRST_AREA, layoutContext.isFirstArea());
             lc.setFlags(LayoutContext.LAST_AREA, layoutContext.isLastArea());
             // set the space adjustment ratio
             lc.setSpaceAdjust(layoutContext.getSpaceAdjust());
             // TO DO: use the right stack limit for the body
             lc.setStackLimitBP(layoutContext.getStackLimitBP());
-            this.body.addAreas(bodyIter, lc);
+            body.addAreas(bodyIter, lc);
         }
 
         // after adding body areas, set the maximum area bpd
-        final int childCount = this.curBlockArea.getChildAreas().size();
+        int childCount = curBlockArea.getChildAreas().size();
         assert childCount >= 1 && childCount <= 2;
-        int itemBPD = this.curBlockArea.getChildAreas().get(0).getAllocBPD();
+        int itemBPD = ((Block)curBlockArea.getChildAreas().get(0)).getAllocBPD();
         if (childCount == 2) {
-            itemBPD = Math.max(itemBPD, this.curBlockArea.getChildAreas()
-                    .get(1).getAllocBPD());
+            itemBPD = Math.max(itemBPD, ((Block)curBlockArea.getChildAreas().get(1)).getAllocBPD());
         }
-        this.curBlockArea.setBPD(itemBPD);
+        curBlockArea.setBPD(itemBPD);
 
         addMarkersToPage(false, isFirst(firstPos), isLast(lastPos));
 
         // We are done with this area add the background
-        TraitSetter.addBackground(this.curBlockArea, getListItemFO()
-                .getCommonBorderPaddingBackground(), this);
-        TraitSetter.addSpaceBeforeAfter(this.curBlockArea,
-                layoutContext.getSpaceAdjust(), this.effSpaceBefore,
-                this.effSpaceAfter);
+        TraitSetter.addBackground(curBlockArea,
+                getListItemFO().getCommonBorderPaddingBackground(),
+                this);
+        TraitSetter.addSpaceBeforeAfter(curBlockArea, layoutContext.getSpaceAdjust(),
+                effSpaceBefore, effSpaceAfter);
 
         flush();
 
-        this.curBlockArea = null;
+        curBlockArea = null;
         resetSpaces();
 
         checkEndOfLayout(lastPos);
     }
 
     /**
-     * Get the height of the list item after adjusting. Should only be called
-     * after adding the list item areas.
+     * Return an Area which can contain the passed childArea. The childArea
+     * may not yet have any content, but it has essential traits set.
+     * In general, if the LayoutManager already has an Area it simply returns
+     * it. Otherwise, it makes a new Area of the appropriate class.
+     * It gets a parent area for its area by calling its parent LM.
+     * Finally, based on the dimensions of the parent area, it initializes
+     * its own area. This includes setting the content IPD and the maximum
+     * BPD.
      *
-     * @return the height of this list item after adjustment
-     */
-    public int getListItemHeight() {
-        return this.listItemHeight;
-    }
-
-    /**
-     * Return an Area which can contain the passed childArea. The childArea may
-     * not yet have any content, but it has essential traits set. In general, if
-     * the LayoutManager already has an Area it simply returns it. Otherwise, it
-     * makes a new Area of the appropriate class. It gets a parent area for its
-     * area by calling its parent LM. Finally, based on the dimensions of the
-     * parent area, it initializes its own area. This includes setting the
-     * content IPD and the maximum BPD.
-     *
-     * @param childArea
-     *            the child area
+     * @param childArea the child area
      * @return the parent are for the child
      */
     @Override
-    public Area getParentArea(final Area childArea) {
-        if (this.curBlockArea == null) {
-            this.curBlockArea = new Block();
+    public Area getParentArea(Area childArea) {
+        if (curBlockArea == null) {
+            curBlockArea = new Block();
 
             // Set up dimensions
-            /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.curBlockArea);
+            /*Area parentArea =*/ parentLayoutManager.getParentArea(curBlockArea);
 
             // set traits
-            TraitSetter.setProducerID(this.curBlockArea, getListItemFO()
-                    .getId());
-            TraitSetter.addBorders(this.curBlockArea, getListItemFO()
-                    .getCommonBorderPaddingBackground(),
-                    this.discardBorderBefore, this.discardBorderAfter, false,
-                    false, this);
-            TraitSetter.addPadding(this.curBlockArea, getListItemFO()
-                    .getCommonBorderPaddingBackground(),
-                    this.discardPaddingBefore, this.discardPaddingAfter, false,
-                    false, this);
-            TraitSetter.addMargins(this.curBlockArea, getListItemFO()
-                    .getCommonBorderPaddingBackground(), getListItemFO()
-                    .getCommonMarginBlock(), this);
-            TraitSetter.addBreaks(this.curBlockArea, getListItemFO()
-                    .getBreakBefore(), getListItemFO().getBreakAfter());
+            ListItem fo = getListItemFO();
+            TraitSetter.setProducerID(curBlockArea, fo.getId());
+            TraitSetter.addBorders(curBlockArea, fo.getCommonBorderPaddingBackground(),
+                    discardBorderBefore, discardBorderAfter, false, false, this);
+            TraitSetter.addPadding(curBlockArea, fo.getCommonBorderPaddingBackground(),
+                    discardPaddingBefore, discardPaddingAfter, false, false, this);
+            TraitSetter.addMargins(curBlockArea, fo.getCommonBorderPaddingBackground(),
+                    fo.getCommonMarginBlock(), this);
+            TraitSetter.addBreaks(curBlockArea, fo.getBreakBefore(), fo.getBreakAfter());
 
-            final int contentIPD = this.referenceIPD - getIPIndents();
-            this.curBlockArea.setIPD(contentIPD);
+            int contentIPD = referenceIPD - getIPIndents();
+            curBlockArea.setIPD(contentIPD);
 
-            setCurrentArea(this.curBlockArea);
+            setCurrentArea(curBlockArea);
         }
-        return this.curBlockArea;
+        return curBlockArea;
     }
 
     /**
-     * Add the child. Rows return the areas returned by the child elements. This
-     * simply adds the area to the parent layout manager.
+     * Add the child.
+     * Rows return the areas returned by the child elements.
+     * This simply adds the area to the parent layout manager.
      *
-     * @param childArea
-     *            the child area
+     * @param childArea the child area
      */
     @Override
-    public void addChildArea(final Area childArea) {
-        if (this.curBlockArea != null) {
-            this.curBlockArea.addBlock((Block) childArea);
+    public void addChildArea(Area childArea) {
+        if (curBlockArea != null) {
+            curBlockArea.addBlock((Block) childArea);
         }
     }
 
@@ -720,26 +641,24 @@ ConditionalElementListener {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void notifySpace(final RelSide side, final MinOptMax effectiveLength) {
+    public void notifySpace(RelSide side, MinOptMax effectiveLength) {
         if (RelSide.BEFORE == side) {
             if (log.isDebugEnabled()) {
-                log.debug(this + ": Space " + side + ", " + this.effSpaceBefore
-                        + "-> " + effectiveLength);
+                log.debug(this + ": Space " + side + ", "
+                        + this.effSpaceBefore + "-> " + effectiveLength);
             }
             this.effSpaceBefore = effectiveLength;
         } else {
             if (log.isDebugEnabled()) {
-                log.debug(this + ": Space " + side + ", " + this.effSpaceAfter
-                        + "-> " + effectiveLength);
+                log.debug(this + ": Space " + side + ", "
+                        + this.effSpaceAfter + "-> " + effectiveLength);
             }
             this.effSpaceAfter = effectiveLength;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void notifyBorder(final RelSide side, final MinOptMax effectiveLength) {
+    public void notifyBorder(RelSide side, MinOptMax effectiveLength) {
         if (effectiveLength == null) {
             if (RelSide.BEFORE == side) {
                 this.discardBorderBefore = true;
@@ -753,9 +672,7 @@ ConditionalElementListener {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void notifyPadding(final RelSide side,
-            final MinOptMax effectiveLength) {
+    public void notifyPadding(RelSide side, MinOptMax effectiveLength) {
         if (effectiveLength == null) {
             if (RelSide.BEFORE == side) {
                 this.discardPaddingBefore = true;
@@ -772,8 +689,10 @@ ConditionalElementListener {
     @Override
     public void reset() {
         super.reset();
-        this.label.reset();
-        this.body.reset();
+        label.reset();
+        body.reset();
     }
 
+
 }
+

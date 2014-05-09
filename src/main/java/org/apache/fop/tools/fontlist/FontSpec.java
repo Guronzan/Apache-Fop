@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FontSpec.java 757172 2009-03-22 11:54:39Z jeremias $ */
+/* $Id: FontSpec.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.tools.fontlist;
 
@@ -30,67 +30,57 @@ import org.apache.fop.fonts.FontTriplet;
 /**
  * Represents a font with information on how it can be used from XSL-FO.
  */
-public class FontSpec implements Comparable<FontSpec> {
+public class FontSpec implements Comparable {
 
-    private final String key;
-    private final FontMetrics metrics;
-    private final SortedSet<String> familyNames = new TreeSet<>();
-    private final Collection<FontTriplet> triplets = new TreeSet<>();
+    private String key;
+    private FontMetrics metrics;
+    private SortedSet<String> familyNames = new TreeSet<String>();
+    private Collection triplets = new TreeSet();
 
     /**
      * Creates a new font spec.
-     *
-     * @param key
-     *            the internal font key
-     * @param metrics
-     *            the font metrics
+     * @param key the internal font key
+     * @param metrics the font metrics
      */
-    public FontSpec(final String key, final FontMetrics metrics) {
+    public FontSpec(String key, FontMetrics metrics) {
         this.key = key;
         this.metrics = metrics;
     }
 
     /**
      * Adds font family names.
-     *
-     * @param names
-     *            the names
+     * @param names the names
      */
-    public void addFamilyNames(final Collection<String> names) {
+    public void addFamilyNames(Collection<String> names) {
         this.familyNames.addAll(names);
     }
 
     /**
      * Adds a font triplet.
-     *
-     * @param triplet
-     *            the font triplet
+     * @param triplet the font triplet
      */
-    public void addTriplet(final FontTriplet triplet) {
+    public void addTriplet(FontTriplet triplet) {
         this.triplets.add(triplet);
     }
 
     /**
      * Returns the font family names.
-     *
      * @return the font family names
      */
-    public SortedSet<String> getFamilyNames() {
+    public SortedSet getFamilyNames() {
         return Collections.unmodifiableSortedSet(this.familyNames);
     }
 
     /**
      * Returns the font triplets.
-     *
      * @return the font triplets
      */
-    public Collection<FontTriplet> getTriplets() {
+    public Collection getTriplets() {
         return Collections.unmodifiableCollection(this.triplets);
     }
 
     /**
      * Returns the internal font key.
-     *
      * @return the internal font key
      */
     public String getKey() {
@@ -99,7 +89,6 @@ public class FontSpec implements Comparable<FontSpec> {
 
     /**
      * Returns the font metrics.
-     *
      * @return the font metrics
      */
     public FontMetrics getFontMetrics() {
@@ -107,59 +96,9 @@ public class FontSpec implements Comparable<FontSpec> {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int compareTo(final FontSpec other) {
-        return this.metrics.getFullName()
-                .compareTo(other.metrics.getFullName());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (this.key == null ? 0 : this.key.hashCode());
-        result = prime * result
-                + (this.metrics == null ? 0 : this.metrics.hashCode());
-        return result;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof FontSpec)) {
-            return false;
-        }
-        final FontSpec other = (FontSpec) obj;
-        if (this.key == null) {
-            if (other.key != null) {
-                return false;
-            }
-        } else if (!this.key.equals(other.key)) {
-            return false;
-        }
-        if (this.metrics == null) {
-            if (other.metrics != null) {
-                return false;
-            }
-        } else if (!this.metrics.equals(other.metrics)) {
-            return false;
-        }
-        return true;
+    public int compareTo(Object o) {
+        FontSpec other = (FontSpec)o;
+        return metrics.getFullName().compareTo(other.metrics.getFullName());
     }
 
 }

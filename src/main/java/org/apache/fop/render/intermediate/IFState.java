@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: IFState.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: IFState.java 1069439 2011-02-10 15:58:57Z jeremias $ */
 
 package org.apache.fop.render.intermediate;
 
 import java.awt.Color;
 
-public class IFState {
+import org.apache.xmlgraphics.java2d.color.ColorUtil;
+
+/** a state class for intermediate format data */
+public final class IFState {
 
     private IFState parent;
 
@@ -35,10 +38,10 @@ public class IFState {
     private Color textColor;
 
     private IFState() {
-        // nop
+        //nop
     }
 
-    private IFState(final IFState parent) {
+    private IFState(IFState parent) {
         this.parent = parent;
 
         this.fontFamily = parent.fontFamily;
@@ -50,42 +53,44 @@ public class IFState {
         this.textColor = parent.textColor;
     }
 
+    /** @return create state */
     public static IFState create() {
         return new IFState();
     }
 
+    /** @return push state */
     public IFState push() {
         return new IFState(this);
     }
 
+    /** @return pop state */
     public IFState pop() {
         return this.parent;
     }
 
+    /** @return true if font changed */
     public boolean isFontChanged() {
         return this.fontChanged;
     }
 
+    /** reset font changed */
     public void resetFontChanged() {
         this.fontChanged = false;
     }
 
     /**
      * Returns the font family.
-     * 
      * @return the font family
      */
     public String getFontFamily() {
-        return this.fontFamily;
+        return fontFamily;
     }
 
     /**
      * Sets the font family.
-     * 
-     * @param family
-     *            the new font family
+     * @param family the new font family
      */
-    public void setFontFamily(final String family) {
+    public void setFontFamily(String family) {
         if (!family.equals(this.fontFamily)) {
             this.fontChanged = true;
         }
@@ -94,20 +99,17 @@ public class IFState {
 
     /**
      * Returns the font size.
-     * 
      * @return the font size (in mpt)
      */
     public int getFontSize() {
-        return this.fontSize;
+        return fontSize;
     }
 
     /**
      * Sets the font size.
-     * 
-     * @param size
-     *            the new font size (in mpt)
+     * @param size the new font size (in mpt)
      */
-    public void setFontSize(final int size) {
+    public void setFontSize(int size) {
         if (size != this.fontSize) {
             this.fontChanged = true;
         }
@@ -116,20 +118,17 @@ public class IFState {
 
     /**
      * Returns the font style.
-     * 
      * @return the font style
      */
     public String getFontStyle() {
-        return this.fontStyle;
+        return fontStyle;
     }
 
     /**
      * Set the font style
-     * 
-     * @param style
-     *            the new font style
+     * @param style the new font style
      */
-    public void setFontStyle(final String style) {
+    public void setFontStyle(String style) {
         if (!style.equals(this.fontStyle)) {
             this.fontChanged = true;
         }
@@ -138,20 +137,17 @@ public class IFState {
 
     /**
      * Returns the font weight.
-     * 
      * @return the font weight
      */
     public int getFontWeight() {
-        return this.fontWeight;
+        return fontWeight;
     }
 
     /**
      * Sets the font weight
-     * 
-     * @param weight
-     *            the new font weight
+     * @param weight the new font weight
      */
-    public void setFontWeight(final int weight) {
+    public void setFontWeight(int weight) {
         if (weight != this.fontWeight) {
             this.fontChanged = true;
         }
@@ -160,20 +156,17 @@ public class IFState {
 
     /**
      * Returns the font variant.
-     * 
      * @return the font variant
      */
     public String getFontVariant() {
-        return this.fontVariant;
+        return fontVariant;
     }
 
     /**
      * Sets the font variant.
-     * 
-     * @param variant
-     *            the new font variant
+     * @param variant the new font variant
      */
-    public void setFontVariant(final String variant) {
+    public void setFontVariant(String variant) {
         if (!variant.equals(this.fontVariant)) {
             this.fontChanged = true;
         }
@@ -182,24 +175,22 @@ public class IFState {
 
     /**
      * Returns the text color.
-     * 
      * @return the text color
      */
     public Color getTextColor() {
-        return this.textColor;
+        return textColor;
     }
 
     /**
      * Sets the text color.
-     * 
-     * @param color
-     *            the new text color
+     * @param color the new text color
      */
-    public void setTextColor(final Color color) {
-        if (!color.equals(this.textColor)) {
+    public void setTextColor(Color color) {
+        if (!ColorUtil.isSameColor(color, this.textColor)) {
             this.fontChanged = true;
         }
         this.textColor = color;
     }
+
 
 }

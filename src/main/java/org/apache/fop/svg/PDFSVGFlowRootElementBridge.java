@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFSVGFlowRootElementBridge.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFSVGFlowRootElementBridge.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.svg;
 
@@ -23,40 +23,37 @@ import org.apache.batik.bridge.svg12.SVGFlowRootElementBridge;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.TextNode;
 import org.apache.batik.gvt.TextPainter;
+
 import org.apache.fop.fonts.FontInfo;
 
 /**
- * Element Bridge for SVG 1.2 flow text, so those texts can be painted using PDF
- * primitives.
+ * Element Bridge for SVG 1.2 flow text, so those texts can be painted using
+ * PDF primitives.
  */
 public class PDFSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
 
-    private final PDFTextPainter textPainter;
+    private PDFTextPainter textPainter;
 
     /**
      * Main Constructor.
-     * 
-     * @param fontInfo
-     *            the font directory
+     * @param fontInfo the font directory
      */
-    public PDFSVGFlowRootElementBridge(final FontInfo fontInfo) {
+    public PDFSVGFlowRootElementBridge(FontInfo fontInfo) {
         this.textPainter = new PDFFlowTextPainter(fontInfo);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected GraphicsNode instantiateGraphicsNode() {
-        final GraphicsNode node = super.instantiateGraphicsNode();
+        GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {
-            // Set our own text painter
-            ((TextNode) node).setTextPainter(getTextPainter());
+            //Set our own text painter
+            ((TextNode)node).setTextPainter(getTextPainter());
         }
         return node;
     }
 
     /**
      * Returns the text painter used by this bridge.
-     * 
      * @return the text painter
      */
     public TextPainter getTextPainter() {

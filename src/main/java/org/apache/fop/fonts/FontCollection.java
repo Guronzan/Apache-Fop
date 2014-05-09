@@ -19,6 +19,7 @@
 
 package org.apache.fop.fonts;
 
+
 /**
  * Sets up a set of fonts
  */
@@ -27,14 +28,12 @@ public interface FontCollection {
     /**
      * Sets up fonts in a font info object.
      *
-     * Adds metrics for basic fonts and useful family-style-weight triplets for
-     * lookup.
+     * Adds metrics for basic fonts and useful family-style-weight
+     * triplets for lookup.
      *
-     * @param start
-     *            the font starting number
-     * @param fontInfo
-     *            the font info to set up
+     * @param start the font starting number
+     * @param fontInfo the font info to set up
      * @return the starting font number for the next font to be added
      */
-    int setup(final int start, final FontInfo fontInfo);
+    int setup(int start, FontInfo fontInfo);
 }

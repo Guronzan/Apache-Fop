@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-/* $Id: AFPDataObjectInfo.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: AFPDataObjectInfo.java 985571 2010-08-14 19:28:26Z jeremias $ */
 
 package org.apache.fop.afp;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.afp.modca.Registry;
 import org.apache.fop.afp.modca.triplets.MappingOptionTriplet;
@@ -27,7 +25,6 @@ import org.apache.fop.afp.modca.triplets.MappingOptionTriplet;
 /**
  * A list of parameters associated with an AFP data objects
  */
-@Slf4j
 public class AFPDataObjectInfo {
 
     /** the object area info */
@@ -69,10 +66,9 @@ public class AFPDataObjectInfo {
     /**
      * Sets the image mime type
      *
-     * @param mimeType
-     *            the image mime type
+     * @param mimeType the image mime type
      */
-    public void setMimeType(final String mimeType) {
+    public void setMimeType(String mimeType) {
         this.mimeType = mimeType;
     }
 
@@ -82,7 +78,7 @@ public class AFPDataObjectInfo {
      * @return the mime type of this data object
      */
     public String getMimeType() {
-        return this.mimeType;
+        return mimeType;
     }
 
     /**
@@ -100,29 +96,27 @@ public class AFPDataObjectInfo {
      * @return the resource level at which this data object should reside
      */
     public AFPResourceInfo getResourceInfo() {
-        if (this.resourceInfo == null) {
+        if (resourceInfo == null) {
             this.resourceInfo = new AFPResourceInfo();
         }
-        return this.resourceInfo;
+        return resourceInfo;
     }
 
     /**
      * Sets the resource level at which this object should reside
      *
-     * @param resourceInfo
-     *            the resource level at which this data object should reside
+     * @param resourceInfo the resource level at which this data object should reside
      */
-    public void setResourceInfo(final AFPResourceInfo resourceInfo) {
+    public void setResourceInfo(AFPResourceInfo resourceInfo) {
         this.resourceInfo = resourceInfo;
     }
 
     /**
      * Sets the object area info
      *
-     * @param objectAreaInfo
-     *            the object area info
+     * @param objectAreaInfo the object area info
      */
-    public void setObjectAreaInfo(final AFPObjectAreaInfo objectAreaInfo) {
+    public void setObjectAreaInfo(AFPObjectAreaInfo objectAreaInfo) {
         this.objectAreaInfo = objectAreaInfo;
     }
 
@@ -147,10 +141,9 @@ public class AFPDataObjectInfo {
     /**
      * Sets the data object uri
      *
-     * @param uri
-     *            the data object uri
+     * @param uri the data object uri
      */
-    public void setUri(final String uri) {
+    public void setUri(String uri) {
         getResourceInfo().setUri(uri);
     }
 
@@ -160,16 +153,15 @@ public class AFPDataObjectInfo {
      * @return the image data width
      */
     public int getDataWidth() {
-        return this.dataWidth;
+        return dataWidth;
     }
 
     /**
      * Sets the image data width
      *
-     * @param imageDataWidth
-     *            the image data width
+     * @param imageDataWidth the image data width
      */
-    public void setDataWidth(final int imageDataWidth) {
+    public void setDataWidth(int imageDataWidth) {
         this.dataWidth = imageDataWidth;
     }
 
@@ -179,16 +171,15 @@ public class AFPDataObjectInfo {
      * @return the image data height
      */
     public int getDataHeight() {
-        return this.dataHeight;
+        return dataHeight;
     }
 
     /**
      * Sets the image data height
      *
-     * @param imageDataHeight
-     *            the image data height
+     * @param imageDataHeight the image data height
      */
-    public void setDataHeight(final int imageDataHeight) {
+    public void setDataHeight(int imageDataHeight) {
         this.dataHeight = imageDataHeight;
     }
 
@@ -202,12 +193,11 @@ public class AFPDataObjectInfo {
     }
 
     /**
-     * Sets the data width resolution
+     * Sets the data height resolution
      *
-     * @param dataWidthRes
-     *            the data width resolution
+     * @param dataHeightRes the data height resolution
      */
-    public void setDataHeightRes(final int dataHeightRes) {
+    public void setDataHeightRes(int dataHeightRes) {
         this.dataHeightRes = dataHeightRes;
     }
 
@@ -223,20 +213,18 @@ public class AFPDataObjectInfo {
     /**
      * Sets the data width resolution
      *
-     * @param dataWidthRes
-     *            the data width resolution
+     * @param dataWidthRes the data width resolution
      */
-    public void setDataWidthRes(final int dataWidthRes) {
+    public void setDataWidthRes(int dataWidthRes) {
         this.dataWidthRes = dataWidthRes;
     }
 
     /**
      * Sets the object data
      *
-     * @param data
-     *            the object data
+     * @param data the object data
      */
-    public void setData(final byte[] data) {
+    public void setData(byte[] data) {
         this.data = data;
     }
 
@@ -251,17 +239,14 @@ public class AFPDataObjectInfo {
 
     /**
      * Controls whether to create a page segment or a normal object.
-     *
-     * @param value
-     *            true for page segments, false for objects
+     * @param value true for page segments, false for objects
      */
-    public void setCreatePageSegment(final boolean value) {
+    public void setCreatePageSegment(boolean value) {
         this.createPageSegment = value;
     }
 
     /**
      * Indicates whether a page segment or a normal object shall be created.
-     *
      * @return true for page segments, false for objects
      */
     public boolean isCreatePageSegment() {
@@ -270,42 +255,31 @@ public class AFPDataObjectInfo {
 
     /**
      * Sets the way an image is mapped into its target area.
-     *
-     * @param mappingOption
-     *            the mapping option (Valid values: see Mapping Option Triplet)
+     * @param mappingOption the mapping option (Valid values: see Mapping Option Triplet)
      */
-    public void setMappingOption(final byte mappingOption) {
+    public void setMappingOption(byte mappingOption) {
         this.mappingOption = mappingOption;
     }
 
     /**
-     * Returns the way an image is mapped into its target area. By default, this
-     * is "scale to fill" behavior.
-     *
+     * Returns the way an image is mapped into its target area. By default, this is "scale to fill"
+     * behavior.
      * @return the mapping option value from the Mapping Option Triplet
      */
     public byte getMappingOption() {
-        return this.mappingOption;
+        return mappingOption;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return "AFPDataObjectInfo{"
-                + "mimeType="
-                + this.mimeType
-                + ", dataWidth="
-                + this.dataWidth
-                + ", dataHeight="
-                + this.dataHeight
-                + ", dataWidthRes="
-                + this.dataWidthRes
-                + ", dataHeightRes="
-                + this.dataHeightRes
-                + (this.objectAreaInfo != null ? ", objectAreaInfo="
-                        + this.objectAreaInfo : "")
-                        + (this.resourceInfo != null ? ", resourceInfo="
-                                + this.resourceInfo : "");
+            + "mimeType=" + mimeType
+            + ", dataWidth=" + dataWidth
+            + ", dataHeight=" + dataHeight
+            + ", dataWidthRes=" + dataWidthRes
+            + ", dataHeightRes=" + dataHeightRes
+            + (objectAreaInfo != null ? ", objectAreaInfo=" + objectAreaInfo : "")
+            + (resourceInfo != null ? ", resourceInfo=" + resourceInfo : "");
     }
 
 }

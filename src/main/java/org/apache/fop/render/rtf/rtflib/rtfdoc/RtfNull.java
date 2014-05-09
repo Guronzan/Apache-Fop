@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfNull.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfNull.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,11 +30,14 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * @author Christopher Scott, scottc@westinghouse.com
+ * <p>Null container.</p>
+ *
+ * <p>This work was authored by Christopher Scott (scottc@westinghouse.com).</p>
  */
-public class RtfNull extends RtfContainer {
+public class RtfNull
+extends RtfContainer {
 
-    RtfNull(final RtfPage parent, final Writer w) throws IOException {
-        super(parent, w);
+    RtfNull(RtfPage parent, Writer w) throws IOException {
+        super((RtfContainer)parent, w);
     }
 }

@@ -20,24 +20,29 @@
 package org.apache.fop.fo.pagination.bookmarks;
 
 import java.util.ArrayList;
-import java.util.List;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
+
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_bookmark">
- * <code>fo:bookmark</code></a> object, first introduced in the XSL 1.1 WD.
+ * <code>fo:bookmark</code></a> object, first introduced in the
+ * XSL 1.1 WD.
  */
-public class Bookmark extends FObj {
+public class Bookmark extends FObj implements CommonAccessibilityHolder {
     private BookmarkTitle bookmarkTitle;
-    private final List<Bookmark> childBookmarks = new ArrayList<>();
+    private ArrayList childBookmarks = new ArrayList();
 
     // The value of properties relevant for this FO
+    private CommonAccessibility commonAccessibility;
     private String internalDestination;
     private String externalDestination;
     private boolean bShow = true; // from starting-state property
@@ -45,54 +50,50 @@ public class Bookmark extends FObj {
     // Valid, but unused properties. Commented out for performance
     // private CommonAccessibility commonAccessibility;
 
+
     /**
-     * Create a new Bookmark object that is a child of the given {@link FONode}.
+     * Create a new Bookmark object that is a child of the
+     * given {@link FONode}.
      *
-     * @param parent
-     *            the parent fo node
+     * @param parent the parent fo node
      */
-    public Bookmark(final FONode parent) {
+    public Bookmark(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        this.externalDestination = pList.get(PR_EXTERNAL_DESTINATION)
-                .getString();
-        this.internalDestination = pList.get(PR_INTERNAL_DESTINATION)
-                .getString();
-        this.bShow = pList.get(PR_STARTING_STATE).getEnum() == EN_SHOW;
+    public void bind(PropertyList pList) throws FOPException {
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        externalDestination = pList.get(PR_EXTERNAL_DESTINATION).getString();
+        internalDestination = pList.get(PR_INTERNAL_DESTINATION).getString();
+        bShow = (pList.get(PR_STARTING_STATE).getEnum() == EN_SHOW);
 
         // per spec, internal takes precedence if both specified
-        if (this.internalDestination.length() > 0) {
-            this.externalDestination = null;
-        } else if (this.externalDestination.length() == 0) {
+        if (internalDestination.length() > 0) {
+            externalDestination = null;
+        } else if (externalDestination.length() == 0) {
             // slightly stronger than spec "should be specified"
-            getFOValidationEventProducer().missingLinkDestination(this,
-                    getName(), this.locator);
+            getFOValidationEventProducer().missingLinkDestination(this, getName(), locator);
         } else {
-            getFOValidationEventProducer().unimplementedFeature(this,
-                    getName(), "external-destination", getLocator());
+            getFOValidationEventProducer().unimplementedFeature(this, getName(),
+                    "external-destination", getLocator());
         }
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL/FOP: (bookmark-title, bookmark*)
+     * {@inheritDoc}
+     * <br>XSL/FOP: (bookmark-title, bookmark*)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("bookmark-title")) {
-                if (this.bookmarkTitle != null) {
+                if (bookmarkTitle != null) {
                     tooManyNodesError(loc, "fo:bookmark-title");
                 }
             } else if (localName.equals("bookmark")) {
-                if (this.bookmarkTitle == null) {
-                    nodesOutOfOrderError(loc, "fo:bookmark-title",
-                            "fo:bookmark");
+                if (bookmarkTitle == null) {
+                    nodesOutOfOrderError(loc, "fo:bookmark-title", "fo:bookmark");
                 }
             } else {
                 invalidChildError(loc, nsURI, localName);
@@ -101,21 +102,24 @@ public class Bookmark extends FObj {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (this.bookmarkTitle == null) {
-            missingChildElementError("(bookmark-title, bookmark*)");
+        if (bookmarkTitle == null) {
+           missingChildElementError("(bookmark-title, bookmark*)");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void addChildNode(final FONode obj) {
+    protected void addChildNode(FONode obj) {
         if (obj instanceof BookmarkTitle) {
-            this.bookmarkTitle = (BookmarkTitle) obj;
+            bookmarkTitle = (BookmarkTitle)obj;
         } else if (obj instanceof Bookmark) {
-            this.childBookmarks.add((Bookmark) obj);
+            childBookmarks.add(obj);
         }
+    }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /**
@@ -124,60 +128,52 @@ public class Bookmark extends FObj {
      * @return the bookmark title string or an empty string if not found
      */
     public String getBookmarkTitle() {
-        return this.bookmarkTitle == null ? "" : this.bookmarkTitle.getTitle();
+        return bookmarkTitle == null ? "" : bookmarkTitle.getTitle();
     }
 
     /**
      * Returns the value of the internal-destination property.
-     *
      * @return the internal-destination
      */
     public String getInternalDestination() {
-        return this.internalDestination;
+        return internalDestination;
     }
 
     /**
      * Returns the value of the external-destination property.
-     *
      * @return the external-destination
      */
     public String getExternalDestination() {
-        return this.externalDestination;
+        return externalDestination;
     }
 
     /**
      * Determines if this fo:bookmark's subitems should be initially displayed
      * or hidden, based on the starting-state property set on this FO.
      *
-     * @return true if this bookmark's starting-state is "show", false if
-     *         "hide".
+     * @return true if this bookmark's starting-state is "show", false if "hide".
      */
     public boolean showChildItems() {
-        return this.bShow;
+        return bShow;
     }
 
     /**
-     * Get the child <code>Bookmark</code>s in an
-     * <code>java.util.ArrayList</code>.
-     *
+     * Get the child <code>Bookmark</code>s in an <code>java.util.ArrayList</code>.
      * @return an <code>ArrayList</code> containing the child Bookmarks
      */
-    public List<Bookmark> getChildBookmarks() {
-        return this.childBookmarks;
+    public ArrayList getChildBookmarks() {
+        return childBookmarks;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "bookmark";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_BOOKMARK}
      */
-    @Override
     public int getNameId() {
         return FO_BOOKMARK;
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RTFHandler.java 932497 2010-04-09 16:34:29Z vhennebert $ */
+/* $Id: RTFHandler.java 1310948 2012-04-08 03:57:07Z gadams $ */
 
 package org.apache.fop.render.rtf;
 
@@ -31,9 +31,24 @@ import java.io.OutputStreamWriter;
 import java.util.Iterator;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.xmlgraphics.image.loader.Image;
+import org.apache.xmlgraphics.image.loader.ImageException;
+import org.apache.xmlgraphics.image.loader.ImageFlavor;
+import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.apache.xmlgraphics.image.loader.ImageManager;
+import org.apache.xmlgraphics.image.loader.ImageSessionContext;
+import org.apache.xmlgraphics.image.loader.ImageSize;
+import org.apache.xmlgraphics.image.loader.impl.ImageRawStream;
+import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
+import org.apache.xmlgraphics.image.loader.util.ImageUtil;
+
 import org.apache.fop.ResourceEventProducer;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -62,6 +77,7 @@ import org.apache.fop.fo.flow.ListItemBody;
 import org.apache.fop.fo.flow.ListItemLabel;
 import org.apache.fop.fo.flow.PageNumber;
 import org.apache.fop.fo.flow.PageNumberCitation;
+import org.apache.fop.fo.flow.PageNumberCitationLast;
 import org.apache.fop.fo.flow.table.Table;
 import org.apache.fop.fo.flow.table.TableBody;
 import org.apache.fop.fo.flow.table.TableCell;
@@ -83,6 +99,7 @@ import org.apache.fop.layoutmgr.inline.ImageLayout;
 import org.apache.fop.layoutmgr.table.ColumnSetup;
 import org.apache.fop.render.DefaultFontResolver;
 import org.apache.fop.render.RendererEventProducer;
+import org.apache.fop.render.rtf.rtflib.exceptions.RtfException;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.IRtfAfterContainer;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.IRtfBeforeContainer;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.IRtfListContainer;
@@ -102,6 +119,7 @@ import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfList;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfListItem;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfListItem.RtfListItemLabel;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfPage;
+import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfParagraphBreak;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfSection;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfTable;
 import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfTableCell;
@@ -110,684 +128,647 @@ import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfTextrun;
 import org.apache.fop.render.rtf.rtflib.tools.BuilderContext;
 import org.apache.fop.render.rtf.rtflib.tools.PercentContext;
 import org.apache.fop.render.rtf.rtflib.tools.TableContext;
-import org.apache.xmlgraphics.image.loader.Image;
-import org.apache.xmlgraphics.image.loader.ImageException;
-import org.apache.xmlgraphics.image.loader.ImageFlavor;
-import org.apache.xmlgraphics.image.loader.ImageInfo;
-import org.apache.xmlgraphics.image.loader.ImageManager;
-import org.apache.xmlgraphics.image.loader.ImageSessionContext;
-import org.apache.xmlgraphics.image.loader.ImageSize;
-import org.apache.xmlgraphics.image.loader.impl.ImageRawStream;
-import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
-import org.apache.xmlgraphics.image.loader.util.ImageUtil;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 /**
- * RTF Handler: generates RTF output using the structure events from the FO Tree
- * sent to this structure handler.
- *
- * @author Bertrand Delacretaz <bdelacretaz@codeconsult.ch>
- * @author Trembicki-Guy, Ed <GuyE@DNB.com>
- * @author Boris Poudérous <boris.pouderous@eads-telecom.com>
- * @author Peter Herweg <pherweg@web.de>
- * @author Andreas Putz <a.putz@skynamics.com>
+ * RTF Handler: generates RTF output using the structure events from
+ * the FO Tree sent to this structure handler.
  */
-@Slf4j
 public class RTFHandler extends FOEventHandler {
 
     private RtfFile rtfFile;
     private final OutputStream os;
+    private static Log log = LogFactory.getLog(RTFHandler.class);
     private RtfSection sect;
     private RtfDocumentArea docArea;
-    private boolean bDefer; // true, if each called handler shall be
-    // processed at later time.
-    private boolean bPrevHeaderSpecified = false; // true, if there has been a
-    // header in any page-sequence
-    private boolean bPrevFooterSpecified = false; // true, if there has been a
-    // footer in any page-sequence
-    private boolean bHeaderSpecified = false; // true, if there is a header
-    // in current page-sequence
-    private boolean bFooterSpecified = false; // true, if there is a footer
-    // in current page-sequence
-    private final BuilderContext builderContext = new BuilderContext(null);
+    private boolean bDefer;              //true, if each called handler shall be
+                                         //processed at later time.
+    private boolean bPrevHeaderSpecified = false; //true, if there has been a
+                                                  //header in any page-sequence
+    private boolean bPrevFooterSpecified = false; //true, if there has been a
+                                                  //footer in any page-sequence
+    private boolean bHeaderSpecified = false;  //true, if there is a header
+                                               //in current page-sequence
+    private boolean bFooterSpecified = false;  //true, if there is a footer
+                                               //in current page-sequence
+    private BuilderContext builderContext = new BuilderContext(null);
 
     private SimplePageMaster pagemaster;
 
     private int nestedTableDepth = 1;
 
-    private final PercentContext percentManager = new PercentContext();
+    private PercentContext percentManager = new PercentContext();
 
     /**
      * Creates a new RTF structure handler.
-     *
-     * @param userAgent
-     *            the FOUserAgent for this process
-     * @param os
-     *            OutputStream to write to
+     * @param userAgent the FOUserAgent for this process
+     * @param os OutputStream to write to
      */
-    public RTFHandler(final FOUserAgent userAgent, final OutputStream os) {
+    public RTFHandler(FOUserAgent userAgent, OutputStream os) {
         super(userAgent);
         this.os = os;
-        this.bDefer = true;
+        bDefer = true;
 
-        FontSetup
-        .setup(this.fontInfo, null, new DefaultFontResolver(userAgent));
+        boolean base14Kerning = false;
+        FontSetup.setup(fontInfo, null, new DefaultFontResolver(userAgent), base14Kerning);
     }
 
     /**
      * Central exception handler for I/O exceptions.
-     *
-     * @param ioe
-     *            IOException to handle
+     * @param ioe IOException to handle
      */
-    protected void handleIOTrouble(final IOException ioe) {
-        final RendererEventProducer eventProducer = RendererEventProducer.Provider
-                .get(getUserAgent().getEventBroadcaster());
+    protected void handleIOTrouble(IOException ioe) {
+        RendererEventProducer eventProducer = RendererEventProducer.Provider.get(
+                getUserAgent().getEventBroadcaster());
         eventProducer.ioError(this, ioe);
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws SAXException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void startDocument() throws SAXException {
         // TODO sections should be created
         try {
-            this.rtfFile = new RtfFile(new OutputStreamWriter(this.os));
-            this.docArea = this.rtfFile.startDocumentArea();
-        } catch (final IOException ioe) {
+            rtfFile = new RtfFile(new OutputStreamWriter(os));
+            docArea = rtfFile.startDocumentArea();
+        } catch (IOException ioe) {
             // TODO could we throw Exception in all FOEventHandler events?
             throw new SAXException(ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endDocument() throws SAXException {
         try {
-            this.rtfFile.flush();
-        } catch (final IOException ioe) {
+            rtfFile.flush();
+        } catch (IOException ioe) {
             // TODO could we throw Exception in all FOEventHandler events?
             throw new SAXException(ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageSequence(final PageSequence pageSeq) {
+    public void startPageSequence(PageSequence pageSeq)  {
         try {
-            // This is needed for region handling
+            //This is needed for region handling
             if (this.pagemaster == null) {
-                final String reference = pageSeq.getMasterReference();
-                this.pagemaster = pageSeq.getRoot().getLayoutMasterSet()
-                        .getSimplePageMaster(reference);
+                String reference = pageSeq.getMasterReference();
+                this.pagemaster
+                        = pageSeq.getRoot().getLayoutMasterSet().getSimplePageMaster(reference);
                 if (this.pagemaster == null) {
-                    final RTFEventProducer eventProducer = RTFEventProducer.Provider
-                            .get(getUserAgent().getEventBroadcaster());
-                    eventProducer.onlySPMSupported(this, reference,
-                            pageSeq.getLocator());
-                    final PageSequenceMaster master = pageSeq.getRoot()
-                            .getLayoutMasterSet()
-                            .getPageSequenceMaster(reference);
-                    this.pagemaster = master.getNextSimplePageMaster(false,
-                            false, false, false);
+                    RTFEventProducer eventProducer = RTFEventProducer.Provider.get(
+                            getUserAgent().getEventBroadcaster());
+                    eventProducer.onlySPMSupported(this, reference, pageSeq.getLocator());
+                    PageSequenceMaster master
+                        = pageSeq.getRoot().getLayoutMasterSet().getPageSequenceMaster(reference);
+                    this.pagemaster = master.getNextSimplePageMaster(
+                            false, false, false, false, pageSeq.getMainFlow().getFlowName());
                 }
             }
 
-            if (this.bDefer) {
+            if (bDefer) {
                 return;
             }
 
-            this.sect = this.docArea.newSection();
+            sect = docArea.newSection();
 
-            // read page size and margins, if specified
-            // only simple-page-master supported, so pagemaster may be null
-            if (this.pagemaster != null) {
-                this.sect.getRtfAttributes().set(
-                        PageAttributesConverter
-                        .convertPageAttributes(this.pagemaster));
+            //read page size and margins, if specified
+            //only simple-page-master supported, so pagemaster may be null
+            if (pagemaster != null) {
+                sect.getRtfAttributes().set(
+                    PageAttributesConverter.convertPageAttributes(
+                            pagemaster));
             } else {
-                final RTFEventProducer eventProducer = RTFEventProducer.Provider
-                        .get(getUserAgent().getEventBroadcaster());
+                RTFEventProducer eventProducer = RTFEventProducer.Provider.get(
+                        getUserAgent().getEventBroadcaster());
                 eventProducer.noSPMFound(this, pageSeq.getLocator());
             }
 
-            this.builderContext.pushContainer(this.sect);
+            builderContext.pushContainer(sect);
 
-            // Calculate usable page width for this flow
-            final int useAblePageWidth = this.pagemaster.getPageWidth()
-                    .getValue()
-                    - this.pagemaster.getCommonMarginBlock().marginLeft
-                    .getValue()
-                    - this.pagemaster.getCommonMarginBlock().marginRight
-                    .getValue()
-                    - this.sect.getRtfAttributes()
-                    .getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
-                    - this.sect.getRtfAttributes()
-                    .getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
-            this.percentManager.setDimension(pageSeq, useAblePageWidth);
+            //Calculate usable page width for this flow
+            int useAblePageWidth = pagemaster.getPageWidth().getValue()
+                - pagemaster.getCommonMarginBlock().marginLeft.getValue()
+                - pagemaster.getCommonMarginBlock().marginRight.getValue()
+                - sect.getRtfAttributes().getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
+                - sect.getRtfAttributes().getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
+            percentManager.setDimension(pageSeq, useAblePageWidth);
 
-            this.bHeaderSpecified = false;
-            this.bFooterSpecified = false;
-        } catch (final IOException ioe) {
+            bHeaderSpecified = false;
+            bFooterSpecified = false;
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPageSequence(final PageSequence pageSeq) {
-        if (this.bDefer) {
-            // If endBlock was called while SAX parsing, and the passed FO is
-            // Block
-            // nested within another Block, stop deferring.
-            // Now process all deferred FOs.
-            this.bDefer = false;
+    public void endPageSequence(PageSequence pageSeq) {
+        if (bDefer) {
+            //If endBlock was called while SAX parsing, and the passed FO is Block
+            //nested within another Block, stop deferring.
+            //Now process all deferred FOs.
+            bDefer = false;
             recurseFONode(pageSeq);
             this.pagemaster = null;
-            this.bDefer = true;
+            bDefer = true;
 
             return;
         } else {
-            this.builderContext.popContainer();
+            builderContext.popContainer();
             this.pagemaster = null;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startFlow(final Flow fl) {
-        if (this.bDefer) {
+    public void startFlow(Flow fl) {
+        if (bDefer) {
             return;
         }
 
         try {
             log.debug("starting flow: " + fl.getFlowName());
             boolean handled = false;
-            final Region regionBody = this.pagemaster
-                    .getRegion(Constants.FO_REGION_BODY);
-            final Region regionBefore = this.pagemaster
-                    .getRegion(Constants.FO_REGION_BEFORE);
-            final Region regionAfter = this.pagemaster
-                    .getRegion(Constants.FO_REGION_AFTER);
+            Region regionBody = pagemaster.getRegion(Constants.FO_REGION_BODY);
+            Region regionBefore = pagemaster.getRegion(Constants.FO_REGION_BEFORE);
+            Region regionAfter = pagemaster.getRegion(Constants.FO_REGION_AFTER);
             if (fl.getFlowName().equals(regionBody.getRegionName())) {
-                // if there is no header in current page-sequence but there has
-                // been
+                // if there is no header in current page-sequence but there has been
                 // a header in a previous page-sequence, insert an empty header.
-                if (this.bPrevHeaderSpecified && !this.bHeaderSpecified) {
-                    final RtfAttributes attr = new RtfAttributes();
+                if (bPrevHeaderSpecified && !bHeaderSpecified) {
+                    RtfAttributes attr = new RtfAttributes();
                     attr.set(RtfBefore.HEADER);
 
-                    final IRtfBeforeContainer contBefore = (IRtfBeforeContainer) this.builderContext
-                            .getContainer(IRtfBeforeContainer.class, true, this);
+                    final IRtfBeforeContainer contBefore
+                        = (IRtfBeforeContainer)builderContext.getContainer
+                                (IRtfBeforeContainer.class, true, this);
                     contBefore.newBefore(attr);
                 }
 
-                // if there is no footer in current page-sequence but there has
-                // been
+                // if there is no footer in current page-sequence but there has been
                 // a footer in a previous page-sequence, insert an empty footer.
-                if (this.bPrevFooterSpecified && !this.bFooterSpecified) {
-                    final RtfAttributes attr = new RtfAttributes();
+                if (bPrevFooterSpecified && !bFooterSpecified) {
+                    RtfAttributes attr = new RtfAttributes();
                     attr.set(RtfAfter.FOOTER);
 
-                    final IRtfAfterContainer contAfter = (IRtfAfterContainer) this.builderContext
-                            .getContainer(IRtfAfterContainer.class, true, this);
+                    final IRtfAfterContainer contAfter
+                        = (IRtfAfterContainer)builderContext.getContainer
+                                (IRtfAfterContainer.class, true, this);
                     contAfter.newAfter(attr);
                 }
                 handled = true;
             } else if (regionBefore != null
                     && fl.getFlowName().equals(regionBefore.getRegionName())) {
-                this.bHeaderSpecified = true;
-                this.bPrevHeaderSpecified = true;
+                bHeaderSpecified = true;
+                bPrevHeaderSpecified = true;
 
-                final IRtfBeforeContainer c = (IRtfBeforeContainer) this.builderContext
-                        .getContainer(IRtfBeforeContainer.class, true, this);
+                final IRtfBeforeContainer c
+                    = (IRtfBeforeContainer)builderContext.getContainer(
+                        IRtfBeforeContainer.class,
+                        true, this);
 
-                RtfAttributes beforeAttributes = ((RtfElement) c)
-                        .getRtfAttributes();
+                RtfAttributes beforeAttributes = ((RtfElement)c).getRtfAttributes();
                 if (beforeAttributes == null) {
                     beforeAttributes = new RtfAttributes();
                 }
                 beforeAttributes.set(RtfBefore.HEADER);
 
-                final RtfBefore before = c.newBefore(beforeAttributes);
-                this.builderContext.pushContainer(before);
+                RtfBefore before = c.newBefore(beforeAttributes);
+                builderContext.pushContainer(before);
                 handled = true;
             } else if (regionAfter != null
                     && fl.getFlowName().equals(regionAfter.getRegionName())) {
-                this.bFooterSpecified = true;
-                this.bPrevFooterSpecified = true;
+                bFooterSpecified = true;
+                bPrevFooterSpecified = true;
 
-                final IRtfAfterContainer c = (IRtfAfterContainer) this.builderContext
-                        .getContainer(IRtfAfterContainer.class, true, this);
+                final IRtfAfterContainer c
+                    = (IRtfAfterContainer)builderContext.getContainer(
+                        IRtfAfterContainer.class,
+                        true, this);
 
-                RtfAttributes afterAttributes = ((RtfElement) c)
-                        .getRtfAttributes();
+                RtfAttributes afterAttributes = ((RtfElement)c).getRtfAttributes();
                 if (afterAttributes == null) {
                     afterAttributes = new RtfAttributes();
                 }
 
                 afterAttributes.set(RtfAfter.FOOTER);
 
-                final RtfAfter after = c.newAfter(afterAttributes);
-                this.builderContext.pushContainer(after);
+                RtfAfter after = c.newAfter(afterAttributes);
+                builderContext.pushContainer(after);
                 handled = true;
             }
             if (!handled) {
-                log.warn("A " + fl.getLocalName() + " has been skipped: "
-                        + fl.getFlowName());
+                log.warn("A " + fl.getLocalName() + " has been skipped: " + fl.getFlowName());
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startFlow: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endFlow(final Flow fl) {
-        if (this.bDefer) {
+    public void endFlow(Flow fl) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final Region regionBody = this.pagemaster
-                    .getRegion(Constants.FO_REGION_BODY);
-            final Region regionBefore = this.pagemaster
-                    .getRegion(Constants.FO_REGION_BEFORE);
-            final Region regionAfter = this.pagemaster
-                    .getRegion(Constants.FO_REGION_AFTER);
+            Region regionBody = pagemaster.getRegion(Constants.FO_REGION_BODY);
+            Region regionBefore = pagemaster.getRegion(Constants.FO_REGION_BEFORE);
+            Region regionAfter = pagemaster.getRegion(Constants.FO_REGION_AFTER);
             if (fl.getFlowName().equals(regionBody.getRegionName())) {
-                // just do nothing
+                //just do nothing
             } else if (regionBefore != null
                     && fl.getFlowName().equals(regionBefore.getRegionName())) {
-                this.builderContext.popContainer();
+                builderContext.popContainer();
             } else if (regionAfter != null
                     && fl.getFlowName().equals(regionAfter.getRegionName())) {
-                this.builderContext.popContainer();
+                builderContext.popContainer();
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("endFlow: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startBlock(final Block bl) {
-        if (this.bDefer) {
+    public void startBlock(Block bl) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertAttributes(bl);
+            RtfAttributes rtfAttr
+                = TextAttributesConverter.convertAttributes(bl);
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class,
+                    true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
 
             textrun.addParagraphBreak();
             textrun.pushBlockAttributes(rtfAttr);
             textrun.addBookmark(bl.getId());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startBlock: " + e.getMessage());
             throw new RuntimeException("Exception: " + e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endBlock(final Block bl) {
+    public void endBlock(Block bl) {
 
-        if (this.bDefer) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class,
+                    true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
+            RtfParagraphBreak par = textrun.addParagraphBreak();
 
-            textrun.addParagraphBreak();
-            textrun.popBlockAttributes();
+            RtfTableCell cellParent = (RtfTableCell)textrun.getParentOfClass(RtfTableCell.class);
+            if (cellParent != null && par != null) {
+                int iDepth = cellParent.findChildren(textrun);
+                cellParent.setLastParagraph(par, iDepth);
+            }
 
-        } catch (final IOException ioe) {
+            int breakValue = toRtfBreakValue(bl.getBreakAfter());
+            textrun.popBlockAttributes(breakValue);
+
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startBlock:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startBlockContainer(final BlockContainer blc) {
-        if (this.bDefer) {
+    public void startBlockContainer(BlockContainer blc) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertBlockContainerAttributes(blc);
+            RtfAttributes rtfAttr
+                = TextAttributesConverter.convertBlockContainerAttributes(blc);
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class,
+                    true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
 
             textrun.addParagraphBreak();
             textrun.pushBlockAttributes(rtfAttr);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startBlock: " + e.getMessage());
             throw new RuntimeException("Exception: " + e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endBlockContainer(final BlockContainer bl) {
-        if (this.bDefer) {
+    public void endBlockContainer(BlockContainer bl) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class,
+                    true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
 
             textrun.addParagraphBreak();
-            textrun.popBlockAttributes();
+            int breakValue = toRtfBreakValue(bl.getBreakAfter());
+            textrun.popBlockAttributes(breakValue);
 
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startBlock:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
+    private int toRtfBreakValue(int foBreakValue) {
+        switch (foBreakValue) {
+        case Constants.EN_PAGE:
+            return RtfTextrun.BREAK_PAGE;
+        case Constants.EN_EVEN_PAGE:
+            return RtfTextrun.BREAK_EVEN_PAGE;
+        case Constants.EN_ODD_PAGE:
+            return RtfTextrun.BREAK_ODD_PAGE;
+        case Constants.EN_COLUMN:
+            return RtfTextrun.BREAK_COLUMN;
+        default:
+            return RtfTextrun.BREAK_NONE;
+        }
+    }
+
     /** {@inheritDoc} */
-    @Override
-    public void startTable(final Table tbl) {
-        if (this.bDefer) {
+    public void startTable(Table tbl) {
+        if (bDefer) {
             return;
         }
 
         // create an RtfTable in the current table container
-        final TableContext tableContext = new TableContext(this.builderContext);
+        TableContext tableContext = new TableContext(builderContext);
 
         try {
-            final IRtfTableContainer tc = (IRtfTableContainer) this.builderContext
-                    .getContainer(IRtfTableContainer.class, true, null);
+            final IRtfTableContainer tc
+                = (IRtfTableContainer)builderContext.getContainer(
+                        IRtfTableContainer.class, true, null);
 
-            final RtfAttributes atts = TableAttributesConverter
-                    .convertTableAttributes(tbl);
+            RtfAttributes atts
+                = TableAttributesConverter.convertTableAttributes(tbl);
 
-            final RtfTable table = tc.newTable(atts, tableContext);
-            table.setNestedTableDepth(this.nestedTableDepth);
-            this.nestedTableDepth++;
+            RtfTable table = tc.newTable(atts, tableContext);
+            table.setNestedTableDepth(nestedTableDepth);
+            nestedTableDepth++;
 
-            final CommonBorderPaddingBackground border = tbl
-                    .getCommonBorderPaddingBackground();
-            final RtfAttributes borderAttributes = new RtfAttributes();
+            CommonBorderPaddingBackground border = tbl.getCommonBorderPaddingBackground();
+            RtfAttributes borderAttributes = new RtfAttributes();
 
-            BorderAttributesConverter.makeBorder(border,
-                    CommonBorderPaddingBackground.BEFORE, borderAttributes,
-                    ITableAttributes.CELL_BORDER_TOP);
-            BorderAttributesConverter.makeBorder(border,
-                    CommonBorderPaddingBackground.AFTER, borderAttributes,
-                    ITableAttributes.CELL_BORDER_BOTTOM);
-            BorderAttributesConverter.makeBorder(border,
-                    CommonBorderPaddingBackground.START, borderAttributes,
-                    ITableAttributes.CELL_BORDER_LEFT);
-            BorderAttributesConverter.makeBorder(border,
-                    CommonBorderPaddingBackground.END, borderAttributes,
-                    ITableAttributes.CELL_BORDER_RIGHT);
+            BorderAttributesConverter.makeBorder(border, CommonBorderPaddingBackground.BEFORE,
+                    borderAttributes, ITableAttributes.CELL_BORDER_TOP);
+            BorderAttributesConverter.makeBorder(border, CommonBorderPaddingBackground.AFTER,
+                    borderAttributes, ITableAttributes.CELL_BORDER_BOTTOM);
+            BorderAttributesConverter.makeBorder(border, CommonBorderPaddingBackground.START,
+                    borderAttributes, ITableAttributes.CELL_BORDER_LEFT);
+            BorderAttributesConverter.makeBorder(border, CommonBorderPaddingBackground.END,
+                    borderAttributes,  ITableAttributes.CELL_BORDER_RIGHT);
 
             table.setBorderAttributes(borderAttributes);
 
-            this.builderContext.pushContainer(table);
-        } catch (final IOException ioe) {
+            builderContext.pushContainer(table);
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startTable:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 
-        this.builderContext.pushTableContext(tableContext);
+        builderContext.pushTableContext(tableContext);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endTable(final Table tbl) {
-        if (this.bDefer) {
+    public void endTable(Table tbl) {
+        if (bDefer) {
             return;
         }
 
-        this.nestedTableDepth--;
-        this.builderContext.popTableContext();
-        this.builderContext.popContainer();
+        nestedTableDepth--;
+        builderContext.popTableContext();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startColumn(final TableColumn tc) {
-        if (this.bDefer) {
+    public void startColumn(TableColumn tc) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final int iWidth = tc.getColumnWidth()
-                    .getValue(this.percentManager);
-            this.percentManager.setDimension(tc, iWidth);
+            int iWidth = tc.getColumnWidth().getValue(percentManager);
+            percentManager.setDimension(tc, iWidth);
 
-            // convert to twips
-            final Float width = new Float(FoUnitsConverter.getInstance()
-                    .convertMptToTwips(iWidth));
-            this.builderContext.getTableContext().setNextColumnWidth(width);
-            this.builderContext.getTableContext().setNextColumnRowSpanning(0,
-                    null);
-            this.builderContext.getTableContext()
-            .setNextFirstSpanningCol(false);
-        } catch (final Exception e) {
+            //convert to twips
+            Float width = new Float(FoUnitsConverter.getInstance().convertMptToTwips(iWidth));
+            builderContext.getTableContext().setNextColumnWidth(width);
+            builderContext.getTableContext().setNextColumnRowSpanning(
+                  new Integer(0), null);
+            builderContext.getTableContext().setNextFirstSpanningCol(false);
+        } catch (Exception e) {
             log.error("startColumn: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endColumn(final TableColumn tc) {
-        if (this.bDefer) {
+    public void endColumn(TableColumn tc) {
+        if (bDefer) {
             return;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startHeader(final TableHeader header) {
+    public void startHeader(TableHeader header) {
         startPart(header);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endHeader(final TableHeader header) {
+    public void endHeader(TableHeader header) {
         endPart(header);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startFooter(final TableFooter footer) {
+    public void startFooter(TableFooter footer) {
         startPart(footer);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endFooter(final TableFooter footer) {
+    public void endFooter(TableFooter footer) {
         endPart(footer);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startInline(final Inline inl) {
-        if (this.bDefer) {
+    public void startInline(Inline inl) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertCharacterAttributes(inl);
+            RtfAttributes rtfAttr
+                = TextAttributesConverter.convertCharacterAttributes(inl);
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class, true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
             textrun.pushInlineAttributes(rtfAttr);
             textrun.addBookmark(inl.getId());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (FOPException fe) {
+            log.error("startInline:" + fe.getMessage());
+            throw new RuntimeException(fe.getMessage());
+        } catch (Exception e) {
             log.error("startInline:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endInline(final Inline inl) {
-        if (this.bDefer) {
+    public void endInline(Inline inl) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class, true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
             textrun.popInlineAttributes();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startInline:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    private void startPart(final TablePart part) {
-        if (this.bDefer) {
+    private void startPart(TablePart part) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfAttributes atts = TableAttributesConverter
-                    .convertTablePartAttributes(part);
+            RtfAttributes atts = TableAttributesConverter.convertTablePartAttributes(part);
 
-            final RtfTable tbl = (RtfTable) this.builderContext.getContainer(
-                    RtfTable.class, true, this);
+            RtfTable tbl = (RtfTable)builderContext.getContainer(RtfTable.class, true, this);
             tbl.setHeaderAttribs(atts);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startPart: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    private void endPart(final TablePart tb) {
-        if (this.bDefer) {
+    private void endPart(TablePart tb) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfTable tbl = (RtfTable) this.builderContext.getContainer(
-                    RtfTable.class, true, this);
+            RtfTable tbl = (RtfTable)builderContext.getContainer(RtfTable.class, true, this);
             tbl.setHeaderAttribs(null);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("endPart: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    /**
+
+     /**
      * {@inheritDoc}
      */
-    @Override
-    public void startBody(final TableBody body) {
+    public void startBody(TableBody body) {
         startPart(body);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endBody(final TableBody body) {
+    public void endBody(TableBody body) {
         endPart(body);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void startRow(final TableRow tr) {
-        if (this.bDefer) {
+    public void startRow(TableRow tr) {
+        if (bDefer) {
             return;
         }
 
         try {
             // create an RtfTableRow in the current RtfTable
-            final RtfTable tbl = (RtfTable) this.builderContext.getContainer(
-                    RtfTable.class, true, null);
+            final RtfTable tbl = (RtfTable)builderContext.getContainer(RtfTable.class,
+                    true, null);
 
-            final RtfAttributes atts = TableAttributesConverter
-                    .convertRowAttributes(tr, tbl.getHeaderAttribs());
+            RtfAttributes atts = TableAttributesConverter.convertRowAttributes(tr,
+                    tbl.getHeaderAttribs());
 
             if (tr.getParent() instanceof TableHeader) {
                 atts.set(ITableAttributes.ATTR_HEADER);
             }
 
-            this.builderContext.pushContainer(tbl.newTableRow(atts));
+            builderContext.pushContainer(tbl.newTableRow(atts));
 
             // reset column iteration index to correctly access column widths
-            this.builderContext.getTableContext().selectFirstColumn();
-        } catch (final IOException ioe) {
+            builderContext.getTableContext().selectFirstColumn();
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startRow: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endRow(final TableRow tr) {
-        if (this.bDefer) {
+    public void endRow(TableRow tr) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final TableContext tctx = this.builderContext.getTableContext();
-            final RtfTableRow row = (RtfTableRow) this.builderContext
-                    .getContainer(RtfTableRow.class, true, null);
+            TableContext tctx = builderContext.getTableContext();
+            final RtfTableRow row = (RtfTableRow)builderContext.getContainer(RtfTableRow.class,
+                    true, null);
 
-            // while the current column is in row-spanning, act as if
-            // a vertical merged cell would have been specified.
+            //while the current column is in row-spanning, act as if
+            //a vertical merged cell would have been specified.
             while (tctx.getNumberOfColumns() > tctx.getColumnIndex()
-                    && tctx.getColumnRowSpanningNumber().intValue() > 0) {
-                final RtfTableCell vCell = row.newTableCellMergedVertically(
-                        (int) tctx.getColumnWidth(),
+                  && tctx.getColumnRowSpanningNumber().intValue() > 0) {
+                RtfTableCell vCell = row.newTableCellMergedVertically(
+                        (int)tctx.getColumnWidth(),
                         tctx.getColumnRowSpanningAttrs());
 
                 if (!tctx.getFirstSpanningCol()) {
@@ -796,38 +777,38 @@ public class RTFHandler extends FOEventHandler {
 
                 tctx.selectNextColumn();
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("endRow: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
 
-        this.builderContext.popContainer();
-        this.builderContext.getTableContext().decreaseRowSpannings();
+
+        builderContext.popContainer();
+        builderContext.getTableContext().decreaseRowSpannings();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startCell(final TableCell tc) {
-        if (this.bDefer) {
+    public void startCell(TableCell tc) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final TableContext tctx = this.builderContext.getTableContext();
-            final RtfTableRow row = (RtfTableRow) this.builderContext
-                    .getContainer(RtfTableRow.class, true, null);
+            TableContext tctx = builderContext.getTableContext();
+            final RtfTableRow row = (RtfTableRow)builderContext.getContainer(RtfTableRow.class,
+                    true, null);
 
-            final int numberRowsSpanned = tc.getNumberRowsSpanned();
-            final int numberColumnsSpanned = tc.getNumberColumnsSpanned();
+            int numberRowsSpanned = tc.getNumberRowsSpanned();
+            int numberColumnsSpanned = tc.getNumberColumnsSpanned();
 
-            // while the current column is in row-spanning, act as if
-            // a vertical merged cell would have been specified.
+            //while the current column is in row-spanning, act as if
+            //a vertical merged cell would have been specified.
             while (tctx.getNumberOfColumns() > tctx.getColumnIndex()
-                    && tctx.getColumnRowSpanningNumber().intValue() > 0) {
-                final RtfTableCell vCell = row.newTableCellMergedVertically(
-                        (int) tctx.getColumnWidth(),
+                  && tctx.getColumnRowSpanningNumber().intValue() > 0) {
+                RtfTableCell vCell = row.newTableCellMergedVertically(
+                        (int)tctx.getColumnWidth(),
                         tctx.getColumnRowSpanningAttrs());
 
                 if (!tctx.getFirstSpanningCol()) {
@@ -837,241 +818,236 @@ public class RTFHandler extends FOEventHandler {
                 tctx.selectNextColumn();
             }
 
-            // get the width of the currently started cell
+            //get the width of the currently started cell
             float width = tctx.getColumnWidth();
 
             // create an RtfTableCell in the current RtfTableRow
-            final RtfAttributes atts = TableAttributesConverter
-                    .convertCellAttributes(tc);
-            final RtfTableCell cell = row.newTableCell((int) width, atts);
+            RtfAttributes atts = TableAttributesConverter.convertCellAttributes(tc);
+            RtfTableCell cell = row.newTableCell((int)width, atts);
 
-            // process number-rows-spanned attribute
+            //process number-rows-spanned attribute
             if (numberRowsSpanned > 1) {
                 // Start vertical merge
                 cell.setVMerge(RtfTableCell.MERGE_START);
 
                 // set the number of rows spanned
-                tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
+                tctx.setCurrentColumnRowSpanning(new Integer(numberRowsSpanned),
                         cell.getRtfAttributes());
             } else {
-                tctx.setCurrentColumnRowSpanning(numberRowsSpanned, null);
+                tctx.setCurrentColumnRowSpanning(
+                        new Integer(numberRowsSpanned), null);
             }
 
-            // process number-columns-spanned attribute
+            //process number-columns-spanned attribute
             if (numberColumnsSpanned > 0) {
                 // Get the number of columns spanned
                 tctx.setCurrentFirstSpanningCol(true);
 
-                // We widthdraw one cell because the first cell is already
-                // created
+                // We widthdraw one cell because the first cell is already created
                 // (it's the current cell) !
-                for (int i = 0; i < numberColumnsSpanned - 1; ++i) {
+                 for (int i = 0; i < numberColumnsSpanned - 1; ++i) {
                     tctx.selectNextColumn();
 
-                    // aggregate width for further elements
+                    //aggregate width for further elements
                     width += tctx.getColumnWidth();
                     tctx.setCurrentFirstSpanningCol(false);
-                    final RtfTableCell hCell = row
-                            .newTableCellMergedHorizontally(0, null);
+                    RtfTableCell hCell = row.newTableCellMergedHorizontally(
+                            0, null);
 
                     if (numberRowsSpanned > 1) {
                         // Start vertical merge
                         hCell.setVMerge(RtfTableCell.MERGE_START);
 
                         // set the number of rows spanned
-                        tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
+                        tctx.setCurrentColumnRowSpanning(
+                                new Integer(numberRowsSpanned),
                                 cell.getRtfAttributes());
                     } else {
-                        tctx.setCurrentColumnRowSpanning(numberRowsSpanned,
-                                cell.getRtfAttributes());
+                        tctx.setCurrentColumnRowSpanning(
+                                new Integer(numberRowsSpanned), cell.getRtfAttributes());
                     }
                 }
             }
-            // save width of the cell, convert from twips to mpt
-            this.percentManager.setDimension(tc, (int) width * 50);
+            //save width of the cell, convert from twips to mpt
+            percentManager.setDimension(tc, (int)width * 50);
 
-            this.builderContext.pushContainer(cell);
-        } catch (final IOException ioe) {
+            builderContext.pushContainer(cell);
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startCell: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endCell(final TableCell tc) {
-        if (this.bDefer) {
+    public void endCell(TableCell tc) {
+        if (bDefer) {
             return;
         }
+        try {
+            RtfTableCell cell = (RtfTableCell)builderContext.getContainer(RtfTableCell.class, false, this);
+            cell.finish();
 
-        this.builderContext.popContainer();
-        this.builderContext.getTableContext().selectNextColumn();
+        } catch (Exception e) {
+            log.error("endCell: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+
+        builderContext.popContainer();
+        builderContext.getTableContext().selectNextColumn();
     }
 
     // Lists
     /** {@inheritDoc} */
-    @Override
-    public void startList(final ListBlock lb) {
-        if (this.bDefer) {
+    public void startList(ListBlock lb) {
+        if (bDefer) {
             return;
         }
 
-        try {
+        try  {
             // create an RtfList in the current list container
-            final IRtfListContainer c = (IRtfListContainer) this.builderContext
-                    .getContainer(IRtfListContainer.class, true, this);
-            final RtfList newList = c.newList(ListAttributesConverter
-                    .convertAttributes(lb));
-            this.builderContext.pushContainer(newList);
-        } catch (final IOException ioe) {
+            final IRtfListContainer c
+                = (IRtfListContainer)builderContext.getContainer(
+                    IRtfListContainer.class, true, this);
+            final RtfList newList = c.newList(
+                ListAttributesConverter.convertAttributes(lb));
+            builderContext.pushContainer(newList);
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final FOPException fe) {
+        } catch (FOPException fe) {
             log.error("startList: " + fe.getMessage());
             throw new RuntimeException(fe.getMessage());
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startList: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endList(final ListBlock lb) {
-        if (this.bDefer) {
+    public void endList(ListBlock lb) {
+        if (bDefer) {
             return;
         }
 
-        this.builderContext.popContainer();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startListItem(final ListItem li) {
-        if (this.bDefer) {
+    public void startListItem(ListItem li) {
+        if (bDefer) {
             return;
         }
 
         // create an RtfListItem in the current RtfList
         try {
-            RtfList list = (RtfList) this.builderContext.getContainer(
+            RtfList list = (RtfList)builderContext.getContainer(
                     RtfList.class, true, this);
 
             /**
              * If the current list already contains a list item, then close the
              * list and open a new one, so every single list item gets its own
-             * list. This allows every item to have a different list label. If
-             * all the items would be in the same list, they had all the same
-             * label.
+             * list. This allows every item to have a different list label.
+             * If all the items would be in the same list, they had all the
+             * same label.
              */
-            // TODO: do this only, if the labels content <> previous labels
-            // content
+            //TODO: do this only, if the labels content <> previous labels content
             if (list.getChildCount() > 0) {
-                endListBody();
-                endList((ListBlock) li.getParent());
-                startList((ListBlock) li.getParent());
-                startListBody();
+                this.endListBody(null);
+                this.endList((ListBlock) li.getParent());
+                this.startList((ListBlock) li.getParent());
+                this.startListBody(null);
 
-                list = (RtfList) this.builderContext.getContainer(
+                list = (RtfList)builderContext.getContainer(
                         RtfList.class, true, this);
             }
 
-            this.builderContext.pushContainer(list.newListItem());
-        } catch (final IOException ioe) {
+            builderContext.pushContainer(list.newListItem());
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startList: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endListItem(final ListItem li) {
-        if (this.bDefer) {
+    public void endListItem(ListItem li) {
+        if (bDefer) {
             return;
         }
 
-        this.builderContext.popContainer();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startListLabel() {
-        if (this.bDefer) {
+    public void startListLabel(ListItemLabel listItemLabel) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfListItem item = (RtfListItem) this.builderContext
-                    .getContainer(RtfListItem.class, true, this);
+            RtfListItem item
+                = (RtfListItem)builderContext.getContainer(RtfListItem.class, true, this);
 
-            final RtfListItemLabel label = item.new RtfListItemLabel(item);
-            this.builderContext.pushContainer(label);
-        } catch (final IOException ioe) {
+            RtfListItemLabel label = item.new RtfListItemLabel(item);
+            builderContext.pushContainer(label);
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startPageNumber: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endListLabel() {
-        if (this.bDefer) {
+    public void endListLabel(ListItemLabel listItemLabel) {
+        if (bDefer) {
             return;
         }
 
-        this.builderContext.popContainer();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startListBody() {
+    public void startListBody(ListItemBody listItemBody) {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endListBody() {
+    public void endListBody(ListItemBody listItemBody) {
     }
 
     // Static Regions
     /** {@inheritDoc} */
-    @Override
-    public void startStatic() {
+    public void startStatic(StaticContent staticContent) {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endStatic() {
+    public void endStatic(StaticContent statisContent) {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void startMarkup() {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endMarkup() {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startLink(final BasicLink basicLink) {
-        if (this.bDefer) {
+    public void startLink(BasicLink basicLink) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class, true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
 
-            final RtfHyperLink link = textrun.addHyperlink(new RtfAttributes());
+            RtfHyperLink link = textrun.addHyperlink(new RtfAttributes());
 
             if (basicLink.hasExternalDestination()) {
                 link.setExternalURL(basicLink.getExternalDestination());
@@ -1079,170 +1055,149 @@ public class RTFHandler extends FOEventHandler {
                 link.setInternalURL(basicLink.getInternalDestination());
             }
 
-            this.builderContext.pushContainer(link);
+            builderContext.pushContainer(link);
 
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startLink: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endLink() {
-        if (this.bDefer) {
+    public void endLink(BasicLink basicLink) {
+        if (bDefer) {
             return;
         }
 
-        this.builderContext.popContainer();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void image(final ExternalGraphic eg) {
-        if (this.bDefer) {
+    public void image(ExternalGraphic eg) {
+        if (bDefer) {
             return;
         }
 
-        final String uri = eg.getURL();
+        String uri = eg.getURL();
         ImageInfo info = null;
         try {
 
-            // set image data
-            final FOUserAgent userAgent = eg.getUserAgent();
-            final ImageManager manager = userAgent.getFactory()
-                    .getImageManager();
-            info = manager
-                    .getImageInfo(uri, userAgent.getImageSessionContext());
+            //set image data
+            FOUserAgent userAgent = eg.getUserAgent();
+            ImageManager manager = userAgent.getFactory().getImageManager();
+            info = manager.getImageInfo(uri, userAgent.getImageSessionContext());
 
             putGraphic(eg, info);
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageError(this,
-                    info != null ? info.toString() : uri, ie, null);
-        } catch (final FileNotFoundException fe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageNotFound(this, info != null ? info.toString()
-                    : uri, fe, null);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageIOError(this, info != null ? info.toString()
-                    : uri, ioe, null);
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageError(this, (info != null ? info.toString() : uri), ie, null);
+        } catch (FileNotFoundException fe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageNotFound(this, (info != null ? info.toString() : uri), fe, null);
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageIOError(this, (info != null ? info.toString() : uri), ioe, null);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void foreignObject(final InstreamForeignObject ifo) {
-        if (this.bDefer) {
+    public void endInstreamForeignObject(InstreamForeignObject ifo) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final XMLObj child = ifo.getChildXMLObj();
-            final Document doc = child.getDOMDocument();
-            final String ns = child.getNamespaceURI();
+            XMLObj child = ifo.getChildXMLObj();
+            Document doc = child.getDOMDocument();
+            String ns = child.getNamespaceURI();
 
-            final ImageInfo info = new ImageInfo(null, null);
+            ImageInfo info = new ImageInfo(null, null);
             // Set the resolution to that of the FOUserAgent
-            final FOUserAgent ua = ifo.getUserAgent();
-            final ImageSize size = new ImageSize();
+            FOUserAgent ua = ifo.getUserAgent();
+            ImageSize size = new ImageSize();
             size.setResolution(ua.getSourceResolution());
 
             // Set the image size to the size of the svg.
-            final Point2D csize = new Point2D.Float(-1, -1);
-            final Point2D intrinsicDimensions = child.getDimension(csize);
+            Point2D csize = new Point2D.Float(-1, -1);
+            Point2D intrinsicDimensions = child.getDimension(csize);
             if (intrinsicDimensions == null) {
-                final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                        .get(getUserAgent().getEventBroadcaster());
+                ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                        getUserAgent().getEventBroadcaster());
                 eventProducer.ifoNoIntrinsicSize(this, child.getLocator());
                 return;
             }
             size.setSizeInMillipoints(
-                    (int) Math.round(intrinsicDimensions.getX() * 1000),
-                    (int) Math.round(intrinsicDimensions.getY() * 1000));
+                    (int)Math.round(intrinsicDimensions.getX() * 1000),
+                    (int)Math.round(intrinsicDimensions.getY() * 1000));
             size.calcPixelsFromSize();
             info.setSize(size);
 
-            final ImageXMLDOM image = new ImageXMLDOM(info, doc, ns);
+            ImageXMLDOM image = new ImageXMLDOM(info, doc, ns);
 
-            final FOUserAgent userAgent = ifo.getUserAgent();
-            final ImageManager manager = userAgent.getFactory()
-                    .getImageManager();
-            final Map<Object, Object> hints = ImageUtil.getDefaultHints(ua
-                    .getImageSessionContext());
-            final Image converted = manager.convertImage(image, FLAVORS, hints);
+            FOUserAgent userAgent = ifo.getUserAgent();
+            ImageManager manager = userAgent.getFactory().getImageManager();
+            Map hints = ImageUtil.getDefaultHints(ua.getImageSessionContext());
+            Image converted = manager.convertImage(image, FLAVORS, hints);
             putGraphic(ifo, converted);
 
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageError(this, null, ie, null);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageIOError(this, null, ioe, null);
         }
     }
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG };
+        ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG
+    };
 
     /**
      * Puts a graphic/image into the generated RTF file.
-     *
-     * @param abstractGraphic
-     *            the graphic (external-graphic or instream-foreign-object)
-     * @param info
-     *            the image info object
-     * @throws IOException
-     *             In case of an I/O error
+     * @param abstractGraphic the graphic (external-graphic or instream-foreign-object)
+     * @param info the image info object
+     * @throws IOException In case of an I/O error
      */
-    private void putGraphic(final AbstractGraphics abstractGraphic,
-            final ImageInfo info) throws IOException {
+    private void putGraphic(AbstractGraphics abstractGraphic, ImageInfo info)
+            throws IOException {
         try {
-            final FOUserAgent userAgent = abstractGraphic.getUserAgent();
-            final ImageManager manager = userAgent.getFactory()
-                    .getImageManager();
-            final ImageSessionContext sessionContext = userAgent
-                    .getImageSessionContext();
-            final Map<Object, Object> hints = ImageUtil
-                    .getDefaultHints(sessionContext);
-            final Image image = manager.getImage(info, FLAVORS, hints,
-                    sessionContext);
+            FOUserAgent userAgent = abstractGraphic.getUserAgent();
+            ImageManager manager = userAgent.getFactory().getImageManager();
+            ImageSessionContext sessionContext = userAgent.getImageSessionContext();
+            Map hints = ImageUtil.getDefaultHints(sessionContext);
+            Image image = manager.getImage(info, FLAVORS, hints, sessionContext);
 
             putGraphic(abstractGraphic, image);
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageError(this, null, ie, null);
         }
     }
 
     /**
      * Puts a graphic/image into the generated RTF file.
-     *
-     * @param abstractGraphic
-     *            the graphic (external-graphic or instream-foreign-object)
-     * @param image
-     *            the image
-     * @throws IOException
-     *             In case of an I/O error
+     * @param abstractGraphic the graphic (external-graphic or instream-foreign-object)
+     * @param image the image
+     * @throws IOException In case of an I/O error
      */
-    private void putGraphic(final AbstractGraphics abstractGraphic,
-            final Image image) throws IOException {
+    private void putGraphic(AbstractGraphics abstractGraphic, Image image)
+            throws IOException {
         byte[] rawData = null;
 
         final ImageInfo info = image.getInfo();
 
         if (image instanceof ImageRawStream) {
-            final ImageRawStream rawImage = (ImageRawStream) image;
-            final InputStream in = rawImage.createInputStream();
+            ImageRawStream rawImage = (ImageRawStream)image;
+            InputStream in = rawImage.createInputStream();
             try {
                 rawData = IOUtils.toByteArray(in);
             } finally {
@@ -1251,55 +1206,52 @@ public class RTFHandler extends FOEventHandler {
         }
 
         if (rawData == null) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageWritingError(this, null);
             return;
         }
 
-        // Set up percentage calculations
+        //Set up percentage calculations
         this.percentManager.setDimension(abstractGraphic);
-        final PercentBaseContext pContext = new PercentBaseContext() {
+        PercentBaseContext pContext = new PercentBaseContext() {
 
-            @Override
-            public int getBaseLength(final int lengthBase, final FObj fobj) {
+            public int getBaseLength(int lengthBase, FObj fobj) {
                 switch (lengthBase) {
-                    case LengthBase.IMAGE_INTRINSIC_WIDTH:
-                        return info.getSize().getWidthMpt();
-                    case LengthBase.IMAGE_INTRINSIC_HEIGHT:
-                        return info.getSize().getHeightMpt();
-                    default:
-                        return RTFHandler.this.percentManager.getBaseLength(
-                                lengthBase, fobj);
+                case LengthBase.IMAGE_INTRINSIC_WIDTH:
+                    return info.getSize().getWidthMpt();
+                case LengthBase.IMAGE_INTRINSIC_HEIGHT:
+                    return info.getSize().getHeightMpt();
+                default:
+                    return percentManager.getBaseLength(lengthBase, fobj);
                 }
             }
 
         };
-        final ImageLayout layout = new ImageLayout(abstractGraphic, pContext,
+        ImageLayout layout = new ImageLayout(abstractGraphic, pContext,
                 image.getInfo().getSize().getDimensionMpt());
 
-        final IRtfTextrunContainer c = (IRtfTextrunContainer) this.builderContext
-                .getContainer(IRtfTextrunContainer.class, true, this);
+        final IRtfTextrunContainer c
+            = (IRtfTextrunContainer)builderContext.getContainer(
+                IRtfTextrunContainer.class, true, this);
 
         final RtfExternalGraphic rtfGraphic = c.getTextrun().newImage();
 
-        // set URL
+        //set URL
         if (info.getOriginalURI() != null) {
             rtfGraphic.setURL(info.getOriginalURI());
         }
         rtfGraphic.setImageData(rawData);
 
-        final FoUnitsConverter converter = FoUnitsConverter.getInstance();
-        final Dimension viewport = layout.getViewportSize();
-        final Rectangle placement = layout.getPlacement();
-        final int cropLeft = Math.round(converter
-                .convertMptToTwips(-placement.x));
-        final int cropTop = Math.round(converter
-                .convertMptToTwips(-placement.y));
-        final int cropRight = Math.round(converter.convertMptToTwips(-1
-                * (viewport.width - placement.x - placement.width)));
-        final int cropBottom = Math.round(converter.convertMptToTwips(-1
-                * (viewport.height - placement.y - placement.height)));
+        FoUnitsConverter converter = FoUnitsConverter.getInstance();
+        Dimension viewport = layout.getViewportSize();
+        Rectangle placement = layout.getPlacement();
+        int cropLeft = Math.round(converter.convertMptToTwips(-placement.x));
+        int cropTop = Math.round(converter.convertMptToTwips(-placement.y));
+        int cropRight = Math.round(converter.convertMptToTwips(
+                -1 * (viewport.width - placement.x - placement.width)));
+        int cropBottom = Math.round(converter.convertMptToTwips(
+                -1 * (viewport.height - placement.y - placement.height)));
         rtfGraphic.setCropping(cropLeft, cropTop, cropRight, cropBottom);
 
         int width = Math.round(converter.convertMptToTwips(viewport.width));
@@ -1309,403 +1261,413 @@ public class RTFHandler extends FOEventHandler {
         rtfGraphic.setWidthTwips(width);
         rtfGraphic.setHeightTwips(height);
 
-        // TODO: make this configurable:
-        // int compression =
-        // m_context.m_options.getRtfExternalGraphicCompressionRate ();
-        final int compression = 0;
+        //TODO: make this configurable:
+        //      int compression = m_context.m_options.getRtfExternalGraphicCompressionRate ();
+        int compression = 0;
         if (compression != 0) {
             if (!rtfGraphic.setCompressionRate(compression)) {
-                log.warn("The compression rate "
-                        + compression
-                        + " is invalid. The value has to be between 1 and 100 %.");
+                log.warn("The compression rate " + compression
+                    + " is invalid. The value has to be between 1 and 100 %.");
             }
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void pageRef() {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startFootnote(final Footnote footnote) {
-        if (this.bDefer) {
+    public void startFootnote(Footnote footnote) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class,
+                    true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
-            final RtfFootnote rtfFootnote = textrun.addFootnote();
+            RtfTextrun textrun = container.getTextrun();
+            RtfFootnote rtfFootnote = textrun.addFootnote();
 
-            this.builderContext.pushContainer(rtfFootnote);
+            builderContext.pushContainer(rtfFootnote);
 
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startFootnote: " + e.getMessage());
             throw new RuntimeException("Exception: " + e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endFootnote(final Footnote footnote) {
-        if (this.bDefer) {
+    public void endFootnote(Footnote footnote) {
+        if (bDefer) {
             return;
         }
 
-        this.builderContext.popContainer();
+        builderContext.popContainer();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startFootnoteBody(final FootnoteBody body) {
-        if (this.bDefer) {
+    public void startFootnoteBody(FootnoteBody body) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfFootnote rtfFootnote = (RtfFootnote) this.builderContext
-                    .getContainer(RtfFootnote.class, true, this);
+            RtfFootnote rtfFootnote
+                = (RtfFootnote)builderContext.getContainer(
+                    RtfFootnote.class,
+                    true, this);
 
             rtfFootnote.startBody();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startFootnoteBody: " + e.getMessage());
             throw new RuntimeException("Exception: " + e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endFootnoteBody(final FootnoteBody body) {
-        if (this.bDefer) {
+    public void endFootnoteBody(FootnoteBody body) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfFootnote rtfFootnote = (RtfFootnote) this.builderContext
-                    .getContainer(RtfFootnote.class, true, this);
+            RtfFootnote rtfFootnote
+                = (RtfFootnote)builderContext.getContainer(
+                    RtfFootnote.class,
+                    true, this);
 
             rtfFootnote.endBody();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("endFootnoteBody: " + e.getMessage());
             throw new RuntimeException("Exception: " + e);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void leader(final Leader l) {
-        if (this.bDefer) {
+    public void startLeader(Leader l) {
+        if (bDefer) {
             return;
         }
 
         try {
-            this.percentManager.setDimension(l);
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertLeaderAttributes(l, this.percentManager);
+            percentManager.setDimension(l);
+            RtfAttributes rtfAttr = TextAttributesConverter.convertLeaderAttributes(
+                    l, percentManager);
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
-            final RtfTextrun textrun = container.getTextrun();
+            IRtfTextrunContainer container
+                  = (IRtfTextrunContainer)builderContext.getContainer(
+                      IRtfTextrunContainer.class, true, this);
+            RtfTextrun textrun = container.getTextrun();
 
             textrun.addLeader(rtfAttr);
-
-        } catch (final Exception e) {
+        } catch (IOException e) {
+            log.error("startLeader: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        } catch (FOPException e) {
             log.error("startLeader: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /**
-     * @param text
-     *            FOText object
-     * @param data
-     *            Array of characters to process.
-     * @param start
-     *            Offset for characters to process.
-     * @param length
-     *            Portion of array to process.
+     * @param text FOText object
+     * @param characters CharSequence of the characters to process.
      */
-    public void text(final FOText text, final char[] data, final int start,
-            final int length) {
-        if (this.bDefer) {
+    public void text(FOText text, CharSequence characters) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class, true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertCharacterAttributes(text);
+            RtfTextrun textrun = container.getTextrun();
+            RtfAttributes rtfAttr
+                = TextAttributesConverter.convertCharacterAttributes(text);
 
             textrun.pushInlineAttributes(rtfAttr);
-            textrun.addString(new String(data, start, length - start));
+            textrun.addString(characters.toString());
             textrun.popInlineAttributes();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("characters:" + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageNumber(final PageNumber pagenum) {
-        if (this.bDefer) {
+    public void startPageNumber(PageNumber pagenum) {
+        if (bDefer) {
             return;
         }
 
         try {
-            final RtfAttributes rtfAttr = TextAttributesConverter
-                    .convertCharacterAttributes(pagenum);
+            RtfAttributes rtfAttr
+                = TextAttributesConverter.convertCharacterAttributes(
+                    pagenum);
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
+            IRtfTextrunContainer container
+                = (IRtfTextrunContainer)builderContext.getContainer(
+                    IRtfTextrunContainer.class, true, this);
 
-            final RtfTextrun textrun = container.getTextrun();
+            RtfTextrun textrun = container.getTextrun();
             textrun.addPageNumber(rtfAttr);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             handleIOTrouble(ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startPageNumber: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPageNumber(final PageNumber pagenum) {
-        if (this.bDefer) {
+    public void endPageNumber(PageNumber pagenum) {
+        if (bDefer) {
             return;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageNumberCitation(final PageNumberCitation l) {
-        if (this.bDefer) {
+    public void startPageNumberCitation(PageNumberCitation l) {
+        if (bDefer) {
             return;
         }
         try {
 
-            final IRtfTextrunContainer container = (IRtfTextrunContainer) this.builderContext
-                    .getContainer(IRtfTextrunContainer.class, true, this);
-            final RtfTextrun textrun = container.getTextrun();
+            IRtfTextrunContainer container
+                  = (IRtfTextrunContainer)builderContext.getContainer(
+                      IRtfTextrunContainer.class, true, this);
+            RtfTextrun textrun = container.getTextrun();
 
             textrun.addPageNumberCitation(l.getRefId());
 
-        } catch (final Exception e) {
+        } catch (Exception e) {
             log.error("startPageNumberCitation: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
         }
     }
 
-    private void prepareTable(final Table tab) {
+    /** {@inheritDoc} */
+    public void startPageNumberCitationLast(PageNumberCitationLast l) {
+        if (bDefer) {
+            return;
+        }
+        try {
+
+            IRtfTextrunContainer container
+                  = (IRtfTextrunContainer)builderContext.getContainer(
+                      IRtfTextrunContainer.class, true, this);
+            RtfTextrun textrun = container.getTextrun();
+
+            textrun.addPageNumberCitation(l.getRefId());
+
+        } catch (RtfException e) {
+            log.error("startPageNumberCitationLast: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            log.error("startPageNumberCitationLast: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    private void prepareTable(Table tab) {
         // Allows to receive the available width of the table
-        this.percentManager.setDimension(tab);
+        percentManager.setDimension(tab);
 
         // Table gets expanded by half of the border on each side inside Word
         // When using wide borders the table gets cut off
-        final int tabDiff = tab.getCommonBorderPaddingBackground()
-                .getBorderStartWidth(false)
-                / 2
-                + tab.getCommonBorderPaddingBackground().getBorderEndWidth(
-                        false);
+        int tabDiff = tab.getCommonBorderPaddingBackground().getBorderStartWidth(false) / 2
+                + tab.getCommonBorderPaddingBackground().getBorderEndWidth(false);
 
         // check for "auto" value
-        if (!(tab.getInlineProgressionDimension().getMaximum(null).getLength() instanceof EnumLength)) {
+        if (!(tab.getInlineProgressionDimension().getMaximum(null).getLength()
+                    instanceof EnumLength)) {
             // value specified
-            this.percentManager.setDimension(tab, tab
-                    .getInlineProgressionDimension().getMaximum(null)
-                    .getLength().getValue(this.percentManager)
+            percentManager.setDimension(tab,
+                    tab.getInlineProgressionDimension().getMaximum(null)
+                        .getLength().getValue(percentManager)
                     - tabDiff);
         } else {
             // set table width again without border width
-            this.percentManager.setDimension(
-                    tab,
-                    this.percentManager.getBaseLength(
-                            LengthBase.CONTAINING_BLOCK_WIDTH, tab) - tabDiff);
+            percentManager.setDimension(tab, percentManager.getBaseLength(
+                    LengthBase.CONTAINING_BLOCK_WIDTH, tab) - tabDiff);
         }
 
-        final ColumnSetup columnSetup = new ColumnSetup(tab);
-        // int sumOfColumns = columnSetup.getSumOfColumnWidths(percentManager);
-        final float tableWidth = this.percentManager.getBaseLength(
-                LengthBase.CONTAINING_BLOCK_WIDTH, tab);
-        final float tableUnit = columnSetup.computeTableUnit(
-                this.percentManager, Math.round(tableWidth));
-        this.percentManager.setTableUnit(tab, Math.round(tableUnit));
+        ColumnSetup columnSetup = new ColumnSetup(tab);
+        //int sumOfColumns = columnSetup.getSumOfColumnWidths(percentManager);
+        float tableWidth = percentManager.getBaseLength(LengthBase.CONTAINING_BLOCK_WIDTH, tab);
+        float tableUnit = columnSetup.computeTableUnit(percentManager, Math.round(tableWidth));
+        percentManager.setTableUnit(tab, Math.round(tableUnit));
 
     }
 
     /**
      * Calls the appropriate event handler for the passed FObj.
      *
-     * @param foNode
-     *            FO node whose event is to be called
-     * @param bStart
-     *            TRUE calls the start handler, FALSE the end handler
+     * @param foNode FO node whose event is to be called
+     * @param bStart TRUE calls the start handler, FALSE the end handler
      */
-    private void invokeDeferredEvent(final FONode foNode, final boolean bStart) {
+    private void invokeDeferredEvent(FONode foNode, boolean bStart) { // CSOK: MethodLength
         if (foNode instanceof PageSequence) {
             if (bStart) {
-                startPageSequence((PageSequence) foNode);
+                startPageSequence( (PageSequence) foNode);
             } else {
-                endPageSequence((PageSequence) foNode);
+                endPageSequence( (PageSequence) foNode);
             }
         } else if (foNode instanceof Flow) {
             if (bStart) {
-                startFlow((Flow) foNode);
+                startFlow( (Flow) foNode);
             } else {
-                endFlow((Flow) foNode);
+                endFlow( (Flow) foNode);
             }
         } else if (foNode instanceof StaticContent) {
             if (bStart) {
-                startStatic();
+                startStatic(null);
             } else {
-                endStatic();
+                endStatic(null);
             }
         } else if (foNode instanceof ExternalGraphic) {
             if (bStart) {
-                image((ExternalGraphic) foNode);
+                image( (ExternalGraphic) foNode );
             }
         } else if (foNode instanceof InstreamForeignObject) {
             if (bStart) {
-                foreignObject((InstreamForeignObject) foNode);
+                endInstreamForeignObject( (InstreamForeignObject) foNode );
             }
         } else if (foNode instanceof Block) {
             if (bStart) {
-                startBlock((Block) foNode);
+                startBlock( (Block) foNode);
             } else {
-                endBlock((Block) foNode);
+                endBlock( (Block) foNode);
             }
         } else if (foNode instanceof BlockContainer) {
             if (bStart) {
-                startBlockContainer((BlockContainer) foNode);
+                startBlockContainer( (BlockContainer) foNode);
             } else {
-                endBlockContainer((BlockContainer) foNode);
+                endBlockContainer( (BlockContainer) foNode);
             }
         } else if (foNode instanceof BasicLink) {
-            // BasicLink must be placed before Inline
+            //BasicLink must be placed before Inline
             if (bStart) {
-                startLink((BasicLink) foNode);
+                startLink( (BasicLink) foNode);
             } else {
-                endLink();
+                endLink(null);
             }
         } else if (foNode instanceof Inline) {
             if (bStart) {
-                startInline((Inline) foNode);
+                startInline( (Inline) foNode);
             } else {
-                endInline((Inline) foNode);
+                endInline( (Inline) foNode);
             }
         } else if (foNode instanceof FOText) {
             if (bStart) {
-                final FOText text = (FOText) foNode;
-                text(text, text.getCharArray(), 0, text.length());
+                FOText text = (FOText) foNode;
+                text(text, text.getCharSequence());
             }
         } else if (foNode instanceof Character) {
             if (bStart) {
-                final Character c = (Character) foNode;
+                Character c = (Character) foNode;
                 character(c);
             }
         } else if (foNode instanceof PageNumber) {
             if (bStart) {
-                startPageNumber((PageNumber) foNode);
+                startPageNumber( (PageNumber) foNode);
             } else {
-                endPageNumber((PageNumber) foNode);
+                endPageNumber( (PageNumber) foNode);
             }
         } else if (foNode instanceof Footnote) {
             if (bStart) {
-                startFootnote((Footnote) foNode);
+                startFootnote( (Footnote) foNode);
             } else {
-                endFootnote((Footnote) foNode);
+                endFootnote( (Footnote) foNode);
             }
         } else if (foNode instanceof FootnoteBody) {
             if (bStart) {
-                startFootnoteBody((FootnoteBody) foNode);
+                startFootnoteBody( (FootnoteBody) foNode);
             } else {
-                endFootnoteBody((FootnoteBody) foNode);
+                endFootnoteBody( (FootnoteBody) foNode);
             }
         } else if (foNode instanceof ListBlock) {
             if (bStart) {
-                startList((ListBlock) foNode);
+                startList( (ListBlock) foNode);
             } else {
-                endList((ListBlock) foNode);
+                endList( (ListBlock) foNode);
             }
         } else if (foNode instanceof ListItemBody) {
             if (bStart) {
-                startListBody();
+                startListBody(null);
             } else {
-                endListBody();
+                endListBody(null);
             }
         } else if (foNode instanceof ListItem) {
             if (bStart) {
-                startListItem((ListItem) foNode);
+                startListItem( (ListItem) foNode);
             } else {
-                endListItem((ListItem) foNode);
+                endListItem( (ListItem) foNode);
             }
         } else if (foNode instanceof ListItemLabel) {
             if (bStart) {
-                startListLabel();
+                startListLabel(null);
             } else {
-                endListLabel();
+                endListLabel(null);
             }
         } else if (foNode instanceof Table) {
             if (bStart) {
-                startTable((Table) foNode);
+                startTable( (Table) foNode);
             } else {
-                endTable((Table) foNode);
+                endTable( (Table) foNode);
             }
         } else if (foNode instanceof TableHeader) {
             if (bStart) {
-                startHeader((TableHeader) foNode);
+                startHeader( (TableHeader) foNode);
             } else {
-                endHeader((TableHeader) foNode);
+                endHeader( (TableHeader) foNode);
             }
         } else if (foNode instanceof TableFooter) {
             if (bStart) {
-                startFooter((TableFooter) foNode);
+                startFooter( (TableFooter) foNode);
             } else {
-                endFooter((TableFooter) foNode);
+                endFooter( (TableFooter) foNode);
             }
         } else if (foNode instanceof TableBody) {
             if (bStart) {
-                startBody((TableBody) foNode);
+                startBody( (TableBody) foNode);
             } else {
-                endBody((TableBody) foNode);
+                endBody( (TableBody) foNode);
             }
         } else if (foNode instanceof TableColumn) {
             if (bStart) {
-                startColumn((TableColumn) foNode);
+                startColumn( (TableColumn) foNode);
             } else {
-                endColumn((TableColumn) foNode);
+                endColumn( (TableColumn) foNode);
             }
         } else if (foNode instanceof TableRow) {
             if (bStart) {
-                startRow((TableRow) foNode);
+                startRow( (TableRow) foNode);
             } else {
-                endRow((TableRow) foNode);
+                endRow( (TableRow) foNode);
             }
         } else if (foNode instanceof TableCell) {
             if (bStart) {
-                startCell((TableCell) foNode);
+                startCell( (TableCell) foNode);
             } else {
-                endCell((TableCell) foNode);
+                endCell( (TableCell) foNode);
             }
         } else if (foNode instanceof Leader) {
             if (bStart) {
-                leader((Leader) foNode);
+                startLeader((Leader) foNode);
             }
         } else if (foNode instanceof PageNumberCitation) {
             if (bStart) {
@@ -1713,98 +1675,100 @@ public class RTFHandler extends FOEventHandler {
             } else {
                 endPageNumberCitation((PageNumberCitation) foNode);
             }
+        } else if (foNode instanceof PageNumberCitationLast) {
+            if (bStart) {
+                startPageNumberCitationLast((PageNumberCitationLast) foNode);
+            } else {
+                endPageNumberCitationLast((PageNumberCitationLast) foNode);
+            }
         } else {
-            final RTFEventProducer eventProducer = RTFEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.ignoredDeferredEvent(this, foNode, bStart,
-                    foNode.getLocator());
+            RTFEventProducer eventProducer = RTFEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.ignoredDeferredEvent(this, foNode, bStart, foNode.getLocator());
         }
     }
 
     /**
      * Calls the event handlers for the passed FONode and all its elements.
      *
-     * @param foNode
-     *            FONode object which shall be recursed
+     * @param foNode FONode object which shall be recursed
      */
-    private void recurseFONode(final FONode foNode) {
+    private void recurseFONode(FONode foNode) {
         invokeDeferredEvent(foNode, true);
 
         if (foNode instanceof PageSequence) {
-            final PageSequence pageSequence = (PageSequence) foNode;
+            PageSequence pageSequence = (PageSequence) foNode;
 
-            final Region regionBefore = this.pagemaster
-                    .getRegion(Constants.FO_REGION_BEFORE);
+            Region regionBefore = pagemaster.getRegion(Constants.FO_REGION_BEFORE);
             if (regionBefore != null) {
-                final FONode staticBefore = pageSequence.getFlowMap().get(
+                FONode staticBefore = (FONode) pageSequence.getFlowMap().get(
                         regionBefore.getRegionName());
                 if (staticBefore != null) {
                     recurseFONode(staticBefore);
                 }
             }
-            final Region regionAfter = this.pagemaster
-                    .getRegion(Constants.FO_REGION_AFTER);
+            Region regionAfter = pagemaster.getRegion(Constants.FO_REGION_AFTER);
             if (regionAfter != null) {
-                final FONode staticAfter = pageSequence.getFlowMap().get(
+                FONode staticAfter = (FONode) pageSequence.getFlowMap().get(
                         regionAfter.getRegionName());
                 if (staticAfter != null) {
                     recurseFONode(staticAfter);
                 }
             }
 
-            recurseFONode(pageSequence.getMainFlow());
+
+            recurseFONode( pageSequence.getMainFlow() );
         } else if (foNode instanceof Table) {
-            final Table table = (Table) foNode;
+            Table table = (Table) foNode;
 
-            // recurse all table-columns
+            //recurse all table-columns
             if (table.getColumns() != null) {
-                // Calculation for column-widths which are not set
-                prepareTable(table);
+              //Calculation for column-widths which are not set
+              prepareTable(table);
 
-                for (final Object element : table.getColumns()) {
-                    recurseFONode((FONode) element);
-                }
+              for (Iterator it = table.getColumns().iterator(); it.hasNext();) {
+                  recurseFONode( (FONode) it.next() );
+              }
             } else {
-                // TODO Implement implicit column setup handling!
-                final RTFEventProducer eventProducer = RTFEventProducer.Provider
-                        .get(getUserAgent().getEventBroadcaster());
-                eventProducer.explicitTableColumnsRequired(this,
-                        table.getLocator());
+                //TODO Implement implicit column setup handling!
+                RTFEventProducer eventProducer = RTFEventProducer.Provider.get(
+                        getUserAgent().getEventBroadcaster());
+                eventProducer.explicitTableColumnsRequired(this, table.getLocator());
             }
 
-            // recurse table-header
+            //recurse table-header
             if (table.getTableHeader() != null) {
-                recurseFONode(table.getTableHeader());
+                recurseFONode( table.getTableHeader() );
             }
 
-            // recurse table-footer
+            //recurse table-footer
             if (table.getTableFooter() != null) {
-                recurseFONode(table.getTableFooter());
+                recurseFONode( table.getTableFooter() );
             }
 
             if (foNode.getChildNodes() != null) {
-                for (final Iterator<FONode> it = foNode.getChildNodes(); it
-                        .hasNext();) {
-                    recurseFONode(it.next());
+                for (Iterator it = foNode.getChildNodes(); it.hasNext();) {
+                    recurseFONode( (FONode) it.next() );
                 }
             }
         } else if (foNode instanceof ListItem) {
-            final ListItem item = (ListItem) foNode;
+            ListItem item = (ListItem) foNode;
 
             recurseFONode(item.getLabel());
             recurseFONode(item.getBody());
         } else if (foNode instanceof Footnote) {
-            final Footnote fn = (Footnote) foNode;
+            Footnote fn = (Footnote)foNode;
 
             recurseFONode(fn.getFootnoteCitation());
             recurseFONode(fn.getFootnoteBody());
         } else {
-            // Any other FO-Object: Simply recurse through all childNodes.
+            //Any other FO-Object: Simply recurse through all childNodes.
             if (foNode.getChildNodes() != null) {
-                for (final Iterator<FONode> it = foNode.getChildNodes(); it
-                        .hasNext();) {
-                    final FONode fn = it.next();
-                    log.trace("  ChildNode for {} ({})", fn, fn.getName());
+                for (Iterator it = foNode.getChildNodes(); it.hasNext();) {
+                    FONode fn = (FONode)it.next();
+                    if (log.isTraceEnabled()) {
+                        log.trace("  ChildNode for " + fn + " (" + fn.getName() + ")");
+                    }
                     recurseFONode(fn);
                 }
             }

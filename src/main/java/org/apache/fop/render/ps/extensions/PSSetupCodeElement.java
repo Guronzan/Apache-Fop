@@ -33,26 +33,22 @@ public class PSSetupCodeElement extends AbstractPSExtensionObject {
 
     /**
      * Main constructor
-     * 
-     * @param parent
-     *            parent FO node
+     * @param parent parent FO node
      */
-    public PSSetupCodeElement(final FONode parent) {
+    public PSSetupCodeElement(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
-        if (this.parent.getNameId() != Constants.FO_DECLARATIONS) {
-            invalidChildError(getLocator(), this.parent.getName(),
-                    getNamespaceURI(), getName(), "rule.childOfDeclarations");
+        if (parent.getNameId() != Constants.FO_DECLARATIONS) {
+            invalidChildError(getLocator(), parent.getName(), getNamespaceURI(), getName(),
+                    "rule.childOfDeclarations");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return ELEMENT;
     }

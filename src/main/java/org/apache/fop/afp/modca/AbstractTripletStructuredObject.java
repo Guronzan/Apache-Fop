@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractTripletStructuredObject.java 828678 2009-10-22 13:20:53Z acumiskey $ */
+/* $Id: AbstractTripletStructuredObject.java 1151452 2011-07-27 12:50:12Z phancock $ */
 
 package org.apache.fop.afp.modca;
 
@@ -23,8 +23,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.afp.modca.Registry.ObjectType;
 import org.apache.fop.afp.modca.triplets.AbstractTriplet;
@@ -36,11 +34,10 @@ import org.apache.fop.afp.modca.triplets.Triplet;
 /**
  * A MODCA structured object base class providing support for Triplets
  */
-@Slf4j
-public class AbstractTripletStructuredObject extends AbstractStructuredObject {
+public abstract class AbstractTripletStructuredObject extends AbstractStructuredObject {
 
     /** list of object triplets */
-    protected List<Triplet> triplets = new java.util.ArrayList<>();
+    protected List<AbstractTriplet> triplets = new java.util.ArrayList<AbstractTriplet>();
 
     /**
      * Returns the triplet data length
@@ -49,10 +46,8 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
      */
     protected int getTripletDataLength() {
         int dataLength = 0;
-        if (hasTriplets()) {
-            for (final Triplet triplet : this.triplets) {
-                dataLength += triplet.getDataLength();
-            }
+        for (Triplet triplet : triplets) {
+            dataLength += triplet.getDataLength();
         }
         return dataLength;
     }
@@ -63,35 +58,31 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
      * @return true when this structured field contains triplets
      */
     public boolean hasTriplets() {
-        return this.triplets.size() > 0;
+        return triplets.size() > 0;
     }
 
     /**
      * Writes any triplet data
      *
-     * @param os
-     *            The stream to write to
-     * @throws IOException
-     *             The stream to write to
+     * @param os The stream to write to
+     * @throws IOException The stream to write to
      */
-    protected void writeTriplets(final OutputStream os) throws IOException {
+    protected void writeTriplets(OutputStream os) throws IOException {
         if (hasTriplets()) {
-            writeObjects(this.triplets, os);
-            this.triplets = null; // gc
+            writeObjects(triplets, os);
+            triplets = null; // gc
         }
     }
 
     /**
-     * Returns the first matching triplet found in the structured field triplet
-     * list
+     * Returns the first matching triplet found in the structured field triplet list
      *
-     * @param tripletId
-     *            the triplet identifier
+     * @param tripletId the triplet identifier
      */
-    private Triplet getTriplet(final byte tripletId) {
-        for (final Triplet triplet : this.triplets) {
-            if (((AbstractTriplet) triplet).getId() == tripletId) {
-                return triplet;
+    private AbstractTriplet getTriplet(byte tripletId) {
+        for (AbstractTriplet trip : triplets) {
+            if (trip.getId() == tripletId) {
+                return trip;
             }
         }
         return null;
@@ -100,101 +91,85 @@ public class AbstractTripletStructuredObject extends AbstractStructuredObject {
     /**
      * Returns true of this structured field has the given triplet
      *
-     * @param tripletId
-     *            the triplet identifier
+     * @param tripletId the triplet identifier
      * @return true if the structured field has the given triplet
      */
-    public boolean hasTriplet(final byte tripletId) {
+    public boolean hasTriplet(byte tripletId) {
         return getTriplet(tripletId) != null;
     }
 
     /**
      * Adds a triplet to this structured object
      *
-     * @param triplet
-     *            the triplet to add
+     * @param triplet the triplet to add
      */
-    protected void addTriplet(final Triplet triplet) {
-        this.triplets.add(triplet);
+    protected void addTriplet(AbstractTriplet triplet) {
+        triplets.add(triplet);
     }
 
     /**
-     * Adds a list of triplets to the triplets contained within this structured
-     * field
+     * Adds a list of triplets to the triplets contained within this structured field
      *
-     * @param tripletCollection
-     *            a collection of triplets
+     * @param tripletCollection a collection of triplets
      */
-    public void addTriplets(final Collection<Triplet> tripletCollection) {
+    public void addTriplets(Collection<AbstractTriplet> tripletCollection) {
         if (tripletCollection != null) {
-            this.triplets.addAll(tripletCollection);
+            triplets.addAll(tripletCollection);
         }
     }
 
     /** @return the triplet list pertaining to this resource */
-    protected List<Triplet> getTriplets() {
-        return this.triplets;
+    protected List<AbstractTriplet> getTriplets() {
+        return triplets;
     }
 
     /**
      * Sets the fully qualified name of this structured field
      *
-     * @param fqnType
-     *            the fully qualified name type of this resource
-     * @param fqnFormat
-     *            the fully qualified name format of this resource
-     * @param fqName
-     *            the fully qualified name of this resource
+     * @param fqnType the fully qualified name type of this resource
+     * @param fqnFormat the fully qualified name format of this resource
+     * @param fqName the fully qualified name of this resource
      */
-    public void setFullyQualifiedName(final byte fqnType, final byte fqnFormat,
-            final String fqName) {
+    public void setFullyQualifiedName(byte fqnType, byte fqnFormat, String fqName) {
         addTriplet(new FullyQualifiedNameTriplet(fqnType, fqnFormat, fqName));
     }
 
-    /**
-     * @return the fully qualified name of this triplet or null if it does not
-     *         exist
-     */
+    /** @return the fully qualified name of this triplet or null if it does not exist */
     public String getFullyQualifiedName() {
-        final FullyQualifiedNameTriplet fqNameTriplet = (FullyQualifiedNameTriplet) getTriplet(Triplet.FULLY_QUALIFIED_NAME);
+        FullyQualifiedNameTriplet fqNameTriplet
+            = (FullyQualifiedNameTriplet)getTriplet(AbstractTriplet.FULLY_QUALIFIED_NAME);
         if (fqNameTriplet != null) {
             return fqNameTriplet.getFullyQualifiedName();
         }
-        log.warn(this + " has no fully qualified name");
+        LOG.warn(this + " has no fully qualified name");
         return null;
     }
 
     /**
      * Sets the objects classification
      *
-     * @param objectClass
-     *            the classification of the object
-     * @param objectType
-     *            the MOD:CA registry object type entry for the given
-     *            object/component type of the object
-     * @param dataInContainer
-     *            whether the data resides in the container
-     * @param containerHasOEG
-     *            whether the container has an object environment group
-     * @param dataInOCD
-     *            whether the data resides in a object container data structured
-     *            field
+     * @param objectClass the classification of the object
+     * @param objectType the MOD:CA registry object type entry for the given
+     *        object/component type of the object
+     * @param dataInContainer whether the data resides in the container
+     * @param containerHasOEG whether the container has an object environment group
+     * @param dataInOCD whether the data resides in a object container data structured field
      */
-    public void setObjectClassification(final byte objectClass,
-            final ObjectType objectType, final boolean dataInContainer,
-            final boolean containerHasOEG, final boolean dataInOCD) {
-        addTriplet(new ObjectClassificationTriplet(objectClass, objectType,
-                dataInContainer, containerHasOEG, dataInOCD));
+    public void setObjectClassification(
+            byte objectClass, ObjectType objectType,
+            boolean dataInContainer, boolean containerHasOEG, boolean dataInOCD) {
+        addTriplet(
+                new ObjectClassificationTriplet(
+                        objectClass, objectType, dataInContainer, containerHasOEG, dataInOCD));
     }
 
     /**
      * Sets a comment on this resource
      *
-     * @param commentString
-     *            a comment string
+     * @param commentString a comment string
      */
-    public void setComment(final String commentString) {
-        addTriplet(new CommentTriplet(Triplet.COMMENT, commentString));
+    public void setComment(String commentString) {
+        addTriplet(new CommentTriplet(AbstractTriplet.COMMENT, commentString));
     }
 
 }

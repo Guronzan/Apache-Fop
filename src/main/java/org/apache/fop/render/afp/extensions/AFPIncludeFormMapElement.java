@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-/* $Id: AFPIncludeFormMapElement.java 798207 2009-07-27 16:33:01Z jeremias $ */
+/* $Id: AFPIncludeFormMapElement.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.afp.extensions;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
-import org.apache.fop.fo.extensions.ExtensionObj;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
 
 /**
- * This class extends the {@link ExtensionObj} class. It represents the
- * "include-form-map" extension in the FO tree.
+ * This class extends the {@link org.apache.fop.fo.extensions.ExtensionObj} class.
+ * It represents the "include-form-map" extension in the FO tree.
  */
 public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
 
@@ -42,41 +42,37 @@ public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
     /**
      * Constructs an AFP object (called by Maker).
      *
-     * @param parent
-     *            the parent formatting object
-     * @param name
-     *            the name of the AFP element
+     * @param parent the parent formatting object
+     * @param name the name of the AFP element
      */
-    public AFPIncludeFormMapElement(final FONode parent, final String name) {
+    public AFPIncludeFormMapElement(FONode parent, String name) {
         super(parent, name);
     }
 
     private AFPIncludeFormMap getFormMapAttachment() {
-        return (AFPIncludeFormMap) getExtensionAttachment();
+        return (AFPIncludeFormMap)getExtensionAttachment();
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
-        if (this.parent.getNameId() != Constants.FO_DECLARATIONS) {
-            invalidChildError(getLocator(), this.parent.getName(),
-                    getNamespaceURI(), getName(), "rule.childOfDeclarations");
+        if (parent.getNameId() != Constants.FO_DECLARATIONS) {
+            invalidChildError(getLocator(), parent.getName(), getNamespaceURI(), getName(),
+                "rule.childOfDeclarations");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList propertyList)
-            throws FOPException {
+    public void processNode(String elementName, Locator locator,
+                            Attributes attlist, PropertyList propertyList)
+                                throws FOPException {
         super.processNode(elementName, locator, attlist, propertyList);
-        final AFPIncludeFormMap formMap = getFormMapAttachment();
-        final String attr = attlist.getValue(ATT_SRC);
+        AFPIncludeFormMap formMap = getFormMapAttachment();
+        String attr = attlist.getValue(ATT_SRC);
         if (attr != null && attr.length() > 0) {
             try {
                 formMap.setSrc(new URI(attr));
-            } catch (final URISyntaxException e) {
+            } catch (URISyntaxException e) {
                 getFOValidationEventProducer().invalidPropertyValue(this,
                         elementName, ATT_SRC, attr, null, getLocator());
             }
@@ -86,7 +82,6 @@ public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPIncludeFormMap();
     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractIFPainter.java 932497 2010-04-09 16:34:29Z vhennebert $ */
+/* $Id: AbstractIFPainter.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.render.intermediate;
 
@@ -30,17 +30,11 @@ import java.util.Map;
 
 import javax.xml.transform.dom.DOMSource;
 
-import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
 
-import org.apache.fop.ResourceEventProducer;
-import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.apps.FopFactory;
-import org.apache.fop.render.ImageHandler;
-import org.apache.fop.render.ImageHandlerRegistry;
-import org.apache.fop.render.ImageHandlerUtil;
-import org.apache.fop.render.RenderingContext;
-import org.apache.fop.traits.BorderProps;
-import org.apache.fop.traits.RuleStyle;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageException;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
@@ -48,22 +42,32 @@ import org.apache.xmlgraphics.image.loader.ImageInfo;
 import org.apache.xmlgraphics.image.loader.ImageManager;
 import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
-import org.w3c.dom.Document;
+
+import org.apache.fop.ResourceEventProducer;
+import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.FopFactory;
+import org.apache.fop.fo.Constants;
+import org.apache.fop.render.ImageHandler;
+import org.apache.fop.render.ImageHandlerRegistry;
+import org.apache.fop.render.ImageHandlerUtil;
+import org.apache.fop.render.RenderingContext;
+import org.apache.fop.traits.BorderProps;
+import org.apache.fop.traits.RuleStyle;
 
 /**
  * Abstract base class for IFPainter implementations.
  */
-@Slf4j
 public abstract class AbstractIFPainter implements IFPainter {
 
-    /**
-     * non-URI that can be used in feedback messages that an image is an
-     * instream-object
-     */
+    /** logging instance */
+    private static Log log = LogFactory.getLog(AbstractIFPainter.class);
+
+    /** non-URI that can be used in feedback messages that an image is an instream-object */
     protected static final String INSTREAM_OBJECT_URI = "(instream-object)";
 
     /** Holds the intermediate format state */
     protected IFState state;
+
 
     /**
      * Default constructor.
@@ -73,14 +77,12 @@ public abstract class AbstractIFPainter implements IFPainter {
 
     /**
      * Returns the intermediate format context object.
-     *
      * @return the context object
      */
     protected abstract IFContext getContext();
 
     /**
      * Returns the user agent.
-     *
      * @return the user agent
      */
     protected FOUserAgent getUserAgent() {
@@ -89,97 +91,79 @@ public abstract class AbstractIFPainter implements IFPainter {
 
     /**
      * Returns the FOP factory.
-     *
      * @return the FOP factory.
      */
     protected FopFactory getFopFactory() {
         return getUserAgent().getFactory();
     }
 
-    private AffineTransform combine(final AffineTransform[] transforms) {
-        final AffineTransform at = new AffineTransform();
-        for (final AffineTransform transform : transforms) {
-            at.concatenate(transform);
+    private AffineTransform combine(AffineTransform[] transforms) {
+        AffineTransform at = new AffineTransform();
+        for (int i = 0, c = transforms.length; i < c; i++) {
+            at.concatenate(transforms[i]);
         }
         return at;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startViewport(final AffineTransform[] transforms,
-            final Dimension size, final Rectangle clipRect) throws IFException {
+    public void startViewport(AffineTransform[] transforms, Dimension size, Rectangle clipRect)
+            throws IFException {
         startViewport(combine(transforms), size, clipRect);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startGroup(final AffineTransform[] transforms)
-            throws IFException {
+    public void startGroup(AffineTransform[] transforms) throws IFException {
         startGroup(combine(transforms));
     }
 
     /**
      * Creates a new RenderingContext instance.
-     *
      * @return the new rendering context.
      */
     protected abstract RenderingContext createRenderingContext();
 
     /**
      * Loads a preloaded image and draws it using a suitable image handler.
-     *
-     * @param info
-     *            the information object of the preloaded image
-     * @param rect
-     *            the rectangle in which to paint the image
-     * @throws ImageException
-     *             if there's an error while processing the image
-     * @throws IOException
-     *             if there's an I/O error while loading the image
+     * @param info the information object of the preloaded image
+     * @param rect the rectangle in which to paint the image
+     * @throws ImageException if there's an error while processing the image
+     * @throws IOException if there's an I/O error while loading the image
      */
-    protected void drawImageUsingImageHandler(final ImageInfo info,
-            final Rectangle rect) throws ImageException, IOException {
-        final ImageManager manager = getFopFactory().getImageManager();
-        final ImageSessionContext sessionContext = getUserAgent()
-                .getImageSessionContext();
-        final ImageHandlerRegistry imageHandlerRegistry = getFopFactory()
-                .getImageHandlerRegistry();
+    protected void drawImageUsingImageHandler(ImageInfo info, Rectangle rect)
+                    throws ImageException, IOException {
+        ImageManager manager = getFopFactory().getImageManager();
+        ImageSessionContext sessionContext = getUserAgent().getImageSessionContext();
+        ImageHandlerRegistry imageHandlerRegistry = getFopFactory().getImageHandlerRegistry();
 
-        // Load and convert the image to a supported format
-        final RenderingContext context = createRenderingContext();
-        final Map hints = createDefaultImageProcessingHints(sessionContext);
+        //Load and convert the image to a supported format
+        RenderingContext context = createRenderingContext();
+        Map hints = createDefaultImageProcessingHints(sessionContext);
         context.putHints(hints);
 
-        final ImageFlavor[] flavors = imageHandlerRegistry
-                .getSupportedFlavors(context);
-        final org.apache.xmlgraphics.image.loader.Image img = manager.getImage(
-                info, flavors, hints, sessionContext);
+        ImageFlavor[] flavors = imageHandlerRegistry.getSupportedFlavors(context);
+        org.apache.xmlgraphics.image.loader.Image img = manager.getImage(
+                    info, flavors,
+                    hints, sessionContext);
 
         try {
             drawImage(img, rect, context);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageWritingError(this, ioe);
         }
     }
 
     /**
-     * Creates the default map of processing hints for the image loading
-     * framework.
-     *
-     * @param sessionContext
-     *            the session context for access to resolution information
+     * Creates the default map of processing hints for the image loading framework.
+     * @param sessionContext the session context for access to resolution information
      * @return the default processing hints
      */
-    protected Map<Object, Object> createDefaultImageProcessingHints(
-            final ImageSessionContext sessionContext) {
-        final Map<Object, Object> hints = ImageUtil
-                .getDefaultHints(sessionContext);
+    protected Map createDefaultImageProcessingHints(ImageSessionContext sessionContext) {
+        Map hints = ImageUtil.getDefaultHints(sessionContext);
 
-        // Transfer common foreign attributes to hints
-        final Object conversionMode = getContext().getForeignAttribute(
-                ImageHandlerUtil.CONVERSION_MODE);
+        //Transfer common foreign attributes to hints
+        Object conversionMode = getContext().getForeignAttribute(ImageHandlerUtil.CONVERSION_MODE);
         if (conversionMode != null) {
             hints.put(ImageHandlerUtil.CONVERSION_MODE, conversionMode);
         }
@@ -189,58 +173,37 @@ public abstract class AbstractIFPainter implements IFPainter {
 
     /**
      * Draws an image using a suitable image handler.
-     *
-     * @param image
-     *            the image to be painted (it needs to of a supported image
-     *            flavor)
-     * @param rect
-     *            the rectangle in which to paint the image
-     * @param context
-     *            a suitable rendering context
-     * @throws IOException
-     *             in case of an I/O error while handling/writing the image
-     * @throws ImageException
-     *             if an error occurs while converting the image to a suitable
-     *             format
+     * @param image the image to be painted (it needs to of a supported image flavor)
+     * @param rect the rectangle in which to paint the image
+     * @param context a suitable rendering context
+     * @throws IOException in case of an I/O error while handling/writing the image
+     * @throws ImageException if an error occurs while converting the image to a suitable format
      */
-    protected void drawImage(final Image image, final Rectangle rect,
-            final RenderingContext context) throws IOException, ImageException {
+    protected void drawImage(Image image, Rectangle rect,
+            RenderingContext context) throws IOException, ImageException {
         drawImage(image, rect, context, false, null);
     }
 
     /**
      * Draws an image using a suitable image handler.
-     *
-     * @param image
-     *            the image to be painted (it needs to of a supported image
-     *            flavor)
-     * @param rect
-     *            the rectangle in which to paint the image
-     * @param context
-     *            a suitable rendering context
-     * @param convert
-     *            true to run the image through image conversion if that is
-     *            necessary
-     * @param additionalHints
-     *            additional image processing hints
-     * @throws IOException
-     *             in case of an I/O error while handling/writing the image
-     * @throws ImageException
-     *             if an error occurs while converting the image to a suitable
-     *             format
+     * @param image the image to be painted (it needs to of a supported image flavor)
+     * @param rect the rectangle in which to paint the image
+     * @param context a suitable rendering context
+     * @param convert true to run the image through image conversion if that is necessary
+     * @param additionalHints additional image processing hints
+     * @throws IOException in case of an I/O error while handling/writing the image
+     * @throws ImageException if an error occurs while converting the image to a suitable format
      */
-    protected void drawImage(final Image image, final Rectangle rect,
-            final RenderingContext context, final boolean convert,
-            final Map additionalHints) throws IOException, ImageException {
-        final ImageManager manager = getFopFactory().getImageManager();
-        final ImageHandlerRegistry imageHandlerRegistry = getFopFactory()
-                .getImageHandlerRegistry();
+    protected void drawImage(Image image, Rectangle rect,
+            RenderingContext context, boolean convert, Map additionalHints)
+                    throws IOException, ImageException {
+        ImageManager manager = getFopFactory().getImageManager();
+        ImageHandlerRegistry imageHandlerRegistry = getFopFactory().getImageHandlerRegistry();
 
         Image effImage;
         context.putHints(additionalHints);
         if (convert) {
-            final Map hints = createDefaultImageProcessingHints(getUserAgent()
-                    .getImageSessionContext());
+            Map hints = createDefaultImageProcessingHints(getUserAgent().getImageSessionContext());
             if (additionalHints != null) {
                 hints.putAll(additionalHints);
             }
@@ -250,14 +213,12 @@ public abstract class AbstractIFPainter implements IFPainter {
             effImage = image;
         }
 
-        // First check for a dynamically registered handler
-        final ImageHandler handler = imageHandlerRegistry.getHandler(context,
-                effImage);
+        //First check for a dynamically registered handler
+        ImageHandler handler = imageHandlerRegistry.getHandler(context, effImage);
         if (handler == null) {
             throw new UnsupportedOperationException(
                     "No ImageHandler available for image: "
-                            + effImage.getInfo() + " ("
-                            + effImage.getClass().getName() + ")");
+                        + effImage.getInfo() + " (" + effImage.getClass().getName() + ")");
         }
 
         if (log.isTraceEnabled()) {
@@ -268,32 +229,28 @@ public abstract class AbstractIFPainter implements IFPainter {
     }
 
     /**
-     * Returns an ImageInfo instance for the given URI. If there's an error,
-     * null is returned. The caller can assume that any exceptions have already
-     * been handled properly. The caller simply skips painting anything in this
-     * case.
-     *
-     * @param uri
-     *            the URI identifying the image
+     * Returns an ImageInfo instance for the given URI. If there's an error, null is returned.
+     * The caller can assume that any exceptions have already been handled properly. The caller
+     * simply skips painting anything in this case.
+     * @param uri the URI identifying the image
      * @return the ImageInfo instance or null if there has been an error.
      */
-    protected ImageInfo getImageInfo(final String uri) {
-        final ImageManager manager = getFopFactory().getImageManager();
+    protected ImageInfo getImageInfo(String uri) {
+        ImageManager manager = getFopFactory().getImageManager();
         try {
-            final ImageSessionContext sessionContext = getUserAgent()
-                    .getImageSessionContext();
+            ImageSessionContext sessionContext = getUserAgent().getImageSessionContext();
             return manager.getImageInfo(uri, sessionContext);
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageError(this, uri, ie, null);
-        } catch (final FileNotFoundException fe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (FileNotFoundException fe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageNotFound(this, uri, fe, null);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
             eventProducer.imageIOError(this, uri, ioe, null);
         }
         return null;
@@ -301,129 +258,143 @@ public abstract class AbstractIFPainter implements IFPainter {
 
     /**
      * Default drawing method for handling an image referenced by a URI.
-     *
-     * @param uri
-     *            the image's URI
-     * @param rect
-     *            the rectangle in which to paint the image
+     * @param uri the image's URI
+     * @param rect the rectangle in which to paint the image
      */
-    protected void drawImageUsingURI(final String uri, final Rectangle rect) {
-        final ImageManager manager = getFopFactory().getImageManager();
+    protected void drawImageUsingURI(String uri, Rectangle rect) {
+        ImageManager manager = getFopFactory().getImageManager();
         ImageInfo info = null;
         try {
-            final ImageSessionContext sessionContext = getUserAgent()
-                    .getImageSessionContext();
+            ImageSessionContext sessionContext = getUserAgent().getImageSessionContext();
             info = manager.getImageInfo(uri, sessionContext);
 
             drawImageUsingImageHandler(info, rect);
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageError(this,
-                    info != null ? info.toString() : uri, ie, null);
-        } catch (final FileNotFoundException fe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageNotFound(this, info != null ? info.toString()
-                    : uri, fe, null);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageIOError(this, info != null ? info.toString()
-                    : uri, ioe, null);
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageError(this, (info != null ? info.toString() : uri), ie, null);
+        } catch (FileNotFoundException fe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageNotFound(this, (info != null ? info.toString() : uri), fe, null);
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageIOError(this, (info != null ? info.toString() : uri), ioe, null);
         }
     }
 
     /**
-     * Default drawing method for handling a foreign object in the form of a DOM
-     * document.
-     *
-     * @param doc
-     *            the DOM document containing the foreign object
-     * @param rect
-     *            the rectangle in which to paint the image
+     * Default drawing method for handling a foreign object in the form of a DOM document.
+     * @param doc the DOM document containing the foreign object
+     * @param rect the rectangle in which to paint the image
      */
-    protected void drawImageUsingDocument(final Document doc,
-            final Rectangle rect) {
-        final ImageManager manager = getFopFactory().getImageManager();
+    protected void drawImageUsingDocument(Document doc, Rectangle rect) {
+        ImageManager manager = getFopFactory().getImageManager();
         ImageInfo info = null;
         try {
             info = manager.preloadImage(null, new DOMSource(doc));
 
             drawImageUsingImageHandler(info, rect);
-        } catch (final ImageException ie) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageError(this, info != null ? info.toString()
-                    : INSTREAM_OBJECT_URI, ie, null);
-        } catch (final FileNotFoundException fe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageNotFound(this, info != null ? info.toString()
-                    : INSTREAM_OBJECT_URI, fe, null);
-        } catch (final IOException ioe) {
-            final ResourceEventProducer eventProducer = ResourceEventProducer.Provider
-                    .get(getUserAgent().getEventBroadcaster());
-            eventProducer.imageIOError(this, info != null ? info.toString()
-                    : INSTREAM_OBJECT_URI, ioe, null);
+        } catch (ImageException ie) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageError(this,
+                    (info != null ? info.toString() : INSTREAM_OBJECT_URI), ie, null);
+        } catch (FileNotFoundException fe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageNotFound(this,
+                    (info != null ? info.toString() : INSTREAM_OBJECT_URI), fe, null);
+        } catch (IOException ioe) {
+            ResourceEventProducer eventProducer = ResourceEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster());
+            eventProducer.imageIOError(this,
+                    (info != null ? info.toString() : INSTREAM_OBJECT_URI), ioe, null);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void drawBorderRect(final Rectangle rect, final BorderProps before,
-            final BorderProps after, final BorderProps start,
-            final BorderProps end) throws IFException {
-        if (before != null) {
-            final Rectangle b = new Rectangle(rect.x, rect.y, rect.width,
-                    before.width);
-            fillRect(b, before.color);
+    public void drawBorderRect(Rectangle rect, BorderProps top, BorderProps bottom,
+            BorderProps left, BorderProps right) throws IFException {
+        if (top != null) {
+            Rectangle b = new Rectangle(
+                    rect.x, rect.y,
+                    rect.width, top.width);
+            fillRect(b, top.color);
         }
-        if (end != null) {
-            final Rectangle b = new Rectangle(rect.x + rect.width - end.width,
-                    rect.y, end.width, rect.height);
-            fillRect(b, end.color);
+        if (right != null) {
+            Rectangle b = new Rectangle(
+                    rect.x + rect.width - right.width, rect.y,
+                    right.width, rect.height);
+            fillRect(b, right.color);
         }
-        if (after != null) {
-            final Rectangle b = new Rectangle(rect.x, rect.y + rect.height
-                    - after.width, rect.width, after.width);
-            fillRect(b, after.color);
+        if (bottom != null) {
+            Rectangle b = new Rectangle(
+                    rect.x, rect.y + rect.height - bottom.width,
+                    rect.width, bottom.width);
+            fillRect(b, bottom.color);
         }
-        if (start != null) {
-            final Rectangle b = new Rectangle(rect.x, rect.y, start.width,
-                    rect.height);
-            fillRect(b, start.color);
+        if (left != null) {
+            Rectangle b = new Rectangle(
+                    rect.x, rect.y,
+                    left.width, rect.height);
+            fillRect(b, left.color);
         }
     }
 
+    /**
+     * Indicates whether the given border segments (if present) have only solid borders, i.e.
+     * could be painted in a simplified fashion keeping the output file smaller.
+     * @param top the border segment on the top edge
+     * @param bottom the border segment on the bottom edge
+     * @param left the border segment on the left edge
+     * @param right the border segment on the right edge
+     * @return true if any border segment has a non-solid border style
+     */
+    protected boolean hasOnlySolidBorders(BorderProps top, BorderProps bottom,
+            BorderProps left, BorderProps right) {
+        if (top != null && top.style != Constants.EN_SOLID) {
+            return false;
+        }
+        if (bottom != null && bottom.style != Constants.EN_SOLID) {
+            return false;
+        }
+        if (left != null && left.style != Constants.EN_SOLID) {
+            return false;
+        }
+        if (right != null && right.style != Constants.EN_SOLID) {
+            return false;
+        }
+        return true;
+    }
+
     /** {@inheritDoc} */
-    @Override
-    public void drawLine(final Point start, final Point end, final int width,
-            final Color color, final RuleStyle style) throws IFException {
-        final Rectangle rect = getLineBoundingBox(start, end, width);
+    public void drawLine(Point start, Point end, int width, Color color, RuleStyle style)
+            throws IFException {
+        Rectangle rect = getLineBoundingBox(start, end, width);
         fillRect(rect, color);
     }
 
     /**
-     * Calculates the bounding box for a line. Currently, only horizontal and
-     * vertical lines are needed and supported.
-     *
-     * @param start
-     *            the starting point of the line (coordinates in mpt)
-     * @param end
-     *            the ending point of the line (coordinates in mpt)
-     * @param width
-     *            the line width (in mpt)
+     * Calculates the bounding box for a line. Currently, only horizontal and vertical lines
+     * are needed and supported.
+     * @param start the starting point of the line (coordinates in mpt)
+     * @param end the ending point of the line (coordinates in mpt)
+     * @param width the line width (in mpt)
      * @return the bounding box (coordinates in mpt)
      */
-    protected Rectangle getLineBoundingBox(final Point start, final Point end,
-            final int width) {
+    protected Rectangle getLineBoundingBox(Point start, Point end, int width) {
         if (start.y == end.y) {
-            final int topy = start.y - width / 2;
-            return new Rectangle(start.x, topy, end.x - start.x, width);
+            int topy = start.y - width / 2;
+            return new Rectangle(
+                    start.x, topy,
+                    end.x - start.x, width);
         } else if (start.x == end.y) {
-            final int leftx = start.x - width / 2;
-            return new Rectangle(leftx, start.x, width, end.y - start.y);
+            int leftx = start.x - width / 2;
+            return new Rectangle(
+                    leftx, start.x,
+                    width, end.y - start.y);
         } else {
             throw new IllegalArgumentException(
                     "Only horizontal or vertical lines are supported at the moment.");
@@ -431,41 +402,37 @@ public abstract class AbstractIFPainter implements IFPainter {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setFont(final String family, final String style,
-            final Integer weight, final String variant, final Integer size,
-            final Color color) throws IFException {
+    public void setFont(String family, String style, Integer weight, String variant, Integer size,
+            Color color) throws IFException {
         if (family != null) {
-            this.state.setFontFamily(family);
+            state.setFontFamily(family);
         }
         if (style != null) {
-            this.state.setFontStyle(style);
+            state.setFontStyle(style);
         }
         if (weight != null) {
-            this.state.setFontWeight(weight.intValue());
+            state.setFontWeight(weight.intValue());
         }
         if (variant != null) {
-            this.state.setFontVariant(variant);
+            state.setFontVariant(variant);
         }
         if (size != null) {
-            this.state.setFontSize(size.intValue());
+            state.setFontSize(size.intValue());
         }
         if (color != null) {
-            this.state.setTextColor(color);
+            state.setTextColor(color);
         }
     }
 
     /**
      * Converts a transformation matrix from millipoints to points.
-     *
-     * @param transform
-     *            the transformation matrix (in millipoints)
+     * @param transform the transformation matrix (in millipoints)
      * @return the converted transformation matrix (in points)
      */
-    public static AffineTransform toPoints(final AffineTransform transform) {
+    public static AffineTransform toPoints(AffineTransform transform) {
         final double[] matrix = new double[6];
         transform.getMatrix(matrix);
-        // Convert from millipoints to points
+        //Convert from millipoints to points
         matrix[4] /= 1000;
         matrix[5] /= 1000;
         return new AffineTransform(matrix);

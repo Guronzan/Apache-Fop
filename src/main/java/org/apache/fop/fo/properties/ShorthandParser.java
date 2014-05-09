@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ShorthandParser.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ShorthandParser.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.properties;
 
@@ -29,15 +29,15 @@ import org.apache.fop.fo.expr.PropertyException;
 public interface ShorthandParser {
 
     /**
-     * @param propId
-     *            the property ID in the Constants interface
-     * @param maker
-     *            Maker object for the Property
-     * @param propertyList
-     *            list of properties
+     * @param propId the property ID in the Constants interface
+     * @param property from which value is obtained
+     * @param maker Maker object for the Property
+     * @param propertyList list of properties
      * @return Property object corresponding to propName
+     * @throws PropertyException in case a property exception occurs
      */
-    Property getValueForProperty(final int propId, final Property property,
-            final PropertyMaker maker, final PropertyList propertyList)
-            throws PropertyException;
+    Property getValueForProperty(int propId,
+                                 Property property,
+                                 PropertyMaker maker,
+                                 PropertyList propertyList) throws PropertyException;
 }

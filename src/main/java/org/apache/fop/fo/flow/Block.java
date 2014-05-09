@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-/* $Id: Block.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: Block.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
 import java.awt.Color;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.Length;
@@ -31,6 +33,8 @@ import org.apache.fop.fo.NullCharIterator;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.properties.BreakPropertySet;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonFont;
 import org.apache.fop.fo.properties.CommonHyphenation;
@@ -38,21 +42,20 @@ import org.apache.fop.fo.properties.CommonMarginBlock;
 import org.apache.fop.fo.properties.CommonRelativePosition;
 import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.SpaceProperty;
-import org.apache.fop.fo.properties.StructurePointerPropertySet;
-import org.xml.sax.Locator;
 
-/**
- * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_block">
- * <code>fo:block object</code></a>.
- */
+ /**
+  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_block">
+  * <code>fo:block object</code></a>.
+  */
 public class Block extends FObjMixed implements BreakPropertySet,
-StructurePointerPropertySet {
+        CommonAccessibilityHolder {
 
     // used for FO validation
     private boolean blockOrInlineItemFound = false;
     private boolean initialPropertySetFound = false;
 
-    // The value of properties relevant for fo:block.
+    // The value of FO traits (refined properties) that apply to fo:block.
+    private CommonAccessibility commonAccessibility;
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     private CommonFont commonFont;
     private CommonHyphenation commonHyphenation;
@@ -73,7 +76,6 @@ StructurePointerPropertySet {
     private int lineHeightShiftAdjustment;
     private int lineStackingStrategy;
     private Numeric orphans;
-    private String ptr; // used for accessibility
     private int whiteSpaceTreatment;
     private int span;
     private int textAlign;
@@ -83,246 +85,229 @@ StructurePointerPropertySet {
     private Numeric widows;
     private int wrapOption;
     private int disableColumnBalancing;
-
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
-    // private CommonAural commonAural;
-    // private Length textDepth;
-    // private Length textAltitude;
-    // private int visibility;
-    // End of property values
+    //     private CommonAccessibility commonAccessibility;
+    //     private CommonAural commonAural;
+    //     private Length textDepth;
+    //     private Length textAltitude;
+    //     private int visibility;
+    // End of FO trait values
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      *
      */
-    public Block(final FONode parent) {
+    public Block(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
-        this.commonFont = pList.getFontProps();
-        this.commonHyphenation = pList.getHyphenationProps();
-        this.commonMarginBlock = pList.getMarginBlockProps();
-        this.commonRelativePosition = pList.getRelativePositionProps();
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
+        commonFont = pList.getFontProps();
+        commonHyphenation = pList.getHyphenationProps();
+        commonMarginBlock = pList.getMarginBlockProps();
+        commonRelativePosition = pList.getRelativePositionProps();
 
-        this.breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
-        this.breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
-        this.color = pList.get(PR_COLOR).getColor(getUserAgent());
-        this.hyphenationKeep = pList.get(PR_HYPHENATION_KEEP).getEnum();
-        this.hyphenationLadderCount = pList.get(PR_HYPHENATION_LADDER_COUNT)
-                .getNumeric();
-        this.intrusionDisplace = pList.get(PR_INTRUSION_DISPLACE).getEnum();
-        this.keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
-        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        this.lastLineEndIndent = pList.get(PR_LAST_LINE_END_INDENT).getLength();
-        this.linefeedTreatment = pList.get(PR_LINEFEED_TREATMENT).getEnum();
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        this.lineHeightShiftAdjustment = pList.get(
-                PR_LINE_HEIGHT_SHIFT_ADJUSTMENT).getEnum();
-        this.lineStackingStrategy = pList.get(PR_LINE_STACKING_STRATEGY)
-                .getEnum();
-        this.orphans = pList.get(PR_ORPHANS).getNumeric();
-        this.ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
-        this.whiteSpaceTreatment = pList.get(PR_WHITE_SPACE_TREATMENT)
-                .getEnum();
-        this.span = pList.get(PR_SPAN).getEnum();
-        this.textAlign = pList.get(PR_TEXT_ALIGN).getEnum();
-        this.textAlignLast = pList.get(PR_TEXT_ALIGN_LAST).getEnum();
-        this.textIndent = pList.get(PR_TEXT_INDENT).getLength();
-        this.whiteSpaceCollapse = pList.get(PR_WHITE_SPACE_COLLAPSE).getEnum();
-        this.widows = pList.get(PR_WIDOWS).getNumeric();
-        this.wrapOption = pList.get(PR_WRAP_OPTION).getEnum();
-        this.disableColumnBalancing = pList.get(PR_X_DISABLE_COLUMN_BALANCING)
-                .getEnum();
+        breakAfter = pList.get(PR_BREAK_AFTER).getEnum();
+        breakBefore = pList.get(PR_BREAK_BEFORE).getEnum();
+        color = pList.get(PR_COLOR).getColor(getUserAgent());
+        hyphenationKeep = pList.get(PR_HYPHENATION_KEEP).getEnum();
+        hyphenationLadderCount = pList.get(PR_HYPHENATION_LADDER_COUNT).getNumeric();
+        intrusionDisplace = pList.get(PR_INTRUSION_DISPLACE).getEnum();
+        keepTogether = pList.get(PR_KEEP_TOGETHER).getKeep();
+        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        lastLineEndIndent = pList.get(PR_LAST_LINE_END_INDENT).getLength();
+        linefeedTreatment = pList.get(PR_LINEFEED_TREATMENT).getEnum();
+        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        lineHeightShiftAdjustment = pList.get(PR_LINE_HEIGHT_SHIFT_ADJUSTMENT).getEnum();
+        lineStackingStrategy = pList.get(PR_LINE_STACKING_STRATEGY).getEnum();
+        orphans = pList.get(PR_ORPHANS).getNumeric();
+        whiteSpaceTreatment = pList.get(PR_WHITE_SPACE_TREATMENT).getEnum();
+        span = pList.get(PR_SPAN).getEnum();
+        textAlign = pList.get(PR_TEXT_ALIGN).getEnum();
+        textAlignLast = pList.get(PR_TEXT_ALIGN_LAST).getEnum();
+        textIndent = pList.get(PR_TEXT_INDENT).getLength();
+        whiteSpaceCollapse = pList.get(PR_WHITE_SPACE_COLLAPSE).getEnum();
+        widows = pList.get(PR_WIDOWS).getNumeric();
+        wrapOption = pList.get(PR_WRAP_OPTION).getEnum();
+        disableColumnBalancing = pList.get(PR_X_DISABLE_COLUMN_BALANCING).getEnum();
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBlock(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endBlock(this);
     }
 
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
+    }
+
     /** @return the {@link CommonMarginBlock} */
     public CommonMarginBlock getCommonMarginBlock() {
-        return this.commonMarginBlock;
+        return commonMarginBlock;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
     /**
-     * @return the {@link CommonFont}
-     */
+     * @return the {@link CommonFont} */
     public CommonFont getCommonFont() {
-        return this.commonFont;
+        return commonFont;
     }
 
     /** @return the {@link CommonHyphenation} */
     public CommonHyphenation getCommonHyphenation() {
-        return this.commonHyphenation;
+        return commonHyphenation;
     }
 
-    /** @return the "break-after" property. */
-    @Override
+    /** @return the "break-after" trait. */
     public int getBreakAfter() {
-        return this.breakAfter;
+        return breakAfter;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String getPtr() {
-        return this.ptr;
-    }
-
-    /** @return the "break-before" property. */
-    @Override
+    /** @return the "break-before" trait. */
     public int getBreakBefore() {
-        return this.breakBefore;
+        return breakBefore;
     }
 
-    /** @return the "hyphenation-ladder-count" property. */
+    /** @return the "hyphenation-ladder-count" trait.  */
     public Numeric getHyphenationLadderCount() {
-        return this.hyphenationLadderCount;
+        return hyphenationLadderCount;
     }
 
-    /** @return the "keep-with-next" property. */
+    /** @return the "keep-with-next" trait.  */
     public KeepProperty getKeepWithNext() {
-        return this.keepWithNext;
+        return keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property. */
+    /** @return the "keep-with-previous" trait.  */
     public KeepProperty getKeepWithPrevious() {
-        return this.keepWithPrevious;
+        return keepWithPrevious;
     }
 
-    /** @return the "keep-together" property. */
+    /** @return the "keep-together" trait.  */
     public KeepProperty getKeepTogether() {
-        return this.keepTogether;
+        return keepTogether;
     }
 
-    /** @return the "orphans" property. */
+    /** @return the "orphans" trait.  */
     public int getOrphans() {
-        return this.orphans.getValue();
+        return orphans.getValue();
     }
 
-    /** @return the "widows" property. */
+    /** @return the "widows" trait.  */
     public int getWidows() {
-        return this.widows.getValue();
+        return widows.getValue();
     }
 
-    /** @return the "line-stacking-strategy" property. */
+    /** @return the "line-stacking-strategy" trait.  */
     public int getLineStackingStrategy() {
-        return this.lineStackingStrategy;
+        return lineStackingStrategy;
     }
 
-    /** @return the "color" property */
+    /** @return the "color" trait */
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
-    /** @return the "line-height" property */
+    /** @return the "line-height" trait */
     public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+        return lineHeight;
     }
 
-    /** @return the "span" property */
+    /** @return the "span" trait */
     public int getSpan() {
         return this.span;
     }
 
-    /** @return the "text-align" property */
+    /** @return the "text-align" trait */
     public int getTextAlign() {
-        return this.textAlign;
+        return textAlign;
     }
 
-    /** @return the "text-align-last" property */
+    /** @return the "text-align-last" trait */
     public int getTextAlignLast() {
-        return this.textAlignLast;
+        return textAlignLast;
     }
 
-    /** @return the "text-indent" property */
+    /** @return the "text-indent" trait */
     public Length getTextIndent() {
-        return this.textIndent;
+        return textIndent;
     }
 
-    /** @return the "last-line-end-indent" property */
+    /** @return the "last-line-end-indent" trait */
     public Length getLastLineEndIndent() {
-        return this.lastLineEndIndent;
+        return lastLineEndIndent;
     }
 
-    /** @return the "wrap-option" property */
+    /** @return the "wrap-option" trait */
     public int getWrapOption() {
-        return this.wrapOption;
+        return wrapOption;
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: marker* initial-property-set?
-     * (#PCDATA|%inline;|%block;)* <br>
-     * <i>Additionally: "An fo:bidi-override that is a descendant of an
-     * fo:leader or of the fo:inline child of an fo:footnote may not have
-     * block-level children, unless it has a nearer ancestor that is an
-     * fo:inline-container."</i>
+     * {@inheritDoc}
+     * <br>XSL Content Model: marker* initial-property-set? (#PCDATA|%inline;|%block;)*
+     * <br><i>Additionally: "An fo:bidi-override that is a descendant of an fo:leader
+     *  or of the fo:inline child of an fo:footnote may not have block-level
+     *  children, unless it has a nearer ancestor that is an
+     *  fo:inline-container."</i>
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+            throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if ("marker".equals(localName)) {
-                if (this.blockOrInlineItemFound || this.initialPropertySetFound) {
-                    nodesOutOfOrderError(loc, "fo:marker",
-                            "initial-property-set? (#PCDATA|%inline;|%block;)");
+                if (blockOrInlineItemFound || initialPropertySetFound) {
+                   nodesOutOfOrderError(loc, "fo:marker",
+                        "initial-property-set? (#PCDATA|%inline;|%block;)");
                 }
             } else if ("initial-property-set".equals(localName)) {
-                if (this.initialPropertySetFound) {
+                if (initialPropertySetFound) {
                     tooManyNodesError(loc, "fo:initial-property-set");
-                } else if (this.blockOrInlineItemFound) {
+                } else if (blockOrInlineItemFound) {
                     nodesOutOfOrderError(loc, "fo:initial-property-set",
-                            "(#PCDATA|%inline;|%block;)");
+                        "(#PCDATA|%inline;|%block;)");
                 } else {
-                    this.initialPropertySetFound = true;
+                    initialPropertySetFound = true;
                 }
             } else if (isBlockOrInlineItem(nsURI, localName)) {
-                this.blockOrInlineItemFound = true;
+                blockOrInlineItemFound = true;
             } else {
                 invalidChildError(loc, nsURI, localName);
             }
         }
     }
 
-    /** @return the "linefeed-treatment" property */
+    /** @return the "linefeed-treatment" trait */
     public int getLinefeedTreatment() {
-        return this.linefeedTreatment;
+        return linefeedTreatment;
     }
 
-    /** @return the "white-space-treatment" property */
+    /** @return the "white-space-treatment" trait */
     public int getWhitespaceTreatment() {
-        return this.whiteSpaceTreatment;
+        return whiteSpaceTreatment;
     }
 
-    /** @return the "white-space-collapse" property */
+    /** @return the "white-space-collapse" trait */
     public int getWhitespaceCollapse() {
-        return this.whiteSpaceCollapse;
+        return whiteSpaceCollapse;
     }
 
     /** @return the {@link CommonRelativePosition} */
@@ -330,47 +315,45 @@ StructurePointerPropertySet {
         return this.commonRelativePosition;
     }
 
-    /** @return the "hyphenation-keep" property */
+    /** @return the "hyphenation-keep" trait */
     public int getHyphenationKeep() {
         return this.hyphenationKeep;
     }
 
-    /** @return the "intrusion-displace" property */
+    /** @return the "intrusion-displace" trait */
     public int getIntrusionDisplace() {
         return this.intrusionDisplace;
     }
 
-    /** @return the "line-height-shift-adjustment" property */
+    /** @return the "line-height-shift-adjustment" trait */
     public int getLineHeightShiftAdjustment() {
         return this.lineHeightShiftAdjustment;
     }
 
-    /**
+     /**
      * @return the "fox:disable-column-balancing" property, one of
-     *         {@link Constants#EN_TRUE}, {@link Constants#EN_FALSE}
+     * {@link org.apache.fop.fo.Constants#EN_TRUE},
+     * {@link org.apache.fop.fo.Constants#EN_FALSE}
      */
     public int getDisableColumnBalancing() {
-        return this.disableColumnBalancing;
+        return disableColumnBalancing;
     }
 
+
     /** {@inheritDoc} */
-    @Override
     public CharIterator charIterator() {
         return NullCharIterator.getInstance();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "block";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_BLOCK}
      */
-    @Override
     public int getNameId() {
         return FO_BLOCK;
     }

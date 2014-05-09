@@ -20,9 +20,9 @@
 package org.apache.fop.afp.fonts;
 
 /**
- * This class encapsulates the font attributes that need to be included in the
- * AFP data stream. This class does not assist in converting the font attributes
- * to AFP code pages and character set values.
+ * This class encapsulates the font attributes that need to be included
+ * in the AFP data stream. This class does not assist in converting the
+ * font attributes to AFP code pages and character set values.
  */
 public class AFPFontAttributes {
 
@@ -41,15 +41,11 @@ public class AFPFontAttributes {
     /**
      * Constructor for the AFPFontAttributes
      *
-     * @param fontKey
-     *            the font key
-     * @param font
-     *            the font
-     * @param pointSize
-     *            the point size
+     * @param fontKey the font key
+     * @param font the font
+     * @param pointSize the point size
      */
-    public AFPFontAttributes(final String fontKey, final AFPFont font,
-            final int pointSize) {
+    public AFPFontAttributes(String fontKey, AFPFont font, int pointSize) {
         this.fontKey = fontKey;
         this.font = font;
         this.pointSize = pointSize;
@@ -61,7 +57,7 @@ public class AFPFontAttributes {
      * @return the font
      */
     public AFPFont getFont() {
-        return this.font;
+        return font;
     }
 
     /**
@@ -70,7 +66,7 @@ public class AFPFontAttributes {
      * @return the FontKey attribute
      */
     public String getFontKey() {
-        return this.fontKey + this.pointSize;
+        return fontKey + pointSize;
     }
 
     /**
@@ -79,7 +75,7 @@ public class AFPFontAttributes {
      * @return the point size attribute
      */
     public int getPointSize() {
-        return this.pointSize;
+        return pointSize;
     }
 
     /**
@@ -88,24 +84,23 @@ public class AFPFontAttributes {
      * @return the FontReference attribute
      */
     public int getFontReference() {
-        return this.fontReference;
+        return fontReference;
     }
 
     /**
      * Sets the FontReference attribute
      *
-     * @param fontReference
-     *            the FontReference to set
+     * @param fontReference the FontReference to set
      */
-    public void setFontReference(final int fontReference) {
+    public void setFontReference(int fontReference) {
         this.fontReference = fontReference;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "fontReference=" + this.fontReference + ", fontKey="
-                + this.fontKey + ", font=" + this.font + ", pointSize="
-                + this.pointSize;
+        return "fontReference=" + fontReference
+            + ", fontKey=" + fontKey
+            + ", font=" + font
+            + ", pointSize=" + pointSize;
     }
 }

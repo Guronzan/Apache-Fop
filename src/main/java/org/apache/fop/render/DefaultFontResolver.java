@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: DefaultFontResolver.java 757341 2009-03-23 07:54:43Z jeremias $ */
+/* $Id: DefaultFontResolver.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.render;
 
@@ -25,28 +25,28 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.fonts.FontResolver;
 
 /**
- * Default FontResolver implementation which uses the FOUserAgent to resolve
- * font URIs.
+ * Default FontResolver implementation which uses the FOUserAgent to resolve font URIs.
  */
 public class DefaultFontResolver implements FontResolver {
 
-    private final FOUserAgent userAgent;
+    private FOUserAgent userAgent;
 
     /**
      * Main constructor.
-     * 
-     * @param userAgent
-     *            the user agent
+     * @param userAgent the user agent
      */
-    public DefaultFontResolver(final FOUserAgent userAgent) {
+    public DefaultFontResolver(FOUserAgent userAgent) {
         this.userAgent = userAgent;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Source resolve(final String href) {
-        return this.userAgent.resolveURI(href, this.userAgent.getFactory()
-                .getFontManager().getFontBaseURL());
+    public Source resolve(String href) {
+        return userAgent.resolveURI(href, userAgent.getFactory().getFontManager().getFontBaseURL());
+    }
+
+    /** {@inheritDoc} */
+    public boolean isComplexScriptFeaturesEnabled() {
+        return userAgent.isComplexScriptFeaturesEnabled();
     }
 
 }

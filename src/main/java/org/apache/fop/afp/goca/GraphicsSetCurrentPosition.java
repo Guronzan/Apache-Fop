@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsSetCurrentPosition.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsSetCurrentPosition.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -27,16 +27,14 @@ public class GraphicsSetCurrentPosition extends AbstractGraphicsCoord {
     /**
      * Constructor
      *
-     * @param coords
-     *            the x/y coordinates for this object
+     * @param coords the x/y coordinates for this object
      */
-    public GraphicsSetCurrentPosition(final int[] coords) {
+    public GraphicsSetCurrentPosition(int[] coords) {
         super(coords);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected byte getOrderCode() {
-        return (byte) 0x21;
+        return (byte)0x21;
     }
 }

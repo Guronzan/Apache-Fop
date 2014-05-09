@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageOutputControl.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: ImageOutputControl.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.ioca;
 
@@ -64,16 +64,15 @@ public class ImageOutputControl extends AbstractAFPObject {
      * @param y
      *            The Y-axis offset.
      */
-    public ImageOutputControl(final int x, final int y) {
-        this.xCoord = x;
-        this.yCoord = y;
+    public ImageOutputControl(int x, int y) {
+        xCoord = x;
+        yCoord = y;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
+    public void writeToStream(OutputStream os) throws IOException {
 
-        final byte[] data = new byte[33];
+        byte[] data = new byte[33];
 
         data[0] = 0x5A;
         data[1] = 0x00;
@@ -86,53 +85,53 @@ public class ImageOutputControl extends AbstractAFPObject {
         data[8] = 0x00;
 
         // XoaOset
-        final byte[] x1 = BinaryUtils.convert(this.xCoord, 3);
+        byte[] x1 = BinaryUtils.convert(xCoord, 3);
         data[9] = x1[0];
         data[10] = x1[1];
         data[11] = x1[2];
 
         // YoaOset
-        final byte[] x2 = BinaryUtils.convert(this.yCoord, 3);
+        byte[] x2 = BinaryUtils.convert(yCoord, 3);
         data[12] = x2[0];
         data[13] = x2[1];
         data[14] = x2[2];
 
-        switch (this.orientation) {
-        case 0:
-            // 0 and 90 degrees respectively
-            data[15] = 0x00;
-            data[16] = 0x00;
-            data[17] = 0x2D;
-            data[18] = 0x00;
-            break;
-        case 90:
-            // 90 and 180 degrees respectively
-            data[15] = 0x2D;
-            data[16] = 0x00;
-            data[17] = 0x5A;
-            data[18] = 0x00;
-            break;
-        case 180:
-            // 180 and 270 degrees respectively
-            data[15] = 0x5A;
-            data[16] = 0x00;
-            data[17] = (byte) 0x87;
-            data[18] = 0x00;
-            break;
-        case 270:
-            // 270 and 0 degrees respectively
-            data[15] = (byte) 0x87;
-            data[16] = 0x00;
-            data[17] = 0x00;
-            data[18] = 0x00;
-            break;
-        default:
-            // 0 and 90 degrees respectively
-            data[15] = 0x00;
-            data[16] = 0x00;
-            data[17] = 0x2D;
-            data[18] = 0x00;
-            break;
+        switch (orientation) {
+            case 0:
+                // 0 and 90 degrees respectively
+                data[15] = 0x00;
+                data[16] = 0x00;
+                data[17] = 0x2D;
+                data[18] = 0x00;
+                break;
+            case 90:
+                // 90 and 180 degrees respectively
+                data[15] = 0x2D;
+                data[16] = 0x00;
+                data[17] = 0x5A;
+                data[18] = 0x00;
+                break;
+            case 180:
+                // 180 and 270 degrees respectively
+                data[15] = 0x5A;
+                data[16] = 0x00;
+                data[17] = (byte) 0x87;
+                data[18] = 0x00;
+                break;
+            case 270:
+                // 270 and 0 degrees respectively
+                data[15] = (byte) 0x87;
+                data[16] = 0x00;
+                data[17] = 0x00;
+                data[18] = 0x00;
+                break;
+            default:
+                // 0 and 90 degrees respectively
+                data[15] = 0x00;
+                data[16] = 0x00;
+                data[17] = 0x2D;
+                data[18] = 0x00;
+                break;
 
         }
 
@@ -146,7 +145,7 @@ public class ImageOutputControl extends AbstractAFPObject {
         data[25] = 0x00;
         data[26] = 0x00;
 
-        if (this.singlePoint) {
+        if (singlePoint) {
             data[27] = 0x03;
             data[28] = (byte) 0xE8;
             data[29] = 0x03;
@@ -172,14 +171,14 @@ public class ImageOutputControl extends AbstractAFPObject {
      * @param orientation
      *            The orientation to set.
      */
-    public void setOrientation(final int orientation) {
+    public void setOrientation(int orientation) {
 
         if (orientation == 0 || orientation == 90 || orientation == 180
-                || orientation == 270) {
+            || orientation == 270) {
             this.orientation = orientation;
         } else {
             throw new IllegalArgumentException(
-                    "The orientation must be one of the values 0, 90, 180, 270");
+                "The orientation must be one of the values 0, 90, 180, 270");
         }
     }
 
@@ -191,7 +190,7 @@ public class ImageOutputControl extends AbstractAFPObject {
      * @param singlepoint
      *            Use the singlepoint basis when true.
      */
-    public void setSinglepoint(final boolean singlepoint) {
-        this.singlePoint = singlepoint;
+    public void setSinglepoint(boolean singlepoint) {
+        singlePoint = singlepoint;
     }
 }

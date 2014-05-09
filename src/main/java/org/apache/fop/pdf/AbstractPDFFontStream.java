@@ -19,6 +19,7 @@
 
 package org.apache.fop.pdf;
 
+
 /**
  * Base class for PDF font streams.
  */
@@ -32,7 +33,6 @@ public abstract class AbstractPDFFontStream extends AbstractPDFStream {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected String getDefaultFilterName() {
         return PDFFilterList.FONT_FILTER;
     }

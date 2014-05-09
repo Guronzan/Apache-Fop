@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: AFPRectanglePainter.java 894416 2009-12-29 15:15:26Z cbowditch $ */
+/* $Id: AFPRectanglePainter.java 1296432 2012-03-02 20:10:46Z gadams $ */
 
 package org.apache.fop.afp;
 
 import java.awt.geom.AffineTransform;
+
 
 /**
  * A painter of rectangles in AFP
@@ -29,68 +30,64 @@ public class AFPRectanglePainter extends AbstractAFPPainter {
     /**
      * Main constructor
      *
-     * @param paintingState
-     *            the AFP painting state
-     * @param dataStream
-     *            the AFP datastream
+     * @param paintingState the AFP painting state
+     * @param dataStream the AFP datastream
      */
-    public AFPRectanglePainter(final AFPPaintingState paintingState,
-            final DataStream dataStream) {
+    public AFPRectanglePainter(AFPPaintingState paintingState, DataStream dataStream) {
         super(paintingState, dataStream);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void paint(final PaintingInfo paintInfo) {
-        final RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo) paintInfo;
-        final int pageWidth = this.dataStream.getCurrentPage().getWidth();
-        final int pageHeight = this.dataStream.getCurrentPage().getHeight();
+    public void paint(PaintingInfo paintInfo) {
+        RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo)paintInfo;
+        int pageWidth = dataStream.getCurrentPage().getWidth();
+        int pageHeight = dataStream.getCurrentPage().getHeight();
+        int yNew;
 
-        final AFPUnitConverter unitConv = this.paintingState.getUnitConverter();
-        final float width = unitConv.pt2units(rectanglePaintInfo.getWidth());
-        final float height = unitConv.pt2units(rectanglePaintInfo.getHeight());
-        final float x = unitConv.pt2units(rectanglePaintInfo.getX());
-        final float y = unitConv.pt2units(rectanglePaintInfo.getY());
+        AFPUnitConverter unitConv = paintingState.getUnitConverter();
+        float width = unitConv.pt2units(rectanglePaintInfo.getWidth());
+        float height = unitConv.pt2units(rectanglePaintInfo.getHeight());
+        float x = unitConv.pt2units(rectanglePaintInfo.getX());
+        float y = unitConv.pt2units(rectanglePaintInfo.getY());
 
-        final AffineTransform at = this.paintingState.getData().getTransform();
+        AffineTransform at = paintingState.getData().getTransform();
 
-        final AFPLineDataInfo lineDataInfo = new AFPLineDataInfo();
-        lineDataInfo.color = this.paintingState.getColor();
-        lineDataInfo.rotation = this.paintingState.getRotation();
-        lineDataInfo.thickness = Math.round(height);
+        AFPLineDataInfo lineDataInfo = new AFPLineDataInfo();
+        lineDataInfo.setColor ( paintingState.getColor() );
+        lineDataInfo.setRotation ( paintingState.getRotation() );
+        lineDataInfo.setThickness ( Math.round(height) );
 
-        switch (lineDataInfo.rotation) {
-        case 0:
-            lineDataInfo.x1 = Math.round((float) at.getTranslateX() + x);
-            lineDataInfo.y1 = lineDataInfo.y2 = Math.round((float) at
-                    .getTranslateY() + y);
-            lineDataInfo.x2 = Math
-                    .round((float) at.getTranslateX() + x + width);
-            break;
+        switch (lineDataInfo.getRotation()) {
         case 90:
-            lineDataInfo.x1 = Math.round((float) at.getTranslateY() + x);
-            lineDataInfo.y1 = lineDataInfo.y2 = pageWidth
-                    - Math.round((float) at.getTranslateX()) + Math.round(y);
-            lineDataInfo.x2 = Math
-                    .round(width + (float) at.getTranslateY() + x);
+            lineDataInfo.setX1 ( Math.round((float)at.getTranslateY() + x) );
+            yNew = pageWidth - Math.round((float)at.getTranslateX()) + Math.round(y);
+            lineDataInfo.setY1 ( yNew );
+            lineDataInfo.setY2 ( yNew );
+            lineDataInfo.setX2 ( Math.round(width + (float)at.getTranslateY() + x) );
             break;
         case 180:
-            lineDataInfo.x1 = pageWidth
-            - Math.round((float) at.getTranslateX() - x);
-            lineDataInfo.y1 = lineDataInfo.y2 = pageHeight
-                    - Math.round((float) at.getTranslateY() - y);
-            lineDataInfo.x2 = pageWidth
-                    - Math.round((float) at.getTranslateX() - x - width);
+            lineDataInfo.setX1 ( pageWidth - Math.round((float)at.getTranslateX() - x) );
+            yNew = pageHeight - Math.round((float)at.getTranslateY() - y);
+            lineDataInfo.setY1 ( yNew );
+            lineDataInfo.setY2 ( yNew );
+            lineDataInfo.setX2 ( pageWidth - Math.round((float)at.getTranslateX() - x - width) );
             break;
         case 270:
-            lineDataInfo.x1 = pageHeight
-            - Math.round((float) at.getTranslateY() - x);
-            lineDataInfo.y1 = lineDataInfo.y2 = Math.round((float) at
-                    .getTranslateX() + y);
-            lineDataInfo.x2 = pageHeight
-                    - Math.round((float) at.getTranslateY() - x - width);
+            lineDataInfo.setX1 ( pageHeight - Math.round((float)at.getTranslateY() - x) );
+            yNew = Math.round((float)at.getTranslateX() + y);
+            lineDataInfo.setY1 ( yNew );
+            lineDataInfo.setY2 ( yNew );
+            lineDataInfo.setX2 ( pageHeight - Math.round((float)at.getTranslateY() - x - width) );
+            break;
+        case 0:
+        default:
+            lineDataInfo.setX1 ( Math.round((float)at.getTranslateX() + x) );
+            yNew = Math.round((float)at.getTranslateY() + y);
+            lineDataInfo.setY1 ( yNew );
+            lineDataInfo.setY2 ( yNew );
+            lineDataInfo.setX2 ( Math.round((float)at.getTranslateX() + x + width) );
             break;
         }
-        this.dataStream.createLine(lineDataInfo);
+        dataStream.createLine(lineDataInfo);
     }
 }

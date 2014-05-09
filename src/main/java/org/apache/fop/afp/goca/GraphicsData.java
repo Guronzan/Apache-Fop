@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsData.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsData.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -32,10 +32,13 @@ import org.apache.fop.afp.util.StringUtils;
 public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
 
     /** the maximum graphics data length */
-    public static final int MAX_DATA_LEN = 8192;
+    public static final int MAX_DATA_LEN = GraphicsChainedSegment.MAX_DATA_LEN + 16;
+    //+16 to avoid unnecessary, practically empty GraphicsData instances.
 
     /** the graphics segment */
     private GraphicsChainedSegment currentSegment = null;
+
+    private boolean segmentedData;
 
     /**
      * Main constructor
@@ -50,42 +53,62 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
     }
 
     /**
+     * Sets the indicator that this instance is a part of a series of segmented data chunks.
+     * This indirectly sets the SegFlag on the SFI header.
+     * @param segmented true if this data object is not the last of the series
+     */
+    public void setSegmentedData(boolean segmented) {
+        this.segmentedData = segmented;
+    }
+
+    /**
      * Returns a new segment name
      *
      * @return a new segment name
      */
     public String createSegmentName() {
-        return StringUtils.lpad(
-                String.valueOf((super.objects != null ? super.objects.size()
-                        : 0) + 1), '0', 4);
+        return StringUtils.lpad(String.valueOf(
+                (super.objects != null ? super.objects.size() : 0) + 1),
+            '0', 4);
     }
 
     /**
-     * Creates a new graphics segment
+     * Creates a new graphics segment.
      *
      * @return a newly created graphics segment
      */
     public GraphicsChainedSegment newSegment() {
-        final String segmentName = createSegmentName();
-        if (this.currentSegment == null) {
-            this.currentSegment = new GraphicsChainedSegment(segmentName);
+        return newSegment(false, false);
+    }
+
+    /**
+     * Creates a new graphics segment.
+     * @param appended true if this segment is appended to the previous one
+     * @param prologPresent true if started with a prolog
+     * @return a newly created graphics segment
+     */
+    public GraphicsChainedSegment newSegment(boolean appended, boolean prologPresent) {
+        String segmentName = createSegmentName();
+        if (currentSegment == null) {
+            currentSegment = new GraphicsChainedSegment(segmentName);
         } else {
-            this.currentSegment.setComplete(true);
-            this.currentSegment = new GraphicsChainedSegment(segmentName,
-                    this.currentSegment.getNameBytes());
+            currentSegment.setComplete(true);
+            currentSegment = new GraphicsChainedSegment(segmentName,
+                    currentSegment.getNameBytes(), appended, prologPresent);
         }
-        super.addObject(this.currentSegment);
-        return this.currentSegment;
+        super.addObject(currentSegment);
+        return currentSegment;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addObject(final StructuredData object) {
-        if (this.currentSegment == null
-                || this.currentSegment.getDataLength() + object.getDataLength() >= GraphicsChainedSegment.MAX_DATA_LEN) {
-            newSegment();
+    public void addObject(StructuredData object) {
+        if (currentSegment == null
+                || (currentSegment.getDataLength() + object.getDataLength())
+                >= GraphicsChainedSegment.MAX_DATA_LEN) {
+            newSegment(true, false);
         }
-        this.currentSegment.addObject(object);
+        currentSegment.addObject(object);
     }
 
     /**
@@ -100,32 +123,34 @@ public final class GraphicsData extends AbstractGraphicsDrawingOrderContainer {
 
     /** {@inheritDoc} */
     @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[9];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[9];
         copySF(data, SF_CLASS, Type.DATA, Category.GRAPHICS);
-        final int dataLength = getDataLength();
-        final byte[] len = BinaryUtils.convert(dataLength, 2);
+        int dataLength = getDataLength();
+        byte[] len = BinaryUtils.convert(dataLength, 2);
         data[1] = len[0]; // Length byte 1
         data[2] = len[1]; // Length byte 2
+        if (this.segmentedData) {
+            data[6] |= 32; //Data is segmented
+        }
         os.write(data);
 
-        writeObjects(this.objects, os);
+        writeObjects(objects, os);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "GraphicsData";
+        return "GraphicsData(len: " + getDataLength() + ")";
     }
 
     /**
      * Adds the given segment to this graphics data
      *
-     * @param segment
-     *            a graphics chained segment
+     * @param segment a graphics chained segment
      */
-    public void addSegment(final GraphicsChainedSegment segment) {
-        this.currentSegment = segment;
-        super.addObject(this.currentSegment);
+    public void addSegment(GraphicsChainedSegment segment) {
+        currentSegment = segment;
+        super.addObject(currentSegment);
     }
 }

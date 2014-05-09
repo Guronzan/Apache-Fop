@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfAfterBeforeBase.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfAfterBeforeBase.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,68 +30,63 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Common code for RtfAfter and RtfBefore
- * 
- * @author Andreas Lambert <andreas.lambert@cronidesoft.com>
- * @author Christopher Scott, scottc@westinghouse.com
- * @author Christoph Zahm <zahm@jnet.ch> (support for tables in headers/footers)
+ * <p>Common code for RtfAfter and RtfBefore.</p>
+ *
+ * <p>This work was authored by Andreas Lambert (andreas.lambert@cronidesoft.com),
+ * Christopher Scott (scottc@westinghouse.com), and
+ * Christoph Zahm (zahm@jnet.ch) [support for tables in headers/footers].</p>
  */
 
-abstract class RtfAfterBeforeBase extends RtfContainer implements
-        IRtfParagraphContainer, IRtfExternalGraphicContainer,
-        IRtfTableContainer, IRtfTextrunContainer {
+abstract class RtfAfterBeforeBase
+extends RtfContainer
+implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContainer,
+        IRtfTextrunContainer {
     protected RtfAttributes attrib;
     private RtfParagraph para;
     private RtfExternalGraphic externalGraphic;
     private RtfTable table;
 
-    RtfAfterBeforeBase(final RtfSection parent, final Writer w,
-            final RtfAttributes attrs) throws IOException {
-        super(parent, w, attrs);
-        this.attrib = attrs;
+    RtfAfterBeforeBase(RtfSection parent, Writer w, RtfAttributes attrs) throws IOException {
+        super((RtfContainer)parent, w, attrs);
+        attrib = attrs;
     }
 
-    @Override
     public RtfParagraph newParagraph() throws IOException {
         closeAll();
-        this.para = new RtfParagraph(this, this.writer);
-        return this.para;
+        para = new RtfParagraph(this, writer);
+        return para;
     }
 
-    @Override
-    public RtfParagraph newParagraph(final RtfAttributes attrs)
-            throws IOException {
+    public RtfParagraph newParagraph(RtfAttributes attrs) throws IOException {
         closeAll();
-        this.para = new RtfParagraph(this, this.writer, attrs);
-        return this.para;
+        para = new RtfParagraph(this, writer, attrs);
+        return para;
     }
 
-    @Override
     public RtfExternalGraphic newImage() throws IOException {
         closeAll();
-        this.externalGraphic = new RtfExternalGraphic(this, this.writer);
-        return this.externalGraphic;
+        externalGraphic = new RtfExternalGraphic(this, writer);
+        return externalGraphic;
     }
 
     private void closeCurrentParagraph() throws IOException {
-        if (this.para != null) {
-            this.para.close();
+        if (para != null) {
+            para.close();
         }
     }
 
     private void closeCurrentExternalGraphic() throws IOException {
-        if (this.externalGraphic != null) {
-            this.externalGraphic.close();
+        if (externalGraphic != null) {
+            externalGraphic.close();
         }
     }
 
     private void closeCurrentTable() throws IOException {
-        if (this.table != null) {
-            this.table.close();
+        if (table != null) {
+            table.close();
         }
     }
 
-    @Override
     protected void writeRtfPrefix() throws IOException {
         writeGroupMark(true);
         writeMyAttributes();
@@ -100,13 +95,12 @@ abstract class RtfAfterBeforeBase extends RtfContainer implements
     /** must be implemented to write the header or footer attributes */
     protected abstract void writeMyAttributes() throws IOException;
 
-    @Override
     protected void writeRtfSuffix() throws IOException {
         writeGroupMark(false);
     }
 
     public RtfAttributes getAttributes() {
-        return this.attrib;
+        return attrib;
     }
 
     public void closeAll() throws IOException {
@@ -115,31 +109,25 @@ abstract class RtfAfterBeforeBase extends RtfContainer implements
         closeCurrentTable();
     }
 
-    /**
-     * close current table if any and start a new one
-     * 
-     * @param tc
-     *            added by Boris Poudérous on july 2002 in order to process
-     *            number-columns-spanned attribute
+    /** close current table if any and start a new one
+     * @param tc added by Boris Poudérous on july 2002 in order to process
+     *  number-columns-spanned attribute
      */
-    @Override
-    public RtfTable newTable(final RtfAttributes attrs,
-            final ITableColumnsInfo tc) throws IOException {
+    public RtfTable newTable(RtfAttributes attrs, ITableColumnsInfo tc) throws IOException {
         closeAll();
-        this.table = new RtfTable(this, this.writer, attrs, tc);
-        return this.table;
+        table = new RtfTable(this, writer, attrs, tc);
+        return table;
     }
 
-    /** close current table if any and start a new one */
-    @Override
-    public RtfTable newTable(final ITableColumnsInfo tc) throws IOException {
+    /** close current table if any and start a new one  */
+    public RtfTable newTable(ITableColumnsInfo tc) throws IOException {
         closeAll();
-        this.table = new RtfTable(this, this.writer, tc);
-        return this.table;
+        table = new RtfTable(this, writer, tc);
+        return table;
     }
 
-    @Override
-    public RtfTextrun getTextrun() throws IOException {
-        return RtfTextrun.getTextrun(this, this.writer, null);
+    public RtfTextrun getTextrun()
+    throws IOException {
+        return RtfTextrun.getTextrun(this, writer, null);
     }
 }

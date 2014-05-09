@@ -29,15 +29,13 @@ public final class PagesMode {
     /** the odd pages mode */
     public static final PagesMode ODD = new PagesMode("odd");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     * 
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private PagesMode(final String name) {
+    private PagesMode(String name) {
         this.name = name;
     }
 
@@ -48,12 +46,10 @@ public final class PagesMode {
 
     /**
      * Returns a PagesMode instance by name.
-     * 
-     * @param name
-     *            the name of the pages mode
+     * @param name the name of the pages mode
      * @return the pages mode
      */
-    public static PagesMode byName(final String name) {
+    public static PagesMode byName(String name) {
         if (PagesMode.ALL.getName().equalsIgnoreCase(name)) {
             return PagesMode.ALL;
         } else if (PagesMode.EVEN.getName().equalsIgnoreCase(name)) {
@@ -61,15 +57,13 @@ public final class PagesMode {
         } else if (PagesMode.ODD.getName().equalsIgnoreCase(name)) {
             return PagesMode.ODD;
         } else {
-            throw new IllegalArgumentException("Invalid value for PagesMode: "
-                    + name);
+            throw new IllegalArgumentException("Invalid value for PagesMode: " + name);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "PagesMode:" + this.name;
+        return "PagesMode:" + name;
     }
 
 }

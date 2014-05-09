@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: SystemColorFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: SystemColorFunction.java 1328963 2012-04-22 20:09:42Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
@@ -29,17 +29,15 @@ import org.apache.fop.fo.properties.Property;
 class SystemColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
-    @Override
-    public int nbArgs() {
+    public int getRequiredArgsCount() {
         return 1;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo pInfo)
-            throws PropertyException {
-        final FOUserAgent ua = pInfo == null ? null
-                        : pInfo.getFO() == null ? null : pInfo.getFO().getUserAgent();
+    public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
+        FOUserAgent ua = (pInfo == null)
+                ? null
+                : (pInfo.getFO() == null ? null : pInfo.getFO().getUserAgent());
         return ColorProperty.getInstance(ua, "system-color(" + args[0] + ")");
 
     }

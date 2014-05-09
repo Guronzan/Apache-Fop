@@ -58,18 +58,17 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
     /**
      * The presentation text data list
      */
-    private List<PresentationTextData> presentationTextDataList = null;
+    private List/*<PresentationTextData>*/ presentationTextDataList = null;
 
-    private final PtocaBuilder builder = new DefaultBuilder();
+    private PtocaBuilder builder = new DefaultBuilder();
 
     /**
      * Construct a new PresentationTextObject for the specified name argument,
      * the name should be an 8 character identifier.
      *
-     * @param name
-     *            the name of this presentation object
+     * @param name the name of this presentation object
      */
-    public PresentationTextObject(final String name) {
+    public PresentationTextObject(String name) {
         super(name);
     }
 
@@ -78,49 +77,40 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
      *
      * @param textDataInfo
      *            The afp text data
-     * @throws UnsupportedEncodingException
-     *             thrown if character encoding is not supported
+     * @throws UnsupportedEncodingException thrown if character encoding is not supported
      */
-    public void createTextData(final AFPTextDataInfo textDataInfo)
-            throws UnsupportedEncodingException {
+    public void createTextData(AFPTextDataInfo textDataInfo) throws UnsupportedEncodingException {
         createControlSequences(new TextDataInfoProducer(textDataInfo));
     }
 
     /**
      * Creates a chain of control sequences using a producer.
-     *
-     * @param producer
-     *            the producer
-     * @throws UnsupportedEncodingException
-     *             thrown if character encoding is not supported
+     * @param producer the producer
+     * @throws UnsupportedEncodingException thrown if character encoding is not supported
      */
-    public void createControlSequences(final PtocaProducer producer)
-            throws UnsupportedEncodingException {
-        if (this.currentPresentationTextData == null) {
+    public void createControlSequences(PtocaProducer producer)
+                throws UnsupportedEncodingException {
+        if (currentPresentationTextData == null) {
             startPresentationTextData();
         }
         try {
-            producer.produce(this.builder);
-        } catch (final UnsupportedEncodingException e) {
+            producer.produce(builder);
+        } catch (UnsupportedEncodingException e) {
             endPresentationTextData();
             throw e;
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             endPresentationTextData();
             handleUnexpectedIOError(ioe);
         }
     }
 
     private class DefaultBuilder extends PtocaBuilder {
-        @Override
-        protected OutputStream getOutputStreamForControlSequence(
-                final int length) {
-            if (length > PresentationTextObject.this.currentPresentationTextData
-                    .getBytesAvailable()) {
+        protected OutputStream getOutputStreamForControlSequence(int length) {
+            if (length > currentPresentationTextData.getBytesAvailable()) {
                 endPresentationTextData();
                 startPresentationTextData();
             }
-            return PresentationTextObject.this.currentPresentationTextData
-                    .getOutputStream();
+            return currentPresentationTextData.getOutputStream();
         }
     }
 
@@ -128,14 +118,13 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
      * Drawing of lines using the starting and ending coordinates, thickness and
      * orientation arguments.
      *
-     * @param lineDataInfo
-     *            the line data information.
+     * @param lineDataInfo the line data information.
      */
-    public void createLineData(final AFPLineDataInfo lineDataInfo) {
+    public void createLineData(AFPLineDataInfo lineDataInfo) {
         try {
             createControlSequences(new LineDataInfoProducer(lineDataInfo));
-        } catch (final UnsupportedEncodingException e) {
-            handleUnexpectedIOError(e); // Won't happen for lines
+        } catch (UnsupportedEncodingException e) {
+            handleUnexpectedIOError(e); //Won't happen for lines
         }
     }
 
@@ -143,15 +132,15 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
      * Helper method to mark the start of the presentation text data
      */
     private void startPresentationTextData() {
-        if (this.presentationTextDataList == null) {
-            this.presentationTextDataList = new java.util.ArrayList<>();
+        if (presentationTextDataList == null) {
+            presentationTextDataList = new java.util.ArrayList/*<PresentationTextData>*/();
         }
-        if (this.presentationTextDataList.size() == 0) {
-            this.currentPresentationTextData = new PresentationTextData(true);
+        if (presentationTextDataList.size() == 0) {
+            currentPresentationTextData = new PresentationTextData(true);
         } else {
-            this.currentPresentationTextData = new PresentationTextData();
+            currentPresentationTextData = new PresentationTextData();
         }
-        this.presentationTextDataList.add(this.currentPresentationTextData);
+        presentationTextDataList.add(currentPresentationTextData);
     }
 
     /**
@@ -162,23 +151,20 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.PRESENTATION_TEXT);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
+    protected void writeContent(OutputStream os) throws IOException {
         writeObjects(this.presentationTextDataList, os);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.PRESENTATION_TEXT);
         os.write(data);
     }
@@ -191,30 +177,27 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
      * method terminates the control sequence.
      */
     public void endControlSequence() {
-        if (this.currentPresentationTextData == null) {
+        if (currentPresentationTextData == null) {
             startPresentationTextData();
         }
         try {
-            this.builder.endChainedControlSequence();
-        } catch (final IOException ioe) {
+            builder.endChainedControlSequence();
+        } catch (IOException ioe) {
             endPresentationTextData();
             handleUnexpectedIOError(ioe);
-            // Should not occur since we're writing to byte arrays
+            //Should not occur since we're writing to byte arrays
         }
     }
 
-    private void handleUnexpectedIOError(final IOException ioe) {
-        // "Unexpected" since we're currently dealing with
-        // ByteArrayOutputStreams here.
-        throw new RuntimeException("Unexpected I/O error: " + ioe.getMessage(),
-                ioe);
+    private void handleUnexpectedIOError(IOException ioe) {
+        //"Unexpected" since we're currently dealing with ByteArrayOutputStreams here.
+        throw new RuntimeException("Unexpected I/O error: " + ioe.getMessage(), ioe);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        if (this.presentationTextDataList != null) {
-            return this.presentationTextDataList.toString();
+        if (presentationTextDataList != null) {
+            return presentationTextDataList.toString();
         }
         return super.toString();
     }

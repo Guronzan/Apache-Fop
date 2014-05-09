@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-/* $Id: AFPPageOverlay.java 830929 2009-10-29 13:19:36Z maxberger $ */
+/* $Id: AFPPageOverlay.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.afp.extensions;
 
-import org.apache.fop.fo.extensions.ExtensionAttachment;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * This extension allows to include an AFP Page Overlay resource. It is
- * implemented as an extension attachment ({@link ExtensionAttachment}).
+ * This extension allows to include an AFP Page Overlay resource. It is implemented as an extension
+ * attachment ({@link org.apache.fop.fo.extensions.ExtensionAttachment}).
  */
 public class AFPPageOverlay extends AFPExtensionAttachment {
 
@@ -56,57 +55,49 @@ public class AFPPageOverlay extends AFPExtensionAttachment {
 
     /**
      * returns X coordinate
-     * 
      * @return x integer
      */
     public int getX() {
-        return this.x;
+        return x;
     }
 
     /**
      * Sets the X coordinate
-     * 
-     * @param x
-     *            The integer to be set.
+     * @param x The integer to be set.
      */
-    public void setX(final int x) {
+    public void setX(int x) {
         this.x = x;
     }
 
     /**
      * returns Y coordinate
-     * 
      * @return y integer
      */
     public int getY() {
-        return this.y;
+        return y;
     }
 
     /**
      * Sets the Y coordinate
-     * 
-     * @param y
-     *            The integer to be set.
+     * @param y The integer to be set.
      */
-    public void setY(final int y) {
+    public void setY(int y) {
         this.y = y;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
-        if (this.name != null && this.name.length() > 0) {
-            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", this.name);
+    public void toSAX(ContentHandler handler) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
+        if (name != null && name.length() > 0) {
+            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", name);
         }
-        handler.startElement(CATEGORY, this.elementName, this.elementName, atts);
-        handler.endElement(CATEGORY, this.elementName, this.elementName);
+        handler.startElement(CATEGORY, elementName, elementName, atts);
+        handler.endElement(CATEGORY, elementName, elementName);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return getClass().getName() + "(element-name=" + getElementName()
-                + " name=" + getName() + " x=" + getX() + " y=" + getY() + ")";
+            + " name=" + getName() + " x=" + getX() + " y=" + getY() + ")";
     }
 }

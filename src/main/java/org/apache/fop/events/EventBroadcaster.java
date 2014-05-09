@@ -20,56 +20,42 @@
 package org.apache.fop.events;
 
 /**
- * The EventBroadcaster is the central relay point for events. It receives
- * events from various parts of the application and forwards them to any
- * registered EventListener.
+ * The EventBroadcaster is the central relay point for events. It receives events from various
+ * parts of the application and forwards them to any registered EventListener.
  */
 public interface EventBroadcaster {
 
     /**
-     * Adds an event listener to the broadcaster. It is appended to the list of
-     * previously registered listeners (the order of registration defines the
-     * calling order).
-     * 
-     * @param listener
-     *            the listener to be added
+     * Adds an event listener to the broadcaster. It is appended to the list of previously
+     * registered listeners (the order of registration defines the calling order).
+     * @param listener the listener to be added
      */
-    void addEventListener(final EventListener listener);
+    void addEventListener(EventListener listener);
 
     /**
-     * Removes an event listener from the broadcaster. If the event listener is
-     * not registered, nothing happens.
-     * 
-     * @param listener
-     *            the listener to be removed
+     * Removes an event listener from the broadcaster. If the event listener is not registered,
+     * nothing happens.
+     * @param listener the listener to be removed
      */
-    void removeEventListener(final EventListener listener);
+    void removeEventListener(EventListener listener);
 
     /**
-     * Indicates whether any listeners have been registered with the
-     * broadcaster.
-     * 
+     * Indicates whether any listeners have been registered with the broadcaster.
      * @return true if listeners are present, false otherwise
      */
     boolean hasEventListeners();
 
     /**
-     * Broadcasts an event. This method is usually called from within the
-     * observed component.
-     * 
-     * @param event
-     *            the event to be broadcast
+     * Broadcasts an event. This method is usually called from within the observed component.
+     * @param event the event to be broadcast
      */
-    void broadcastEvent(final Event event);
+    void broadcastEvent(Event event);
 
     /**
      * Returns an event producer instance for the given interface class.
-     * 
-     * @param clazz
-     *            the Class object identifying an {@link EventProducer}
-     *            interface
+     * @param clazz the Class object identifying an {@link EventProducer} interface
      * @return the event producer instance
      */
-    EventProducer getEventProducerFor(final Class clazz);
+    EventProducer getEventProducerFor(Class clazz);
 
 }

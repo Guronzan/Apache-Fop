@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: NativeFontDirFinder.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: NativeFontDirFinder.java 1039502 2010-11-26 18:37:40Z spepping $ */
 
 package org.apache.fop.fonts.autodetect;
 
@@ -25,20 +25,19 @@ import java.util.List;
 /**
  * Native font finder base class
  */
-public abstract class NativeFontDirFinder implements FontFinder<File> {
+public abstract class NativeFontDirFinder implements FontDirFinder {
 
     /**
      * Generic method used by Mac and Unix font finders.
-     *
-     * @return list of natively existing font directories {@inheritDoc}
+     * @return list of natively existing font directories
+     * {@inheritDoc}
      */
-    @Override
     public List<File> find() {
-        final List<File> fontDirList = new java.util.ArrayList<>();
-        final String[] searchableDirectories = getSearchableDirectories();
+        List<File> fontDirList = new java.util.ArrayList<File>();
+        String[] searchableDirectories = getSearchableDirectories();
         if (searchableDirectories != null) {
-            for (final String searchableDirectorie : searchableDirectories) {
-                final File fontDir = new File(searchableDirectorie);
+            for (int i = 0; i < searchableDirectories.length; i++) {
+                File fontDir = new File(searchableDirectories[i]);
                 if (fontDir.exists() && fontDir.canRead()) {
                     fontDirList.add(fontDir);
                 }
@@ -49,7 +48,6 @@ public abstract class NativeFontDirFinder implements FontFinder<File> {
 
     /**
      * Returns an array of directories to search for fonts in.
-     *
      * @return an array of directories
      */
     protected abstract String[] getSearchableDirectories();

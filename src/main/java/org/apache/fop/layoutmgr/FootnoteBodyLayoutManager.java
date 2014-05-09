@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FootnoteBodyLayoutManager.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: FootnoteBodyLayoutManager.java 1067672 2011-02-06 14:19:42Z adelmelle $ */
 
 package org.apache.fop.layoutmgr;
 
@@ -31,55 +31,48 @@ public class FootnoteBodyLayoutManager extends BlockStackingLayoutManager {
 
     /**
      * Creates a new FootnoteBodyLayoutManager.
-     *
-     * @param body
-     *            the footnote-body element
+     * @param body the footnote-body element
      */
-    public FootnoteBodyLayoutManager(final FootnoteBody body) {
+    public FootnoteBodyLayoutManager(FootnoteBody body) {
         super(body);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void addAreas(final PositionIterator parentIter,
-            final LayoutContext layoutContext) {
-        LayoutManager childLM = null;
+    public void addAreas(PositionIterator parentIter, LayoutContext layoutContext) {
+        LayoutManager childLM;
         LayoutManager lastLM = null;
-        final LayoutContext lc = new LayoutContext(0);
+        LayoutContext lc = new LayoutContext(0);
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList<Position> positionList = new LinkedList<>();
+        LinkedList<Position> positionList = new LinkedList<Position>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = parentIter.next();
-            // log.trace("pos = " + pos.getClass().getName() + "; " + pos);
-            Position innerPosition = pos;
+            Position innerPosition;
             if (pos instanceof NonLeafPosition) {
-                innerPosition = ((NonLeafPosition) pos).getPosition();
+                innerPosition = pos.getPosition();
                 if (innerPosition.getLM() == this) {
                     // pos was created by this LM and was inside a penalty
                     // allowing or forbidding a page break
                     // nothing to do
-                    // log.trace(" penalty");
                 } else {
                     // innerPosition was created by another LM
                     positionList.add(innerPosition);
                     lastLM = innerPosition.getLM();
-                    // log.trace(" " + innerPosition.getClass().getName());
                 }
             }
         }
 
         // the Positions in positionList were inside the elements
         // created by the LineLM
-        final StackingIter childPosIter = new StackingIter(
-                positionList.listIterator());
+        PositionIterator childPosIter = new PositionIterator(positionList.listIterator());
 
         while ((childLM = childPosIter.getNextChildLM()) != null) {
             // set last area flag
-            lc.setFlags(LayoutContext.LAST_AREA, layoutContext.isLastArea()
-                    && childLM == lastLM);
+            lc.setFlags(LayoutContext.LAST_AREA,
+                    (layoutContext.isLastArea() && childLM == lastLM));
             // Add the line areas to Area
             childLM.addAreas(childPosIter, lc);
         }
@@ -87,14 +80,14 @@ public class FootnoteBodyLayoutManager extends BlockStackingLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public void addChildArea(final Area childArea) {
+    public void addChildArea(Area childArea) {
         childArea.setAreaClass(Area.CLASS_FOOTNOTE);
-        this.parentLayoutManager.addChildArea(childArea);
+        parentLayoutManager.addChildArea(childArea);
     }
 
     /** @return the FootnoteBody node */
     protected FootnoteBody getFootnodeBodyFO() {
-        return (FootnoteBody) this.fobj;
+        return (FootnoteBody) fobj;
     }
 
     /** {@inheritDoc} */

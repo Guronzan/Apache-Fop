@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ICLayoutManager.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ICLayoutManager.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.layoutmgr.inline;
 
@@ -25,20 +25,29 @@ import java.util.List;
 // FOP
 import org.apache.fop.area.inline.InlineArea;
 import org.apache.fop.fo.flow.InlineContainer;
-
 /**
- * This creates a single inline container area after laying out the child block
- * areas. All footnotes, floats and id areas are maintained for later retrieval.
+ * This creates a single inline container area after
+ * laying out the child block areas. All footnotes, floats
+ * and id areas are maintained for later retrieval.
  */
 public class ICLayoutManager extends LeafNodeLayoutManager {
-    private final List childrenLM;
+    private List childrenLM;
 
-    public ICLayoutManager(final InlineContainer node, final List childLM) {
+    /**
+     * Construct inline container layout manager.
+     * @param node inline container FO node
+     * @param childLM child layout manager
+     */
+    public ICLayoutManager(InlineContainer node, List childLM) {
         super(node);
-        this.childrenLM = childLM;
+        childrenLM = childLM;
     }
 
-    public InlineArea get(final int index) {
+    /**
+     * @param index an integer
+     * @return an inline area or null
+     */
+    public InlineArea get(int index) {
         return null;
     }
 

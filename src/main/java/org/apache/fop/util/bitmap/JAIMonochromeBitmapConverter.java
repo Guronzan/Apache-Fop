@@ -35,28 +35,27 @@ import javax.media.jai.LookupTableJAI;
 import javax.media.jai.PlanarImage;
 
 /**
- * Implementation of the MonochromeBitmapConverter which uses Java Advanced
- * Imaging (JAI) to convert grayscale bitmaps to monochrome bitmaps. JAI
- * provides better dithering options including error diffusion dithering.
+ * Implementation of the MonochromeBitmapConverter which uses Java Advanced Imaging (JAI)
+ * to convert grayscale bitmaps to monochrome bitmaps. JAI provides better dithering options
+ * including error diffusion dithering.
  * <p>
- * If you call setHint("quality", "true") on the instance you can enabled error
- * diffusion dithering which produces a nicer result but is also a lot slower.
+ * If you call setHint("quality", "true") on the instance you can enabled error diffusion
+ * dithering which produces a nicer result but is also a lot slower.
  */
-public class JAIMonochromeBitmapConverter implements MonochromeBitmapConverter {
+public class JAIMonochromeBitmapConverter implements
+        MonochromeBitmapConverter {
 
     private boolean isErrorDiffusion = false;
 
     /** {@inheritDoc} */
-    @Override
-    public void setHint(final String name, final String value) {
+    public void setHint(String name, String value) {
         if ("quality".equalsIgnoreCase(name)) {
-            this.isErrorDiffusion = "true".equalsIgnoreCase(value);
+            isErrorDiffusion = "true".equalsIgnoreCase(value);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public RenderedImage convertToMonochrome(final BufferedImage img) {
+    public RenderedImage convertToMonochrome(BufferedImage img) {
         return convertToMonochromePlanarImage(img);
     }
 
@@ -67,38 +66,36 @@ public class JAIMonochromeBitmapConverter implements MonochromeBitmapConverter {
 
         // Load the ParameterBlock for the dithering operation
         // and set the operation name.
-        final ParameterBlock pb = new ParameterBlock();
+        ParameterBlock pb = new ParameterBlock();
         pb.addSource(img);
         String opName = null;
-        if (this.isErrorDiffusion) {
+        if (isErrorDiffusion) {
             opName = "errordiffusion";
-            final LookupTableJAI lut = new LookupTableJAI(new byte[] {
-                    (byte) 0x00, (byte) 0xff });
+            LookupTableJAI lut = new LookupTableJAI(new byte[] {(byte)0x00, (byte)0xff});
             pb.add(lut);
             pb.add(KernelJAI.ERROR_FILTER_FLOYD_STEINBERG);
         } else {
             opName = "ordereddither";
-            // Create the color cube.
-            final ColorCube colorMap = ColorCube.createColorCube(
-                    DataBuffer.TYPE_BYTE, 0, new int[] { 2 });
+            //Create the color cube.
+            ColorCube colorMap = ColorCube.createColorCube(DataBuffer.TYPE_BYTE,
+                    0, new int[] {2});
             pb.add(colorMap);
             pb.add(KernelJAI.DITHER_MASK_441);
         }
 
-        // Create an image layout for a monochrome b/w image
-        final ImageLayout layout = new ImageLayout();
-        final byte[] map = new byte[] { (byte) 0x00, (byte) 0xff };
-        final ColorModel cm = new IndexColorModel(1, 2, map, map, map);
+        //Create an image layout for a monochrome b/w image
+        ImageLayout layout = new ImageLayout();
+        byte[] map = new byte[] {(byte)0x00, (byte)0xff};
+        ColorModel cm = new IndexColorModel(1, 2, map, map, map);
         layout.setColorModel(cm);
 
         // Create a hint containing the layout.
-        final RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT,
-                layout);
+        RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
 
         // Dither the image.
-        final PlanarImage dst = JAI.create(opName, pb, hints);
+        PlanarImage dst = JAI.create(opName, pb, hints);
 
-        // Convert it to a BufferedImage
+        //Convert it to a BufferedImage
         return dst;
     }
 

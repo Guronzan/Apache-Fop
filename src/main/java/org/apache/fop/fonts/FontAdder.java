@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FontAdder.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: FontAdder.java 1039502 2010-11-26 18:37:40Z spepping $ */
 
 package org.apache.fop.fonts;
 
@@ -34,16 +34,11 @@ public class FontAdder {
 
     /**
      * Main constructor
-     *
-     * @param manager
-     *            a font manager
-     * @param resolver
-     *            a font resolver
-     * @param listener
-     *            a font event handler
+     * @param manager a font manager
+     * @param resolver a font resolver
+     * @param listener a font event handler
      */
-    public FontAdder(final FontManager manager, final FontResolver resolver,
-            final FontEventListener listener) {
+    public FontAdder(FontManager manager, FontResolver resolver, FontEventListener listener) {
         this.manager = manager;
         this.resolver = resolver;
         this.listener = listener;
@@ -51,25 +46,21 @@ public class FontAdder {
 
     /**
      * Iterates over font url list adding to font info list
-     *
-     * @param fontURLList
-     *            font file list
-     * @param fontInfoList
-     *            a configured font info list
+     * @param fontURLList font file list
+     * @param fontInfoList a configured font info list
      */
-    public void add(final List<URL> fontURLList,
-            final List<EmbedFontInfo> fontInfoList) {
-        final FontCache cache = this.manager.getFontCache();
-        final FontInfoFinder finder = new FontInfoFinder();
-        finder.setEventListener(this.listener);
+    public void add(List<URL> fontURLList, List<EmbedFontInfo> fontInfoList) {
+        FontCache cache = manager.getFontCache();
+        FontInfoFinder finder = new FontInfoFinder();
+        finder.setEventListener(listener);
 
-        for (final URL fontUrl : fontURLList) {
-            final EmbedFontInfo[] embedFontInfos = finder.find(fontUrl,
-                    this.resolver, cache);
+        for (URL fontURL : fontURLList) {
+            EmbedFontInfo[] embedFontInfos = finder.find(fontURL, resolver, cache);
             if (embedFontInfos == null) {
                 continue;
             }
-            for (final EmbedFontInfo fontInfo : embedFontInfos) {
+            for (int i = 0, c = embedFontInfos.length; i < c; i++) {
+                EmbedFontInfo fontInfo = embedFontInfos[i];
                 if (fontInfo != null) {
                     fontInfoList.add(fontInfo);
                 }

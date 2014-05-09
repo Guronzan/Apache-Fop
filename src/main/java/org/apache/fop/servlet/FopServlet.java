@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FopServlet.java 732631 2009-01-08 07:59:58Z jeremias $ */
+/* $Id: FopServlet.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.servlet;
 
@@ -37,41 +37,38 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.output.ByteArrayOutputStream;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.FopFactory;
+import org.apache.fop.apps.MimeConstants;
 
 /**
- * Example servlet to generate a PDF from a servlet. <br/>
+ * Example servlet to generate a PDF from a servlet.
+ * <br/>
  * Servlet param is:
  * <ul>
- * <li>fo: the path to a XSL-FO file to render
+ *   <li>fo: the path to a XSL-FO file to render
  * </ul>
  * or
  * <ul>
- * <li>xml: the path to an XML file to render</li>
- * <li>xslt: the path to an XSLT file that can transform the above XML to XSL-FO
- * </li>
+ *   <li>xml: the path to an XML file to render</li>
+ *   <li>xslt: the path to an XSLT file that can transform the above XML to XSL-FO</li>
  * </ul>
  * <br/>
- * Example URL: http://servername/fop/servlet/FopServlet?fo=readme.fo <br/>
- * Example URL:
- * http://servername/fop/servlet/FopServlet?xml=data.xml&xslt=format.xsl <br/>
+ * Example URL: http://servername/fop/servlet/FopServlet?fo=readme.fo
+ * <br/>
+ * Example URL: http://servername/fop/servlet/FopServlet?xml=data.xml&xslt=format.xsl
+ * <br/>
  * For this to work with Internet Explorer, you might need to append "&ext=.pdf"
  * to the URL.
- *
- * @author <a href="mailto:fop-dev@xmlgraphics.apache.org">Apache FOP
- *         Development Team</a>
- * @version $Id: FopServlet.java 732631 2009-01-08 07:59:58Z jeremias $ (todo)
- *          Ev. add caching mechanism for Templates objects
+ * (todo) Ev. add caching mechanism for Templates objects
  */
 public class FopServlet extends HttpServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -908918093488215264L;
+
     /** Name of the parameter used for the XSL-FO file */
     protected static final String FO_REQUEST_PARAM = "fo";
     /** Name of the parameter used for the XML file */
@@ -89,66 +86,62 @@ public class FopServlet extends HttpServlet {
     /**
      * {@inheritDoc}
      */
-    @Override
     public void init() throws ServletException {
         this.uriResolver = new ServletContextURIResolver(getServletContext());
         this.transFactory = TransformerFactory.newInstance();
         this.transFactory.setURIResolver(this.uriResolver);
-        // Configure FopFactory as desired
+        //Configure FopFactory as desired
         this.fopFactory = FopFactory.newInstance();
         this.fopFactory.setURIResolver(this.uriResolver);
         configureFopFactory();
     }
 
     /**
-     * This method is called right after the FopFactory is instantiated and can
-     * be overridden by subclasses to perform additional configuration.
+     * This method is called right after the FopFactory is instantiated and can be overridden
+     * by subclasses to perform additional configuration.
      */
     protected void configureFopFactory() {
-        // Subclass and override this method to perform additional configuration
+        //Subclass and override this method to perform additional configuration
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void doGet(final HttpServletRequest request,
-            final HttpServletResponse response) throws ServletException {
+    public void doGet(HttpServletRequest request,
+                      HttpServletResponse response) throws ServletException {
         try {
-            // Get parameters
-            final String foParam = request.getParameter(FO_REQUEST_PARAM);
-            final String xmlParam = request.getParameter(XML_REQUEST_PARAM);
-            final String xsltParam = request.getParameter(XSLT_REQUEST_PARAM);
+            //Get parameters
+            String foParam = request.getParameter(FO_REQUEST_PARAM);
+            String xmlParam = request.getParameter(XML_REQUEST_PARAM);
+            String xsltParam = request.getParameter(XSLT_REQUEST_PARAM);
 
-            // Analyze parameters and decide with method to use
+            //Analyze parameters and decide with method to use
             if (foParam != null) {
                 renderFO(foParam, response);
-            } else if (xmlParam != null && xsltParam != null) {
+            } else if ((xmlParam != null) && (xsltParam != null)) {
                 renderXML(xmlParam, xsltParam, response);
             } else {
                 response.setContentType("text/html");
-                final PrintWriter out = response.getWriter();
+                PrintWriter out = response.getWriter();
                 out.println("<html><head><title>Error</title></head>\n"
-                        + "<body><h1>FopServlet Error</h1><h3>No 'fo' "
-                        + "request param given.</body></html>");
+                          + "<body><h1>FopServlet Error</h1><h3>No 'fo' "
+                          + "request param given.</body></html>");
             }
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             throw new ServletException(ex);
         }
     }
 
     /**
      * Converts a String parameter to a JAXP Source object.
-     * 
-     * @param param
-     *            a String parameter
+     * @param param a String parameter
      * @return Source the generated Source object
      */
-    protected Source convertString2Source(final String param) {
+    protected Source convertString2Source(String param) {
         Source src;
         try {
-            src = this.uriResolver.resolve(param, null);
-        } catch (final TransformerException e) {
+            src = uriResolver.resolve(param, null);
+        } catch (TransformerException e) {
             src = null;
         }
         if (src == null) {
@@ -157,9 +150,8 @@ public class FopServlet extends HttpServlet {
         return src;
     }
 
-    private void sendPDF(final byte[] content,
-            final HttpServletResponse response) throws IOException {
-        // Send the result back to the client
+    private void sendPDF(byte[] content, HttpServletResponse response) throws IOException {
+        //Send the result back to the client
         response.setContentType("application/pdf");
         response.setContentLength(content.length);
         response.getOutputStream().write(content);
@@ -169,64 +161,53 @@ public class FopServlet extends HttpServlet {
     /**
      * Renders an XSL-FO file into a PDF file. The PDF is written to a byte
      * array that is returned as the method's result.
-     * 
-     * @param fo
-     *            the XSL-FO file
-     * @param response
-     *            HTTP response object
-     * @throws FOPException
-     *             If an error occurs during the rendering of the XSL-FO
-     * @throws TransformerException
-     *             If an error occurs while parsing the input file
-     * @throws IOException
-     *             In case of an I/O problem
+     * @param fo the XSL-FO file
+     * @param response HTTP response object
+     * @throws FOPException If an error occurs during the rendering of the
+     * XSL-FO
+     * @throws TransformerException If an error occurs while parsing the input
+     * file
+     * @throws IOException In case of an I/O problem
      */
-    protected void renderFO(final String fo, final HttpServletResponse response)
-            throws FOPException, TransformerException, IOException {
+    protected void renderFO(String fo, HttpServletResponse response)
+                throws FOPException, TransformerException, IOException {
 
-        // Setup source
-        final Source foSrc = convertString2Source(fo);
+        //Setup source
+        Source foSrc = convertString2Source(fo);
 
-        // Setup the identity transformation
-        final Transformer transformer = this.transFactory.newTransformer();
+        //Setup the identity transformation
+        Transformer transformer = this.transFactory.newTransformer();
         transformer.setURIResolver(this.uriResolver);
 
-        // Start transformation and rendering process
+        //Start transformation and rendering process
         render(foSrc, transformer, response);
     }
 
     /**
-     * Renders an XML file into a PDF file by applying a stylesheet that
-     * converts the XML to XSL-FO. The PDF is written to a byte array that is
-     * returned as the method's result.
-     * 
-     * @param xml
-     *            the XML file
-     * @param xslt
-     *            the XSLT file
-     * @param response
-     *            HTTP response object
-     * @throws FOPException
-     *             If an error occurs during the rendering of the XSL-FO
-     * @throws TransformerException
-     *             If an error occurs during XSL transformation
-     * @throws IOException
-     *             In case of an I/O problem
+     * Renders an XML file into a PDF file by applying a stylesheet
+     * that converts the XML to XSL-FO. The PDF is written to a byte array
+     * that is returned as the method's result.
+     * @param xml the XML file
+     * @param xslt the XSLT file
+     * @param response HTTP response object
+     * @throws FOPException If an error occurs during the rendering of the
+     * XSL-FO
+     * @throws TransformerException If an error occurs during XSL
+     * transformation
+     * @throws IOException In case of an I/O problem
      */
-    protected void renderXML(final String xml, final String xslt,
-            final HttpServletResponse response) throws FOPException,
-            TransformerException, IOException {
+    protected void renderXML(String xml, String xslt, HttpServletResponse response)
+                throws FOPException, TransformerException, IOException {
 
-        // Setup sources
-        final Source xmlSrc = convertString2Source(xml);
-        final Source xsltSrc = convertString2Source(xslt);
+        //Setup sources
+        Source xmlSrc = convertString2Source(xml);
+        Source xsltSrc = convertString2Source(xslt);
 
-        // Setup the XSL transformation
-        final Transformer transformer = this.transFactory
-                .newTransformer(xsltSrc);
+        //Setup the XSL transformation
+        Transformer transformer = this.transFactory.newTransformer(xsltSrc);
         transformer.setURIResolver(this.uriResolver);
 
-        // Start transformation and rendering process
+        //Start transformation and rendering process
         render(xmlSrc, transformer, response);
     }
 
@@ -236,48 +217,40 @@ public class FopServlet extends HttpServlet {
      * The transformer may be an identity transformer in which case the input
      * must already be XSL-FO. The PDF is written to a byte array that is
      * returned as the method's result.
-     * 
-     * @param src
-     *            Input XML or XSL-FO
-     * @param transformer
-     *            Transformer to use for optional transformation
-     * @param response
-     *            HTTP response object
-     * @throws FOPException
-     *             If an error occurs during the rendering of the XSL-FO
-     * @throws TransformerException
-     *             If an error occurs during XSL transformation
-     * @throws IOException
-     *             In case of an I/O problem
+     * @param src Input XML or XSL-FO
+     * @param transformer Transformer to use for optional transformation
+     * @param response HTTP response object
+     * @throws FOPException If an error occurs during the rendering of the
+     * XSL-FO
+     * @throws TransformerException If an error occurs during XSL
+     * transformation
+     * @throws IOException In case of an I/O problem
      */
-    protected void render(final Source src, final Transformer transformer,
-            final HttpServletResponse response) throws FOPException,
-            TransformerException, IOException {
+    protected void render(Source src, Transformer transformer, HttpServletResponse response)
+                throws FOPException, TransformerException, IOException {
 
-        final FOUserAgent foUserAgent = getFOUserAgent();
+        FOUserAgent foUserAgent = getFOUserAgent();
 
-        // Setup output
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        //Setup output
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        // Setup FOP
-        final Fop fop = this.fopFactory.newFop(
-                org.apache.xmlgraphics.util.MimeConstants.MIME_PDF,
-                foUserAgent, out);
+        //Setup FOP
+        Fop fop = fopFactory.newFop(MimeConstants.MIME_PDF, foUserAgent, out);
 
-        // Make sure the XSL transformation's result is piped through to FOP
-        final Result res = new SAXResult(fop.getDefaultHandler());
+        //Make sure the XSL transformation's result is piped through to FOP
+        Result res = new SAXResult(fop.getDefaultHandler());
 
-        // Start the transformation and rendering process
+        //Start the transformation and rendering process
         transformer.transform(src, res);
 
-        // Return the result
+        //Return the result
         sendPDF(out.toByteArray(), response);
     }
 
     /** @return a new FOUserAgent for FOP */
     protected FOUserAgent getFOUserAgent() {
-        final FOUserAgent userAgent = this.fopFactory.newFOUserAgent();
-        // Configure foUserAgent as desired
+        FOUserAgent userAgent = fopFactory.newFOUserAgent();
+        //Configure foUserAgent as desired
         return userAgent;
     }
 

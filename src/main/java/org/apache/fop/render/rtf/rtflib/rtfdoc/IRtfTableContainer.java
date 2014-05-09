@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfTableContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfTableContainer.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,34 +29,26 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Interface for RtfElements that can contain RtfTables
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
- * @author Boris Poudérous
+ * <p>Interface for RtfElements that can contain RtfTables.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch)
+ * and Boris Poudérous.</p>
  */
 public interface IRtfTableContainer {
-    /**
-     * Close current table, if any, and start a new one
-     * 
-     * @param tc
-     *            Table Columns Info
-     * @return new table object
-     * @throws IOException
-     *             for I/O problems
-     */
-    RtfTable newTable(final ITableColumnsInfo tc) throws IOException;
+   /**
+    * Close current table, if any, and start a new one
+    * @param tc Table Columns Info
+    * @return new table object
+    * @throws IOException for I/O problems
+    */
+    RtfTable newTable(ITableColumnsInfo tc) throws IOException;
 
-    /**
-     * Close current table, if any, and start a new one
-     * 
-     * @param attrs
-     *            for the Table attributes
-     * @param tc
-     *            to process number-columns-spanned attribute
-     * @return new table object
-     * @throws IOException
-     *             for I/O problems
-     */
-    RtfTable newTable(final RtfAttributes attrs, final ITableColumnsInfo tc)
-            throws IOException;
+   /**
+    * Close current table, if any, and start a new one
+    * @param attrs for the Table attributes
+    * @param tc to process number-columns-spanned attribute
+    * @return new table object
+    * @throws IOException for I/O problems
+    */
+    RtfTable newTable(RtfAttributes attrs, ITableColumnsInfo tc) throws IOException;
 }

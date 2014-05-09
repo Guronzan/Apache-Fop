@@ -15,54 +15,45 @@
  * limitations under the License.
  */
 
-/* $Id: PSTextElementBridge.java 766594 2009-04-20 06:50:59Z jeremias $ */
+/* $Id: PSTextElementBridge.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.ps;
+
+import org.w3c.dom.Element;
 
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.SVGTextElementBridge;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.TextNode;
 import org.apache.batik.gvt.TextPainter;
-import org.w3c.dom.Element;
 
 /**
- * Bridge class for the &lt;text> element. This bridge will use the direct text
- * painter if the text for the element is simple.
- *
- * @author <a href="mailto:fop-dev@xml.apache.org">Apache XML FOP Development
- *         Team</a>
- * @version $Id: PSTextElementBridge.java 766594 2009-04-20 06:50:59Z jeremias $
+ * <p>Bridge class for the &lt;text> element.
+ * This bridge will use the direct text painter if the text
+ * for the element is simple.</p>
  */
 public class PSTextElementBridge extends SVGTextElementBridge {
 
-    private final TextPainter textPainter;
+    private TextPainter textPainter;
 
     /**
      * Constructs a new bridge for the &lt;text> element.
-     * 
-     * @param textPainter
-     *            the text painter to use
+     * @param textPainter the text painter to use
      */
-    public PSTextElementBridge(final TextPainter textPainter) {
+    public PSTextElementBridge(TextPainter textPainter) {
         this.textPainter = textPainter;
     }
 
     /**
-     * Create a text element bridge. This set the text painter on the node if
-     * the text is simple.
-     * 
-     * @param ctx
-     *            the bridge context
-     * @param e
-     *            the svg element
+     * Create a text element bridge.
+     * This set the text painter on the node if the text is simple.
+     * @param ctx the bridge context
+     * @param e the svg element
      * @return the text graphics node created by the super class
      */
-    @Override
-    public GraphicsNode createGraphicsNode(final BridgeContext ctx,
-            final Element e) {
-        final GraphicsNode node = super.createGraphicsNode(ctx, e);
-        ((TextNode) node).setTextPainter(getTextPainter());
+    public GraphicsNode createGraphicsNode(BridgeContext ctx, Element e) {
+        GraphicsNode node = super.createGraphicsNode(ctx, e);
+        ((TextNode)node).setTextPainter(getTextPainter());
         return node;
     }
 

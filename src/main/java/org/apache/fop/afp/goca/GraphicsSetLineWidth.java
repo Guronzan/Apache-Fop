@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsSetLineWidth.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsSetLineWidth.java 1339442 2012-05-17 01:42:56Z gadams $ */
 
 package org.apache.fop.afp.goca;
 
@@ -28,41 +28,37 @@ import java.io.OutputStream;
 public class GraphicsSetLineWidth extends AbstractGraphicsDrawingOrder {
 
     /** line width multiplier */
-    private int multiplier = 1;
+    private final int multiplier;
 
     /**
      * Main constructor
      *
-     * @param multiplier
-     *            the line width multiplier
+     * @param multiplier the line width multiplier
      */
-    public GraphicsSetLineWidth(final int multiplier) {
+    public GraphicsSetLineWidth(int multiplier) {
         this.multiplier = multiplier;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[] { getOrderCode(), // GSLW order code
-                (byte) this.multiplier // MH (line-width)
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[] {
+           getOrderCode(), // GSLW order code
+           (byte) multiplier // MH (line-width)
         };
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "GraphicsSetLineWidth{multiplier=" + this.multiplier + "}";
+        return "GraphicsSetLineWidth{multiplier=" + multiplier + "}";
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         return 0x19;
     }

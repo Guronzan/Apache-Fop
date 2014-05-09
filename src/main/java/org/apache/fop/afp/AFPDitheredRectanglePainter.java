@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPDitheredRectanglePainter.java 804268 2009-08-14 15:46:05Z cbowditch $ */
+/* $Id: AFPDitheredRectanglePainter.java 1195952 2011-11-01 12:20:21Z phancock $ */
 
 package org.apache.fop.afp;
 
@@ -25,98 +25,87 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
-import org.apache.fop.afp.modca.triplets.MappingOptionTriplet;
-import org.apache.fop.util.bitmap.DitherUtil;
 import org.apache.xmlgraphics.image.loader.ImageSize;
 import org.apache.xmlgraphics.util.MimeConstants;
+
+import org.apache.fop.afp.modca.triplets.MappingOptionTriplet;
+import org.apache.fop.util.bitmap.DitherUtil;
+
 
 /**
  * A painter of rectangles in AFP
  */
 public class AFPDitheredRectanglePainter extends AbstractAFPPainter {
 
-    private final AFPResourceManager resourceManager;
+    private AFPResourceManager resourceManager;
 
     /**
      * Main constructor
      *
-     * @param paintingState
-     *            the AFP painting state
-     * @param dataStream
-     *            the AFP datastream
-     * @param resourceManager
-     *            the resource manager
+     * @param paintingState the AFP painting state
+     * @param dataStream the AFP datastream
+     * @param resourceManager the resource manager
      */
-    public AFPDitheredRectanglePainter(final AFPPaintingState paintingState,
-            final DataStream dataStream,
-            final AFPResourceManager resourceManager) {
+    public AFPDitheredRectanglePainter(AFPPaintingState paintingState, DataStream dataStream,
+            AFPResourceManager resourceManager) {
         super(paintingState, dataStream);
         this.resourceManager = resourceManager;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void paint(final PaintingInfo paintInfo) throws IOException {
-        final RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo) paintInfo;
-        if (rectanglePaintInfo.getWidth() <= 0
-                || rectanglePaintInfo.getHeight() <= 0) {
+    public void paint(PaintingInfo paintInfo) throws IOException {
+        RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo)paintInfo;
+        if (rectanglePaintInfo.getWidth() <= 0 || rectanglePaintInfo.getHeight() <= 0) {
             return;
         }
 
-        final int ditherMatrix = DitherUtil.DITHER_MATRIX_8X8;
-        final Dimension ditherSize = new Dimension(ditherMatrix, ditherMatrix);
+        int ditherMatrix = DitherUtil.DITHER_MATRIX_8X8;
+        Dimension ditherSize = new Dimension(ditherMatrix, ditherMatrix);
 
-        // Prepare an FS10 bi-level image
-        final AFPImageObjectInfo imageObjectInfo = new AFPImageObjectInfo();
+        //Prepare an FS10 bi-level image
+        AFPImageObjectInfo imageObjectInfo = new AFPImageObjectInfo();
         imageObjectInfo.setMimeType(MimeConstants.MIME_AFP_IOCA_FS10);
-        // imageObjectInfo.setCreatePageSegment(true);
-        imageObjectInfo.getResourceInfo().setLevel(
-                new AFPResourceLevel(AFPResourceLevel.INLINE));
+        //imageObjectInfo.setCreatePageSegment(true);
+        imageObjectInfo.getResourceInfo().setLevel(new AFPResourceLevel(AFPResourceLevel.INLINE));
         imageObjectInfo.getResourceInfo().setImageDimension(ditherSize);
         imageObjectInfo.setBitsPerPixel(1);
         imageObjectInfo.setColor(false);
-        // Note: the following may not be supported by older implementations
-        imageObjectInfo
-        .setMappingOption(MappingOptionTriplet.REPLICATE_AND_TRIM);
+        //Note: the following may not be supported by older implementations
+        imageObjectInfo.setMappingOption(MappingOptionTriplet.REPLICATE_AND_TRIM);
 
-        // Dither image size
-        final int resolution = this.paintingState.getResolution();
-        final ImageSize ditherBitmapSize = new ImageSize(ditherSize.width,
-                ditherSize.height, resolution);
-        imageObjectInfo.setDataHeightRes((int) Math.round(ditherBitmapSize
-                .getDpiHorizontal() * 10));
-        imageObjectInfo.setDataWidthRes((int) Math.round(ditherBitmapSize
-                .getDpiVertical() * 10));
+        //Dither image size
+        int resolution = paintingState.getResolution();
+        ImageSize ditherBitmapSize = new ImageSize(
+                ditherSize.width, ditherSize.height, resolution);
+        imageObjectInfo.setDataHeightRes((int)Math.round(
+                ditherBitmapSize.getDpiHorizontal() * 10));
+        imageObjectInfo.setDataWidthRes((int)Math.round(
+                ditherBitmapSize.getDpiVertical() * 10));
         imageObjectInfo.setDataWidth(ditherSize.width);
         imageObjectInfo.setDataHeight(ditherSize.height);
 
-        // Create dither image
-        final Color col = this.paintingState.getColor();
-        final byte[] dither = DitherUtil.getBayerDither(ditherMatrix, col,
-                false);
+        //Create dither image
+        Color col = paintingState.getColor();
+        byte[] dither = DitherUtil.getBayerDither(ditherMatrix, col, false);
         imageObjectInfo.setData(dither);
 
-        // Positioning
-        final AFPObjectAreaInfo objectAreaInfo = new AFPObjectAreaInfo();
-        final int rotation = this.paintingState.getRotation();
-        final AffineTransform at = this.paintingState.getData().getTransform();
-        final Point2D origin = at.transform(new Point2D.Float(
+        //Positioning
+        int rotation = paintingState.getRotation();
+        AffineTransform at = paintingState.getData().getTransform();
+        Point2D origin = at.transform(new Point2D.Float(
                 rectanglePaintInfo.getX() * 1000,
                 rectanglePaintInfo.getY() * 1000), null);
-        objectAreaInfo.setX((int) Math.round(origin.getX()));
-        objectAreaInfo.setY((int) Math.round(origin.getY()));
-        final AFPUnitConverter unitConv = this.paintingState.getUnitConverter();
-        final float width = unitConv.pt2units(rectanglePaintInfo.getWidth());
-        final float height = unitConv.pt2units(rectanglePaintInfo.getHeight());
-        objectAreaInfo.setWidth(Math.round(width));
-        objectAreaInfo.setHeight(Math.round(height));
-        objectAreaInfo.setHeightRes(resolution);
-        objectAreaInfo.setWidthRes(resolution);
-        objectAreaInfo.setRotation(rotation);
+        AFPUnitConverter unitConv = paintingState.getUnitConverter();
+        float width = unitConv.pt2units(rectanglePaintInfo.getWidth());
+        float height = unitConv.pt2units(rectanglePaintInfo.getHeight());
+        AFPObjectAreaInfo objectAreaInfo = new AFPObjectAreaInfo(
+                (int) Math.round(origin.getX()),
+                (int) Math.round(origin.getY()),
+                Math.round(width), Math.round(height), resolution, rotation);
         imageObjectInfo.setObjectAreaInfo(objectAreaInfo);
 
-        // Create rectangle
-        this.resourceManager.createObject(imageObjectInfo);
+        //Create rectangle
+        resourceManager.createObject(imageObjectInfo);
     }
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsSetCharacterSet.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsSetCharacterSet.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -25,8 +25,7 @@ import java.io.OutputStream;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * Sets the current character set (font) to be used for following graphics
- * strings
+ * Sets the current character set (font) to be used for following graphics strings
  */
 public class GraphicsSetCharacterSet extends AbstractGraphicsDrawingOrder {
 
@@ -34,35 +33,32 @@ public class GraphicsSetCharacterSet extends AbstractGraphicsDrawingOrder {
     private final int fontReference;
 
     /**
-     * @param fontReference
-     *            character set font reference
+     * @param fontReference character set font reference
      */
-    public GraphicsSetCharacterSet(final int fontReference) {
+    public GraphicsSetCharacterSet(int fontReference) {
         this.fontReference = fontReference;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[] { getOrderCode(), // GSCS order code
-                BinaryUtils.convert(this.fontReference)[0] };
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[] {
+            getOrderCode(), // GSCS order code
+            BinaryUtils.convert(fontReference)[0]
+        };
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "GraphicsSetCharacterSet(" + this.fontReference + ")";
+        return "GraphicsSetCharacterSet(" + fontReference + ")";
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         return 0x38;
     }

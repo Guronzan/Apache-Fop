@@ -15,11 +15,13 @@
  * limitations under the License.
  */
 
-/* $Id: Region.java 757256 2009-03-22 21:08:48Z adelmelle $ */
+/* $Id: Region.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.pagination;
 
 import java.awt.Rectangle;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.datatypes.FODimension;
@@ -30,97 +32,85 @@ import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
-import org.xml.sax.Locator;
+import org.apache.fop.traits.WritingMode;
 
 /**
  * This is an abstract base class for pagination regions.
  */
 public abstract class Region extends FObj {
-    // The value of properties relevant for fo:region
+    // The value of FO traits (refined properties) that apply to fo:region
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     // private ToBeImplementedProperty clip
     private int displayAlign;
     private int overflow;
     private String regionName;
     private Numeric referenceOrientation;
-    private int writingMode;
-    // End of property values
+    private WritingMode writingMode;
+    // End of FO trait values
 
-    private final SimplePageMaster layoutMaster;
+    /** the parent {@link SimplePageMaster} */
+    protected final SimplePageMaster layoutMaster;
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    protected Region(final FONode parent) {
+    protected Region(FONode parent) {
         super(parent);
-        this.layoutMaster = (SimplePageMaster) parent;
+        layoutMaster = (SimplePageMaster) parent;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
+    public void bind(PropertyList pList) throws FOPException {
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
         // clip = pList.get(PR_CLIP);
-        this.displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
-        this.overflow = pList.get(PR_OVERFLOW).getEnum();
-        this.regionName = pList.get(PR_REGION_NAME).getString();
-        this.referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION)
-                .getNumeric();
-        this.writingMode = pList.getWritingMode();
+        displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
+        overflow = pList.get(PR_OVERFLOW).getEnum();
+        regionName = pList.get(PR_REGION_NAME).getString();
+        referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION).getNumeric();
+        writingMode = WritingMode.valueOf(pList.get(PR_WRITING_MODE).getEnum());
 
         // regions may have name, or default
-        if (this.regionName.equals("")) {
-            this.regionName = getDefaultRegionName();
+        if (regionName.equals("")) {
+            regionName = getDefaultRegionName();
         } else {
             // check that name is OK. Not very pretty.
             if (isReserved(getRegionName())
                     && !getRegionName().equals(getDefaultRegionName())) {
-                getFOValidationEventProducer().illegalRegionName(this,
-                        getName(), this.regionName, getLocator());
+                getFOValidationEventProducer().illegalRegionName(this, getName(),
+                        regionName, getLocator());
             }
         }
 
-        // TODO do we need context for getBPPaddingAndBorder() and
-        // getIPPaddingAndBorder()?
-        if (getCommonBorderPaddingBackground().getBPPaddingAndBorder(false,
-                null) != 0
-                || getCommonBorderPaddingBackground().getIPPaddingAndBorder(
-                        false, null) != 0) {
-            getFOValidationEventProducer().nonZeroBorderPaddingOnRegion(this,
-                    getName(), this.regionName, true, getLocator());
+        //TODO do we need context for getBPPaddingAndBorder() and getIPPaddingAndBorder()?
+        if ((getCommonBorderPaddingBackground().getBPPaddingAndBorder(false, null) != 0
+                || getCommonBorderPaddingBackground().getIPPaddingAndBorder(false, null) != 0)) {
+            getFOValidationEventProducer().nonZeroBorderPaddingOnRegion(this, getName(),
+                    regionName, true, getLocator());
         }
     }
 
     /**
-     * {@inheritDoc} String, String) <br>
-     * XSL Content Model: empty
+     * {@inheritDoc} String, String)
+     * <br>XSL Content Model: empty
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /**
-     * @param pageRefRect
-     *            reference dimension of the page area.
-     * @param spm
-     *            the simple page master this region belongs to.
+     * @param pageRefRect reference dimension of the page area.
      * @return the rectangle for the viewport area
      */
-    public abstract Rectangle getViewportRectangle(
-            final FODimension pageRefRect, final SimplePageMaster spm);
+    public abstract Rectangle getViewportRectangle(FODimension pageRefRect);
 
     /**
      * Returns the default region name (xsl-region-before, xsl-region-start,
      * etc.)
-     *
      * @return the default region name
      */
     protected abstract String getDefaultRegionName();
@@ -128,88 +118,80 @@ public abstract class Region extends FObj {
     /**
      * Checks to see if a given region name is one of the reserved names
      *
-     * @param name
-     *            a region name to check
+     * @param name a region name to check
      * @return true if the name parameter is a reserved region name
      */
-    protected boolean isReserved(final String name) {
-        return name.equals("xsl-region-before")
+    protected boolean isReserved(String name) {
+        return (name.equals("xsl-region-before")
                 || name.equals("xsl-region-start")
                 || name.equals("xsl-region-end")
                 || name.equals("xsl-region-after")
                 || name.equals("xsl-before-float-separator")
-                || name.equals("xsl-footnote-separator");
+                || name.equals("xsl-footnote-separator"));
     }
 
     /**
      * Get the page-width context
-     *
-     * @param lengthBase
-     *            the lengthBase to use for resolving percentages
-     * @return context for the width of the page-reference-area
+     * @param lengthBase    the lengthBase to use for resolving percentages
+     * @return  context for the width of the page-reference-area
      */
-    protected PercentBaseContext getPageWidthContext(final int lengthBase) {
-        return this.layoutMaster.getPageWidthContext(lengthBase);
+    protected PercentBaseContext getPageWidthContext(int lengthBase) {
+        return layoutMaster.getPageWidthContext(lengthBase);
     }
 
     /**
      * Get the page-width context
-     *
-     * @param lengthBase
-     *            the lengthBase to use for resolving percentages
-     * @return context for the width of the page-reference-area
+     * @param lengthBase    the lengthBase to use for resolving percentages
+     * @return  context for the width of the page-reference-area
      */
-    protected PercentBaseContext getPageHeightContext(final int lengthBase) {
-        return this.layoutMaster.getPageHeightContext(lengthBase);
+    protected PercentBaseContext getPageHeightContext(int lengthBase) {
+        return layoutMaster.getPageHeightContext(lengthBase);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
 
     /**
      * Returns a sibling region for this region.
-     *
-     * @param regionId
-     *            the Constants ID of the FO representing the region
+     * @param regionId the Constants ID of the FO representing the region
      * @return the requested region
      */
-    protected Region getSiblingRegion(final int regionId) {
+    protected Region getSiblingRegion(int regionId) {
         // Ask parent for region
-        return this.layoutMaster.getRegion(regionId);
+        return layoutMaster.getRegion(regionId);
     }
 
     /**
      * @return the Background Properties (border and padding are not used here).
      */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
-    /** @return the "region-name" property. */
+    /** @return the "region-name" FO trait. */
     public String getRegionName() {
-        return this.regionName;
+        return regionName;
     }
 
-    /** @return the "writing-mode" property. */
-    public int getWritingMode() {
-        return this.writingMode;
-    }
-
-    /** @return the "overflow" property. */
+    /** @return the "overflow" FO trait. */
     public int getOverflow() {
-        return this.overflow;
+        return overflow;
     }
 
-    /** @return the display-align property. */
+    /** @return the display-align FO trait. */
     public int getDisplayAlign() {
-        return this.displayAlign;
+        return displayAlign;
     }
 
-    /** @return the "reference-orientation" property. */
+    /** @return the "reference-orientation" FO trait. */
     public int getReferenceOrientation() {
-        return this.referenceOrientation.getValue();
+        return referenceOrientation.getValue();
+    }
+
+    /** @return the "writing-mode" FO trait. */
+    public WritingMode getWritingMode() {
+        return writingMode;
     }
 }

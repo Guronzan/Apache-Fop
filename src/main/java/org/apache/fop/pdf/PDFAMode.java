@@ -29,15 +29,13 @@ public final class PDFAMode {
     /** PDF/A-1b enabled */
     public static final PDFAMode PDFA_1B = new PDFAMode("PDF/A-1b");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     * 
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private PDFAMode(final String name) {
+    private PDFAMode(String name) {
         this.name = name;
     }
 
@@ -47,35 +45,28 @@ public final class PDFAMode {
     }
 
     /**
-     * Indicates whether this mode obeys the restrictions established by
-     * PDF/A-1a.
-     * 
+     * Indicates whether this mode obeys the restrictions established by PDF/A-1a.
      * @return true if this mode obeys the restrictions established by PDF/A-1a.
      */
     public boolean isPDFA1LevelA() {
-        return this == PDFA_1A;
+        return (this == PDFA_1A);
     }
 
     /**
-     * Indicates whether this mode obeys the restrictions established by
-     * PDF/A-1b.
-     * 
+     * Indicates whether this mode obeys the restrictions established by PDF/A-1b.
      * @return true if this mode obeys the restrictions established by PDF/A-1b.
      */
     public boolean isPDFA1LevelB() {
-        return this != DISABLED;
-        // PDF/A-1a is a superset of PDF/A-1b!
+        return (this != DISABLED);
+        //PDF/A-1a is a superset of PDF/A-1b!
     }
 
     /**
      * Returns the mode enum object given a String.
-     * 
-     * @param s
-     *            the string
-     * @return the PDFAMode enum object (DISABLED will be returned if no match
-     *         is found)
+     * @param s the string
+     * @return the PDFAMode enum object (DISABLED will be returned if no match is found)
      */
-    public static PDFAMode valueOf(final String s) {
+    public static PDFAMode valueOf(String s) {
         if (PDFA_1A.getName().equalsIgnoreCase(s)) {
             return PDFA_1A;
         } else if (PDFA_1B.getName().equalsIgnoreCase(s)) {
@@ -86,9 +77,8 @@ public final class PDFAMode {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return this.name;
+        return name;
     }
 
 }

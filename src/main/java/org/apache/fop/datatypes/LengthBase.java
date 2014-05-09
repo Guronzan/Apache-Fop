@@ -15,22 +15,23 @@
  * limitations under the License.
  */
 
-/* $Id: LengthBase.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LengthBase.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.datatypes;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
+import org.apache.fop.util.CompareUtil;
 
 /**
  * Models a length which can be used as a factor in a percentage length
  * calculation
  */
-@Slf4j
 public class LengthBase implements PercentBase {
     // Standard kinds of percent-based length
     /** constant for a custom percent-based length */
@@ -61,30 +62,30 @@ public class LengthBase implements PercentBase {
     public static final int ALIGNMENT_ADJUST = 12;
 
     /**
+     * logging instance
+     */
+    protected static final Log log = LogFactory.getLog(LengthBase.class);
+
+    /**
      * The FO for which this property is to be calculated.
      */
-    protected/* final */FObj fobj;
+    protected /* final */ FObj fobj;
 
     /**
      * One of the defined types of LengthBase
      */
-    private final/* final */int baseType;
+    private /* final */ int baseType;
 
     /** For percentages based on other length properties */
     private Length baseLength;
 
     /**
      * Constructor
-     *
-     * @param plist
-     *            property list for this
-     * @param baseType
-     *            a constant defining the type of teh percent base
-     * @throws PropertyException
-     *             In case an problem occurs while evaluating values
+     * @param plist property list for this
+     * @param baseType a constant defining the type of teh percent base
+     * @throws PropertyException In case an problem occurs while evaluating values
      */
-    public LengthBase(final PropertyList plist, final int baseType)
-            throws PropertyException {
+    public LengthBase(PropertyList plist, int baseType) throws PropertyException {
         this.fobj = plist.getFObj();
         this.baseType = baseType;
         switch (baseType) {
@@ -92,8 +93,7 @@ public class LengthBase implements PercentBase {
             this.baseLength = plist.get(Constants.PR_FONT_SIZE).getLength();
             break;
         case INH_FONTSIZE:
-            this.baseLength = plist.getInherited(Constants.PR_FONT_SIZE)
-                    .getLength();
+            this.baseLength = plist.getInherited(Constants.PR_FONT_SIZE).getLength();
             break;
         default:
             // TODO: pacify CheckStyle
@@ -105,7 +105,6 @@ public class LengthBase implements PercentBase {
     /**
      * @return the dimension of this object (always 1)
      */
-    @Override
     public int getDimension() {
         return 1;
     }
@@ -113,7 +112,6 @@ public class LengthBase implements PercentBase {
     /**
      * @return the base value of this object (always 1.0)
      */
-    @Override
     public double getBaseValue() {
         return 1.0;
     }
@@ -121,15 +119,13 @@ public class LengthBase implements PercentBase {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int getBaseLength(final PercentBaseContext context)
-            throws PropertyException {
+    public int getBaseLength(PercentBaseContext context) throws PropertyException {
         int baseLen = 0;
         if (context != null) {
-            if (this.baseType == FONTSIZE || this.baseType == INH_FONTSIZE) {
-                return this.baseLength.getValue(context);
+            if (baseType == FONTSIZE || baseType == INH_FONTSIZE) {
+                return baseLength.getValue(context);
             }
-            baseLen = context.getBaseLength(this.baseType, this.fobj);
+            baseLen =  context.getBaseLength(baseType,  fobj);
         } else {
             log.error("getBaseLength called without context");
         }
@@ -137,14 +133,41 @@ public class LengthBase implements PercentBase {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return super.toString() + "[fo=" + this.fobj + "," + "baseType="
-                + this.baseType + "," + "baseLength=" + this.baseLength + "]";
+        return super.toString()
+          + "[fo=" + fobj + ","
+          + "baseType=" + baseType + ","
+          + "baseLength=" + baseLength + "]";
     }
 
-    /** @return the base length as a {@link Length} */
+    /**@return the base length as a {@link Length} */
     public Length getBaseLength() {
-        return this.baseLength;
+        return baseLength;
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + CompareUtil.getHashCode(baseLength);
+        result = prime * result + baseType;
+        result = prime * result + CompareUtil.getHashCode(fobj);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof LengthBase)) {
+            return false;
+        }
+        LengthBase other = (LengthBase) obj;
+        return CompareUtil.equal(baseLength, other.baseLength)
+                && baseType == other.baseType
+                && CompareUtil.equal(fobj, other.fobj);
+    }
+
 }
+

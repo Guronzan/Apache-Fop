@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-/* $Id: AreaAdditionUtil.java 808157 2009-08-26 18:50:10Z vhennebert $ */
+/* $Id: AreaAdditionUtil.java 1297008 2012-03-05 11:19:47Z vhennebert $ */
 
 package org.apache.fop.layoutmgr;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import org.apache.fop.layoutmgr.SpaceResolver.SpaceHandlingBreakPosition;
@@ -27,47 +26,33 @@ import org.apache.fop.layoutmgr.SpaceResolver.SpaceHandlingBreakPosition;
 /**
  * Utility class which provides common code for the addAreas stage.
  */
-public class AreaAdditionUtil {
+public final class AreaAdditionUtil {
 
-    private static class StackingIter extends PositionIterator {
-        StackingIter(final Iterator parentIter) {
-            super(parentIter);
-        }
-
-        @Override
-        protected LayoutManager getLM(final Object nextObj) {
-            return ((Position) nextObj).getLM();
-        }
-
-        @Override
-        protected Position getPos(final Object nextObj) {
-            return (Position) nextObj;
-        }
+    private AreaAdditionUtil() {
     }
 
     /**
      * Creates the child areas for the given layout manager.
-     *
-     * @param bslm
-     *            the BlockStackingLayoutManager instance for which "addAreas"
-     *            is performed.
-     * @param parentIter
-     *            the position iterator
-     * @param layoutContext
-     *            the layout context
+     * @param bslm the BlockStackingLayoutManager instance for which "addAreas" is performed.
+     * @param parentIter the position iterator
+     * @param layoutContext the layout context
      */
-    public static void addAreas(final BlockStackingLayoutManager bslm,
-            final PositionIterator parentIter, final LayoutContext layoutContext) {
-        LayoutManager childLM = null;
-        final LayoutContext lc = new LayoutContext(0);
+    public static void addAreas(BlockStackingLayoutManager bslm,
+            PositionIterator parentIter, LayoutContext layoutContext) {
+        LayoutManager childLM;
+        LayoutContext lc = new LayoutContext(0);
         LayoutManager firstLM = null;
         LayoutManager lastLM = null;
         Position firstPos = null;
         Position lastPos = null;
 
+        if (bslm != null) {
+            bslm.addId();
+        }
+
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList<>();
+        LinkedList<Position> positionList = new LinkedList<Position>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = parentIter.next();
@@ -82,8 +67,8 @@ public class AreaAdditionUtil {
             }
             if (pos instanceof NonLeafPosition) {
                 // pos was created by a child of this FlowLM
-                positionList.add(((NonLeafPosition) pos).getPosition());
-                lastLM = ((NonLeafPosition) pos).getPosition().getLM();
+                positionList.add(pos.getPosition());
+                lastLM = (pos.getPosition().getLM());
                 if (firstLM == null) {
                     firstLM = lastLM;
                 }
@@ -94,24 +79,24 @@ public class AreaAdditionUtil {
             }
         }
         if (firstPos == null) {
-            return; // Nothing to do, return early
-            // TODO This is a hack to avoid an NPE in the code block below.
-            // If there's no firstPos/lastPos there's currently no way to
-            // correctly determine first and last conditions. The Iterator
-            // doesn't give us that info.
+            return; //Nothing to do, return early
+            //TODO This is a hack to avoid an NPE in the code block below.
+            //If there's no firstPos/lastPos there's currently no way to
+            //correctly determine first and last conditions. The Iterator
+            //doesn't give us that info.
         }
 
         if (bslm != null) {
-            bslm.addMarkersToPage(true, bslm.isFirst(firstPos),
+            bslm.addMarkersToPage(
+                    true,
+                    bslm.isFirst(firstPos),
                     bslm.isLast(lastPos));
         }
 
-        final StackingIter childPosIter = new StackingIter(
-                positionList.listIterator());
+        PositionIterator childPosIter = new PositionIterator(positionList.listIterator());
 
         while ((childLM = childPosIter.getNextChildLM()) != null) {
-            // TODO vh: the test above might be problematic in some cases. See
-            // comment in
+            // TODO vh: the test above might be problematic in some cases. See comment in
             // the TableCellLM.getNextKnuthElements method
             // Add the block areas to Area
             lc.setFlags(LayoutContext.FIRST_AREA, childLM == firstLM);
@@ -120,8 +105,7 @@ public class AreaAdditionUtil {
             lc.setSpaceAdjust(layoutContext.getSpaceAdjust());
             // set space before for the first LM, in order to implement
             // display-align = center or after
-            lc.setSpaceBefore(childLM == firstLM ? layoutContext
-                    .getSpaceBefore() : 0);
+            lc.setSpaceBefore((childLM == firstLM ? layoutContext.getSpaceBefore() : 0));
             // set space after for each LM, in order to implement
             // display-align = distribute
             lc.setSpaceAfter(layoutContext.getSpaceAfter());
@@ -130,9 +114,13 @@ public class AreaAdditionUtil {
         }
 
         if (bslm != null) {
-            bslm.addMarkersToPage(false, bslm.isFirst(firstPos),
+            bslm.addMarkersToPage(
+                    false,
+                    bslm.isFirst(firstPos),
                     bslm.isLast(lastPos));
+            bslm.checkEndOfLayout(lastPos);
         }
+
 
     }
 

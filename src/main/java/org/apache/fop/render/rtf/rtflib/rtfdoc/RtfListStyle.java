@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfListStyle.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfListStyle.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -28,7 +28,6 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 //Java
 import java.io.IOException;
-//FOP
 
 /**
  * Class to handle list styles.
@@ -38,64 +37,51 @@ public class RtfListStyle {
 
     /**
      * Sets the RtfListItem this style belongs to.
-     * 
-     * @param item
-     *            RtfListItem this style belongs to
+     * @param item RtfListItem this style belongs to
      */
-    public void setRtfListItem(final RtfListItem item) {
-        this.rtfListItem = item;
+    public void setRtfListItem(RtfListItem item) {
+        rtfListItem = item;
     }
 
     /**
      * Gets the RtfListItem this style belongs to.
-     * 
      * @return RtfListItem this style belongs to
      */
     public RtfListItem getRtfListItem() {
-        return this.rtfListItem;
+        return rtfListItem;
     }
 
     /**
      * Gets the RtfList this style belongs to.
-     * 
      * @return RtfList this style belongs to
      */
     public RtfList getRtfList() {
-        return this.rtfListItem.getParentList();
+        return rtfListItem.getParentList();
     }
 
     /**
      * Gets called before a RtfListItem has to be written.
-     * 
-     * @param item
-     *            RtfListItem this style belongs to
-     * @throws IOException
-     *             Thrown when an IO-problem occurs.
+     * @param item RtfListItem this style belongs to
+     * @throws IOException Thrown when an IO-problem occurs.
      */
-    public void writeListPrefix(final RtfListItem item) throws IOException {
+    public void writeListPrefix(RtfListItem item)
+    throws IOException {
     }
-
     /**
-     * Gets called before a paragraph has to be written, which is contained by a
-     * RtfListItem.
-     * 
-     * @param element
-     *            RtfElement in whose context is to be written
-     * @throws IOException
-     *             Thrown when an IO-problem occurs.
+     * Gets called before a paragraph has to be written, which is contained by a RtfListItem.
+     * @param element RtfElement in whose context is to be written
+     * @throws IOException Thrown when an IO-problem occurs.
      */
-    public void writeParagraphPrefix(final RtfElement element)
-            throws IOException {
+    public void writeParagraphPrefix(RtfElement element)
+    throws IOException {
     }
 
     /**
      * Gets called when the list table has to be written.
-     * 
-     * @param element
-     *            RtfElement in whose context is to be written
-     * @throws IOException
-     *             Thrown when an IO-problem occurs.
+     * @param element RtfElement in whose context is to be written
+     * @throws IOException Thrown when an IO-problem occurs.
      */
-    public void writeLevelGroup(final RtfElement element) throws IOException {
+    public void writeLevelGroup(RtfElement element)
+    throws IOException {
     }
 }

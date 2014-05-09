@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsSetMix.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: GraphicsSetMix.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp.goca;
 
@@ -27,7 +27,10 @@ import java.io.OutputStream;
  */
 public class GraphicsSetMix extends AbstractGraphicsDrawingOrder {
 
+    /** default mode */
     public static final byte MODE_DEFAULT = 0x00;
+
+    /** overpaint mode */
     public static final byte MODE_OVERPAINT = 0x02;
 
     /** the mix mode value */
@@ -36,36 +39,32 @@ public class GraphicsSetMix extends AbstractGraphicsDrawingOrder {
     /**
      * Main constructor
      *
-     * @param mode
-     *            the mix mode value
+     * @param mode the mix mode value
      */
-    public GraphicsSetMix(final byte mode) {
+    public GraphicsSetMix(byte mode) {
         this.mode = mode;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[] { 0x0C, // GSMX order code
-                this.mode // MODE (mix mode value)
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[] {
+           0x0C, // GSMX order code
+           mode // MODE (mix mode value)
         };
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "GraphicsSetMix{mode=" + this.mode + "}";
+        return "GraphicsSetMix{mode=" + mode + "}";
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         return 0x0C;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 2;
     }

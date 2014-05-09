@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-/* $Id: FloorFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FloorFunction.java 1328963 2012-04-22 20:09:42Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
 import org.apache.fop.fo.properties.NumberProperty;
 import org.apache.fop.fo.properties.Property;
 
+
 class FloorFunction extends FunctionBase {
 
-    @Override
-    public int nbArgs() {
+    /** {@inheritDoc} */
+    public int getRequiredArgsCount() {
         return 1;
     }
 
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo pInfo)
-            throws PropertyException {
-        final Number dbl = args[0].getNumber();
+    /** {@inheritDoc} */
+    public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
+        Number dbl = args[0].getNumber();
         if (dbl == null) {
             throw new PropertyException("Non number operand to floor function");
         }
@@ -40,3 +40,4 @@ class FloorFunction extends FunctionBase {
     }
 
 }
+

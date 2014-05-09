@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsConfiguration.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: GraphicsConfiguration.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.svg;
 
@@ -23,33 +23,34 @@ import java.awt.image.VolatileImage;
 
 /**
  * Adapter to allow subclassing java.awt.GraphicsConfiguration without
- * compilation errors. The version for JDK 1.4 needs to add an override for the
- * abstract createCompatibleVolatileImage() method. It can't be overidden for
- * JDK 1.3 because there is no VolatileImage there.
+ * compilation errors.
+ * The version for JDK 1.4 needs to add an override for the abstract
+ * createCompatibleVolatileImage() method. It can't be overidden
+ * for JDK 1.3 because there is no VolatileImage there.
  *
  */
-abstract public class GraphicsConfiguration extends
-        java.awt.GraphicsConfiguration {
+public abstract class GraphicsConfiguration extends java.awt.GraphicsConfiguration {
 
     /**
-     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int,
-     *      int)
+     * @param width of image
+     * @param height of image
+     * @return new volatile image
+     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int)
      * @since JDK 1.4
      */
-    @Override
-    public VolatileImage createCompatibleVolatileImage(final int width,
-            final int height) {
+    public VolatileImage createCompatibleVolatileImage(int width, int height) {
         return null;
     }
 
     /**
-     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int,
-     *      int, int)
+     * @param width of image
+     * @param height of image
+     * @param transparency of image
+     * @return new volatile image
+     * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int, int)
      * @since JDK 1.5
      */
-    @Override
-    public VolatileImage createCompatibleVolatileImage(final int width,
-            final int height, final int transparency) {
+    public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency) {
         return null;
     }
 

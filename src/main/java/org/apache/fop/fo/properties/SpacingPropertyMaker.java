@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: SpacingPropertyMaker.java 824686 2009-10-13 10:52:29Z vhennebert $ */
+/* $Id: SpacingPropertyMaker.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.properties;
 
@@ -25,29 +25,31 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * A maker which creates 'letter-spacing' and 'word-spacing' properties. These
- * two properties properties are standard space properties with additinal
- * support for the 'normal' enum value.
+ * A maker which creates 'letter-spacing' and 'word-spacing' properties.
+ * These two properties properties are standard space properties with
+ * additinal support for the 'normal' enum value.
  */
 
 public class SpacingPropertyMaker extends SpaceProperty.Maker {
     /**
      * Create a maker for [letter|word]-spacing.
-     * 
-     * @param propId
-     *            the id for property.
+     * @param propId the id for property.
      */
-    public SpacingPropertyMaker(final int propId) {
+    public SpacingPropertyMaker(int propId) {
         super(propId);
     }
 
     /**
      * Support for the 'normal' value.
+     * @param p the property to convert
+     * @param propertyList the property list to use in conversion
+     * @param fo the FO to use in conversion
+     * @return the converted property
+     * @throws PropertyException if a property conversion exception occurs
      */
-    @Override
-    public Property convertProperty(final Property p,
-            final PropertyList propertyList, final FObj fo)
-            throws PropertyException {
+    public Property convertProperty(Property p,
+                                       PropertyList propertyList,
+                                       FObj fo) throws PropertyException {
         if (p.getEnum() == Constants.EN_NORMAL) {
             return p;
         }

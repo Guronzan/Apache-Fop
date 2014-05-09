@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-/* $Id: HyphenationTreeResolver.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: HyphenationTreeResolver.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
 import javax.xml.transform.Source;
 
 /**
- * This interface is used to resolve relative URIs pointing to hyphenation tree
- * files.
+ * <p>This interface is used to resolve relative URIs pointing to hyphenation tree files.</p>
  */
 public interface HyphenationTreeResolver {
 
     /**
-     * Called to resolve an URI to a Source instance. The base URI needed by the
-     * URIResolver's resolve() method is defined to be implicitely available in
-     * this case. If the URI cannot be resolved, null is returned.
-     * 
-     * @param href
-     *            An href attribute, which may be relative or absolute.
+     * Called to resolve an URI to a Source instance. The base URI needed by the URIResolver's
+     * resolve() method is defined to be implicitely available in this case. If the URI cannot
+     * be resolved, null is returned.
+     * @param href An href attribute, which may be relative or absolute.
      * @return A Source object, or null if the href could not resolved.
      */
-    Source resolve(final String href);
+    Source resolve(String href);
 
 }

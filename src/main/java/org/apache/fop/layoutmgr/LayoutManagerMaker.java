@@ -15,7 +15,8 @@
  * limitations under the License.
  */
 
-/* $Id: LayoutManagerMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LayoutManagerMaker.java 1296526 2012-03-03 00:18:45Z gadams $ */
+
 package org.apache.fop.layoutmgr;
 
 import java.util.List;
@@ -38,107 +39,76 @@ public interface LayoutManagerMaker {
 
     /**
      * Make LayoutManagers for the node and add them to the list lms.
-     *
-     * @param node
-     *            the FO node for which the LayoutManagers are made
-     * @param lms
-     *            the list to which the LayoutManagers are added
+     * @param node the FO node for which the LayoutManagers are made
+     * @param lms the list to which the LayoutManagers are added
      */
-    public void makeLayoutManagers(final FONode node,
-            final List<LayoutManager> lms);
+    void makeLayoutManagers(FONode node, List lms);
 
     /**
-     * Make a specific LayoutManager for the node. If not exactly one
-     * LayoutManagers is available, an IllegalStateException is thrown.
-     *
-     * @param node
-     *            the FO node for which the LayoutManagers are made
+     * Make a specific LayoutManager for the node.
+     * If not exactly one LayoutManagers is available,
+     * an IllegalStateException is thrown.
+     * @param node the FO node for which the LayoutManagers are made
      * @return The created LayoutManager
-     * @throws IllegalStateException
-     *             if not exactly one LayoutManager is available for the
-     *             requested node
      */
-    public LayoutManager makeLayoutManager(final FONode node);
+    LayoutManager makeLayoutManager(FONode node);
 
     /**
      * Make a PageSequenceLayoutManager object.
-     *
-     * @param ath
-     *            the AreaTreeHandler object the PSLM interacts with
-     * @param ps
-     *            the fo:page-sequence object this PSLM will process
+     * @param ath the AreaTreeHandler object the PSLM interacts with
+     * @param ps the fo:page-sequence object this PSLM will process
      * @return The created PageSequenceLayoutManager object
      */
-    public PageSequenceLayoutManager makePageSequenceLayoutManager(
-            final AreaTreeHandler ath, final PageSequence ps);
+    PageSequenceLayoutManager makePageSequenceLayoutManager(
+        AreaTreeHandler ath, PageSequence ps);
 
     /**
-     * Make a ExternalDocumentLayoutManager object for the fox:external-document
-     * extension.
-     *
-     * @param ath
-     *            the AreaTreeHandler object the external-document interacts
-     *            with
-     * @param ed
-     *            the fox:external-document object to be processed
+     * Make a ExternalDocumentLayoutManager object for the fox:external-document extension.
+     * @param ath the AreaTreeHandler object the external-document interacts with
+     * @param ed the fox:external-document object to be processed
      * @return The created ExternalDocumentLayoutManager object
      */
-    public ExternalDocumentLayoutManager makeExternalDocumentLayoutManager(
-            final AreaTreeHandler ath, final ExternalDocument ed);
+    ExternalDocumentLayoutManager makeExternalDocumentLayoutManager(
+        AreaTreeHandler ath, ExternalDocument ed);
 
     /**
      * Make a FlowLayoutManager object.
-     *
-     * @param pslm
-     *            the parent PageSequenceLayoutManager object
-     * @param flow
-     *            the fo:flow object this FLM will process
+     * @param pslm the parent PageSequenceLayoutManager object
+     * @param flow the fo:flow object this FLM will process
      * @return The created FlowLayoutManager object
      */
-    public FlowLayoutManager makeFlowLayoutManager(
-            final PageSequenceLayoutManager pslm, final Flow flow);
+    FlowLayoutManager makeFlowLayoutManager(
+        PageSequenceLayoutManager pslm, Flow flow);
 
     /**
      * Make a ContentLayoutManager object.
-     *
-     * @param pslm
-     *            the parent PageSequenceLayoutManager object
-     * @param title
-     *            the fo:title object this CLM will process
+     * @param pslm the parent PageSequenceLayoutManager object
+     * @param title the fo:title object this CLM will process
      * @return The created ContentLayoutManager object
      */
-    public ContentLayoutManager makeContentLayoutManager(
-            final PageSequenceLayoutManager pslm, final Title title);
+    ContentLayoutManager makeContentLayoutManager(
+        PageSequenceLayoutManager pslm, Title title);
 
     /**
      * Make a StaticContentLayoutManager object.
-     *
-     * @param pslm
-     *            the parent PageSequenceLayoutManager object
-     * @param sc
-     *            the fo:static-content object this SCLM will process
-     * @param reg
-     *            the side region indicating where the static content needs to
-     *            be processed.
+     * @param pslm the parent PageSequenceLayoutManager object
+     * @param sc the fo:static-content object this SCLM will process
+     * @param reg the side region indicating where the static content
+     *     needs to be processed.
      * @return The created StaticContentLayoutManager object
      */
-    public StaticContentLayoutManager makeStaticContentLayoutManager(
-            final PageSequenceLayoutManager pslm, final StaticContent sc,
-            final SideRegion reg);
+    StaticContentLayoutManager makeStaticContentLayoutManager(
+        PageSequenceLayoutManager pslm, StaticContent sc, SideRegion reg);
 
     /**
      * Make a StaticContentLayoutManager object for a footnote-separator.
-     *
-     * @param pslm
-     *            the parent PageSequenceLayoutManager object
-     * @param sc
-     *            the fo:static-content object this SCLM will process
-     * @param block
-     *            the Block area this SCLM must add its areas to
+     * @param pslm the parent PageSequenceLayoutManager object
+     * @param sc the fo:static-content object this SCLM will process
+     * @param block the Block area this SCLM must add its areas to
      * @return The created StaticContentLayoutManager object
      */
-    public StaticContentLayoutManager makeStaticContentLayoutManager(
-            final PageSequenceLayoutManager pslm, final StaticContent sc,
-            final Block block);
+    StaticContentLayoutManager makeStaticContentLayoutManager(
+        PageSequenceLayoutManager pslm, StaticContent sc, Block block);
 
 }
+

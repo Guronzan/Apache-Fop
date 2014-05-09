@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: LMiter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LMiter.java 1067558 2011-02-06 00:56:28Z adelmelle $ */
 
 package org.apache.fop.layoutmgr;
 
@@ -23,75 +23,82 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+/** An iterator for layout managers. */
 public class LMiter implements ListIterator<LayoutManager> {
 
+    /** list of layout managers */
     protected List<LayoutManager> listLMs;
+    /** current position in iteration */
     protected int curPos = 0;
     /** The LayoutManager to which this LMiter is attached **/
-    private final LayoutManager lp;
+    private LayoutManager lp;
 
-    public LMiter(final LayoutManager lp) {
+    /**
+     * Construct a layout manager iterator.
+     * @param lp the associated layout manager (parent)
+     */
+    public LMiter(LayoutManager lp) {
         this.lp = lp;
-        this.listLMs = lp.getChildLMs();
+        listLMs = lp.getChildLMs();
     }
 
-    @Override
+    /** {@inheritDoc} */
     public boolean hasNext() {
-        return this.curPos < this.listLMs.size() ? true : this.lp
-                .createNextChildLMs(this.curPos);
+        return (curPos < listLMs.size()) || lp.createNextChildLMs(curPos);
     }
 
-    @Override
+    /** {@inheritDoc} */
     public boolean hasPrevious() {
-        return this.curPos > 0;
+        return (curPos > 0);
     }
 
-    @Override
+    /** {@inheritDoc} */
     public LayoutManager previous() throws NoSuchElementException {
-        if (this.curPos > 0) {
-            return this.listLMs.get(--this.curPos);
+        if (curPos > 0) {
+            return listLMs.get(--curPos);
         } else {
             throw new NoSuchElementException();
         }
     }
 
-    @Override
+    /** {@inheritDoc} */
     public LayoutManager next() throws NoSuchElementException {
-        if (this.curPos < this.listLMs.size()) {
-            return this.listLMs.get(this.curPos++);
+        if (curPos < listLMs.size()) {
+            return listLMs.get(curPos++);
         } else {
             throw new NoSuchElementException();
         }
     }
 
-    @Override
-    public void remove() throws NoSuchElementException {
-        if (this.curPos > 0) {
-            this.listLMs.remove(--this.curPos);
+    /** {@inheritDoc} */
+     public void remove() throws NoSuchElementException {
+        if (curPos > 0) {
+            listLMs.remove(--curPos);
             // Note: doesn't actually remove it from the base!
         } else {
             throw new NoSuchElementException();
         }
     }
 
-    @Override
-    public void add(final LayoutManager o) throws UnsupportedOperationException {
+
+    /** {@inheritDoc} */
+   public void add(LayoutManager lm) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support add");
     }
 
-    @Override
-    public void set(final LayoutManager o) throws UnsupportedOperationException {
+    /** {@inheritDoc} */
+    public void set(LayoutManager lm) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support set");
     }
 
-    @Override
+    /** {@inheritDoc} */
     public int nextIndex() {
-        return this.curPos;
+        return curPos;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public int previousIndex() {
-        return this.curPos - 1;
+        return curPos - 1;
     }
 
 }

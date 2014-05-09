@@ -23,8 +23,8 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 
 /**
- * This implements the GraphicsDevice interface as appropriate for an
- * AFPGraphics2D.
+ * This implements the GraphicsDevice interface as appropriate for
+ * an AFPGraphics2D.
  */
 public class AFPGraphicsDevice extends GraphicsDevice {
 
@@ -36,10 +36,9 @@ public class AFPGraphicsDevice extends GraphicsDevice {
     /**
      * Create a new AF{ graphics device.
      *
-     * @param gc
-     *            The graphics configuration we should reference
+     * @param gc The graphics configuration we should reference
      */
-    public AFPGraphicsDevice(final AFPGraphicsConfiguration gc) {
+    public AFPGraphicsDevice(AFPGraphicsConfiguration gc) {
         this.gc = gc;
     }
 
@@ -48,9 +47,8 @@ public class AFPGraphicsDevice extends GraphicsDevice {
      *
      * @return an array containing the one graphics configuration
      */
-    @Override
     public GraphicsConfiguration[] getConfigurations() {
-        return new GraphicsConfiguration[] { this.gc };
+        return new GraphicsConfiguration[] {gc};
     }
 
     /**
@@ -58,7 +56,6 @@ public class AFPGraphicsDevice extends GraphicsDevice {
      *
      * @return the graphics configuration that created this object
      */
-    @Override
     public GraphicsConfiguration getDefaultConfiguration() {
         return this.gc;
     }
@@ -68,7 +65,6 @@ public class AFPGraphicsDevice extends GraphicsDevice {
      *
      * @return the ID string for this device, uses toString
      */
-    @Override
     public String getIDstring() {
         return toString();
     }
@@ -78,7 +74,6 @@ public class AFPGraphicsDevice extends GraphicsDevice {
      *
      * @return the type which is always printer
      */
-    @Override
     public int getType() {
         return GraphicsDevice.TYPE_PRINTER;
     }

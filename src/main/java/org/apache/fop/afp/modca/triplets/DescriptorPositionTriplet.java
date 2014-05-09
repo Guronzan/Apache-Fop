@@ -23,8 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Associates an ObjectAreaPosition with and ObjectAreaDescriptor structured
- * field
+ * Associates an ObjectAreaPosition with and ObjectAreaDescriptor structured field
  */
 public class DescriptorPositionTriplet extends AbstractTriplet {
 
@@ -33,25 +32,22 @@ public class DescriptorPositionTriplet extends AbstractTriplet {
     /**
      * Main constructor
      *
-     * @param oapId
-     *            the object area position id
+     * @param oapId the object area position id
      */
-    public DescriptorPositionTriplet(final byte oapId) {
+    public DescriptorPositionTriplet(byte oapId) {
         super(DESCRIPTOR_POSITION);
         this.oapId = oapId;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 3;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
-        data[2] = this.oapId;
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
+        data[2] = oapId;
         os.write(data);
     }
 }

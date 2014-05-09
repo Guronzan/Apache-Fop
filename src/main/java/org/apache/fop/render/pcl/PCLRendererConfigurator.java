@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: PCLRendererConfigurator.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PCLRendererConfigurator.java 1296496 2012-03-02 22:19:46Z gadams $ */
 
 package org.apache.fop.render.pcl;
 
-import java.awt.Graphics2D;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
-import org.apache.fop.fonts.EmbedFontInfo;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontEventAdapter;
 import org.apache.fop.fonts.FontEventListener;
@@ -37,6 +35,7 @@ import org.apache.fop.render.DefaultFontResolver;
 import org.apache.fop.render.PrintRendererConfigurator;
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
+import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.fop.render.java2d.Base14FontCollection;
 import org.apache.fop.render.java2d.ConfiguredFontCollection;
 import org.apache.fop.render.java2d.InstalledFontCollection;
@@ -45,53 +44,39 @@ import org.apache.fop.render.java2d.Java2DFontMetrics;
 /**
  * PCL Renderer configurator
  */
-public class PCLRendererConfigurator extends PrintRendererConfigurator {
+public class PCLRendererConfigurator extends PrintRendererConfigurator
+            implements IFDocumentHandlerConfigurator {
 
     /**
      * Default constructor
-     *
-     * @param userAgent
-     *            user agent
+     * @param userAgent user agent
      */
-    public PCLRendererConfigurator(final FOUserAgent userAgent) {
+    public PCLRendererConfigurator(FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
-     * Configure the PCL renderer.
+     * Throws an UnsupportedOperationException.
      *
-     * @param renderer
-     *            PCL renderer
-     * @throws FOPException
-     *             fop exception
+     * @param renderer not used
      */
-    @Override
-    public void configure(final Renderer renderer) throws FOPException {
-        final Configuration cfg = super.getRendererConfig(renderer);
-        if (cfg != null) {
-            final PCLRenderer pclRenderer = (PCLRenderer) renderer;
-
-            final PCLRenderingUtil pclUtil = pclRenderer.getPCLUtil();
-            configure(cfg, pclUtil);
-        }
-        super.configure(renderer);
+    public void configure(Renderer renderer) {
+        throw new UnsupportedOperationException();
     }
 
-    private void configure(final Configuration cfg,
-            final PCLRenderingUtil pclUtil) throws FOPException {
-        final String rendering = cfg.getChild("rendering").getValue(null);
+    private void configure(Configuration cfg, PCLRenderingUtil pclUtil) throws FOPException {
+        String rendering = cfg.getChild("rendering").getValue(null);
         if (rendering != null) {
             try {
                 pclUtil.setRenderingMode(PCLRenderingMode.valueOf(rendering));
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 throw new FOPException(
-                        "Valid values for 'rendering' are 'quality', 'speed' and 'bitmap'."
-                                + " Value found: " + rendering);
+                    "Valid values for 'rendering' are 'quality', 'speed' and 'bitmap'."
+                        + " Value found: " + rendering);
             }
         }
 
-        final String textRendering = cfg.getChild("text-rendering").getValue(
-                null);
+        String textRendering = cfg.getChild("text-rendering").getValue(null);
         if ("bitmap".equalsIgnoreCase(textRendering)) {
             pclUtil.setAllTextAsBitmaps(true);
         } else if ("auto".equalsIgnoreCase(textRendering)) {
@@ -99,58 +84,49 @@ public class PCLRendererConfigurator extends PrintRendererConfigurator {
         } else if (textRendering != null) {
             throw new FOPException(
                     "Valid values for 'text-rendering' are 'auto' and 'bitmap'. Value found: "
-                            + textRendering);
+                        + textRendering);
         }
 
-        pclUtil.setPJLDisabled(cfg.getChild("disable-pjl").getValueAsBoolean(
-                false));
+        pclUtil.setPJLDisabled(cfg.getChild("disable-pjl").getValueAsBoolean(false));
     }
 
     // ---=== IFDocumentHandler configuration ===---
 
     /** {@inheritDoc} */
-    @Override
-    public void configure(final IFDocumentHandler documentHandler)
-            throws FOPException {
-        final Configuration cfg = super.getRendererConfig(documentHandler
-                .getMimeType());
+    public void configure(IFDocumentHandler documentHandler) throws FOPException {
+        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {
-            final PCLDocumentHandler pclDocumentHandler = (PCLDocumentHandler) documentHandler;
-            final PCLRenderingUtil pclUtil = pclDocumentHandler.getPCLUtil();
+            PCLDocumentHandler pclDocumentHandler = (PCLDocumentHandler)documentHandler;
+            PCLRenderingUtil pclUtil = pclDocumentHandler.getPCLUtil();
             configure(cfg, pclUtil);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setupFontInfo(final IFDocumentHandler documentHandler,
-            final FontInfo fontInfo) throws FOPException {
-        final FontManager fontManager = this.userAgent.getFactory()
-                .getFontManager();
+    public void setupFontInfo(IFDocumentHandler documentHandler, FontInfo fontInfo)
+                throws FOPException {
+        FontManager fontManager = userAgent.getFactory().getFontManager();
 
-        final Graphics2D graphics2D = Java2DFontMetrics
-                .createFontMetricsGraphics2D();
+        final Java2DFontMetrics java2DFontMetrics = new Java2DFontMetrics();
+        final List fontCollections = new java.util.ArrayList();
+        fontCollections.add(new Base14FontCollection(java2DFontMetrics));
+        fontCollections.add(new InstalledFontCollection(java2DFontMetrics));
 
-        final List<FontCollection> fontCollections = new ArrayList<>();
-        fontCollections.add(new Base14FontCollection(graphics2D));
-        fontCollections.add(new InstalledFontCollection(graphics2D));
-
-        final Configuration cfg = super.getRendererConfig(documentHandler
-                .getMimeType());
+        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {
-            final FontResolver fontResolver = new DefaultFontResolver(
-                    this.userAgent);
-            final FontEventListener listener = new FontEventAdapter(
-                    this.userAgent.getEventBroadcaster());
-            final List<EmbedFontInfo> fontList = buildFontList(cfg,
-                    fontResolver, listener);
-            fontCollections.add(new ConfiguredFontCollection(fontResolver,
-                    fontList));
+            FontResolver fontResolver = new DefaultFontResolver(userAgent);
+            FontEventListener listener = new FontEventAdapter(
+                    userAgent.getEventBroadcaster());
+            List fontList = buildFontList(cfg, fontResolver, listener);
+            fontCollections.add(new ConfiguredFontCollection(fontResolver, fontList,
+                                userAgent.isComplexScriptFeaturesEnabled()));
         }
 
-        fontManager.setup(fontInfo, fontCollections
-                .toArray(new FontCollection[fontCollections.size()]));
+        fontManager.setup(fontInfo,
+                (FontCollection[])fontCollections.toArray(
+                        new FontCollection[fontCollections.size()]));
         documentHandler.setFontInfo(fontInfo);
     }
+
 
 }

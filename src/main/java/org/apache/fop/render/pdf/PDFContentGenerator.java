@@ -25,6 +25,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.fop.pdf.PDFColorHandler;
 import org.apache.fop.pdf.PDFDocument;
 import org.apache.fop.pdf.PDFFilterList;
 import org.apache.fop.pdf.PDFNumber;
@@ -35,22 +36,22 @@ import org.apache.fop.pdf.PDFTextUtil;
 import org.apache.fop.pdf.PDFXObject;
 
 /**
- * Generator class encapsulating all object references and state necessary to
- * generate a PDF content stream.
+ * Generator class encapsulating all object references and state necessary to generate a
+ * PDF content stream.
  */
 public class PDFContentGenerator {
 
     /** Controls whether comments are written to the PDF stream. */
     protected static final boolean WRITE_COMMENTS = true;
 
-    private final PDFDocument document;
-    private final OutputStream outputStream;
-    private final PDFResourceContext resourceContext;
+    private PDFDocument document;
+    private OutputStream outputStream;
+    private PDFResourceContext resourceContext;
 
     /** the current stream to add PDF commands to */
-    private final PDFStream currentStream;
+    private PDFStream currentStream;
 
-    private final PDFColorHandler colorHandler;
+    private PDFColorHandler colorHandler;
 
     /** drawing state */
     protected PDFPaintingState currentState = null;
@@ -61,27 +62,22 @@ public class PDFContentGenerator {
     private boolean inArtifactMode;
 
     /**
-     * Main constructor. Creates a new PDF stream and additional helper classes
-     * for text painting and state management.
-     * 
-     * @param document
-     *            the PDF document
-     * @param out
-     *            the output stream the PDF document is generated to
-     * @param resourceContext
-     *            the resource context
+     * Main constructor. Creates a new PDF stream and additional helper classes for text painting
+     * and state management.
+     * @param document the PDF document
+     * @param out the output stream the PDF document is generated to
+     * @param resourceContext the resource context
      */
-    public PDFContentGenerator(final PDFDocument document,
-            final OutputStream out, final PDFResourceContext resourceContext) {
+    public PDFContentGenerator(PDFDocument document, OutputStream out,
+            PDFResourceContext resourceContext) {
         this.document = document;
         this.outputStream = out;
         this.resourceContext = resourceContext;
-        this.currentStream = document.getFactory().makeStream(
-                PDFFilterList.CONTENT_FILTER, false);
+        this.currentStream = document.getFactory()
+                .makeStream(PDFFilterList.CONTENT_FILTER, false);
         this.textutil = new PDFTextUtil() {
-            @Override
-            protected void write(final String code) {
-                PDFContentGenerator.this.currentStream.add(code);
+            protected void write(String code) {
+                currentStream.add(code);
             }
         };
 
@@ -91,7 +87,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the applicable resource context for the generator.
-     * 
      * @return the resource context
      */
     public PDFDocument getDocument() {
@@ -100,7 +95,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the output stream the PDF document is written to.
-     * 
      * @return the output stream
      */
     public OutputStream getOutputStream() {
@@ -109,7 +103,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the applicable resource context for the generator.
-     * 
      * @return the resource context
      */
     public PDFResourceContext getResourceContext() {
@@ -118,7 +111,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the {@link PDFStream} associated with this instance.
-     * 
      * @return the PDF stream
      */
     public PDFStream getStream() {
@@ -127,7 +119,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the {@link PDFPaintingState} associated with this instance.
-     * 
      * @return the PDF state
      */
     public PDFPaintingState getState() {
@@ -136,7 +127,6 @@ public class PDFContentGenerator {
 
     /**
      * Returns the {@link PDFTextUtil} associated with this instance.
-     * 
      * @return the text utility
      */
     public PDFTextUtil getTextUtil() {
@@ -145,9 +135,7 @@ public class PDFContentGenerator {
 
     /**
      * Flushes all queued PDF objects ready to be written to the output stream.
-     * 
-     * @throws IOException
-     *             if an error occurs while flushing the PDF objects
+     * @throws IOException if an error occurs while flushing the PDF objects
      */
     public void flushPDFDoc() throws IOException {
         this.document.output(this.outputStream);
@@ -155,82 +143,69 @@ public class PDFContentGenerator {
 
     /**
      * Writes out a comment.
-     * 
-     * @param text
-     *            text for the comment
+     * @param text text for the comment
      */
-    protected void comment(final String text) {
+    protected void comment(String text) {
         if (WRITE_COMMENTS) {
-            this.currentStream.add("% " + text + "\n");
+            currentStream.add("% " + text + "\n");
         }
     }
 
     /** Save graphics state. */
     protected void saveGraphicsState() {
         endTextObject();
-        this.currentState.save();
-        this.currentStream.add("q\n");
+        currentState.save();
+        currentStream.add("q\n");
     }
 
     /**
      * Save graphics state.
-     * 
-     * @param structElemType
-     *            an element type
-     * @param sequenceNum
-     *            a sequence number
+     * @param structElemType an element type
+     * @param sequenceNum a sequence number
      */
-    protected void saveGraphicsState(final String structElemType,
-            final int sequenceNum) {
+    protected void saveGraphicsState(String structElemType, int sequenceNum) {
         endTextObject();
-        this.currentState.save();
+        currentState.save();
         beginMarkedContentSequence(structElemType, sequenceNum);
-        this.currentStream.add("q\n");
+        currentStream.add("q\n");
     }
 
     /**
-     * Begins a new marked content sequence (BDC or BMC). If the parameter
-     * structElemType is null, the sequenceNum is ignored and instead of a BDC
-     * with the MCID as parameter, an "Artifact" and a BMC command is generated.
-     * 
-     * @param structElemType
-     *            Structure Element Type
-     * @param mcid
-     *            Sequence number
+     * Begins a new marked content sequence (BDC or BMC). If the parameter structElemType is null,
+     * the sequenceNum is ignored and instead of a BDC with the MCID as parameter, an "Artifact"
+     * and a BMC command is generated.
+     * @param structElemType Structure Element Type
+     * @param mcid    Sequence number
      */
-    protected void beginMarkedContentSequence(final String structElemType,
-            final int mcid) {
+    protected void beginMarkedContentSequence(String structElemType, int mcid) {
         assert !this.inMarkedContentSequence;
         assert !this.inArtifactMode;
         if (structElemType != null) {
-            this.currentStream.add(structElemType + " <</MCID "
-                    + String.valueOf(mcid) + ">>\n" + "BDC\n");
+            currentStream.add(structElemType + " <</MCID " + String.valueOf(mcid) + ">>\n"
+                    + "BDC\n");
         } else {
-            this.currentStream.add("/Artifact\nBMC\n");
+            currentStream.add("/Artifact\nBMC\n");
             this.inArtifactMode = true;
         }
         this.inMarkedContentSequence = true;
     }
 
     void endMarkedContentSequence() {
-        this.currentStream.add("EMC\n");
+        currentStream.add("EMC\n");
         this.inMarkedContentSequence = false;
         this.inArtifactMode = false;
     }
 
     /**
-     * Restored the graphics state valid before the previous
-     * {@link #saveGraphicsState()}.
-     * 
-     * @param popState
-     *            true if the state should also be popped, false if only the PDF
-     *            command should be issued
+     * Restored the graphics state valid before the previous {@link #saveGraphicsState()}.
+     * @param popState true if the state should also be popped, false if only the PDF command
+     *           should be issued
      */
-    protected void restoreGraphicsState(final boolean popState) {
+    protected void restoreGraphicsState(boolean popState) {
         endTextObject();
-        this.currentStream.add("Q\n");
+        currentStream.add("Q\n");
         if (popState) {
-            this.currentState.restore();
+            currentState.restore();
         }
     }
 
@@ -248,59 +223,54 @@ public class PDFContentGenerator {
      */
     protected void restoreGraphicsStateAccess() {
         endTextObject();
-        this.currentStream.add("Q\n");
+        currentStream.add("Q\n");
         if (this.inMarkedContentSequence) {
             endMarkedContentSequence();
         }
-        this.currentState.restore();
+        currentState.restore();
     }
 
     /**
      * Separates 2 text elements, ending the current marked content sequence and
      * starting a new one.
      *
-     * @param structElemType
-     *            structure element type
-     * @param mcid
-     *            sequence number
+     * @param structElemType structure element type
+     * @param mcid sequence number
      * @see #beginMarkedContentSequence(String, int)
      */
-    protected void separateTextElements(final String structElemType,
-            final int mcid) {
-        this.textutil.endTextObject();
+    protected void separateTextElements(String structElemType, int mcid) {
+        textutil.endTextObject();
         endMarkedContentSequence();
         beginMarkedContentSequence(structElemType, mcid);
-        this.textutil.beginTextObject();
+        textutil.beginTextObject();
     }
 
     /** Indicates the beginning of a text object. */
     protected void beginTextObject() {
-        if (!this.textutil.isInTextObject()) {
-            this.textutil.beginTextObject();
+        if (!textutil.isInTextObject()) {
+            textutil.beginTextObject();
         }
     }
 
     /**
      * Indicates the beginning of a marked-content text object.
      *
-     * @param structElemType
-     *            structure element type
-     * @param mcid
-     *            sequence number
+     * @param structElemType structure element type
+     * @param mcid sequence number
      * @see #beginTextObject()
      * @see #beginMarkedContentSequence(String, int)
      */
-    protected void beginTextObject(final String structElemType, final int mcid) {
-        if (!this.textutil.isInTextObject()) {
+    protected void beginTextObject(String structElemType, int mcid) {
+        if (!textutil.isInTextObject()) {
             beginMarkedContentSequence(structElemType, mcid);
-            this.textutil.beginTextObject();
+            textutil.beginTextObject();
         }
     }
 
     /** Indicates the end of a text object. */
     protected void endTextObject() {
-        if (this.textutil.isInTextObject()) {
-            this.textutil.endTextObject();
+        if (textutil.isInTextObject()) {
+            textutil.endTextObject();
             if (this.inMarkedContentSequence) {
                 endMarkedContentSequence();
             }
@@ -309,26 +279,21 @@ public class PDFContentGenerator {
 
     /**
      * Concatenates the given transformation matrix with the current one.
-     * 
-     * @param transform
-     *            the transformation matrix (in points)
+     * @param transform the transformation matrix (in points)
      */
-    public void concatenate(final AffineTransform transform) {
+    public void concatenate(AffineTransform transform) {
         if (!transform.isIdentity()) {
-            this.currentState.concatenate(transform);
-            this.currentStream.add(CTMHelper.toPDFString(transform, false)
-                    + " cm\n");
+            currentState.concatenate(transform);
+            currentStream.add(CTMHelper.toPDFString(transform, false) + " cm\n");
         }
     }
 
     /**
      * Intersects the current clip region with the given rectangle.
-     * 
-     * @param rect
-     *            the clip rectangle
+     * @param rect the clip rectangle
      */
-    public void clipRect(final Rectangle rect) {
-        final StringBuffer sb = new StringBuffer();
+    public void clipRect(Rectangle rect) {
+        StringBuffer sb = new StringBuffer();
         sb.append(format(rect.x / 1000f)).append(' ');
         sb.append(format(rect.y / 1000f)).append(' ');
         sb.append(format(rect.width / 1000f)).append(' ');
@@ -338,96 +303,75 @@ public class PDFContentGenerator {
 
     /**
      * Adds content to the stream.
-     * 
-     * @param content
-     *            the PDF content
+     * @param content the PDF content
      */
-    public void add(final String content) {
-        this.currentStream.add(content);
+    public void add(String content) {
+        currentStream.add(content);
     }
 
     /**
      * Formats a float value (normally coordinates in points) as Strings.
-     * 
-     * @param value
-     *            the value
+     * @param value the value
      * @return the formatted value
      */
-    public static final String format(final float value) {
+    public static final String format(float value) {
         return PDFNumber.doubleOut(value);
     }
 
     /**
      * Sets the current line width in points.
-     * 
-     * @param width
-     *            line width in points
+     * @param width line width in points
      */
-    public void updateLineWidth(final float width) {
-        if (this.currentState.setLineWidth(width)) {
-            // Only write if value has changed WRT the current line width
-            this.currentStream.add(format(width) + " w\n");
+    public void updateLineWidth(float width) {
+        if (currentState.setLineWidth(width)) {
+            //Only write if value has changed WRT the current line width
+            currentStream.add(format(width) + " w\n");
         }
     }
 
     /**
      * Sets the current character spacing (Tc) value.
-     * 
-     * @param value
-     *            the Tc value (in unscaled text units)
+     * @param value the Tc value (in unscaled text units)
      */
-    public void updateCharacterSpacing(final float value) {
+    public void updateCharacterSpacing(float value) {
         if (getState().setCharacterSpacing(value)) {
-            this.currentStream.add(format(value) + " Tc\n");
+            currentStream.add(format(value) + " Tc\n");
         }
     }
 
     /**
      * Establishes a new foreground or fill color.
-     * 
-     * @param col
-     *            the color to apply
-     * @param fill
-     *            true to set the fill color, false for the foreground color
-     * @param stream
-     *            the PDFStream to write the PDF code to
+     * @param col the color to apply
+     * @param fill true to set the fill color, false for the foreground color
+     * @param stream the PDFStream to write the PDF code to
      */
-    public void setColor(final Color col, final boolean fill,
-            final PDFStream stream) {
+    public void setColor(Color col, boolean fill, PDFStream stream) {
         assert stream != null;
-        final StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer();
         setColor(col, fill, sb);
         stream.add(sb.toString());
     }
 
     /**
      * Establishes a new foreground or fill color.
-     * 
-     * @param col
-     *            the color to apply
-     * @param fill
-     *            true to set the fill color, false for the foreground color
+     * @param col the color to apply
+     * @param fill true to set the fill color, false for the foreground color
      */
-    public void setColor(final Color col, final boolean fill) {
+    public void setColor(Color col, boolean fill) {
         setColor(col, fill, getStream());
     }
 
     /**
      * Establishes a new foreground or fill color. In contrast to updateColor
      * this method does not check the PDFState for optimization possibilities.
-     * 
-     * @param col
-     *            the color to apply
-     * @param fill
-     *            true to set the fill color, false for the foreground color
-     * @param pdf
-     *            StringBuffer to write the PDF code to, if null, the code is
-     *            written to the current stream.
+     * @param col the color to apply
+     * @param fill true to set the fill color, false for the foreground color
+     * @param pdf StringBuffer to write the PDF code to, if null, the code is
+     *     written to the current stream.
      */
-    protected void setColor(final Color col, final boolean fill,
-            final StringBuffer pdf) {
+    protected void setColor(Color col, boolean fill, StringBuffer pdf) {
         if (pdf != null) {
-            this.colorHandler.establishColor(pdf, col, fill);
+            colorHandler.establishColor(pdf, col, fill);
         } else {
             setColor(col, fill, this.currentStream);
         }
@@ -435,17 +379,12 @@ public class PDFContentGenerator {
 
     /**
      * Establishes a new foreground or fill color.
-     * 
-     * @param col
-     *            the color to apply (null skips this operation)
-     * @param fill
-     *            true to set the fill color, false for the foreground color
-     * @param pdf
-     *            StringBuffer to write the PDF code to, if null, the code is
-     *            written to the current stream.
+     * @param col the color to apply (null skips this operation)
+     * @param fill true to set the fill color, false for the foreground color
+     * @param pdf StringBuffer to write the PDF code to, if null, the code is
+     *     written to the current stream.
      */
-    public void updateColor(final Color col, final boolean fill,
-            final StringBuffer pdf) {
+    public void updateColor(Color col, boolean fill, StringBuffer pdf) {
         if (col == null) {
             return;
         }
@@ -463,23 +402,19 @@ public class PDFContentGenerator {
 
     /**
      * Places a previously registered image at a certain place on the page.
-     * 
-     * @param x
-     *            X coordinate
-     * @param y
-     *            Y coordinate
-     * @param w
-     *            width for image
-     * @param h
-     *            height for image
-     * @param xobj
-     *            the image XObject
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param w width for image
+     * @param h height for image
+     * @param xobj the image XObject
      */
-    public void placeImage(final float x, final float y, final float w,
-            final float h, final PDFXObject xobj) {
+    public void placeImage(float x, float y, float w, float h, PDFXObject xobj) {
         saveGraphicsState();
-        add(format(w) + " 0 0 " + format(-h) + " " + format(x) + " "
-                + format(y + h) + " cm\n" + xobj.getName() + " Do\n");
+        add(format(w) + " 0 0 "
+                          + format(-h) + " "
+                          + format(x) + " "
+                          + format(y + h)
+                          + " cm\n" + xobj.getName() + " Do\n");
         restoreGraphicsState();
     }
 
@@ -487,28 +422,23 @@ public class PDFContentGenerator {
      * Places a previously registered image at a certain place on the page,
      * bracketing it as a marked-content sequence.
      *
-     * @param x
-     *            X coordinate
-     * @param y
-     *            Y coordinate
-     * @param w
-     *            width for image
-     * @param h
-     *            height for image
-     * @param xobj
-     *            the image XObject
-     * @param structElemType
-     *            structure element type
-     * @param mcid
-     *            sequence number
+     * @param x X coordinate
+     * @param y Y coordinate
+     * @param w width for image
+     * @param h height for image
+     * @param xobj the image XObject
+     * @param structElemType structure element type
+     * @param mcid sequence number
      * @see #beginMarkedContentSequence(String, int)
      */
-    public void placeImage(final float x, final float y, final float w,
-            final float h, final PDFXObject xobj, final String structElemType,
-            final int mcid) {
+    public void placeImage(float x, float y, float w, float h, PDFXObject xobj,
+            String structElemType, int mcid) {
         saveGraphicsState(structElemType, mcid);
-        add(format(w) + " 0 0 " + format(-h) + " " + format(x) + " "
-                + format(y + h) + " cm\n" + xobj.getName() + " Do\n");
+        add(format(w) + " 0 0 "
+                          + format(-h) + " "
+                          + format(x) + " "
+                          + format(y + h)
+                          + " cm\n" + xobj.getName() + " Do\n");
         restoreGraphicsStateAccess();
     }
 

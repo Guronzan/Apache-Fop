@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-/* $Id: PDFTextElementBridge.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: PDFTextElementBridge.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.svg;
 
 import org.apache.batik.gvt.TextPainter;
 
 /**
- * Bridge class for the &lt;text> element. This bridge will use the direct text
- * painter if the text for the element is simple.
+ * <p>Bridge class for the &lt;text> element.
+ * This bridge will use the direct text painter if the text
+ * for the element is simple.</p>
  *
- * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
+ * <p>This work was authored by Keiron Liddle (keiron@aftexsw.com).</p>
  */
 public class PDFTextElementBridge extends AbstractFOPTextElementBridge {
 
     /**
      * Constructs a new bridge for the &lt;text> element.
      *
-     * @param textPainter
-     *            the text painter to use
+     * @param textPainter the text painter to use
      */
-    public PDFTextElementBridge(final TextPainter textPainter) {
+    public PDFTextElementBridge(TextPainter textPainter) {
         super(textPainter);
     }
 }
+

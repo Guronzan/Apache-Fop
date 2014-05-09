@@ -25,8 +25,7 @@ import java.io.OutputStream;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * The Object Byte Extent triplet is used to specify the number of bytes
- * contained in an object
+ * The Object Byte Extent triplet is used to specify the number of bytes contained in an object
  */
 public class ObjectByteExtentTriplet extends AbstractTriplet {
 
@@ -35,25 +34,22 @@ public class ObjectByteExtentTriplet extends AbstractTriplet {
     /**
      * Main constructor
      *
-     * @param byteExt
-     *            the number of bytes contained in the object
+     * @param byteExt the number of bytes contained in the object
      */
-    public ObjectByteExtentTriplet(final int byteExt) {
+    public ObjectByteExtentTriplet(int byteExt) {
         super(OBJECT_BYTE_EXTENT);
         this.byteExt = byteExt;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 6;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
-        final byte[] extData = BinaryUtils.convert(this.byteExt, 4);
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
+        byte[] extData = BinaryUtils.convert(byteExt, 4);
         System.arraycopy(extData, 0, data, 2, extData.length);
         os.write(data);
     }

@@ -33,26 +33,22 @@ public class PSPageSetupCodeElement extends AbstractPSExtensionObject {
 
     /**
      * Main constructor
-     * 
-     * @param parent
-     *            parent FO node
+     * @param parent parent FO node
      */
-    public PSPageSetupCodeElement(final FONode parent) {
+    public PSPageSetupCodeElement(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
-        if (this.parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER) {
-            invalidChildError(getLocator(), this.parent.getName(),
-                    getNamespaceURI(), getName(), "rule.childOfSPM");
+        if (parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER) {
+            invalidChildError(getLocator(), parent.getName(), getNamespaceURI(), getName(),
+                "rule.childOfSPM");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return ELEMENT;
     }

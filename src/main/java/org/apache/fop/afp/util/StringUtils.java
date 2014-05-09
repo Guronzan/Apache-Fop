@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: StringUtils.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: StringUtils.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.util;
 
@@ -23,21 +23,20 @@ package org.apache.fop.afp.util;
  * Library of utility methods useful in dealing with strings.
  *
  */
-public class StringUtils {
+public final class StringUtils {
+
+    private StringUtils() {
+    }
 
     /**
-     * Padds the string to the left with the given character for the specified
-     * length.
-     * 
-     * @param input
-     *            The input string.
-     * @param padding
-     *            The char used for padding.
-     * @param length
-     *            The length of the new string.
+     * Padds the string to the left with the given character for
+     * the specified length.
+     * @param input The input string.
+     * @param padding The char used for padding.
+     * @param length The length of the new string.
      * @return The padded string.
      */
-    public static String lpad(String input, final char padding, final int length) {
+    public static String lpad(String input, char padding, int length) {
 
         if (input == null) {
             input = new String();
@@ -46,9 +45,9 @@ public class StringUtils {
         if (input.length() >= length) {
             return input;
         } else {
-            final StringBuilder result = new StringBuilder();
-            final int numChars = length - input.length();
-            for (int i = 0; i < numChars; ++i) {
+            StringBuffer result = new StringBuffer();
+            int numChars = length - input.length();
+            for (int i = 0; i < numChars; i++) {
                 result.append(padding);
             }
             result.append(input);
@@ -57,18 +56,14 @@ public class StringUtils {
     }
 
     /**
-     * Padds the string to the right with the given character for the specified
-     * length.
-     * 
-     * @param input
-     *            The input string.
-     * @param padding
-     *            The char used for padding.
-     * @param length
-     *            The length of the new string.
+     * Padds the string to the right with the given character for
+     * the specified length.
+     * @param input The input string.
+     * @param padding The char used for padding.
+     * @param length The length of the new string.
      * @return The padded string.
      */
-    public static String rpad(String input, final char padding, final int length) {
+    public static String rpad(String input, char padding, int length) {
 
         if (input == null) {
             input = new String();
@@ -77,9 +72,9 @@ public class StringUtils {
         if (input.length() >= length) {
             return input;
         } else {
-            final StringBuilder result = new StringBuilder(input);
-            final int numChars = length - input.length();
-            for (int i = 0; i < numChars; ++i) {
+            StringBuffer result = new StringBuffer(input);
+            int numChars = length - input.length();
+            for (int i = 0; i < numChars; i++) {
                 result.append(padding);
             }
             return result.toString();

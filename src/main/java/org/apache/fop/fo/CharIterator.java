@@ -23,61 +23,56 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * Abstract base class for iterators that should iterate through a series of
- * characters. Extends the java.util.Iterator interface with some additional
- * functions useful for FOP's management of text.
+ * Abstract base class for iterators that should iterate through a series
+ * of characters.  Extends the java.util.Iterator interface with some
+ * additional functions useful for FOP's management of text.
  */
 public abstract class CharIterator implements Iterator, Cloneable {
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public abstract boolean hasNext();
 
     /**
      * @return the character that is the next character in the collection
-     * @throws NoSuchElementException
-     *             if there are no more characters (test for this condition with
-     *             java.util.Iterator.hasNext()).
+     * @throws NoSuchElementException if there are no more characters (test for
+     * this condition with java.util.Iterator.hasNext()).
      */
     public abstract char nextChar() throws NoSuchElementException;
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object next() throws NoSuchElementException {
-        return Character.valueOf(nextChar());
+        return new Character(nextChar());
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
+
     /**
      * Replace the current character managed by the iterator with a specified
      * character?
-     *
-     * @param c
-     *            character
+     * @param c character
      */
-    public void replaceChar(final char c) {
+    public void replaceChar(char c) {
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public Object clone() {
         try {
             return super.clone();
-        } catch (final CloneNotSupportedException ex) {
+        } catch (CloneNotSupportedException ex) {
             return null;
         }
     }
 }
+

@@ -15,27 +15,33 @@
  * limitations under the License.
  */
 
-/* $Id: ValidationException.java 824686 2009-10-13 10:52:29Z vhennebert $ */
+/* $Id: ValidationException.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo;
 
-import org.apache.fop.apps.FOPException;
 import org.xml.sax.Locator;
+
+import org.apache.fop.apps.FOPException;
 
 /**
  * Exception thrown during FO tree validation.
  */
 public class ValidationException extends FOPException {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1837390066992007730L;
 
-    public ValidationException(final String message) {
+    /**
+     * Construct a validation exception instance.
+     * @param message a message
+     */
+    public ValidationException(String message) {
         super(message);
     }
 
-    public ValidationException(final String message, final Locator locator) {
+    /**
+     * Construct a validation exception instance.
+     * @param message a message
+     * @param locator a locator
+     */
+    public ValidationException(String message, Locator locator) {
         super(message, locator);
     }
 }

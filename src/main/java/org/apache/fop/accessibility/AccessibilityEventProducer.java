@@ -30,29 +30,25 @@ public interface AccessibilityEventProducer extends EventProducer {
     /** Provider class for the event producer. */
     public final class Provider {
 
-        private Provider() {
-        }
+        private Provider() { }
 
         /**
          * Returns an event producer.
          *
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static AccessibilityEventProducer get(
-                final EventBroadcaster broadcaster) {
-            return (AccessibilityEventProducer) broadcaster
-                    .getEventProducerFor(AccessibilityEventProducer.class);
+        public static AccessibilityEventProducer get(EventBroadcaster broadcaster) {
+            return (AccessibilityEventProducer) broadcaster.getEventProducerFor(
+                    AccessibilityEventProducer.class);
         }
     }
 
     /**
      * The structure tree is missing in the XML file.
      *
-     * @param source
-     *            the event source
+     * @param source the event source
      * @event.severity FATAL
      */
-    void noStructureTreeInXML(final Object source);
+    void noStructureTreeInXML(Object source);
 }

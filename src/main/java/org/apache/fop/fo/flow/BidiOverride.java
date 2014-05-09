@@ -15,130 +15,112 @@
  * limitations under the License.
  */
 
-/* $Id: BidiOverride.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BidiOverride.java 1296496 2012-03-02 22:19:46Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
+import java.util.Iterator;
+import java.util.Stack;
+
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
+import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
-import org.apache.fop.fo.FObjMixed;
 import org.apache.fop.fo.PropertyList;
-import org.apache.fop.fo.ValidationException;
-import org.apache.fop.fo.properties.SpaceProperty;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.Property;
+import org.apache.fop.util.CharUtilities;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_bidi-override">
  * <code>fo:bidi-override</code></a> object.
  */
-public class BidiOverride extends FObjMixed {
+public class BidiOverride extends Inline {
 
-    // used for FO validation
-    private boolean blockOrInlineItemFound = false;
-    private boolean canHaveBlockLevelChildren = true;
-    // The value of properties relevant for fo:bidi-override.
-    // private ToBeImplementedProperty prDirection;
-    // private ToBeImplementedProperty prLetterSpacing;
-    private SpaceProperty lineHeight;
-
-    // private ToBeImplementedProperty prScoreSpaces;
-    // private ToBeImplementedProperty prUnicodeBidi;
-
-    // Unused but valid items, commented out for performance:
-    // private CommonAural commonAural;
-    // private CommonFont commonFont;
-    // private CommonRelativePosition commonRelativePosition;
-    // private Color prColor;
-    // private SpaceProperty prWordSpacing;
-    // End of property values
+    // The value of FO traits (refined properties) that apply to fo:bidi-override
+    // (that are not implemented by InlineLevel).
+    private Property letterSpacing;
+    private Property wordSpacing;
+    private int direction;
+    private int unicodeBidi;
+    // private int scoreSpaces;
+    // End of trait values
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      */
-    public BidiOverride(final FONode parent) {
+    public BidiOverride(FONode parent) {
         super(parent);
-
-        /*
-         * Check to see if this node can have block-level children. See
-         * validateChildNode() below.
-         */
-        final int lvlLeader = findAncestor(FO_LEADER);
-        final int lvlInCntr = findAncestor(FO_INLINE_CONTAINER);
-        final int lvlInline = findAncestor(FO_INLINE);
-        final int lvlFootnote = findAncestor(FO_FOOTNOTE);
-
-        if (lvlLeader > 0) {
-            if (lvlInCntr < 0 || lvlInCntr > 0 && lvlInCntr > lvlLeader) {
-                this.canHaveBlockLevelChildren = false;
-            }
-        } else if (lvlInline > 0 && lvlFootnote == lvlInline + 1) {
-            if (lvlInCntr < 0 || lvlInCntr > 0 && lvlInCntr > lvlInline) {
-                this.canHaveBlockLevelChildren = false;
-            }
-        }
-
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        // prDirection = pList.get(PR_DIRECTION);
-        // prLetterSpacing = pList.get(PR_LETTER_SPACING);
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        // prScoreSpaces = pList.get(PR_SCORE_SPACES);
-        // prUnicodeBidi = pList.get(PR_UNICODE_BIDI);
+    public void bind(PropertyList pList) throws FOPException {
+        super.bind(pList);
+        letterSpacing = pList.get(PR_LETTER_SPACING);
+        wordSpacing = pList.get(PR_WORD_SPACING);
+        direction = pList.get(PR_DIRECTION).getEnum();
+        unicodeBidi = pList.get(PR_UNICODE_BIDI).getEnum();
     }
 
-    /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: marker* (#PCDATA|%inline;|%block;)* <br>
-     * <i>Additionally: "An fo:bidi-override that is a descendant of an
-     * fo:leader or of the fo:inline child of an fo:footnote may not have
-     * block-level children, unless it has a nearer ancestor that is an
-     * fo:inline-container."</i>
-     */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
-        if (FO_URI.equals(nsURI)) {
-            if (localName.equals("marker")) {
-                if (this.blockOrInlineItemFound) {
-                    nodesOutOfOrderError(loc, "fo:marker",
-                            "(#PCDATA|%inline;|%block;)");
-                }
-            } else if (!isBlockOrInlineItem(nsURI, localName)) {
-                invalidChildError(loc, nsURI, localName);
-            } else if (!this.canHaveBlockLevelChildren
-                    && isBlockItem(nsURI, localName)) {
-                invalidChildError(loc, getParent().getName(), nsURI, getName(),
-                        "rule.bidiOverrideContent");
-            } else {
-                this.blockOrInlineItemFound = true;
-            }
-        }
+    /** @return the "letter-spacing" trait */
+    public Property getLetterSpacing() {
+        return letterSpacing;
     }
 
-    /** @return the "line-height" property */
-    public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+    /** @return the "word-spacing" trait */
+    public Property getWordSpacing() {
+        return wordSpacing;
+    }
+
+    /** @return the "direction" trait */
+    public int getDirection() {
+        return direction;
+    }
+
+    /** @return the "unicodeBidi" trait */
+    public int getUnicodeBidi() {
+        return unicodeBidi;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "bidi-override";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_BIDI_OVERRIDE}
      */
-    @Override
     public int getNameId() {
         return FO_BIDI_OVERRIDE;
     }
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        char pfx = 0;
+        char sfx = 0;
+        int unicodeBidi = getUnicodeBidi();
+        int direction = getDirection();
+        if ( unicodeBidi == Constants.EN_BIDI_OVERRIDE ) {
+            pfx = ( direction == Constants.EN_RTL ) ? CharUtilities.RLO : CharUtilities.LRO;
+            sfx = CharUtilities.PDF;
+        } else if ( unicodeBidi == Constants.EN_EMBED ) {
+            pfx = ( direction == Constants.EN_RTL ) ? CharUtilities.RLE : CharUtilities.LRE;
+            sfx = CharUtilities.PDF;
+        }
+        if ( currentRange != null ) {
+            if ( pfx != 0 ) {
+                currentRange.append ( pfx, this );
+            }
+            for ( Iterator it = getChildNodes(); ( it != null ) && it.hasNext();) {
+                ranges = ( (FONode) it.next() ).collectDelimitedTextRanges ( ranges );
+            }
+            if ( sfx != 0 ) {
+                currentRange.append ( sfx, this );
+            }
+        }
+        return ranges;
+    }
+
 }

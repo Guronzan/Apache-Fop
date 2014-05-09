@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-/* $Id: MultiProperties.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: MultiProperties.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.flow;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_multi-properties">
@@ -33,59 +34,55 @@ import org.xml.sax.Locator;
 public class MultiProperties extends FObj {
     // The value of properties relevant for fo:multi-properties.
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
+    //     private CommonAccessibility commonAccessibility;
     // End of property values
 
-    static boolean notImplementedWarningGiven = false;
+    private static boolean notImplementedWarningGiven = false;
 
     // used for input FO validation
-    boolean hasMultiPropertySet = false;
-    boolean hasWrapper = false;
+    private boolean hasMultiPropertySet = false;
+    private boolean hasWrapper = false;
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public MultiProperties(final FONode parent) {
+    public MultiProperties(FONode parent) {
         super(parent);
 
         if (!notImplementedWarningGiven) {
-            getFOValidationEventProducer().unimplementedFeature(this,
-                    getName(), getName(), getLocator());
+            getFOValidationEventProducer().unimplementedFeature(this, getName(),
+                    getName(), getLocator());
             notImplementedWarningGiven = true;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (!this.hasMultiPropertySet || !this.hasWrapper) {
+        if (!hasMultiPropertySet || !hasWrapper) {
             missingChildElementError("(multi-property-set+, wrapper)");
         }
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: (multi-property-set+, wrapper)
+     * {@inheritDoc}
+     * <br>XSL Content Model: (multi-property-set+, wrapper)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+        throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("multi-property-set")) {
-                if (this.hasWrapper) {
-                    nodesOutOfOrderError(loc, "fo:multi-property-set",
-                            "fo:wrapper");
+                if (hasWrapper) {
+                    nodesOutOfOrderError(loc, "fo:multi-property-set", "fo:wrapper");
                 } else {
-                    this.hasMultiPropertySet = true;
+                    hasMultiPropertySet = true;
                 }
             } else if (localName.equals("wrapper")) {
-                if (this.hasWrapper) {
+                if (hasWrapper) {
                     tooManyNodesError(loc, "fo:wrapper");
                 } else {
-                    this.hasWrapper = true;
+                    hasWrapper = true;
                 }
             } else {
                 invalidChildError(loc, nsURI, localName);
@@ -94,17 +91,14 @@ public class MultiProperties extends FObj {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "multi-properties";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_PROPERTIES}
      */
-    @Override
     public int getNameId() {
         return FO_MULTI_PROPERTIES;
     }

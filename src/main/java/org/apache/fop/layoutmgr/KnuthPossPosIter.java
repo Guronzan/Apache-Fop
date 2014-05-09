@@ -15,50 +15,45 @@
  * limitations under the License.
  */
 
-/* $Id: KnuthPossPosIter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: KnuthPossPosIter.java 1067353 2011-02-05 00:13:18Z adelmelle $ */
 
 package org.apache.fop.layoutmgr;
 
 import java.util.List;
 
-public class KnuthPossPosIter extends PositionIterator<ListElement> {
+/**
+ * A dedicated {@link PositionIterator} that is backed by an iterator
+ * over a list of {@link KnuthElement}s.
+ */
+public class KnuthPossPosIter extends PositionIterator {
 
     private int iterCount;
 
     /**
      * Main constructor
-     *
-     * @param elementList
-     *            List of Knuth elements
-     * @param startPos
-     *            starting position, inclusive
-     * @param endPos
-     *            ending position, exclusive
+     * @param elementList List of Knuth elements
+     * @param startPos starting position, inclusive
+     * @param endPos ending position, exclusive
      */
-    public KnuthPossPosIter(final List<ListElement> elementList,
-            final int startPos, final int endPos) {
+    public KnuthPossPosIter(List elementList, int startPos, int endPos) {
         super(elementList.listIterator(startPos));
-        this.iterCount = endPos - startPos;
+        iterCount = endPos - startPos;
     }
 
     /**
      * Auxiliary constructor
-     *
-     * @param elementList
-     *            List of Knuth elements
+     * @param elementList List of Knuth elements
      */
-    public KnuthPossPosIter(final List<ListElement> elementList) {
+    public KnuthPossPosIter(List elementList) {
         this(elementList, 0, elementList.size());
     }
 
     // Check position < endPos
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     protected boolean checkNext() {
-        if (this.iterCount > 0) {
+        if (iterCount > 0) {
             return super.checkNext();
         } else {
             endIter();
@@ -66,26 +61,30 @@ public class KnuthPossPosIter extends PositionIterator<ListElement> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
     public Position next() {
-        --this.iterCount;
+        --iterCount;
         return super.next();
     }
 
+    /**
+     * Peek at next, returning as ListElement.
+     * @return peek at next as ListElement
+     */
     public ListElement getKE() {
-        return peekNext();
+        return (ListElement) peekNext();
     }
 
+    /** {@inheritDoc} */
     @Override
-    protected LayoutManager getLM(final ListElement nextObj) {
-        return nextObj.getLayoutManager();
+    protected LayoutManager getLM(Object nextObj) {
+        return ((ListElement) nextObj).getLayoutManager();
     }
 
+    /** {@inheritDoc} */
     @Override
-    protected Position getPos(final ListElement nextObj) {
-        return nextObj.getPosition();
+    protected Position getPos(Object nextObj) {
+        return ((ListElement) nextObj).getPosition();
     }
 }

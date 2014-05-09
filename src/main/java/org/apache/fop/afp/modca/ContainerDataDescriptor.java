@@ -25,36 +25,30 @@ import java.io.OutputStream;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * Container data descriptor (to maintain compatibility with pre-year 2000
- * applications)
+ * Container data descriptor (to maintain compatibility with pre-year 2000 applications)
  */
 public class ContainerDataDescriptor extends AbstractDescriptor {
 
     /**
      * Main constructor
      *
-     * @param width
-     *            the container data width
-     * @param height
-     *            the container data height
-     * @param widthRes
-     *            the container width resolution
-     * @param heightRes
-     *            the container height resolution
+     * @param width the container data width
+     * @param height  the container data height
+     * @param widthRes the container width resolution
+     * @param heightRes the container height resolution
      */
-    public ContainerDataDescriptor(final int width, final int height,
-            final int widthRes, final int heightRes) {
+    public ContainerDataDescriptor(int width, int height, int widthRes,
+            int heightRes) {
         super(width, height, widthRes, heightRes);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[21];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[21];
         copySF(data, Type.DESCRIPTOR, Category.OBJECT_CONTAINER);
 
         // SF length
-        final byte[] len = BinaryUtils.convert(data.length - 1, 2);
+        byte[] len = BinaryUtils.convert(data.length - 1, 2);
         data[1] = len[0];
         data[2] = len[1];
 
@@ -65,23 +59,23 @@ public class ContainerDataDescriptor extends AbstractDescriptor {
         data[10] = 0x00;
 
         // XocUnits
-        final byte[] xdpi = BinaryUtils.convert(this.widthRes * 10, 2);
+        byte[] xdpi = BinaryUtils.convert(widthRes * 10, 2);
         data[11] = xdpi[0];
         data[12] = xdpi[1];
 
         // YocUnits
-        final byte[] ydpi = BinaryUtils.convert(this.heightRes * 10, 2);
+        byte[] ydpi = BinaryUtils.convert(heightRes * 10, 2);
         data[13] = ydpi[0];
         data[14] = ydpi[1];
 
         // XocSize
-        final byte[] xsize = BinaryUtils.convert(this.width, 3);
+        byte[] xsize = BinaryUtils.convert(width, 3);
         data[15] = xsize[0];
         data[16] = xsize[1];
         data[17] = xsize[2];
 
         // YocSize
-        final byte[] ysize = BinaryUtils.convert(this.height, 3);
+        byte[] ysize = BinaryUtils.convert(height, 3);
         data[18] = ysize[0];
         data[19] = ysize[1];
         data[20] = ysize[2];

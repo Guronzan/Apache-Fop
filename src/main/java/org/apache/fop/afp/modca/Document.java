@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Document.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: Document.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -58,7 +58,7 @@ public final class Document extends AbstractResourceEnvironmentGroupContainer {
      * @param name
      *            the name of the document
      */
-    public Document(final Factory factory, final String name) {
+    public Document(Factory factory, String name) {
         super(factory, name);
     }
 
@@ -66,33 +66,29 @@ public final class Document extends AbstractResourceEnvironmentGroupContainer {
      * Method to mark the end of the page group.
      */
     public void endDocument() {
-        this.complete = true;
+        complete = true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isComplete() {
-        return this.complete;
+        return complete;
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.DOCUMENT);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.DOCUMENT);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return this.name;
     }

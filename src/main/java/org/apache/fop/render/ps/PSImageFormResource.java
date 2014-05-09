@@ -15,48 +15,42 @@
  * limitations under the License.
  */
 
-/* $Id: PSImageFormResource.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PSImageFormResource.java 1036809 2010-11-19 11:25:15Z spepping $ */
 
 package org.apache.fop.render.ps;
 
 import org.apache.xmlgraphics.ps.PSResource;
 
 /**
- * PostScript Resource class representing a FOP form. This is used by PSRenderer
- * to keep track of images.
+ * PostScript Resource class representing a FOP form. This is used by PSRenderer to keep track
+ * of images.
  */
 public class PSImageFormResource extends PSResource {
 
-    private final String uri;
+    private String uri;
 
     /**
      * Create a new Form Resource.
-     * 
-     * @param id
-     *            An ID for the form
-     * @param uri
-     *            the URI to the image
+     * @param id An ID for the form
+     * @param uri the URI to the image
      */
-    public PSImageFormResource(final int id, final String uri) {
+    public PSImageFormResource(int id, String uri) {
         this("FOPForm:" + Integer.toString(id), uri);
     }
 
     /**
-     * /** Create a new Form Resource.
-     * 
-     * @param name
-     *            the name of the resource
-     * @param uri
-     *            the URI to the image
+    /**
+     * Create a new Form Resource.
+     * @param name the name of the resource
+     * @param uri the URI to the image
      */
-    public PSImageFormResource(final String name, final String uri) {
+    public PSImageFormResource(String name, String uri) {
         super(PSResource.TYPE_FORM, name);
         this.uri = uri;
     }
 
     /**
      * Returns the image URI.
-     * 
      * @return the image URI
      */
     public String getImageURI() {

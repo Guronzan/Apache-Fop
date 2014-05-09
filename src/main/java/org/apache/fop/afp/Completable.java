@@ -27,10 +27,9 @@ public interface Completable {
     /**
      * Sets whether or not this object is complete or not
      *
-     * @param complete
-     *            true if this object is complete
+     * @param complete true if this object is complete
      */
-    void setComplete(final boolean complete);
+    void setComplete(boolean complete);
 
     /**
      * Returns true if this object is complete

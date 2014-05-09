@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PreloaderWMF.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PreloaderWMF.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.image.loader.batik;
 
@@ -25,47 +25,51 @@ import java.io.InputStream;
 
 import javax.xml.transform.Source;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.EndianUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.batik.transcoder.wmf.WMFConstants;
 import org.apache.batik.transcoder.wmf.tosvg.WMFRecordStore;
-import org.apache.commons.io.EndianUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.fop.util.UnclosableInputStream;
+
 import org.apache.xmlgraphics.image.loader.ImageContext;
 import org.apache.xmlgraphics.image.loader.ImageInfo;
 import org.apache.xmlgraphics.image.loader.ImageSize;
 import org.apache.xmlgraphics.image.loader.impl.AbstractImagePreloader;
 import org.apache.xmlgraphics.image.loader.util.ImageUtil;
 
+import org.apache.fop.util.UnclosableInputStream;
+
 /**
  * Image preloader for WMF images (Windows Metafile).
  */
-@Slf4j
 public class PreloaderWMF extends AbstractImagePreloader {
+
+    /** Logger instance */
+    private static Log log = LogFactory.getLog(PreloaderWMF.class);
 
     private boolean batikAvailable = true;
 
     /** {@inheritDoc} */
-    @Override
-    public ImageInfo preloadImage(final String uri, final Source src,
-            final ImageContext context) throws IOException {
+    public ImageInfo preloadImage(String uri, Source src, ImageContext context)
+            throws IOException {
         if (!ImageUtil.hasInputStream(src)) {
             return null;
         }
         ImageInfo info = null;
-        if (this.batikAvailable) {
+        if (batikAvailable) {
             try {
-                final Loader loader = new Loader();
+                Loader loader = new Loader();
                 info = loader.getImage(uri, src, context);
-            } catch (final NoClassDefFoundError e) {
-                this.batikAvailable = false;
+            } catch (NoClassDefFoundError e) {
+                batikAvailable = false;
                 log.warn("Batik not in class path", e);
                 return null;
             }
         }
         if (info != null) {
-            ImageUtil.closeQuietly(src); // Image is fully read
+            ImageUtil.closeQuietly(src); //Image is fully read
         }
         return info;
     }
@@ -75,53 +79,66 @@ public class PreloaderWMF extends AbstractImagePreloader {
      * attempt to load Batik related classes when constructing the WMFPreloader
      * class.
      */
-    class Loader {
-        private ImageInfo getImage(final String uri, final Source src,
-                final ImageContext context) {
+    private final class Loader {
+
+        private Loader() {
+        }
+
+        private ImageInfo getImage(String uri, Source src,
+                ImageContext context) {
             // parse document and get the size attributes of the svg element
 
-            try (final InputStream in = new UnclosableInputStream(
-                    ImageUtil.needInputStream(src))) {
+            InputStream in = new UnclosableInputStream(ImageUtil.needInputStream(src));
+            try {
                 in.mark(4 + 1);
 
-                try (final DataInputStream din = new DataInputStream(in)) {
-                    final int magic = EndianUtils.swapInteger(din.readInt());
-                    din.reset();
-                    if (magic != WMFConstants.META_ALDUS_APM) {
-                        return null; // Not a WMF file
-                    }
-
-                    final WMFRecordStore wmfStore = new WMFRecordStore();
-                    wmfStore.read(din);
-                    IOUtils.closeQuietly(din);
-
-                    final int width = wmfStore.getVpW();
-                    final int height = wmfStore.getVpH();
-                    final int dpi = wmfStore.getNumRecords();
-
-                    final ImageInfo info = new ImageInfo(uri, "image/x-wmf");
-                    final ImageSize size = new ImageSize();
-                    size.setSizeInPixels(width, height);
-                    size.setResolution(dpi);
-                    size.calcSizeFromPixels();
-                    info.setSize(size);
-                    final ImageWMF img = new ImageWMF(info, wmfStore);
-                    info.getCustomObjects().put(ImageInfo.ORIGINAL_IMAGE, img);
-
-                    return info;
+                DataInputStream din = new DataInputStream(in);
+                int magic = EndianUtils.swapInteger(din.readInt());
+                din.reset();
+                if (magic != WMFConstants.META_ALDUS_APM) {
+                    return null; //Not a WMF file
                 }
-            } catch (final NoClassDefFoundError ncdfe) {
-                PreloaderWMF.this.batikAvailable = false;
-                log.error("Batik not in class path", ncdfe);
+
+                WMFRecordStore wmfStore = new WMFRecordStore();
+                wmfStore.read(din);
+                IOUtils.closeQuietly(din);
+
+                int width = wmfStore.getWidthUnits();
+                int height = wmfStore.getHeightUnits();
+                int dpi = wmfStore.getMetaFileUnitsPerInch();
+
+                ImageInfo info = new ImageInfo(uri, "image/x-wmf");
+                ImageSize size = new ImageSize();
+                size.setSizeInPixels(width, height);
+                size.setResolution(dpi);
+                size.calcSizeFromPixels();
+                info.setSize(size);
+                ImageWMF img = new ImageWMF(info, wmfStore);
+                info.getCustomObjects().put(ImageInfo.ORIGINAL_IMAGE, img);
+
+                return info;
+            } catch (NoClassDefFoundError ncdfe) {
+                try {
+                    in.reset();
+                } catch (IOException ioe) {
+                    // we're more interested in the original exception
+                }
+                batikAvailable = false;
+                log.warn("Batik not in class path", ncdfe);
                 return null;
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 // If the svg is invalid then it throws an IOException
                 // so there is no way of knowing if it is an svg document
 
-                log.error("Error while trying to load stream as an WMF file: "
-                        + e.getMessage());
+                log.debug("Error while trying to load stream as an WMF file: "
+                                       + e.getMessage());
                 // assuming any exception means this document is not svg
                 // or could not be loaded for some reason
+                try {
+                    in.reset();
+                } catch (IOException ioe) {
+                    // we're more interested in the original exception
+                }
                 return null;
             }
         }

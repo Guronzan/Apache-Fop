@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractGraphicsCoord.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: AbstractGraphicsCoord.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -27,23 +27,22 @@ import org.apache.fop.afp.util.BinaryUtils;
 /**
  * A base class encapsulating the structure of coordinate based GOCA objects
  */
-public abstract class AbstractGraphicsCoord extends
-        AbstractGraphicsDrawingOrder {
+public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder {
 
     /** array of x/y coordinates */
     protected int[] coords = null;
 
+    /** if true, then uses relative drawing order */
     protected boolean relative = false;
 
     /**
      * Constructor
      *
-     * @param coords
-     *            the x/y coordinates for this object
+     * @param coords the x/y coordinates for this object
      */
-    public AbstractGraphicsCoord(final int[] coords) {
+    public AbstractGraphicsCoord(int[] coords) {
         if (coords == null) {
-            this.relative = true;
+            relative = true;
         } else {
             this.coords = coords;
         }
@@ -52,11 +51,10 @@ public abstract class AbstractGraphicsCoord extends
     /**
      * Constructor
      *
-     * @param coords
-     *            the x/y coordinates for this object
-     * @param relative
+     * @param coords the x/y coordinates for this object
+     * @param relative true if relative drawing order
      */
-    public AbstractGraphicsCoord(final int[] coords, final boolean relative) {
+    public AbstractGraphicsCoord(int[] coords, boolean relative) {
         this(coords);
         this.relative = relative;
     }
@@ -64,36 +62,28 @@ public abstract class AbstractGraphicsCoord extends
     /**
      * Constructor
      *
-     * @param x
-     *            the x coordinate for this object
-     * @param y
-     *            the y coordinate for this object
+     * @param x the x coordinate for this object
+     * @param y the y coordinate for this object
      */
-    public AbstractGraphicsCoord(final int x, final int y) {
-        this(new int[] { x, y });
+    public AbstractGraphicsCoord(int x, int y) {
+        this(new int[] {x, y});
     }
 
     /**
      * Constructor
      *
-     * @param x1
-     *            the x1 coordinate for this object
-     * @param y1
-     *            the y1 coordinate for this object
-     * @param x2
-     *            the x2 coordinate for this object
-     * @param y2
-     *            the y2 coordinate for this object
+     * @param x1 the x1 coordinate for this object
+     * @param y1 the y1 coordinate for this object
+     * @param x2 the x2 coordinate for this object
+     * @param y2 the y2 coordinate for this object
      */
-    public AbstractGraphicsCoord(final int x1, final int y1, final int x2,
-            final int y2) {
-        this(new int[] { x1, y1, x2, y2 });
+    public AbstractGraphicsCoord(int x1, int y1, int x2, int y2) {
+        this(new int[] {x1, y1, x2, y2});
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
-        return 2 + (this.coords != null ? this.coords.length * 2 : 0);
+        return 2 + (coords != null ? coords.length * 2 : 0);
     }
 
     /**
@@ -110,48 +100,42 @@ public abstract class AbstractGraphicsCoord extends
      *
      * @return the coordinate data
      */
-    @Override
     byte[] getData() {
-        final byte[] data = super.getData();
-        if (this.coords != null) {
+        byte[] data = super.getData();
+        if (coords != null) {
             addCoords(data, getCoordinateDataStartIndex());
         }
         return data;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
+    public void writeToStream(OutputStream os) throws IOException {
         os.write(getData());
     }
 
     /**
      * Adds the coordinates to the structured field data
      *
-     * @param data
-     *            the structured field data
-     * @param fromIndex
-     *            the start index
+     * @param data the structured field data
+     * @param fromIndex the start index
      */
-    protected void addCoords(final byte[] data, int fromIndex) {
+    protected void addCoords(byte[] data, int fromIndex) {
         // X/Y POS
-        for (int i = 0; i < this.coords.length; ++i, fromIndex += 2) {
-            final byte[] coord = BinaryUtils.convert(this.coords[i], 2);
+        for (int i = 0; i < coords.length; i++, fromIndex += 2) {
+            byte[] coord = BinaryUtils.convert(coords[i], 2);
             data[fromIndex] = coord[0];
             data[fromIndex + 1] = coord[1];
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        final StringBuilder coords = new StringBuilder();
-        for (int i = 0; i < this.coords.length; ++i) {
-            coords.append(i % 2 == 0 ? "x" : "y");
-            coords.append(i / 2).append("=").append(this.coords[i]).append(",");
+        String coordsStr = "";
+        for (int i = 0; i < coords.length; i++) {
+            coordsStr += (i % 2 == 0) ? "x" : "y";
+            coordsStr += (i / 2) + "=" + coords[i] + ",";
         }
-        final String string = coords.toString();
-        final String coordsStr = string.substring(0, string.length() - 1);
+        coordsStr = coordsStr.substring(0, coordsStr.length() - 1);
         return getName() + "{" + coordsStr + "}";
     }
 

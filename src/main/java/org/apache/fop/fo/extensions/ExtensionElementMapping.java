@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: ExtensionElementMapping.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: ExtensionElementMapping.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.extensions;
 
 import java.util.HashMap;
 import java.util.Set;
 
+import org.apache.xmlgraphics.util.QName;
+
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.UnknownXMLObj;
 import org.apache.fop.fo.extensions.destination.Destination;
-import org.apache.xmlgraphics.util.QName;
 
 /**
  * Element mapping for FOP's proprietary extension to XSL-FO.
@@ -36,67 +37,66 @@ public class ExtensionElementMapping extends ElementMapping {
     /** The FOP extension namespace URI */
     public static final String URI = "http://xmlgraphics.apache.org/fop/extensions";
 
-    private static final Set propertyAttributes = new java.util.HashSet();
+    /** The standard XML prefix for elements and attributes in this namespace. */
+    public static final String STANDARD_PREFIX = "fox";
+
+    private static final Set<String> PROPERTY_ATTRIBUTES
+        = new java.util.HashSet<String>();
 
     static {
-        // These are FOP's standard extension properties (fox:*)
-        propertyAttributes.add("block-progression-unit");
-        propertyAttributes.add("widow-content-limit");
-        propertyAttributes.add("orphan-content-limit");
-        propertyAttributes.add("internal-destination");
-        propertyAttributes.add("disable-column-balancing");
-        // These are FOP's extension properties for accessibility
-        propertyAttributes.add("alt-text");
+        //These are FOP's standard extension properties (fox:*)
+        PROPERTY_ATTRIBUTES.add("block-progression-unit");
+        PROPERTY_ATTRIBUTES.add("widow-content-limit");
+        PROPERTY_ATTRIBUTES.add("orphan-content-limit");
+        PROPERTY_ATTRIBUTES.add("internal-destination");
+        PROPERTY_ATTRIBUTES.add("disable-column-balancing");
+        //These are FOP's extension properties for accessibility
+        PROPERTY_ATTRIBUTES.add("alt-text");
     }
 
     /**
      * Constructor.
      */
     public ExtensionElementMapping() {
-        this.namespaceURI = URI;
+        namespaceURI = URI;
     }
 
     /**
      * Initialize the data structures.
      */
-    @Override
     protected void initialize() {
-        if (this.foObjs == null) {
-            this.foObjs = new HashMap<>();
-            this.foObjs.put("outline", new UnknownXMLObj.Maker(URI));
-            this.foObjs.put("label", new UnknownXMLObj.Maker(URI));
-            this.foObjs.put("destination", new DestinationMaker());
-            this.foObjs.put("external-document", new ExternalDocumentMaker());
+        if (foObjs == null) {
+            foObjs = new HashMap<String, Maker>();
+            foObjs.put("outline", new UnknownXMLObj.Maker(URI));
+            foObjs.put("label", new UnknownXMLObj.Maker(URI));
+            foObjs.put("destination", new DestinationMaker());
+            foObjs.put("external-document", new ExternalDocumentMaker());
         }
     }
 
     static class DestinationMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new Destination(parent);
         }
     }
 
     static class ExternalDocumentMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new ExternalDocument(parent);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getStandardPrefix() {
-        return "fox";
+        return STANDARD_PREFIX;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean isAttributeProperty(final QName attributeName) {
+    public boolean isAttributeProperty(QName attributeName) {
         if (!URI.equals(attributeName.getNamespaceURI())) {
             throw new IllegalArgumentException("The namespace URIs don't match");
         }
-        return propertyAttributes.contains(attributeName.getLocalName());
+        return PROPERTY_ATTRIBUTES.contains(attributeName.getLocalName());
     }
 
 }

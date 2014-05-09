@@ -27,28 +27,26 @@ import java.io.OutputStream;
  */
 public class MappingOptionTriplet extends AbstractTriplet {
     /**
-     * the data object is placed in the upper left corner, all data must be
-     * presented within the object area extents
+     * the data object is placed in the upper left corner, all data must be presented
+     * within the object area extents
      */
     public static final byte POSITION = 0x00;
 
     /**
-     * the data object is placed in the upper left corner, all data that falls
-     * within the object area extents will be presented but data that falls
-     * outside will not be presented
+     * the data object is placed in the upper left corner, all data that falls within
+     * the object area extents will be presented but data that falls outside will not be presented
      */
     public static final byte POSITION_AND_TRIM = 0x10;
 
     /**
-     * the data object is centred and symmetrically scaled up or down while
-     * preserving aspect ratio
+     * the data object is centred and symmetrically scaled up or down
+     * while preserving aspect ratio
      */
     public static final byte SCALE_TO_FIT = 0x20;
 
     /**
-     * the data object is centred, all data that falls within the object area
-     * extents will be presented but data that falls outside will not be
-     * presented
+     * the data object is centred, all data that falls within the object area extents
+     * will be presented but data that falls outside will not be presented
      */
     public static final byte CENTER_AND_TRIM = 0x30;
 
@@ -72,25 +70,22 @@ public class MappingOptionTriplet extends AbstractTriplet {
     /**
      * Main constructor
      *
-     * @param mapValue
-     *            the mapping option to use
+     * @param mapValue the mapping option to use
      */
-    public MappingOptionTriplet(final byte mapValue) {
-        super(Triplet.MAPPING_OPTION);
+    public MappingOptionTriplet(byte mapValue) {
+        super(AbstractTriplet.MAPPING_OPTION);
         this.mapValue = mapValue;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 3;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
-        data[2] = this.mapValue;
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
+        data[2] = mapValue;
 
         os.write(data);
     }

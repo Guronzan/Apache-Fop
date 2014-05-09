@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfListStyleNumber.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfListStyleNumber.java 1296437 2012-03-02 20:24:40Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -28,7 +28,6 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 //Java
 import java.io.IOException;
-//FOP
 
 /**
  * Class to handle number list style.
@@ -37,40 +36,34 @@ public class RtfListStyleNumber extends RtfListStyle {
 
     /**
      * Gets called before a RtfListItem has to be written.
-     * 
-     * @param item
-     *            RtfListItem whose prefix has to be written {@inheritDoc}
-     * @throws IOException
-     *             Thrown when an IO-problem occurs
+     * @param item RtfListItem whose prefix has to be written
+     * {@inheritDoc}
+     * @throws IOException Thrown when an IO-problem occurs
      */
-    @Override
-    public void writeListPrefix(final RtfListItem item) throws IOException {
+    public void writeListPrefix(RtfListItem item)
+    throws IOException {
         item.writeControlWord("pnlvlbody");
         item.writeControlWord("ilvl0");
         item.writeOneAttribute(RtfListTable.LIST_NUMBER, "0");
         item.writeControlWord("pndec");
-        item.writeOneAttribute("pnstart", (1));
+        item.writeOneAttribute("pnstart", new Integer(1));
         item.writeOneAttribute("pnindent",
                 item.attrib.getValue(RtfListTable.LIST_INDENT));
         item.writeControlWord("pntxta.");
     }
 
     /**
-     * Gets called before a paragraph, which is contained by a RtfListItem has
-     * to be written.
+     * Gets called before a paragraph, which is contained by a RtfListItem has to be written.
      *
-     * @param element
-     *            RtfElement in whose context is to be written {@inheritDoc}
-     * @throws IOException
-     *             Thrown when an IO-problem occurs
+     * @param element RtfElement in whose context is to be written
+     * {@inheritDoc}
+     * @throws IOException Thrown when an IO-problem occurs
      */
-    @Override
-    public void writeParagraphPrefix(final RtfElement element)
-            throws IOException {
+    public void writeParagraphPrefix(RtfElement element)
+    throws IOException {
         element.writeGroupMark(true);
         element.writeControlWord("pntext");
-        element.writeControlWord("f"
-                + RtfFontManager.getInstance().getFontNumber("Symbol"));
+        element.writeControlWord("f" + RtfFontManager.getInstance().getFontNumber("Symbol"));
         element.writeControlWord("'b7");
         element.writeControlWord("tab");
         element.writeGroupMark(false);
@@ -79,25 +72,26 @@ public class RtfListStyleNumber extends RtfListStyle {
     /**
      * Gets called when the list table has to be written.
      *
-     * @param element
-     *            RtfElement in whose context is to be written {@inheritDoc}
-     * @throws IOException
-     *             Thrown when an IO-problem occurs
+     * @param element RtfElement in whose context is to be written
+     * {@inheritDoc}
+     * @throws IOException Thrown when an IO-problem occurs
      */
-    @Override
-    public void writeLevelGroup(final RtfElement element) throws IOException {
-        element.writeOneAttributeNS(RtfListTable.LIST_START_AT, (1));
+    public void writeLevelGroup(RtfElement element)
+    throws IOException {
+        element.writeOneAttributeNS(
+                RtfListTable.LIST_START_AT, new Integer(1));
         element.attrib.set(RtfListTable.LIST_NUMBER_TYPE, 0);
 
         element.writeGroupMark(true);
-        element.writeOneAttributeNS(RtfListTable.LIST_TEXT_FORM,
-                "\\'03\\\'00. ;");
+        element.writeOneAttributeNS(
+                RtfListTable.LIST_TEXT_FORM, "\\'03\\\'00. ;");
         element.writeGroupMark(false);
 
         element.writeGroupMark(true);
-        element.writeOneAttributeNS(RtfListTable.LIST_NUM_POSITION, "\\'01;");
+        element.writeOneAttributeNS(
+                RtfListTable.LIST_NUM_POSITION, "\\'01;");
         element.writeGroupMark(false);
 
-        element.writeOneAttribute(RtfListTable.LIST_FONT_TYPE, (0));
+        element.writeOneAttribute(RtfListTable.LIST_FONT_TYPE, new Integer(0));
     }
 }

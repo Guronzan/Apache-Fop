@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IfFieldPart.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IfFieldPart.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.util.text;
 
@@ -25,9 +25,9 @@ import org.apache.fop.util.text.AdvancedMessageFormat.Part;
 import org.apache.fop.util.text.AdvancedMessageFormat.PartFactory;
 
 /**
- * Defines an "if" field part that checks if field's value is true or false. It
- * returns either of two possible values attached as additional part parameters.
- * Example: <code>{field,if,Yes,No}</code>
+ * Defines an "if" field part that checks if field's value is true or false.
+ * It returns either of two possible values attached as additional part parameters. Example:
+ * <code>{field,if,Yes,No}</code>
  */
 public class IfFieldPart implements Part {
 
@@ -40,70 +40,59 @@ public class IfFieldPart implements Part {
 
     /**
      * Creates a new "if" field part.
-     * 
-     * @param fieldName
-     *            the field name
-     * @param values
-     *            the unparsed parameter values
+     * @param fieldName the field name
+     * @param values the unparsed parameter values
      */
-    public IfFieldPart(final String fieldName, final String values) {
+    public IfFieldPart(String fieldName, String values) {
         this.fieldName = fieldName;
         parseValues(values);
     }
 
     /**
      * Parses the parameter values
-     * 
-     * @param values
-     *            the unparsed parameter values
+     * @param values the unparsed parameter values
      */
-    protected void parseValues(final String values) {
-        final String[] parts = AdvancedMessageFormat.COMMA_SEPARATOR_REGEX
-                .split(values, 2);
+    protected void parseValues(String values) {
+        String[] parts = AdvancedMessageFormat.COMMA_SEPARATOR_REGEX.split(values, 2);
         if (parts.length == 2) {
-            this.ifValue = AdvancedMessageFormat.unescapeComma(parts[0]);
-            this.elseValue = AdvancedMessageFormat.unescapeComma(parts[1]);
+            ifValue = AdvancedMessageFormat.unescapeComma(parts[0]);
+            elseValue = AdvancedMessageFormat.unescapeComma(parts[1]);
         } else {
-            this.ifValue = AdvancedMessageFormat.unescapeComma(values);
+            ifValue = AdvancedMessageFormat.unescapeComma(values);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void write(final StringBuilder sb, final Map params) {
-        final boolean isTrue = isTrue(params);
+    public void write(StringBuffer sb, Map params) {
+        boolean isTrue = isTrue(params);
         if (isTrue) {
-            sb.append(this.ifValue);
-        } else if (this.elseValue != null) {
-            sb.append(this.elseValue);
+            sb.append(ifValue);
+        } else if (elseValue != null) {
+            sb.append(elseValue);
         }
     }
 
     /**
-     * Indicates whether the field's value is true. If the field is not a
-     * boolen, it is true if the field is not null.
-     * 
-     * @param params
-     *            the message parameters
+     * Indicates whether the field's value is true. If the field is not a boolen, it is true
+     * if the field is not null.
+     * @param params the message parameters
      * @return true the field's value as boolean
      */
-    protected boolean isTrue(final Map params) {
-        final Object obj = params.get(this.fieldName);
+    protected boolean isTrue(Map params) {
+        Object obj = params.get(fieldName);
         if (obj instanceof Boolean) {
-            return ((Boolean) obj).booleanValue();
+            return ((Boolean)obj).booleanValue();
         } else {
-            return obj != null;
+            return (obj != null);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean isGenerated(final Map params) {
-        return isTrue(params) || this.elseValue != null;
+    public boolean isGenerated(Map params) {
+        return isTrue(params) || (elseValue != null);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return "{" + this.fieldName + ", if...}";
     }
@@ -114,13 +103,11 @@ public class IfFieldPart implements Part {
     public static class Factory implements PartFactory {
 
         /** {@inheritDoc} */
-        @Override
-        public Part newPart(final String fieldName, final String values) {
+        public Part newPart(String fieldName, String values) {
             return new IfFieldPart(fieldName, values);
         }
 
         /** {@inheritDoc} */
-        @Override
         public String getFormat() {
             return "if";
         }

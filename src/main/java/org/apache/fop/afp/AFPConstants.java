@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPConstants.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPConstants.java 1339442 2012-05-17 01:42:56Z gadams $ */
 
 package org.apache.fop.afp;
 
@@ -41,8 +41,8 @@ public interface AFPConstants {
     String US_ASCII_ENCODING = "US-ASCII";
 
     /**
-     * The scaling of the default transform is set to approximately 72 user
-     * space coordinates per square inch
+     * The scaling of the default transform is set to
+     * approximately 72 user space coordinates per square inch
      */
     int DPI_72 = 72;
 
@@ -50,4 +50,15 @@ public interface AFPConstants {
      * 72dpi in millipoints
      */
     int DPI_72_MPTS = DPI_72 * 1000;
+
+    /**
+     * The line width is set as a multiplier of a default line with; the width of the default
+     * line width is implementation defined, which probably means different devices use different
+     * actual widths; this means that the source line width (as specified in, say, a SVG line
+     * element) needs to be corrected by a fudge factor that depends on the output device so that
+     * the final output (print to paper, screen viewer) looks as intended.
+     */
+    float LINE_WIDTH_CORRECTION = 2.5f;
+
 }
+

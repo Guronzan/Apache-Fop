@@ -21,22 +21,19 @@ package org.apache.fop.render.bitmap;
 
 import java.awt.image.BufferedImage;
 
-import org.apache.fop.render.java2d.Java2DRenderingSettings;
 import org.apache.xmlgraphics.image.writer.ImageWriterParams;
+
+import org.apache.fop.render.java2d.Java2DRenderingSettings;
 
 /**
  * This class holds settings used when rendering to bitmaps.
  */
-public class BitmapRenderingSettings extends Java2DRenderingSettings implements
-        TIFFConstants {
+public class BitmapRenderingSettings extends Java2DRenderingSettings implements TIFFConstants {
 
     /** ImageWriter parameters */
-    private final ImageWriterParams writerParams;
+    private ImageWriterParams writerParams;
 
-    /**
-     * Image Type as parameter for the BufferedImage constructor (see
-     * BufferedImage.TYPE_*)
-     */
+    /** Image Type as parameter for the BufferedImage constructor (see BufferedImage.TYPE_*) */
     private int bufferedImageType = BufferedImage.TYPE_INT_ARGB;
 
     /** true if anti-aliasing is set */
@@ -49,12 +46,11 @@ public class BitmapRenderingSettings extends Java2DRenderingSettings implements
      * Default constructor. Initializes the settings to their default values.
      */
     public BitmapRenderingSettings() {
-        this.writerParams = new ImageWriterParams();
+        writerParams = new ImageWriterParams();
     }
 
     /**
      * Returns the image writer parameters used for encoding the bitmap images.
-     * 
      * @return the image writer parameters
      */
     public ImageWriterParams getWriterParams() {
@@ -63,7 +59,6 @@ public class BitmapRenderingSettings extends Java2DRenderingSettings implements
 
     /**
      * Returns the BufferedImage type.
-     * 
      * @return one of BufferedImage.TYPE_*
      */
     public int getBufferedImageType() {
@@ -72,27 +67,22 @@ public class BitmapRenderingSettings extends Java2DRenderingSettings implements
 
     /**
      * Sets the type of the BufferedImage to use when preparing a new instance.
-     * 
-     * @param bufferedImageType
-     *            a BufferImage.TYPE_* value
+     * @param bufferedImageType a BufferImage.TYPE_* value
      */
-    public void setBufferedImageType(final int bufferedImageType) {
+    public void setBufferedImageType(int bufferedImageType) {
         this.bufferedImageType = bufferedImageType;
     }
 
     /**
      * Enables or disables anti-aliasing.
-     * 
-     * @param value
-     *            true to enable anti-aliasing
+     * @param value true to enable anti-aliasing
      */
-    public void setAntiAliasing(final boolean value) {
+    public void setAntiAliasing(boolean value) {
         this.antialiasing = value;
     }
 
     /**
      * Indicates whether anti-aliasing is enabled.
-     * 
      * @return true if anti-aliasing is enabled
      */
     public boolean isAntiAliasingEnabled() {
@@ -101,19 +91,15 @@ public class BitmapRenderingSettings extends Java2DRenderingSettings implements
 
     /**
      * Controls whether to optimize rendering for speed or for quality.
-     * 
-     * @param quality
-     *            true to optimize for quality, false to optimize for speed
+     * @param quality true to optimize for quality, false to optimize for speed
      */
-    public void setQualityRendering(final boolean quality) {
+    public void setQualityRendering(boolean quality) {
         this.qualityRendering = quality;
     }
 
     /**
      * Indicates whether quality rendering is enabled.
-     * 
-     * @return true indicates optimization for quality, false indicates
-     *         optimization for speed
+     * @return true indicates optimization for quality, false indicates optimization for speed
      */
     public boolean isQualityRenderingEnabled() {
         return this.qualityRendering;

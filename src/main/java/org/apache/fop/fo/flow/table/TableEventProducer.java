@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: TableEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: TableEventProducer.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.flow.table;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.events.EventBroadcaster;
 import org.apache.fop.events.EventProducer;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.expr.PropertyException;
-import org.xml.sax.Locator;
 
 /**
  * Event producer interface for table-specific XSL-FO validation messages.
@@ -31,199 +32,142 @@ import org.xml.sax.Locator;
 public interface TableEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    static final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static TableEventProducer get(final EventBroadcaster broadcaster) {
-            return (TableEventProducer) broadcaster
-                    .getEventProducerFor(TableEventProducer.class);
+        public static TableEventProducer get(EventBroadcaster broadcaster) {
+            return (TableEventProducer)broadcaster.getEventProducerFor(
+                    TableEventProducer.class);
         }
     }
 
     /**
      * A value other than "auto" has been specified on fo:table.
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void nonAutoBPDOnTable(final Object source, final Locator loc);
+    void nonAutoBPDOnTable(Object source, Locator loc);
 
     /**
      * Padding on fo:table is ignored if the collapsing border model is active.
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void noTablePaddingWithCollapsingBorderModel(final Object source,
-            final Locator loc);
+    void noTablePaddingWithCollapsingBorderModel(Object source, Locator loc);
 
     /**
-     * No mixing of table-rows and table-cells is allowed for direct children of
-     * table-body.
-     * 
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param loc
-     *            the location of the error or null
-     * @throws ValidationException
-     *             the validation error provoked by the method call
+     * No mixing of table-rows and table-cells is allowed for direct children of table-body.
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param loc the location of the error or null
+     * @throws ValidationException the validation error provoked by the method call
      * @event.severity FATAL
      */
-    void noMixRowsAndCells(final Object source, final String elementName,
-            final Locator loc) throws ValidationException;
-
-    /**
-     * The table-footer was found after the table-body. FOP cannot recover with
-     * collapsed border model.
-     * 
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param loc
-     *            the location of the error or null
-     * @throws ValidationException
-     *             the validation error provoked by the method call
-     * @event.severity FATAL
-     */
-    void footerOrderCannotRecover(final Object source,
-            final String elementName, final Locator loc)
+    void noMixRowsAndCells(Object source, String elementName, Locator loc)
             throws ValidationException;
 
     /**
-     * starts-row/ends-row for fo:table-cells non-applicable for children of an
-     * fo:table-row
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
-     * @event.severity WARN
-     */
-    void startEndRowUnderTableRowWarning(final Object source, final Locator loc);
-
-    /**
-     * Column-number or number of cells in the row overflows the number of
-     * fo:table-column specified for the table.
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
-     * @throws ValidationException
-     *             the validation error provoked by the method call
+     * The table-footer was found after the table-body. FOP cannot recover with collapsed border
+     * model.
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param loc the location of the error or null
+     * @throws ValidationException the validation error provoked by the method call
      * @event.severity FATAL
      */
-    void tooManyCells(final Object source, final Locator loc)
+    void footerOrderCannotRecover(Object source, String elementName, Locator loc)
             throws ValidationException;
+
+    /**
+     * starts-row/ends-row for fo:table-cells non-applicable for children of an fo:table-row
+     * @param source the event source
+     * @param loc the location of the error or null
+     * @event.severity WARN
+     */
+    void startEndRowUnderTableRowWarning(Object source, Locator loc);
+
+    /**
+     * Column-number or number of cells in the row overflows the number of fo:table-column
+     * specified for the table.
+     * @param source the event source
+     * @param loc the location of the error or null
+     * @throws ValidationException the validation error provoked by the method call
+     * @event.severity FATAL
+     */
+    void tooManyCells(Object source, Locator loc) throws ValidationException;
 
     /**
      * Property value must be 1 or bigger.
-     * 
-     * @param source
-     *            the event source
-     * @param propName
-     *            the property name
-     * @param actualValue
-     *            the actual value
-     * @param loc
-     *            the location of the error or null
-     * @throws PropertyException
-     *             the property error provoked by the method call
+     * @param source the event source
+     * @param propName the property name
+     * @param actualValue the actual value
+     * @param loc the location of the error or null
+     * @throws PropertyException the property error provoked by the method call
      * @event.severity FATAL
      */
-    void valueMustBeBiggerGtEqOne(final Object source, final String propName,
-            final int actualValue, final Locator loc) throws PropertyException;
+    void valueMustBeBiggerGtEqOne(Object source, String propName,
+            int actualValue, Locator loc) throws PropertyException;
 
     /**
-     * table-layout=\"fixed\" and column-width unspecified => falling back to
-     * proportional-column-width(1)
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
+     * table-layout=\"fixed\" and column-width unspecified
+     * => falling back to proportional-column-width(1)
+     * @param source the event source
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void warnImplicitColumns(final Object source, final Locator loc);
+    void warnImplicitColumns(Object source, Locator loc);
 
     /**
      * padding-* properties are not applicable.
-     * 
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void paddingNotApplicable(final Object source, final String elementName,
-            final Locator loc);
+    void paddingNotApplicable(Object source, String elementName, Locator loc);
 
     /**
      * Cell overlap.
-     * 
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param column
-     *            the column index of the overlapping cell
-     * @param loc
-     *            the location of the error or null
-     * @throws PropertyException
-     *             the property error provoked by the method call
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param column the column index of the overlapping cell
+     * @param loc the location of the error or null
+     * @throws PropertyException the property error provoked by the method call
      * @event.severity FATAL
      */
-    void cellOverlap(final Object source, final String elementName,
-            final int column, final Locator loc) throws PropertyException;
+    void cellOverlap(Object source, String elementName, int column,
+            Locator loc) throws PropertyException;
 
     /**
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param propValue
-     *            the user-specified value of the column-number property
-     * @param columnNumber
-     *            the generated value for the column-number property
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param propValue the user-specified value of the column-number property
+     * @param columnNumber the generated value for the column-number property
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void forceNextColumnNumber(final Object source, final String elementName,
-            final Number propValue, final int columnNumber, final Locator loc);
+    void forceNextColumnNumber(Object source, String elementName, Number propValue,
+                               int columnNumber, Locator loc);
 
     /**
      * Break ignored due to row spanning.
-     * 
-     * @param source
-     *            the event source
-     * @param elementName
-     *            the name of the context node
-     * @param breakBefore
-     *            true for "break-before", false for "break-after"
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param elementName the name of the context node
+     * @param breakBefore true for "break-before", false for "break-after"
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void breakIgnoredDueToRowSpanning(final Object source,
-            final String elementName, final boolean breakBefore,
-            final Locator loc);
+    void breakIgnoredDueToRowSpanning(Object source, String elementName, boolean breakBefore,
+            Locator loc);
+
 
 }

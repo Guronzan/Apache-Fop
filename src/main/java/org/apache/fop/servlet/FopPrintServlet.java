@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FopPrintServlet.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FopPrintServlet.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.servlet;
 
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.servlet.http.HttpServletResponse;
+
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -34,74 +35,65 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.Fop;
 import org.apache.fop.apps.MimeConstants;
 
+
 /**
- * Example servlet to generate a fop printout from a servlet. Printing goes to
- * the default printer on host where the servlet executes. Servlet param is:
+ * Example servlet to generate a fop printout from a servlet.
+ * Printing goes to the default printer on host where the servlet executes.
+ * Servlet param is:
  * <ul>
- * <li>fo: the path to a XSL-FO file to render
+ *   <li>fo: the path to a XSL-FO file to render
  * </ul>
  * or
  * <ul>
- * <li>xml: the path to an XML file to render</li>
- * <li>xslt: the path to an XSLT file that can transform the above XML to XSL-FO
- * </li>
+ *   <li>xml: the path to an XML file to render</li>
+ *   <li>xslt: the path to an XSLT file that can transform the above XML to XSL-FO</li>
  * </ul>
  * <br/>
- * Example URL: http://servername/fop/servlet/FopPrintServlet?fo=readme.fo <br/>
- * Example URL:
- * http://servername/fop/servlet/FopPrintServlet?xml=data.xml&xsl=format.xsl <br/>
- * <b>Note:</b> This servlet is derived from FopServlet. Most methods are
- * inherited from the superclass. Only the differences to the base class are
- * necessary.
- *
- * @author <a href="mailto:fop-dev@xmlgraphics.apache.org">Apache FOP
- *         Development Team</a>
- * @version $Id: FopPrintServlet.java 679326 2008-07-24 09:35:34Z vhennebert $
+ * Example URL: http://servername/fop/servlet/FopPrintServlet?fo=readme.fo
+ * <br/>
+ * Example URL: http://servername/fop/servlet/FopPrintServlet?xml=data.xml&xsl=format.xsl
+ * <br/>
+ * <b>Note:</b> This servlet is derived from FopServlet. Most methods are inherited from the
+ * superclass. Only the differences to the base class are necessary.
  */
 public class FopPrintServlet extends FopServlet {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1645706757391617935L;
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected void render(final Source src, final Transformer transformer,
-            final HttpServletResponse response) throws FOPException,
-            TransformerException, IOException {
+    protected void render(Source src, Transformer transformer, HttpServletResponse response)
+            throws FOPException, TransformerException, IOException {
 
-        final FOUserAgent foUserAgent = getFOUserAgent();
+        FOUserAgent foUserAgent = getFOUserAgent();
 
-        // Setup FOP
-        final Fop fop = this.fopFactory.newFop(MimeConstants.MIME_FOP_PRINT,
-                foUserAgent);
+        //Setup FOP
+        Fop fop = fopFactory.newFop(MimeConstants.MIME_FOP_PRINT, foUserAgent);
 
-        // Make sure the XSL transformation's result is piped through to FOP
-        final Result res = new SAXResult(fop.getDefaultHandler());
+        //Make sure the XSL transformation's result is piped through to FOP
+        Result res = new SAXResult(fop.getDefaultHandler());
 
-        // Start the transformation and rendering process
+        //Start the transformation and rendering process
         transformer.transform(src, res);
 
-        // Return the result
+        //Return the result
         reportOK(response);
     }
 
     // private helper, tell (browser) user that file printed
-    private void reportOK(final HttpServletResponse response)
-            throws IOException {
-        final String sMsg = "<html><title>Success</title>\n"
+    private void reportOK(HttpServletResponse response) throws IOException {
+        String sMsg = "<html><title>Success</title>\n"
                 + "<body><h1>FopPrintServlet: </h1>"
                 + "<h3>The requested data was printed to the default printer.</h3></body></html>";
 
         response.setContentType("text/html");
         response.setContentLength(sMsg.length());
 
-        final PrintWriter out = response.getWriter();
+        PrintWriter out = response.getWriter();
         out.println(sMsg);
         out.flush();
     }
 
 }
+

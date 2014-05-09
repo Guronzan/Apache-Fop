@@ -15,86 +15,91 @@
  * limitations under the License.
  */
 
-/* $Id: RtfFootnote.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfFootnote.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
-//Java
 import java.io.IOException;
 import java.io.Writer;
-//FOP
 
 /**
- * Model of an RTF footnote
- * 
- * @author Peter Herweg, pherweg@web.de
- * @author Marc Wilhelm Kuester
+ * <p>Model of an RTF footnote.</p>
+ *
+ * <p>This work was authored by Peter Herweg (pherweg@web.de) and
+ *  Marc Wilhelm Kuester.</p>
  */
-public class RtfFootnote extends RtfContainer implements IRtfTextrunContainer,
-        IRtfListContainer {
-    RtfTextrun textrunInline = null;
-    RtfContainer body = null;
-    RtfList list = null;
-    boolean bBody = false;
+public class RtfFootnote extends RtfContainer
+        implements IRtfTextrunContainer, IRtfListContainer {
+    RtfTextrun textrunInline = null;                            // CSOK: VisibilityModifier
+    RtfContainer body = null;                                   // CSOK: VisibilityModifier
+    RtfList list = null;                                        // CSOK: VisibilityModifier
+    boolean bBody = false;                                      // CSOK: VisibilityModifier
 
     /**
-     * Create an RTF list item as a child of given container with default
-     * attributes
+     * Create an RTF list item as a child of given container with default attributes.
+     * @param parent a container
+     * @param w a writer
+     * @throws IOException if not caught
      */
-    RtfFootnote(final RtfContainer parent, final Writer w) throws IOException {
+    RtfFootnote(RtfContainer parent, Writer w) throws IOException {
         super(parent, w);
-        this.textrunInline = new RtfTextrun(this, this.writer, null);
-        this.body = new RtfContainer(this, this.writer);
+        textrunInline = new RtfTextrun(this, writer, null);
+        body = new RtfContainer(this, writer);
     }
 
-    @Override
+    /**
+     * @return a text run
+     * @throws IOException if not caught
+     */
     public RtfTextrun getTextrun() throws IOException {
-        if (this.bBody) {
-            final RtfTextrun textrun = RtfTextrun.getTextrun(this.body,
-                    this.writer, null);
+        if (bBody) {
+            RtfTextrun textrun = RtfTextrun.getTextrun(body, writer, null);
             textrun.setSuppressLastPar(true);
 
             return textrun;
         } else {
-            return this.textrunInline;
+            return textrunInline;
         }
     }
 
     /**
-     * write RTF code of all our children
-     * 
-     * @throws IOException
-     *             for I/O problems
-     */
-    @Override
+    * write RTF code of all our children
+    * @throws IOException for I/O problems
+    */
     protected void writeRtfContent() throws IOException {
-        this.textrunInline.writeRtfContent();
+        textrunInline.writeRtfContent();
 
         writeGroupMark(true);
         writeControlWord("footnote");
         writeControlWord("ftnalt");
 
-        this.body.writeRtfContent();
+        body.writeRtfContent();
 
         writeGroupMark(false);
     }
 
-    @Override
-    public RtfList newList(final RtfAttributes attrs) throws IOException {
-        if (this.list != null) {
-            this.list.close();
+    /**
+     * @param attrs some attributes
+     * @return an rtf list
+     * @throws IOException if not caught
+     */
+    public RtfList newList(RtfAttributes attrs) throws IOException {
+        if (list != null) {
+            list.close();
         }
 
-        this.list = new RtfList(this.body, this.writer, attrs);
+        list = new RtfList(body, writer, attrs);
 
-        return this.list;
+        return list;
     }
 
+    /** start body */
     public void startBody() {
-        this.bBody = true;
+        bBody = true;
     }
 
+    /** end body */
     public void endBody() {
-        this.bBody = false;
+        bBody = false;
     }
 }

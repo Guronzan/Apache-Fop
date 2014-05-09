@@ -19,6 +19,7 @@
 
 package org.apache.fop.events.model;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /** Enumeration class for event severities. */
@@ -35,15 +36,13 @@ public final class EventSeverity implements Serializable {
     /** fatal error */
     public static final EventSeverity FATAL = new EventSeverity("FATAL");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     *
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private EventSeverity(final String name) {
+    private EventSeverity(String name) {
         this.name = name;
     }
 
@@ -54,12 +53,10 @@ public final class EventSeverity implements Serializable {
 
     /**
      * Returns the enumeration/singleton object based on its name.
-     *
-     * @param name
-     *            the name of the enumeration value
+     * @param name the name of the enumeration value
      * @return the enumeration object
      */
-    public static EventSeverity valueOf(final String name) {
+    public static EventSeverity valueOf(String name) {
         if (INFO.getName().equalsIgnoreCase(name)) {
             return INFO;
         } else if (WARN.getName().equalsIgnoreCase(name)) {
@@ -69,19 +66,17 @@ public final class EventSeverity implements Serializable {
         } else if (FATAL.getName().equalsIgnoreCase(name)) {
             return FATAL;
         } else {
-            throw new IllegalArgumentException(
-                    "Illegal value for enumeration: " + name);
+            throw new IllegalArgumentException("Illegal value for enumeration: " + name);
         }
     }
 
-    private Object readResolve() {
+    private Object readResolve() throws ObjectStreamException {
         return valueOf(getName());
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "EventSeverity:" + this.name;
+        return "EventSeverity:" + name;
     }
 
 }

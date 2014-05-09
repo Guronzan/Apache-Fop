@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: Area.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: Area.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.area;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.traits.BorderProps;
+import org.apache.fop.traits.WritingModeTraitsGetter;
 
 // If the area appears more than once in the output
 // or if the area has external data it is cached
@@ -37,31 +41,8 @@ import org.apache.fop.traits.BorderProps;
  * Base object for all areas.
  */
 public class Area extends AreaTreeObject implements Serializable {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 2243215578870359904L;
 
-    // stacking directions
-    /**
-     * Stacking left to right
-     */
-    public static final int LR = 0;
-
-    /**
-     * Stacking right to left
-     */
-    public static final int RL = 1;
-
-    /**
-     * Stacking top to bottom
-     */
-    public static final int TB = 2;
-
-    /**
-     * Stacking bottom to top
-     */
-    public static final int BT = 3;
+    private static final long serialVersionUID = 6342888466142626492L;
 
     // orientations for reference areas
     /**
@@ -131,9 +112,19 @@ public class Area extends AreaTreeObject implements Serializable {
     protected int bpd;
 
     /**
-     * Traits for this area stored in a HashMap
+     * Resolved bidirectional level for area.
      */
-    protected Map<Integer, Object> props = null;
+    protected int bidiLevel = -1;
+
+    /**
+     * Traits for this area.
+     */
+    protected TreeMap<Integer, Object> traits;
+
+    /**
+     * logging instance
+     */
+    protected static final Log log = LogFactory.getLog(Area.class);
 
     /**
      * Get the area class of this area.
@@ -144,79 +135,83 @@ public class Area extends AreaTreeObject implements Serializable {
         return this.areaClass;
     }
 
+    /** {@inheritDoc} */
+    public Object clone() throws CloneNotSupportedException {
+        Area area = (Area) super.clone();
+        if (traits != null) {
+            area.traits = (TreeMap<Integer, Object>) traits.clone();
+        }
+        return area;
+    }
+
     /**
      * Set the area class of this area.
      *
-     * @param areaClass
-     *            the area class
+     * @param areaClass the area class
      */
-    public void setAreaClass(final int areaClass) {
+    public void setAreaClass(int areaClass) {
         this.areaClass = areaClass;
     }
 
     /**
-     * Set the inline progression dimension of content rectangle for this area.
+     * Set the inline progression dimension of content rectangle
+     * for this area.
      *
-     * @param ipd
-     *            the new inline progression dimension
-     * @see <a
-     *      href="http://www.w3.org/TR/xsl/#inline-progression-dimension">ipd</a>
+     * @param ipd the new inline progression dimension
+     * @see <a href="http://www.w3.org/TR/xsl/#inline-progression-dimension">ipd</a>
      */
-    public void setIPD(final int ipd) {
+    public void setIPD(int ipd) {
         this.ipd = ipd;
     }
 
     /**
-     * Get the inline progression dimension of the content rectangle for this
-     * area.
+     * Get the inline progression dimension of the content rectangle
+     * for this area.
      *
      * @return the inline progression dimension
-     * @see <a
-     *      href="http://www.w3.org/TR/xsl/#inline-progression-dimension">ipd</a>
+     * @see <a href="http://www.w3.org/TR/xsl/#inline-progression-dimension">ipd</a>
      */
     public int getIPD() {
-        return this.ipd;
+        return ipd;
     }
 
     /**
-     * Set the block progression dimension of the content rectangle for this
-     * area.
+     * Set the block progression dimension of the content rectangle
+     * for this area.
      *
-     * @param bpd
-     *            the new block progression dimension
-     * @see <a
-     *      href="http://www.w3.org/TR/xsl/#block-progression-dimension">bpd</a>
+     * @param bpd the new block progression dimension
+     * @see <a href="http://www.w3.org/TR/xsl/#block-progression-dimension">bpd</a>
      */
-    public void setBPD(final int bpd) {
+    public void setBPD(int bpd) {
         this.bpd = bpd;
     }
 
     /**
-     * Get the block progression dimension of the content rectangle for this
-     * area.
+     * Get the block progression dimension of the content rectangle
+     * for this area.
      *
      * @return the block progression dimension
-     * @see <a
-     *      href="http://www.w3.org/TR/xsl/#block-progression-dimension">bpd</a>
+     * @see <a href="http://www.w3.org/TR/xsl/#block-progression-dimension">bpd</a>
      */
     public int getBPD() {
-        return this.bpd;
+        return bpd;
     }
 
     /**
-     * Get the allocation inline progression dimension of this area. This adds
-     * the content, borders and the padding to find the total allocated IPD.
+     * Get the allocation inline progression dimension of this area.
+     * This adds the content, borders and the padding to find the
+     * total allocated IPD.
      *
      * @return the total IPD allocation for this area
      */
     public int getAllocIPD() {
-        return getBorderAndPaddingWidthStart() + getIPD()
-                + getBorderAndPaddingWidthEnd();
+        return getBorderAndPaddingWidthStart() + getIPD() + getBorderAndPaddingWidthEnd();
     }
 
     /**
-     * Get the allocation block progression dimension of this area. This adds
-     * the content, borders, padding and spaces to find the total allocated BPD.
+     * Get the allocation block progression dimension of this area.
+     * This adds the content, borders, padding and spaces to find the
+     * total allocated BPD.
      *
      * @return the total BPD allocation for this area
      */
@@ -226,20 +221,46 @@ public class Area extends AreaTreeObject implements Serializable {
     }
 
     /**
+     * Set the bidirectional embedding level.
+     *
+     * @param bidiLevel the bidirectional embedding level
+     */
+    public void setBidiLevel ( int bidiLevel ) {
+        this.bidiLevel = bidiLevel;
+    }
+
+    /**
+     * Reset the bidirectional embedding level to default
+     * value (-1).
+     */
+    public void resetBidiLevel() {
+        setBidiLevel(-1);
+    }
+
+    /**
+     * Get the bidirectional embedding level.
+     *
+     * @return the bidirectional embedding level
+     */
+    public int getBidiLevel() {
+        return bidiLevel;
+    }
+
+    /**
      * Return the sum of region border- and padding-before
      *
      * @return width in millipoints
      */
     public int getBorderAndPaddingWidthBefore() {
         int margin = 0;
-        final BorderProps bps = (BorderProps) getTrait(Trait.BORDER_BEFORE);
+        BorderProps bps = (BorderProps) getTrait(Trait.BORDER_BEFORE);
         if (bps != null) {
             margin = bps.width;
         }
 
-        final Integer padWidth = (Integer) getTrait(Trait.PADDING_BEFORE);
+        Integer padWidth = (Integer) getTrait(Trait.PADDING_BEFORE);
         if (padWidth != null) {
-            margin += padWidth.intValue();
+            margin += padWidth;
         }
 
         return margin;
@@ -253,14 +274,14 @@ public class Area extends AreaTreeObject implements Serializable {
     public int getBorderAndPaddingWidthAfter() {
         int margin = 0;
 
-        final BorderProps bps = (BorderProps) getTrait(Trait.BORDER_AFTER);
+        BorderProps bps = (BorderProps) getTrait(Trait.BORDER_AFTER);
         if (bps != null) {
             margin = bps.width;
         }
 
-        final Integer padWidth = (Integer) getTrait(Trait.PADDING_AFTER);
+        Integer padWidth = (Integer) getTrait(Trait.PADDING_AFTER);
         if (padWidth != null) {
-            margin += padWidth.intValue();
+            margin += padWidth;
         }
 
         return margin;
@@ -273,14 +294,14 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getBorderAndPaddingWidthStart() {
         int margin = 0;
-        final BorderProps bps = (BorderProps) getTrait(Trait.BORDER_START);
+        BorderProps bps = (BorderProps) getTrait(Trait.BORDER_START);
         if (bps != null) {
             margin = bps.width;
         }
 
-        final Integer padWidth = (Integer) getTrait(Trait.PADDING_START);
+        Integer padWidth = (Integer) getTrait(Trait.PADDING_START);
         if (padWidth != null) {
-            margin += padWidth.intValue();
+            margin += padWidth;
         }
 
         return margin;
@@ -293,14 +314,14 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getBorderAndPaddingWidthEnd() {
         int margin = 0;
-        final BorderProps bps = (BorderProps) getTrait(Trait.BORDER_END);
+        BorderProps bps = (BorderProps) getTrait(Trait.BORDER_END);
         if (bps != null) {
             margin = bps.width;
         }
 
-        final Integer padWidth = (Integer) getTrait(Trait.PADDING_END);
+        Integer padWidth = (Integer) getTrait(Trait.PADDING_END);
         if (padWidth != null) {
-            margin += padWidth.intValue();
+            margin += padWidth;
         }
 
         return margin;
@@ -313,9 +334,9 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getSpaceBefore() {
         int margin = 0;
-        final Integer space = (Integer) getTrait(Trait.SPACE_BEFORE);
+        Integer space = (Integer) getTrait(Trait.SPACE_BEFORE);
         if (space != null) {
-            margin = space.intValue();
+            margin = space;
         }
         return margin;
     }
@@ -327,9 +348,9 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getSpaceAfter() {
         int margin = 0;
-        final Integer space = (Integer) getTrait(Trait.SPACE_AFTER);
+        Integer space = (Integer) getTrait(Trait.SPACE_AFTER);
         if (space != null) {
-            margin = space.intValue();
+            margin = space;
         }
         return margin;
     }
@@ -341,9 +362,9 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getSpaceStart() {
         int margin = 0;
-        final Integer space = (Integer) getTrait(Trait.SPACE_START);
+        Integer space = (Integer) getTrait(Trait.SPACE_START);
         if (space != null) {
-            margin = space.intValue();
+            margin = space;
         }
         return margin;
     }
@@ -355,36 +376,48 @@ public class Area extends AreaTreeObject implements Serializable {
      */
     public int getSpaceEnd() {
         int margin = 0;
-        final Integer space = (Integer) getTrait(Trait.SPACE_END);
+        Integer space = (Integer) getTrait(Trait.SPACE_END);
         if (space != null) {
-            margin = space.intValue();
+            margin = space;
         }
         return margin;
     }
 
     /**
-     * Add a child to this area. The default is to do nothing. Subclasses must
-     * override to do something if they can have child areas.
+     * Add a child to this area.
+     * The default is to do nothing. Subclasses must override
+     * to do something if they can have child areas.
      *
-     * @param child
-     *            the child area to add
+     * @param child the child area to add
      */
-    public void addChildArea(final Area child) {
+    public void addChildArea(Area child) {
     }
 
     /**
      * Add a trait to this area.
      *
-     * @param traitCode
-     *            the trait key
-     * @param prop
-     *            the value of the trait
+     * @param traitCode the trait key
+     * @param prop the value of the trait
      */
-    public void addTrait(final Integer traitCode, final Object prop) {
-        if (this.props == null) {
-            this.props = new HashMap<>(20);
+    public void addTrait(Integer traitCode, Object prop) {
+        // use treemap since the typical number of traits are less than four
+        if (traits == null) {
+            traits = new TreeMap<Integer, Object>();
         }
-        this.props.put(traitCode, prop);
+        traits.put(traitCode, prop);
+    }
+
+    /**
+     * Set traits on this area, copying from an existing traits map.
+     *
+     * @param traits the map of traits
+     */
+    public void setTraits ( Map traits ) {
+        if ( traits != null ) {
+            this.traits = new TreeMap<Integer, Object>( traits );
+        } else {
+            this.traits = null;
+        }
     }
 
     /**
@@ -393,73 +426,74 @@ public class Area extends AreaTreeObject implements Serializable {
      * @return the map of traits
      */
     public Map<Integer, Object> getTraits() {
-        return this.props;
+        return this.traits;
     }
 
     /** @return true if the area has traits */
     public boolean hasTraits() {
-        return this.props != null;
+        return (this.traits != null);
     }
 
     /**
      * Get a trait from this area.
      *
-     * @param oTraitCode
-     *            the trait key
+     * @param traitCode the trait key
      * @return the trait value
      */
-    public Object getTrait(final Integer oTraitCode) {
-        return this.props != null ? this.props.get(oTraitCode) : null;
+    public Object getTrait(Integer traitCode) {
+        return (traits != null ? traits.get(traitCode) : null);
     }
 
     /**
      * Checks whether a certain trait is set on this area.
-     *
-     * @param oTraitCode
-     *            the trait key
+     * @param traitCode the trait key
      * @return true if the trait is set
      */
-    public boolean hasTrait(final Integer oTraitCode) {
-        return getTrait(oTraitCode) != null;
+    public boolean hasTrait(Integer traitCode) {
+        return (getTrait(traitCode) != null);
     }
 
     /**
      * Get a boolean trait from this area.
-     *
-     * @param oTraitCode
-     *            the trait key
+     * @param traitCode the trait key
      * @return the trait value
      */
-    public boolean getTraitAsBoolean(final Integer oTraitCode) {
-        return Boolean.TRUE.equals(getTrait(oTraitCode));
+    public boolean getTraitAsBoolean(Integer traitCode) {
+        return Boolean.TRUE.equals(getTrait(traitCode));
     }
 
     /**
      * Get a trait from this area as an integer.
      *
-     * @param oTraitCode
-     *            the trait key
+     * @param traitCode the trait key
      * @return the trait value
      */
-    public int getTraitAsInteger(final Integer oTraitCode) {
-        final Object obj = getTrait(oTraitCode);
+    public int getTraitAsInteger(Integer traitCode) {
+        final Object obj = getTrait(traitCode);
         if (obj instanceof Integer) {
-            return ((Integer) obj).intValue();
+            return (Integer) obj;
         } else {
             throw new IllegalArgumentException("Trait "
-                    + oTraitCode.getClass().getName()
+                    + traitCode.getClass().getName()
                     + " could not be converted to an integer");
         }
     }
 
     /**
+     * Sets the writing mode traits for this area. Default implementation
+     * does nothing.
+     * @param wmtg a WM traits getter
+     */
+    public void setWritingModeTraits(WritingModeTraitsGetter wmtg) {
+    }
+
+    /**
      * {@inheritDoc}
-     *
      * @return ipd and bpd of area
-     * */
+     */
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(super.toString());
+        StringBuffer sb = new StringBuffer(super.toString());
         sb.append(" {ipd=").append(Integer.toString(getIPD()));
         sb.append(", bpd=").append(Integer.toString(getBPD()));
         sb.append("}");

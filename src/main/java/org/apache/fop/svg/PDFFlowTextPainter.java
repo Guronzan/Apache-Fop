@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFFlowTextPainter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFFlowTextPainter.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.svg;
 
@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.batik.gvt.TextNode;
 import org.apache.batik.gvt.flow.FlowTextPainter;
+
 import org.apache.fop.fonts.FontInfo;
 
 /**
@@ -33,22 +34,16 @@ public class PDFFlowTextPainter extends PDFTextPainter {
 
     /**
      * Main constructor
-     * 
-     * @param fontInfo
-     *            the font directory
+     * @param fontInfo the font directory
      */
-    public PDFFlowTextPainter(final FontInfo fontInfo) {
+    public PDFFlowTextPainter(FontInfo fontInfo) {
         super(fontInfo);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public List getTextRuns(final TextNode node,
-            final AttributedCharacterIterator aci) {
-        // Text runs are delegated to the normal FlowTextPainter, we just paint
-        // the text.
-        final FlowTextPainter delegate = (FlowTextPainter) FlowTextPainter
-                .getInstance();
+    public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
+        //Text runs are delegated to the normal FlowTextPainter, we just paint the text.
+        FlowTextPainter delegate = (FlowTextPainter)FlowTextPainter.getInstance();
         return delegate.getTextRuns(node, aci);
     }
 

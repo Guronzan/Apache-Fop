@@ -21,25 +21,21 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.apache.fop.afp.Completable;
 
 /**
- * A Resource Environment Group contains a set of resources for a document or
- * for a group of pages in a document.
+ * A Resource Environment Group contains a set of resources for a document
+ * or for a group of pages in a document.
  */
-public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup
-        implements Completable {
+public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup implements Completable {
 
     /** default name for the resource group */
     private static final String DEFAULT_NAME = "REG00001";
 
-    // /**
-    // * the pre-process presentation objects contained in this resource
-    // * environment group
-    // */
-    // private List<PreprocessPresentationObject> preProcessPresentationObjects
-    // = null;
+    /** the pre-process presentation objects contained in this resource environment group */
+    private List/*<PreprocessPresentationObject>*/ preProcessPresentationObjects = null;
 
     /** the resource environment group state */
     private boolean complete = false;
@@ -51,71 +47,62 @@ public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup
         this(DEFAULT_NAME);
     }
 
-    // private List<PreprocessPresentationObject>
-    // getPreprocessPresentationObjects() {
-    // if (this.preProcessPresentationObjects == null) {
-    // this.preProcessPresentationObjects = new java.util.ArrayList<>();
-    // }
-    // return this.preProcessPresentationObjects;
-    // }
+    private List/*<PreprocessPresentationObject>*/ getPreprocessPresentationObjects() {
+        if (preProcessPresentationObjects == null) {
+            this.preProcessPresentationObjects
+                = new java.util.ArrayList/*<PreprocessPresentationObject>*/();
+        }
+        return this.preProcessPresentationObjects;
+    }
 
     /**
-     * Constructor for the ResourceEnvironmentGroup, this takes a name parameter
-     * which must be 8 characters long.
-     *
-     * @param name
-     *            the resource environment group name
+     * Constructor for the ResourceEnvironmentGroup, this takes a
+     * name parameter which must be 8 characters long.
+     * @param name the resource environment group name
      */
-    public ResourceEnvironmentGroup(final String name) {
+    public ResourceEnvironmentGroup(String name) {
         super(name);
     }
 
-    // /**
-    // * Adds an AFP object mapping reference to this resource environment group
-    // * @param obj the object to add
-    // */
-    // public void addObject(AbstractStructuredAFPObject obj) {
-    // getMapDataResources().add(new MapDataResource(obj));
-    // createOverlay(obj.get);
-    // getPreprocessPresentationObjects().add(new
-    // PreprocessPresentationObject(obj));
-    // }
+//    /**
+//     * Adds an AFP object mapping reference to this resource environment group
+//     * @param obj the object to add
+//     */
+//    public void addObject(AbstractStructuredAFPObject obj) {
+//        getMapDataResources().add(new MapDataResource(obj));
+//        createOverlay(obj.get);
+//        getPreprocessPresentationObjects().add(new PreprocessPresentationObject(obj));
+//    }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.RESOURCE_ENVIROMENT_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.RESOURCE_ENVIROMENT_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
-        writeObjects(this.mapDataResources, os);
-        writeObjects(this.mapPageOverlays, os);
-        // writeObjects(this.preProcessPresentationObjects, os); // never used &
-        // initialized
+    protected void writeContent(OutputStream os) throws IOException {
+        writeObjects(mapDataResources, os);
+        writeObjects(mapPageOverlays, os);
+        writeObjects(preProcessPresentationObjects, os);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setComplete(final boolean complete) {
+    public void setComplete(boolean complete) {
         this.complete = complete;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isComplete() {
-        return this.complete;
+        return complete;
     }
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPFontInfo.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPFontInfo.java 1195952 2011-11-01 12:20:21Z phancock $ */
 
 package org.apache.fop.afp.fonts;
 
@@ -23,24 +23,22 @@ import java.util.List;
 
 import org.apache.fop.fonts.FontTriplet;
 
+
 /**
  * FontInfo contains meta information on fonts
  */
 public class AFPFontInfo {
 
-    private final AFPFont font;
-    private final List<FontTriplet> tripletList;
+    private AFPFont font;
+    private List<FontTriplet> tripletList;
 
     /**
      * Main constructor
      *
-     * @param afpFont
-     *            The AFP Font
-     * @param tripletList
-     *            List of font triplets to associate with this font
+     * @param afpFont The AFP Font
+     * @param tripletList List of font triplets to associate with this font
      */
-    public AFPFontInfo(final AFPFont afpFont,
-            final List<FontTriplet> tripletList) {
+    public AFPFontInfo(AFPFont afpFont, List<FontTriplet> tripletList) {
         this.font = afpFont;
         this.tripletList = tripletList;
     }
@@ -51,7 +49,7 @@ public class AFPFontInfo {
      * @return the afp font
      */
     public AFPFont getAFPFont() {
-        return this.font;
+        return font;
     }
 
     /**
@@ -60,7 +58,8 @@ public class AFPFontInfo {
      * @return List of font triplets
      */
     public List<FontTriplet> getFontTriplets() {
-        return this.tripletList;
+        return tripletList;
     }
 
 }
+

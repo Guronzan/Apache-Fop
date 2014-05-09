@@ -29,23 +29,16 @@ public interface CompoundDatatype extends Constants {
 
     /**
      * Sets a component of the compound datatype.
-     * 
-     * @param cmpId
-     *            ID of the component
-     * @param cmpnValue
-     *            value of the component
-     * @param bIsDefault
-     *            Indicates if it's the default value
+     * @param cmpId ID of the component
+     * @param cmpnValue value of the component
+     * @param bIsDefault Indicates if it's the default value
      */
-    void setComponent(final int cmpId, final Property cmpnValue,
-            final boolean bIsDefault);
+    void setComponent(int cmpId, Property cmpnValue, boolean bIsDefault);
 
     /**
      * Returns a component of the compound datatype.
-     * 
-     * @param cmpId
-     *            ID of the component
+     * @param cmpId ID of the component
      * @return the value of the component
      */
-    Property getComponent(final int cmpId);
+    Property getComponent(int cmpId);
 }

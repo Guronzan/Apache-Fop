@@ -15,90 +15,128 @@
  * limitations under the License.
  */
 
-/* $Id: PositionIterator.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PositionIterator.java 1067353 2011-02-05 00:13:18Z adelmelle $ */
 
 package org.apache.fop.layoutmgr;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public abstract class PositionIterator<T> implements Iterator<Position> {
+/**
+ * An iterator over {@link Position} instances, that is wrapped around
+ * another 'parent' {@link Iterator}. The parent can be either another
+ * {@code PositionIterator}, or an iterator over {@link KnuthElement}s,
+ * for example.<br/>
+ * The {@link #next()} method always returns a {@link Position}. The
+ * {@link #getPos(Object)} method can be overridden in subclasses
+ * to take care of obtaining the {@link LayoutManager} or {@link Position}
+ * from the object returned by the parent iterator's {@code next()} method.
+ */
+public class PositionIterator implements Iterator<Position> {
 
-    private final Iterator<T> parentIter;
-    private T nextObj;
+    private Iterator parentIter;
+    private Object nextObj;
     private LayoutManager childLM;
-    private boolean bHasNext;
+    private boolean hasNext;
 
-    protected PositionIterator(final Iterator<T> pIter) {
-        this.parentIter = pIter;
+    /**
+     * Construct position iterator.
+     * @param parentIter an iterator to use as parent
+     */
+    public PositionIterator(Iterator parentIter) {
+        this.parentIter = parentIter;
         lookAhead();
-        // checkNext();
+        //checkNext();
     }
 
+    /** @return layout manager of next child layout manager or null */
     public LayoutManager getNextChildLM() {
         // Move to next "segment" of iterator, ie: new childLM
-        if (this.childLM == null && this.nextObj != null) {
-            this.childLM = getLM(this.nextObj);
-            this.bHasNext = true;
+        if (childLM == null && nextObj != null) {
+            childLM = getLM(nextObj);
+            hasNext = true;
         }
-        return this.childLM;
+        return childLM;
     }
 
-    protected abstract LayoutManager getLM(final T nextObj);
+    /**
+     * @param nextObj next object from which to obtain position
+     * @return layout manager
+     */
+    protected LayoutManager getLM(Object nextObj) {
+        return getPos(nextObj).getLM();
+    }
 
-    protected abstract Position getPos(final T nextObj);
+    /**
+     * Default implementation assumes that the passed
+     * {@code nextObj} is itself a {@link Position}, and just returns it.
+     * Subclasses for which this is not the case, <em>must</em> provide a
+     * suitable override this method.
+     * @param nextObj next object from which to obtain position
+     * @return position of next object.
+     */
+    protected Position getPos(Object nextObj) {
+        if (nextObj instanceof Position) {
+            return (Position)nextObj;
+        }
+        throw new IllegalArgumentException(
+                "Cannot obtain Position from the given object.");
+    }
 
     private void lookAhead() {
-        if (this.parentIter.hasNext()) {
-            this.bHasNext = true;
-            this.nextObj = this.parentIter.next();
+        if (parentIter.hasNext()) {
+            hasNext = true;
+            nextObj = parentIter.next();
         } else {
             endIter();
         }
     }
 
+    /** @return true if not at end of sub-sequence with same child layout manager */
     protected boolean checkNext() {
-        final LayoutManager lm = getLM(this.nextObj);
-        if (this.childLM == null) {
-            this.childLM = lm;
-        } else if (this.childLM != lm && lm != null) {
+        LayoutManager lm = getLM(nextObj);
+        if (childLM == null) {
+            childLM = lm;
+        } else if (childLM != lm && lm != null) {
             // End of this sub-sequence with same child LM
-            this.bHasNext = false;
-            this.childLM = null;
+            hasNext = false;
+            childLM = null;
             return false;
         }
         return true;
     }
 
+    /** end (reset) iterator */
     protected void endIter() {
-        this.bHasNext = false;
-        this.nextObj = null;
-        this.childLM = null;
+        hasNext = false;
+        nextObj = null;
+        childLM = null;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public boolean hasNext() {
-        return this.bHasNext && checkNext();
+        return (hasNext && checkNext());
     }
 
-    @Override
+
+    /** {@inheritDoc} */
     public Position next() throws NoSuchElementException {
-        if (this.bHasNext) {
-            final Position retObj = getPos(this.nextObj);
+        if (hasNext) {
+            Position retPos = getPos(nextObj);
             lookAhead();
-            return retObj;
+            return retPos;
         } else {
             throw new NoSuchElementException("PosIter");
         }
     }
 
-    public T peekNext() {
-        return this.nextObj;
+    /** @return peek at next object */
+    public Object peekNext() {
+        return nextObj;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public void remove() throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(
-                "PositionIterator doesn't support remove");
+        throw new UnsupportedOperationException("PositionIterator doesn't support remove");
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Java2DGraphicsState.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: Java2DGraphicsState.java 1069439 2011-02-10 15:58:57Z jeremias $ */
 
 package org.apache.fop.render.java2d;
 
@@ -27,6 +27,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
+
+import org.apache.xmlgraphics.java2d.color.ColorUtil;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fonts.FontInfo;
@@ -49,38 +51,31 @@ public class Java2DGraphicsState {
     private int currentStrokeStyle;
 
     /** Font configuration, passed from AWTRenderer */
-    private final FontInfo fontInfo;
+    private FontInfo fontInfo;
 
     /** Initial AffinTransform passed by the renderer, includes scaling-info */
-    private final AffineTransform initialTransform;
+    private AffineTransform initialTransform;
 
     /**
      * State for storing graphics state.
-     * 
-     * @param graphics
-     *            the graphics associated with the BufferedImage
-     * @param fontInfo
-     *            the FontInfo from the renderer
-     * @param at
-     *            the initial AffineTransform containing the scale
-     *            transformation
+     * @param graphics the graphics associated with the BufferedImage
+     * @param fontInfo the FontInfo from the renderer
+     * @param at the initial AffineTransform containing the scale transformation
      */
-    public Java2DGraphicsState(final Graphics2D graphics,
-            final FontInfo fontInfo, final AffineTransform at) {
+    public Java2DGraphicsState(Graphics2D graphics, FontInfo fontInfo,
+            AffineTransform at) {
         this.fontInfo = fontInfo;
         this.currentGraphics = graphics;
         this.initialTransform = at;
-        this.currentGraphics.setTransform(at);
+        currentGraphics.setTransform(at);
     }
 
     /**
      * Copy constructor.
-     * 
-     * @param org
-     *            the instance to copy
+     * @param org the instance to copy
      */
-    public Java2DGraphicsState(final Java2DGraphicsState org) {
-        this.currentGraphics = (Graphics2D) org.currentGraphics.create();
+    public Java2DGraphicsState(Java2DGraphicsState org) {
+        this.currentGraphics = (Graphics2D)org.currentGraphics.create();
         this.fontInfo = org.fontInfo;
         this.initialTransform = org.initialTransform;
         this.currentStroke = org.currentStroke;
@@ -92,7 +87,7 @@ public class Java2DGraphicsState {
      * @return the currently valid state
      */
     public Graphics2D getGraph() {
-        return this.currentGraphics;
+        return currentGraphics;
     }
 
     /** Frees resources allocated by the current Graphics2D instance. */
@@ -106,12 +101,11 @@ public class Java2DGraphicsState {
      * Set the current background color. Check if the background color will
      * change and then set the new color.
      *
-     * @param col
-     *            the new color as a java.awt.Color
+     * @param col the new color as a java.awt.Color
      * @return true if the background color has changed
      */
-    public boolean updateColor(final Color col) {
-        if (!col.equals(getGraph().getColor())) {
+    public boolean updateColor(Color col) {
+        if (!ColorUtil.isSameColor(col, getGraph().getColor())) {
             getGraph().setColor(col);
             return true;
         } else {
@@ -123,32 +117,29 @@ public class Java2DGraphicsState {
      * @return the current java.awt.Color
      */
     public java.awt.Color getColor() {
-        return this.currentGraphics.getColor();
+        return currentGraphics.getColor();
     }
 
     /**
      * Set the current font name. Check if the font name will change and then
      * set the new name.
      *
-     * @param name
-     *            the new font name
-     * @param size
-     *            the font size
+     * @param name the new font name
+     * @param size the font size
      * @return true if the new Font changes the current Font
      */
-    public boolean updateFont(final String name, final int size) {
+    public boolean updateFont(String name, int size) {
 
-        final FontMetricsMapper mapper = (FontMetricsMapper) this.fontInfo
-                .getMetricsFor(name);
-        final boolean updateName = !mapper.getFontName().equals(
-                getGraph().getFont().getFontName());
-        final boolean updateSize = size != getGraph().getFont().getSize() * 1000;
+        FontMetricsMapper mapper = (FontMetricsMapper)fontInfo.getMetricsFor(name);
+        boolean updateName = (!mapper.getFontName().equals(
+                                    getGraph().getFont().getFontName()));
+        boolean updateSize = (size != (getGraph().getFont().getSize() * 1000));
 
         if (updateName || updateSize) {
             // the font name and/or the font size have changed
-            final java.awt.Font font = mapper.getFont(size);
+            java.awt.Font font = mapper.getFont(size);
 
-            this.currentGraphics.setFont(font);
+            currentGraphics.setFont(font);
             return true;
         } else {
             return false;
@@ -157,61 +148,56 @@ public class Java2DGraphicsState {
 
     /** @return the current java.awt.Font */
     public java.awt.Font getFont() {
-        return this.currentGraphics.getFont();
+        return currentGraphics.getFont();
     }
 
     /**
      * Sets the current Stroke. The line width should be set with
      * updateLineWidth() before calling this method
      *
-     * @param width
-     *            the line width
-     * @param style
-     *            the constant for the style of the line as an int
+     * @param width the line width
+     * @param style the constant for the style of the line as an int
      * @return true if the new Stroke changes the current Stroke
      */
-    public boolean updateStroke(final float width, final int style) {
+    public boolean updateStroke(float width, int style) {
 
         boolean update = false;
 
         // only update if necessary
-        if (width != this.currentStrokeWidth
-                || style != this.currentStrokeStyle) {
+        if ((width != currentStrokeWidth) || (style != currentStrokeStyle)) {
 
             update = true;
 
             switch (style) {
             case Constants.EN_DOTTED:
 
-                this.currentStroke = new BasicStroke(width,
-                        BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0f,
-                        new float[] { 0, 2 * width }, width);
-                this.currentGraphics.setStroke(this.currentStroke);
+                currentStroke = new BasicStroke(width, BasicStroke.CAP_ROUND,
+                        BasicStroke.JOIN_BEVEL, 0f, new float[] {0, 2 * width}, width);
+                currentGraphics.setStroke(currentStroke);
 
-                this.currentStrokeWidth = width;
-                this.currentStrokeStyle = style;
+                currentStrokeWidth = width;
+                currentStrokeStyle = style;
 
                 break;
 
             case Constants.EN_DASHED:
 
-                this.currentStroke = new BasicStroke(width,
-                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0f,
-                        new float[] { 8f, 2f }, 0f);
-                this.currentGraphics.setStroke(this.currentStroke);
+                currentStroke = new BasicStroke(width, BasicStroke.CAP_BUTT,
+                        BasicStroke.JOIN_BEVEL, 0f, new float[] {8f, 2f}, 0f);
+                currentGraphics.setStroke(currentStroke);
 
-                this.currentStrokeWidth = width;
-                this.currentStrokeStyle = style;
+                currentStrokeWidth = width;
+                currentStrokeStyle = style;
 
                 break;
 
             default: // EN_SOLID:
 
-                this.currentStroke = new BasicStroke(width);
-                this.currentGraphics.setStroke(this.currentStroke);
+                currentStroke = new BasicStroke(width);
+                currentGraphics.setStroke(currentStroke);
 
-                this.currentStrokeWidth = width;
-                this.currentStrokeStyle = style;
+                currentStrokeWidth = width;
+                currentStrokeStyle = style;
 
                 break;
             }
@@ -222,24 +208,29 @@ public class Java2DGraphicsState {
 
     /** @return the currently active Stroke */
     public BasicStroke getStroke() {
-        return (BasicStroke) this.currentGraphics.getStroke();
+        return (BasicStroke) currentGraphics.getStroke();
     }
 
     /**
      * Set the current paint. This checks if the paint will change and then sets
      * the current paint.
      *
-     * @param p
-     *            the new paint
+     * @param p the new paint
      * @return true if the new paint changes the current paint
      */
-    public boolean updatePaint(final Paint p) {
-        if (getGraph().getPaint() == null) {
+    public boolean updatePaint(Paint p) {
+        Paint currentPaint = getGraph().getPaint();
+        if (currentPaint == null) {
             if (p != null) {
                 getGraph().setPaint(p);
                 return true;
             }
-        } else if (!p.equals(getGraph().getPaint())) {
+        } else if (p instanceof Color && currentPaint instanceof Color) {
+            if (!ColorUtil.isSameColor((Color)p, (Color)currentPaint)) {
+                getGraph().setPaint(p);
+                return true;
+            }
+        } else if (!p.equals(currentPaint)) {
             getGraph().setPaint(p);
             return true;
         }
@@ -250,13 +241,12 @@ public class Java2DGraphicsState {
      * Set the current clip. This either sets a new clip or sets the clip to the
      * intersect of the old clip and the new clip.
      *
-     * @param cl
-     *            the new clip in the current state
+     * @param cl the new clip in the current state
      * @return true if the clip shape needed to be updated
      */
-    public boolean updateClip(final Shape cl) {
+    public boolean updateClip(Shape cl) {
         if (getGraph().getClip() != null) {
-            final Area newClip = new Area(getGraph().getClip());
+            Area newClip = new Area(getGraph().getClip());
             newClip.intersect(new Area(cl));
             getGraph().setClip(new GeneralPath(newClip));
         } else {
@@ -268,13 +258,11 @@ public class Java2DGraphicsState {
     /**
      * Composes an AffineTransform object with the Transform in this Graphics2D
      * according to the rule last-specified-first-applied.
-     * 
      * @see java.awt.Graphics2D#transform(AffineTransform)
      *
-     * @param tf
-     *            the transform to concatenate to the current level transform
+     * @param tf the transform to concatenate to the current level transform
      */
-    public void transform(final AffineTransform tf) {
+    public void transform(AffineTransform tf) {
         if (!tf.isIdentity()) {
             getGraph().transform(tf);
         }
@@ -293,10 +281,9 @@ public class Java2DGraphicsState {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        final String s = "Java2DGraphicsState "
-                + this.currentGraphics.toString() + ", Stroke (width: "
-                + this.currentStrokeWidth + " style: "
-                + this.currentStrokeStyle + "), " + getTransform();
+        String s = "Java2DGraphicsState " + currentGraphics.toString()
+                + ", Stroke (width: " + currentStrokeWidth + " style: "
+                + currentStrokeStyle + "), " + getTransform();
         return s;
     }
 

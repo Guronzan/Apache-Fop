@@ -15,96 +15,104 @@
  * limitations under the License.
  */
 
-/* $Id: TTFDirTabEntry.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TTFDirTabEntry.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.fonts.truetype;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+
 
 /**
  * This class represents an entry to a TrueType font's Dir Tab.
  */
-class TTFDirTabEntry {
+public class TTFDirTabEntry {
 
-    private final byte[] tag = new byte[4];
+    private byte[] tag = new byte[4];
     private int checksum;
     private long offset;
     private long length;
 
+    public TTFDirTabEntry() {
+    }
+
+    public TTFDirTabEntry(long offset, long length) {
+        this.offset = offset;
+        this.length = length;
+    }
+
     /**
-     * Read Dir Tab, return tag name
+     * Read Dir Tab.
+     * @param in font file reader
+     * @return tag name
+     * @throws IOException upon I/O exception
      */
-    public String read(final FontFileReader in) throws IOException {
-        this.tag[0] = in.readTTFByte();
-        this.tag[1] = in.readTTFByte();
-        this.tag[2] = in.readTTFByte();
-        this.tag[3] = in.readTTFByte();
+    public String read(FontFileReader in) throws IOException {
+        tag[0] = in.readTTFByte();
+        tag[1] = in.readTTFByte();
+        tag[2] = in.readTTFByte();
+        tag[3] = in.readTTFByte();
 
-        in.skip(4); // Skip checksum
+        in.skip(4);    // Skip checksum
 
-        this.offset = in.readTTFULong();
-        this.length = in.readTTFULong();
-        final String tagStr = new String(this.tag, "ISO-8859-1");
+        offset = in.readTTFULong();
+        length = in.readTTFULong();
+        String tagStr = new String(tag, "ISO-8859-1");
 
         return tagStr;
     }
 
+
     @Override
     public String toString() {
-        return "Read dir tab [" + this.tag[0] + " " + this.tag[1] + " "
-                + this.tag[2] + " " + this.tag[3] + "]" + " offset: "
-                + this.offset + " length: " + this.length + " name: "
-                + Arrays.toString(this.tag);
+        return "Read dir tab ["
+            + tag[0] + " " + tag[1] + " " + tag[2] + " " + tag[3] + "]"
+            + " offset: " + offset
+            + " length: " + length
+            + " name: " + tag;
     }
 
     /**
      * Returns the checksum.
-     *
      * @return int
      */
     public int getChecksum() {
-        return this.checksum;
+        return checksum;
     }
 
     /**
      * Returns the length.
-     *
      * @return long
      */
     public long getLength() {
-        return this.length;
+        return length;
     }
 
     /**
      * Returns the offset.
-     *
      * @return long
      */
     public long getOffset() {
-        return this.offset;
+        return offset;
     }
 
     /**
      * Returns the tag bytes.
-     *
      * @return byte[]
      */
     public byte[] getTag() {
-        return this.tag;
+        return tag;
     }
 
     /**
      * Returns the tag bytes.
-     *
      * @return byte[]
      */
     public String getTagString() {
         try {
-            return new String(this.tag, "ISO-8859-1");
-        } catch (final UnsupportedEncodingException e) {
-            return toString(); // Should never happen.
+            return new String(tag, "ISO-8859-1");
+        } catch (UnsupportedEncodingException e) {
+            return this.toString(); // Should never happen.
         }
     }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfBefore.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfBefore.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -31,25 +31,23 @@ import java.io.Writer;
 
 /** The opposite of RtfAfter */
 public class RtfBefore extends RtfAfterBeforeBase {
-    /** RtfBefore attributes */
+    /**RtfBefore attributes*/
     public static final String HEADER = "header";
 
     /** String array of attribute names */
-    public static final String[] HEADER_ATTR = new String[] { HEADER };
+    public static final String[] HEADER_ATTR = new String[]{
+        HEADER
+    };
 
-    RtfBefore(final RtfSection parent, final Writer w, final RtfAttributes attrs)
-            throws IOException {
+    RtfBefore(RtfSection parent, Writer w, RtfAttributes attrs) throws IOException {
         super(parent, w, attrs);
     }
 
     /**
      * Write the attributes for this element
-     * 
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    @Override
     protected void writeMyAttributes() throws IOException {
-        writeAttributes(this.attrib, HEADER_ATTR);
+        writeAttributes(attrib, HEADER_ATTR);
     }
 }

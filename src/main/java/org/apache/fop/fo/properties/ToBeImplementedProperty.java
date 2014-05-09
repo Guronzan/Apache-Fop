@@ -15,48 +15,70 @@
  * limitations under the License.
  */
 
-/* $Id: ToBeImplementedProperty.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ToBeImplementedProperty.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
 
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 
+/**
+ * A special property for representing an as yet unimplemented property.
+ */
 public class ToBeImplementedProperty extends Property {
 
+    /**
+     * A to be implemented property maker instance.
+     */
     public static class Maker extends PropertyMaker {
 
-        public Maker(final int propId) {
+        /**
+         * Instantiate a to be implemented property maker instance.
+         * @param propId a property id
+         */
+        public Maker(int propId) {
             super(propId);
         }
 
         @Override
-        public Property convertProperty(final Property p,
-                final PropertyList propertyList, final FObj fo) {
+        public Property convertProperty(Property p,
+                                        PropertyList propertyList, FObj fo) {
             if (p instanceof ToBeImplementedProperty) {
                 return p;
             }
 
-            final ToBeImplementedProperty val = new ToBeImplementedProperty(
-                    getPropId());
+            ToBeImplementedProperty val = new ToBeImplementedProperty(getPropId());
             return val;
         }
     }
 
     /**
      * Constructor
-     * 
-     * @param propId
-     *            id of Property
+     * @param propId id of Property
      */
-    public ToBeImplementedProperty(final int propId) {
+    public ToBeImplementedProperty(int propId) {
 
-        // XXX: (mjg@recalldesign.com) This is a bit of a kluge, perhaps an
-        // UnimplementedPropertyException or something similar should
-        // get thrown here instead.
+        //XXX: (mjg@recalldesign.com) This is a bit of a kluge, perhaps an
+        //UnimplementedPropertyException or something similar should
+        //get thrown here instead.
 
-        // Log log = Hierarchy.getDefaultHierarchy().getLoggerFor("fop");
-        // log.warn("property - \"" + propName
-        // + "\" is not implemented yet.");
+//         Log log = Hierarchy.getDefaultHierarchy().getLoggerFor("fop");
+//         log.warn("property - \"" + propName
+//                                + "\" is not implemented yet.");
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return true;
+        /*
+         * Since a PropertyCache is not used here, returning true helps the PropertyCache when a non
+         * implemented property is part of an implemented one.
+         */
     }
 }
+

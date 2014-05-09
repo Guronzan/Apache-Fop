@@ -15,90 +15,85 @@
  * limitations under the License.
  */
 
-/* $Id: Footnote.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Footnote.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.flow;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_footnote">
  * <code>fo:footnote</code></a> object.
  */
-public class Footnote extends FObj {
-    // The value of properties relevant for fo:footnote (commented out for
-    // performance).
-    // private CommonAccessibility commonAccessibility;
-    // End of property values
+public class Footnote extends FObj implements CommonAccessibilityHolder {
+
+    private CommonAccessibility commonAccessibility;
 
     private Inline footnoteCitation = null;
     private FootnoteBody footnoteBody;
 
     /**
-     * Create a Footnote instance that is a child of the given {@link FONode}
+     * Create a Footnote instance that is a child of the
+     * given {@link FONode}
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public Footnote(final FONode parent) {
+    public Footnote(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) {
-        // No active properties -> do nothing.
+    public void bind(PropertyList pList) throws FOPException {
+        commonAccessibility = CommonAccessibility.getInstance(pList);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void startOfNode() {
+    protected void startOfNode() throws FOPException {
         getFOEventHandler().startFootnote(this);
     }
 
     /**
      * Make sure content model satisfied, if so then tell the
-     * {@link org.apache.fop.fo.FOEventHandler} that we are at the end of the
-     * footnote.
+     * {@link org.apache.fop.fo.FOEventHandler} that we are at the end of the footnote.
      *
      * {@inheritDoc}
      */
-    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
-        if (this.footnoteCitation == null || this.footnoteBody == null) {
+        if (footnoteCitation == null || footnoteBody == null) {
             missingChildElementError("(inline,footnote-body)");
         }
         getFOEventHandler().endFootnote(this);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: (inline,footnote-body)
-     *
-     * @todo implement additional constraint: A fo:footnote is not permitted to
-     *       have a fo:float, fo:footnote, or fo:marker as a descendant.
-     * @todo implement additional constraint: A fo:footnote is not permitted to
-     *       have as a descendant a fo:block-container that generates an
-     *       absolutely positioned area.
+     * {@inheritDoc}
+     * <br>XSL Content Model: (inline,footnote-body)
+     * TODO implement additional constraint: A fo:footnote is not permitted
+     *      to have a fo:float, fo:footnote, or fo:marker as a descendant.
+     * TODO implement additional constraint: A fo:footnote is not
+     *      permitted to have as a descendant a fo:block-container that
+     *      generates an absolutely positioned area.
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("inline")) {
-                if (this.footnoteCitation != null) {
+                if (footnoteCitation != null) {
                     tooManyNodesError(loc, "fo:inline");
                 }
             } else if (localName.equals("footnote-body")) {
-                if (this.footnoteCitation == null) {
+                if (footnoteCitation == null) {
                     nodesOutOfOrderError(loc, "fo:inline", "fo:footnote-body");
-                } else if (this.footnoteBody != null) {
+                } else if (footnoteBody != null) {
                     tooManyNodesError(loc, "fo:footnote-body");
                 }
             } else {
@@ -108,13 +103,17 @@ public class Footnote extends FObj {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void addChildNode(final FONode child) {
+    public void addChildNode(FONode child) {
         if (child.getNameId() == FO_INLINE) {
-            this.footnoteCitation = (Inline) child;
+            footnoteCitation = (Inline) child;
         } else if (child.getNameId() == FO_FOOTNOTE_BODY) {
-            this.footnoteBody = (FootnoteBody) child;
+            footnoteBody = (FootnoteBody) child;
         }
+    }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /**
@@ -123,7 +122,7 @@ public class Footnote extends FObj {
      * @return the {@link Inline} child
      */
     public Inline getFootnoteCitation() {
-        return this.footnoteCitation;
+        return footnoteCitation;
     }
 
     /**
@@ -132,22 +131,20 @@ public class Footnote extends FObj {
      * @return the {@link FootnoteBody} child
      */
     public FootnoteBody getFootnoteBody() {
-        return this.footnoteBody;
+        return footnoteBody;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "footnote";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_FOOTNOTE}
      */
-    @Override
     public int getNameId() {
         return FO_FOOTNOTE;
     }
 }
+

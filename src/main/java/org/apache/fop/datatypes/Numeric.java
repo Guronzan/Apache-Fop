@@ -15,49 +15,44 @@
  * limitations under the License.
  */
 
-/* $Id: Numeric.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Numeric.java 992386 2010-09-03 17:26:28Z vhennebert $ */
 
 package org.apache.fop.datatypes;
 
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * An interface for classes that can participate in numeric operations. All the
- * numeric operation (+, -, *, ...) are expressed in terms of this Numeric
- * interface. Numerics has a value (getNumericValue) and a dimension
- * (getDimension). Numerics can be either absolute or relative. Relative
- * numerics must be resolved against base value before the value can be used.
+ * An interface for classes that can participate in numeric operations.
+ * All the numeric operation (+, -, *, ...) are expressed in terms of
+ * this Numeric interface.
+ * Numerics has a value (getNumericValue) and a dimension (getDimension).
+ * Numerics can be either absolute or relative. Relative numerics
+ * must be resolved against base value before the value can be used.
  * <p>
- * To support relative numerics internally in the expresion parser and during
- * evaulation one additional methods exists: isAbsolute() which return true for
- * absolute numerics and false for relative numerics.
+ * To support relative numerics internally in the expression parser and
+ * during evaluation one additional methods exists: isAbsolute() which
+ * return true for absolute numerics and false for relative numerics.
  */
 public interface Numeric {
     /**
      * Return the value of this Numeric
-     * 
      * @return the computed value.
-     * @throws PropertyException
+     * @throws PropertyException if a property exception occurs
      */
     double getNumericValue() throws PropertyException;
 
     /**
      * Return the value of this Numeric
-     * 
-     * @param context
-     *            The context for the length calculation (for percentage based
-     *            lengths)
+     * @param context The context for the length calculation (for percentage based lengths)
      * @return the computed value.
-     * @throws PropertyException
+     * @throws PropertyException if a property exception occurs
      */
-    double getNumericValue(final PercentBaseContext context)
-            throws PropertyException;
+    double getNumericValue(PercentBaseContext context) throws PropertyException;
 
     /**
-     * Return the dimension of this numeric. Plain numbers has a dimension of 0
-     * and length has a dimension of 1. Other dimension can occur as a result of
-     * multiplications and divisions.
-     * 
+     * Return the dimension of this numeric. Plain numbers has a dimension of
+     * 0 and length has a dimension of 1. Other dimension can occur as a result
+     * of multiplications and divisions.
      * @return the dimension.
      */
     int getDimension();
@@ -65,40 +60,36 @@ public interface Numeric {
     /**
      * Return true if the numeric is an absolute value. Relative values are
      * percentages and table-column-units. All other numerics are absolute.
-     * 
      * @return true when the numeric is absolute.
      */
     boolean isAbsolute();
 
     /**
      * Returns the value of this numeric as an int.
-     * 
      * @return the value as an integer.
      */
-    public int getValue();
+    int getValue();
 
     /**
      * Returns the value of this numeric as an int.
-     * 
-     * @param context
-     *            the context for the length calculation (for percentage based
-     *            lengths)
+     * @param context the context for the length calculation (for percentage based lengths)
      * @return the value as an integer.
      */
-    public int getValue(final PercentBaseContext context);
+    int getValue(PercentBaseContext context);
 
     /**
-     * Return the resolved value. This method will becalled during evaluation of
-     * the expression tree and relative numerics can then return a resolved
-     * absolute Numeric. Absolute numerics can just return themself.
+     * Return the resolved value. This method will be called during evaluation
+     * of the expression tree and relative numerics can then return a
+     * resolved absolute Numeric. Absolute numerics can just return themselves.
      *
      * @return A resolved value.
      * @throws PropertyException
      */
-    // Numeric getResolved() throws PropertyException;
+    //Numeric getResolved() throws PropertyException;
 
     /**
      * Return the enum value that is stored in this numeric.
+     * @return the enum value
      */
-    public int getEnum();
+    int getEnum();
 }

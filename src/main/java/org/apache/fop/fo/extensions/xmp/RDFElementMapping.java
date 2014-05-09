@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-/* $Id: RDFElementMapping.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RDFElementMapping.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.xmp;
 
 import java.util.HashMap;
 
+import org.w3c.dom.DOMImplementation;
+
+import org.apache.xmlgraphics.xmp.XMPConstants;
+
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
-import org.apache.xmlgraphics.xmp.XMPConstants;
-import org.w3c.dom.DOMImplementation;
 
 /**
  * Setup the element mapping for XMP metadata.
@@ -33,27 +35,24 @@ public class RDFElementMapping extends ElementMapping {
 
     /** Main constructor. */
     public RDFElementMapping() {
-        this.namespaceURI = XMPConstants.RDF_NAMESPACE;
+        namespaceURI = XMPConstants.RDF_NAMESPACE;
     }
 
     /** {@inheritDoc} */
-    @Override
     public DOMImplementation getDOMImplementation() {
         return getDefaultDOMImplementation();
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void initialize() {
-        if (this.foObjs == null) {
-            this.foObjs = new HashMap<>();
-            this.foObjs.put("RDF", new RDFElementMaker());
+        if (foObjs == null) {
+            foObjs = new HashMap<String, Maker>();
+            foObjs.put("RDF", new RDFElementMaker());
         }
     }
 
     static class RDFElementMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new RDFElement(parent);
         }
     }

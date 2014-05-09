@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfPageNumberContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfPageNumberContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -36,8 +36,7 @@ public interface IRtfPageNumberContainer {
     /**
      *
      * @return new RtfPageNumber
-     * @throws IOException
-     *             for I/O problems.
+     * @throws IOException for I/O problems.
      */
     RtfPageNumber newPageNumber() throws IOException;
 }

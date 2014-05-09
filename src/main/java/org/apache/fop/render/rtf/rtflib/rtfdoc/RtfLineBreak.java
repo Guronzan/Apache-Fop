@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfLineBreak.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfLineBreak.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,34 +30,26 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * "Model" of an RTF line break
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Model of an RTF line break.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public class RtfLineBreak extends RtfElement {
-    /**
-     * Create an RTF paragraph as a child of given container with default
-     * attributes
-     */
-    RtfLineBreak(final IRtfTextContainer parent, final Writer w)
-            throws IOException {
-        super((RtfContainer) parent, w);
+    /** Create an RTF paragraph as a child of given container with default attributes */
+    RtfLineBreak(IRtfTextContainer parent, Writer w) throws IOException {
+        super((RtfContainer)parent, w);
     }
 
     /**
      * Overridden to write our attributes before our content
-     * 
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    @Override
     protected void writeRtfContent() throws IOException {
         writeControlWord("line");
     }
 
     /** @return true if this element would generate no "useful" RTF content */
-    @Override
     public boolean isEmpty() {
         return false;
     }

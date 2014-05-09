@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ITableColumnsInfo.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ITableColumnsInfo.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -27,28 +27,23 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 
 /**
- * Used to get information about tables, for example when handling nested tables
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Used to get information about tables, for example when handling nested tables.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public interface ITableColumnsInfo {
     /** value for invalid column width */
     float INVALID_COLUMN_WIDTH = 200f;
 
-    /**
-     * reset the column iteration index, meant to be called when creating a new
-     * row
-     */
+    /** reset the column iteration index, meant to be called when creating a new row */
     void selectFirstColumn();
 
     /** increment the column iteration index */
     void selectNextColumn();
 
-    /**
-     * get current column width according to column iteration index
-     * 
-     * @return INVALID_COLUMN_WIDTH if we cannot find the value
+    /** get current column width according to column iteration index
+     *  @return INVALID_COLUMN_WIDTH if we cannot find the value
      */
     float getColumnWidth();
 

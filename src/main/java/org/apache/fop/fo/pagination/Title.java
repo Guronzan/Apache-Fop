@@ -20,10 +20,11 @@
 package org.apache.fop.fo.pagination;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.flow.InlineLevel;
-import org.xml.sax.Locator;
 
 /**
  * Class modeling the <a href="http://www.w3.org/TR/xsl/#fo_title">
@@ -35,20 +36,18 @@ public class Title extends InlineLevel {
     // End of property values
 
     /**
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      */
-    public Title(final FONode parent) {
+    public Title(FONode parent) {
         super(parent);
     }
 
     /**
-     * {@inheritDoc} String, String) <br>
-     * XSL/FOP: (#PCDATA|%inline;)*
+     * {@inheritDoc} String, String)
+     * <br>XSL/FOP: (#PCDATA|%inline;)*
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+        throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (!isInlineItem(nsURI, localName)) {
                 invalidChildError(loc, nsURI, localName);
@@ -57,18 +56,16 @@ public class Title extends InlineLevel {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "title";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_TITLE}
      */
-    @Override
     public int getNameId() {
         return FO_TITLE;
     }
 }
+

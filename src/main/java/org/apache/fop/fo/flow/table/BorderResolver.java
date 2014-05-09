@@ -22,29 +22,25 @@ package org.apache.fop.fo.flow.table;
 import java.util.List;
 
 /**
- * A class dedicated to the resolution of borders in tables. It receives a
- * series of events as the table is parsed and performs border resolution
- * accordingly.
+ * A class dedicated to the resolution of borders in tables. It receives a series of
+ * events as the table is parsed and performs border resolution accordingly.
  */
 interface BorderResolver {
 
     /**
      * Receives notification of the end of a row.
      *
-     * @param row
-     *            the row that has just been finished
-     * @param container
-     *            the FO element holding the given row
+     * @param row the row that has just been finished
+     * @param container the FO element holding the given row
      */
-    void endRow(final List<GridUnit> row, final TableCellContainer container);
+    void endRow(List/*<GridUnit>*/ row, TableCellContainer container);
 
     /**
      * Receives notification of the start of a table-header/footer/body.
      *
-     * @param part
-     *            the part that has started
+     * @param part the part that has started
      */
-    void startPart(final TablePart part);
+    void startPart(TablePart part);
 
     /**
      * Receives notification of the end of a table-header/footer/body.

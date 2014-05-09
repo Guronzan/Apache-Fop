@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: StructuredData.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: StructuredData.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp;
 
 /**
- * An AFP object which is able to know its own data length prior to
- * writeToStream()
+ * An AFP object which is able to know its own data length prior to writeToStream()
  */
-public interface StructuredData extends Streamable {
+public interface StructuredData {
 
     /**
      * Returns the data length of this structured field

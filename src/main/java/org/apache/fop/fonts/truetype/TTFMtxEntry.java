@@ -30,7 +30,7 @@ class TTFMtxEntry {
     private int lsb;
     private String name = "";
     private int index;
-    private final List<Integer> unicodeIndex = new java.util.ArrayList<>();
+    private List unicodeIndex = new java.util.ArrayList();
     private int[] boundingBox = new int[4];
     private long offset;
     private byte found = 0;
@@ -38,69 +38,61 @@ class TTFMtxEntry {
     /**
      * Returns a String representation of this object.
      *
-     * @param t
-     *            TTFFile to use for unit conversion
+     * @param t TTFFile to use for unit conversion
      * @return String String representation
      */
-    public String toString(final TTFFile t) {
-        return "Glyph " + this.name + " index: " + getIndexAsString()
-                + " bbox [" + t.convertTTFUnit2PDFUnit(this.boundingBox[0])
-                + " " + t.convertTTFUnit2PDFUnit(this.boundingBox[1]) + " "
-                + t.convertTTFUnit2PDFUnit(this.boundingBox[2]) + " "
-                + t.convertTTFUnit2PDFUnit(this.boundingBox[3]) + "] wx: "
-                + t.convertTTFUnit2PDFUnit(this.wx);
+    public String toString(TTFFile t) {
+        return "Glyph " + name + " index: " + getIndexAsString() + " bbox ["
+             + t.convertTTFUnit2PDFUnit(boundingBox[0]) + " "
+             + t.convertTTFUnit2PDFUnit(boundingBox[1]) + " "
+             + t.convertTTFUnit2PDFUnit(boundingBox[2]) + " "
+             + t.convertTTFUnit2PDFUnit(boundingBox[3]) + "] wx: "
+             + t.convertTTFUnit2PDFUnit(wx);
     }
 
     /**
      * Returns the boundingBox.
-     *
      * @return int[]
      */
     public int[] getBoundingBox() {
-        return this.boundingBox;
+        return boundingBox;
     }
 
     /**
      * Sets the boundingBox.
-     *
-     * @param boundingBox
-     *            The boundingBox to set
+     * @param boundingBox The boundingBox to set
      */
-    public void setBoundingBox(final int[] boundingBox) {
+    public void setBoundingBox(int[] boundingBox) {
         this.boundingBox = boundingBox;
     }
 
     /**
      * Returns the found.
-     *
      * @return byte
      */
     public byte getFound() {
-        return this.found;
+        return found;
     }
 
     /**
      * Returns the index.
-     *
      * @return int
      */
     public int getIndex() {
-        return this.index;
+        return index;
     }
 
     /**
      * Determines whether this index represents a reserved character.
-     *
      * @return True if it is reserved
      */
     public boolean isIndexReserved() {
-        return getIndex() >= 32768 && getIndex() <= 65535;
+        return (getIndex() >= 32768) && (getIndex() <= 65535);
     }
 
     /**
-     * Returns a String representation of the index taking into account if the
-     * index is in the reserved range.
-     *
+     * Returns a String representation of the index taking into account if
+     * the index is in the reserved range.
      * @return index as String
      */
     public String getIndexAsString() {
@@ -113,107 +105,91 @@ class TTFMtxEntry {
 
     /**
      * Returns the lsb.
-     *
      * @return int
      */
     public int getLsb() {
-        return this.lsb;
+        return lsb;
     }
 
     /**
      * Returns the name.
-     *
      * @return String
      */
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
      * Returns the offset.
-     *
      * @return long
      */
     public long getOffset() {
-        return this.offset;
+        return offset;
     }
 
     /**
      * Returns the unicodeIndex.
-     *
      * @return List
      */
-    public List<Integer> getUnicodeIndex() {
-        return this.unicodeIndex;
+    public List getUnicodeIndex() {
+        return unicodeIndex;
     }
 
     /**
      * Returns the wx.
-     *
      * @return int
      */
     public int getWx() {
-        return this.wx;
+        return wx;
     }
 
     /**
      * Sets the found.
-     *
-     * @param found
-     *            The found to set
+     * @param found The found to set
      */
-    public void setFound(final byte found) {
+    public void setFound(byte found) {
         this.found = found;
     }
 
     /**
      * Sets the index.
-     *
-     * @param index
-     *            The index to set
+     * @param index The index to set
      */
-    public void setIndex(final int index) {
+    public void setIndex(int index) {
         this.index = index;
     }
 
     /**
      * Sets the lsb.
-     *
-     * @param lsb
-     *            The lsb to set
+     * @param lsb The lsb to set
      */
-    public void setLsb(final int lsb) {
+    public void setLsb(int lsb) {
         this.lsb = lsb;
     }
 
     /**
      * Sets the name.
-     *
-     * @param name
-     *            The name to set
+     * @param name The name to set
      */
-    public void setName(final String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
     /**
      * Sets the offset.
-     *
-     * @param offset
-     *            The offset to set
+     * @param offset The offset to set
      */
-    public void setOffset(final long offset) {
+    public void setOffset(long offset) {
         this.offset = offset;
     }
 
     /**
      * Sets the wx.
-     *
-     * @param wx
-     *            The wx to set
+     * @param wx The wx to set
      */
-    public void setWx(final int wx) {
+    public void setWx(int wx) {
         this.wx = wx;
     }
+
 
 }

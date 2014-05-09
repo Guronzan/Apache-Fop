@@ -25,23 +25,22 @@ import java.util.List;
 /**
  * class representing an object which is a list of annotations.
  *
- * This PDF object is a list of references to /Annot objects. So far we are
- * dealing only with links.
+ * This PDF object is a list of references to /Annot objects. So far we
+ * are dealing only with links.
  */
 public class PDFAnnotList extends PDFObject {
 
     /**
      * the /Annot objects
      */
-    private final List links = new java.util.Vector();
+    private List links = new java.util.Vector();
 
     /**
      * add an /Annot object of /Subtype /Link.
      *
-     * @param link
-     *            the PDFLink to add.
+     * @param link the PDFLink to add.
      */
-    public void addAnnot(final PDFObject link) {
+    public void addAnnot(PDFObject link) {
         this.links.add(link);
     }
 
@@ -57,12 +56,11 @@ public class PDFAnnotList extends PDFObject {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String toPDFString() {
-        final StringBuffer p = new StringBuffer(128);
+        StringBuffer p = new StringBuffer(128);
         p.append("[\n");
         for (int i = 0; i < getCount(); i++) {
-            p.append(((PDFObject) this.links.get(i)).referencePDF());
+            p.append(((PDFObject)links.get(i)).referencePDF());
             p.append("\n");
         }
         p.append("]");
@@ -70,6 +68,9 @@ public class PDFAnnotList extends PDFObject {
     }
 
     /*
-     * example [ 19 0 R ]
+     * example
+     * [
+     * 19 0 R
+     * ]
      */
 }

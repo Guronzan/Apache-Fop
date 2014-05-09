@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfParagraphKeepTogetherContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfParagraphKeepTogetherContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -35,10 +35,8 @@ public interface IRtfParagraphKeepTogetherContainer {
 
     /**
      * Close current paragraph, if any, and start a new one
-     * 
      * @return new paragraph object (with keep together)
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
     RtfParagraphKeepTogether newParagraphKeepTogether() throws IOException;
 }

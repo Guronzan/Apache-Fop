@@ -19,87 +19,77 @@
 
 package org.apache.fop.fo;
 
-import org.apache.fop.apps.FOPException;
 import org.xml.sax.Locator;
+
+import org.apache.fop.apps.FOPException;
 
 /**
  * Class for handling generic XML from a namespace not recognized by FOP
  */
 public class UnknownXMLObj extends XMLObj {
-    private final String namespace;
+    private String namespace;
 
     /**
      * Inner class for an UnknownXMLObj Maker
      */
     public static class Maker extends ElementMapping.Maker {
-        private final String space;
+        private String space;
 
         /**
          * Construct the Maker
-         *
-         * @param ns
-         *            the namespace for this Maker
+         * @param ns the namespace for this Maker
          */
-        public Maker(final String ns) {
-            this.space = ns;
+        public Maker(String ns) {
+            space = ns;
         }
 
         /**
          * Make an instance
-         *
-         * @param parent
-         *            FONode that is the parent of the object
+         * @param parent FONode that is the parent of the object
          * @return the created UnknownXMLObj
          */
-        @Override
-        public FONode make(final FONode parent) {
-            return new UnknownXMLObj(parent, this.space);
+        public FONode make(FONode parent) {
+            return new UnknownXMLObj(parent, space);
         }
     }
 
     /**
      * Constructs an unknown xml object (called by Maker).
      *
-     * @param parent
-     *            the parent formatting object
-     * @param space
-     *            the namespace for this object
+     * @param parent the parent formatting object
+     * @param space the namespace for this object
      */
-    protected UnknownXMLObj(final FONode parent, final String space) {
+    protected UnknownXMLObj(FONode parent, String space) {
         super(parent);
         this.namespace = space;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNamespaceURI() {
         return this.namespace;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNormalNamespacePrefix() {
-        return null; // We don't know that in this case.
+        return null; //We don't know that in this case.
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void addChildNode(final FONode child) {
-        if (this.doc == null) {
+    protected void addChildNode(FONode child) {
+        if (doc == null) {
             createBasicDocument();
         }
         super.addChildNode(child);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void characters(final char[] data, final int start,
-            final int length, final PropertyList pList, final Locator locator)
-                    throws FOPException {
-        if (this.doc == null) {
+    protected void characters(char[] data, int start, int length,
+                                 PropertyList pList, Locator locator) throws FOPException {
+        if (doc == null) {
             createBasicDocument();
         }
         super.characters(data, start, length, pList, locator);
     }
 
 }
+

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfGenerator.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfGenerator.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -27,28 +27,31 @@ import java.io.Writer;
  */
 public class RtfGenerator extends RtfElement {
 
-    /** Default constructor for the generator element. */
-    public RtfGenerator(final RtfHeader h, final Writer w) throws IOException {
+    /**
+     * Default constructor for the generator element.
+     * @param h a header
+     * @param w a writer
+     * @throws IOException if not caught
+     */
+    public RtfGenerator(RtfHeader h, Writer w) throws IOException {
         super(h, w);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     protected void writeRtfContent() throws IOException {
         newLine();
         writeGroupMark(true);
         writeStarControlWord("generator");
-        this.writer.write("Apache XML Graphics RTF Library");
-        this.writer.write(";");
+        writer.write("Apache XML Graphics RTF Library");
+        writer.write(";");
         writeGroupMark(false);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isEmpty() {
         return false;
     }

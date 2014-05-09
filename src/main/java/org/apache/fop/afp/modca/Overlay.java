@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Overlay.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: Overlay.java 1067109 2011-02-04 08:14:41Z jeremias $ */
 
 package org.apache.fop.afp.modca;
 
@@ -24,18 +24,19 @@ import java.io.OutputStream;
 
 import org.apache.fop.afp.Factory;
 
+
 /**
  * An overlay is a MO:DCA-P resource object.
  *
- * It may be stored in an external resource library or it may be carried in a
- * resource group. An overlay is similar to a page in that it defines its own
- * environment and carries the same data objects.
+ * It may be stored in an external resource library or it may be
+ * carried in a resource group. An overlay is similar to a page in
+ * that it defines its own environment and carries the same data objects.
  */
 public class Overlay extends PageObject {
 
     /**
-     * Construct a new overlay object for the specified name argument, the
-     * overlay name should be an 8 character identifier.
+     * Construct a new overlay object for the specified name argument, the overlay
+     * name should be an 8 character identifier.
      *
      * @param factory
      *            the resource manager of the page.
@@ -52,36 +53,32 @@ public class Overlay extends PageObject {
      * @param heightResolution
      *            the height resolution of the page.
      */
-    public Overlay(final Factory factory, final String name, final int width,
-            final int height, final int rotation, final int widthResolution,
-            final int heightResolution) {
-        super(factory, name, width, height, rotation, widthResolution,
-                heightResolution);
+    public Overlay(Factory factory,
+            String name, int width, int height, int rotation,
+            int widthResolution, int heightResolution) {
+        super(factory, name, width, height, rotation, widthResolution, heightResolution);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.OVERLAY);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
+    protected void writeContent(OutputStream os) throws IOException {
         super.writeContent(os);
 
         getActiveEnvironmentGroup().writeToStream(os);
 
-        writeObjects(this.tagLogicalElements, os);
-        writeObjects(this.objects, os);
+        writeObjects(objects, os);
     }
 
+
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.OVERLAY);
         os.write(data);
     }

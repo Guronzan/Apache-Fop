@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: NullCharIterator.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: NullCharIterator.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo;
 
@@ -28,6 +28,10 @@ public class NullCharIterator extends CharIterator {
 
     private static CharIterator instance;
 
+    /**
+     * Obtain the singleton instance of the null character iterator.
+     * @return the char iterator
+     */
     public static CharIterator getInstance() {
         if (instance == null) {
             instance = new NullCharIterator();
@@ -39,19 +43,18 @@ public class NullCharIterator extends CharIterator {
      * Constructor
      */
     public NullCharIterator() {
-        // nop
+        //nop
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean hasNext() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public char nextChar() throws NoSuchElementException {
         throw new NoSuchElementException();
     }
 
 }
+

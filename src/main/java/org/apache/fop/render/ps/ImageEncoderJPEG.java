@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageEncoderJPEG.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ImageEncoderJPEG.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.ps;
 
@@ -33,22 +33,18 @@ public class ImageEncoderJPEG implements ImageEncoder {
 
     /**
      * Main constructor
-     * 
-     * @param jpeg
-     *            the JPEG image
+     * @param jpeg the JPEG image
      */
-    public ImageEncoderJPEG(final ImageRawJPEG jpeg) {
+    public ImageEncoderJPEG(ImageRawJPEG jpeg) {
         this.jpeg = jpeg;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeTo(final OutputStream out) throws IOException {
-        this.jpeg.writeTo(out);
+    public void writeTo(OutputStream out) throws IOException {
+        jpeg.writeTo(out);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getImplicitFilter() {
         return "<< >> /DCTDecode";
     }

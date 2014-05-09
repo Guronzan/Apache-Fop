@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: MapImageObject.java 738453 2009-01-28 11:10:51Z jeremias $ */
+/* $Id: MapImageObject.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -26,27 +26,24 @@ import org.apache.fop.afp.modca.triplets.MappingOptionTriplet;
 import org.apache.fop.afp.util.BinaryUtils;
 
 /**
- * The Map Image Object (MIO) structured field specifies how an image data
- * object is mapped into its object area.
+ * The Map Image Object (MIO) structured field specifies how an image data object is
+ * mapped into its object area.
  */
 public class MapImageObject extends AbstractTripletStructuredObject {
 
     /**
      * Constructor for the Map Image Object.
-     * 
-     * @param mappingOption
-     *            the mapping option (see {@link MappingOptionTriplet}.*)
+     * @param mappingOption the mapping option (see {@link MappingOptionTriplet}.*)
      */
-    public MapImageObject(final byte mappingOption) {
+    public MapImageObject(byte mappingOption) {
         addTriplet(new MappingOptionTriplet(mappingOption));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[11];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[11];
         copySF(data, Type.MAP, Category.IMAGE);
-        final int tripletLen = getTripletDataLength();
+        int tripletLen = getTripletDataLength();
 
         byte[] len = BinaryUtils.convert(10 + tripletLen, 2);
         data[1] = len[0];

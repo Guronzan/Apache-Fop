@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsSetPatternSymbol.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsSetPatternSymbol.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -84,36 +84,33 @@ public class GraphicsSetPatternSymbol extends AbstractGraphicsDrawingOrder {
     /**
      * Main constructor
      *
-     * @param symb
-     *            the pattern symbol to use
+     * @param pattern the pattern symbol to use
      */
-    public GraphicsSetPatternSymbol(final byte pattern) {
+    public GraphicsSetPatternSymbol(byte pattern) {
         this.pattern = pattern;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[] { getOrderCode(), // GSPT order code
-                this.pattern };
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[] {
+            getOrderCode(), // GSPT order code
+            pattern
+        };
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return "GraphicsSetPatternSymbol(fill="
-                + (this.pattern == SOLID_FILL ? true : false) + ")";
+            + (pattern == SOLID_FILL ? true : false)  + ")";
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         return 0x28;
     }

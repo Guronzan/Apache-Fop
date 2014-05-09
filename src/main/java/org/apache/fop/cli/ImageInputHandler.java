@@ -21,7 +21,7 @@ package org.apache.fop.cli;
 
 import java.io.File;
 import java.io.StringReader;
-import java.util.List;
+import java.util.Vector;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -33,35 +33,26 @@ public class ImageInputHandler extends InputHandler {
 
     /**
      * Main constructor.
-     * 
-     * @param imagefile
-     *            the image file
-     * @param xsltfile
-     *            XSLT file (may be null in which case the default stylesheet is
-     *            used)
-     * @param params
-     *            List of command-line parameters (name, value, name, value,
-     *            ...) for XSL stylesheet, null if none
+     * @param imagefile the image file
+     * @param xsltfile XSLT file (may be null in which case the default stylesheet is used)
+     * @param params Vector of command-line parameters (name, value,
+     *      name, value, ...) for XSL stylesheet, null if none
      */
-    public ImageInputHandler(final File imagefile, final File xsltfile,
-            final List params) {
+    public ImageInputHandler(File imagefile, File xsltfile, Vector params) {
         super(imagefile, xsltfile, params);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected Source createMainSource() {
-        return new StreamSource(new StringReader("<image>"
-                + this.sourcefile.toURI().toASCIIString() + "</image>"));
+        return new StreamSource(new StringReader(
+                "<image>" + this.sourcefile.toURI().toASCIIString() + "</image>"));
     }
 
     /** {@inheritDoc} */
-    @Override
     protected Source createXSLTSource() {
         Source src = super.createXSLTSource();
         if (src == null) {
-            src = new StreamSource(getClass().getResource("image2fo.xsl")
-                    .toExternalForm());
+            src = new StreamSource(getClass().getResource("image2fo.xsl").toExternalForm());
         }
         return src;
     }

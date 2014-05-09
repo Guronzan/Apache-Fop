@@ -22,22 +22,19 @@ package org.apache.fop.area;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
 
 /**
- * This class wraps ExtensionAttachments which cannot be transported inside the
- * area tree but need to be handled in the AreaTreeHandler. These attachments
- * are schedules for processing before the first page-sequence, i.e. at the
- * start of the document.
+ * This class wraps ExtensionAttachments which cannot be transported inside the area tree but
+ * need to be handled in the AreaTreeHandler. These attachments are schedules for processing
+ * before the first page-sequence, i.e. at the start of the document.
  */
 public class OffDocumentExtensionAttachment implements OffDocumentItem {
 
-    private final ExtensionAttachment attachment;
+    private ExtensionAttachment attachment;
 
     /**
      * Main constructor
-     * 
-     * @param attachment
-     *            the extension attachment to wrap.
+     * @param attachment the extension attachment to wrap.
      */
-    public OffDocumentExtensionAttachment(final ExtensionAttachment attachment) {
+    public OffDocumentExtensionAttachment(ExtensionAttachment attachment) {
         this.attachment = attachment;
     }
 
@@ -47,15 +44,13 @@ public class OffDocumentExtensionAttachment implements OffDocumentItem {
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getWhenToProcess() {
         return OffDocumentItem.IMMEDIATELY;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getName() {
-        return this.attachment.getCategory();
+        return attachment.getCategory();
     }
 
 }

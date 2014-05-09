@@ -15,10 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractIFDocumentHandler.java 820672 2009-10-01 14:48:27Z jeremias $ */
+/* $Id: AbstractIFDocumentHandler.java 1296496 2012-03-02 22:19:46Z gadams $ */
 
 package org.apache.fop.render.intermediate;
 
+import java.util.Locale;
+
+import org.apache.fop.accessibility.DummyStructureTreeEventHandler;
+import org.apache.fop.accessibility.StructureTreeEventHandler;
 import org.apache.fop.apps.FOUserAgent;
 
 /**
@@ -35,20 +39,17 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setContext(final IFContext context) {
+    public void setContext(IFContext context) {
         this.ifContext = context;
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFContext getContext() {
         return this.ifContext;
     }
 
     /**
      * Returns the associated user agent.
-     *
      * @return the user agent
      */
     public FOUserAgent getUserAgent() {
@@ -56,17 +57,16 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public IFDocumentNavigationHandler getDocumentNavigationHandler() {
-        return null; // By default, this is not supported
+    public StructureTreeEventHandler getStructureTreeEventHandler() {
+        return DummyStructureTreeEventHandler.INSTANCE;
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
+    public IFDocumentNavigationHandler getDocumentNavigationHandler() {
+        return null; //By default, this is not supported
+    }
+
+    /** {@inheritDoc} */
     public void startDocument() throws IFException {
         if (getUserAgent() == null) {
             throw new IllegalStateException(
@@ -74,84 +74,47 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
+    public void setDocumentLocale(Locale locale) {
+    }
+
+    /** {@inheritDoc} */
     public void startDocumentHeader() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endDocumentHeader() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void startDocumentTrailer() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endDocumentTrailer() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void startPageHeader() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endPageHeader() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void startPageTrailer() throws IFException {
-        // nop
+        //nop
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void endPageTrailer() throws IFException {
-        // nop
+        //nop
     }
-
 }

@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: AFPResourceInfo.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: AFPResourceInfo.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp;
 
 import java.awt.Dimension;
+
 
 /**
  * The level at which a resource is to reside in the AFP output
@@ -27,15 +28,15 @@ import java.awt.Dimension;
 public class AFPResourceInfo {
 
     /** the general default resource level */
-    public static final AFPResourceLevel DEFAULT_LEVEL = new AFPResourceLevel(
-            AFPResourceLevel.PRINT_FILE);
+    public static final AFPResourceLevel DEFAULT_LEVEL
+        = new AFPResourceLevel(AFPResourceLevel.PRINT_FILE);
 
     /** the URI of this resource */
     private String uri = null;
 
     /**
-     * the image dimension in page coordinates (non-null only when page segments
-     * are generated because the cannot be scaled for painting).
+     * the image dimension in page coordinates (non-null only when page segments are
+     * generated because the cannot be scaled for painting).
      */
     private Dimension imageDimension = null;
 
@@ -51,10 +52,9 @@ public class AFPResourceInfo {
     /**
      * Sets the data object URI.
      *
-     * @param uri
-     *            the data object URI
+     * @param uri the data object URI
      */
-    public void setUri(final String uri) {
+    public void setUri(String uri) {
         this.uri = uri;
     }
 
@@ -64,26 +64,23 @@ public class AFPResourceInfo {
      * @return the URI of this data object
      */
     public String getUri() {
-        return this.uri;
+        return uri;
     }
 
     /**
-     * Sets an optional image dimension (in page coordinates). This is only used
-     * if a page segment is created for this resource as page segments cannot be
-     * rescaled for painting.
-     * 
-     * @param dim
-     *            the image dimension (in page coordinates)
+     * Sets an optional image dimension (in page coordinates). This is only used if
+     * a page segment is created for this resource as page segments cannot be rescaled
+     * for painting.
+     * @param dim the image dimension (in page coordinates)
      */
-    public void setImageDimension(final Dimension dim) {
+    public void setImageDimension(Dimension dim) {
         this.imageDimension = dim;
     }
 
     /**
-     * Returns an optional image dimension (in page coordinates). This is only
-     * used if a page segment is created for this resource as page segments
-     * cannot be rescaled for painting.
-     * 
+     * Returns an optional image dimension (in page coordinates). This is only used if
+     * a page segment is created for this resource as page segments cannot be rescaled
+     * for painting.
      * @return the image dimension (or null if not applicable)
      */
     public Dimension getImageDimension() {
@@ -93,10 +90,9 @@ public class AFPResourceInfo {
     /**
      * Sets the resource reference name
      *
-     * @param resourceName
-     *            the resource reference name
+     * @param resourceName the resource reference name
      */
-    public void setName(final String resourceName) {
+    public void setName(String resourceName) {
         this.name = resourceName;
     }
 
@@ -115,7 +111,7 @@ public class AFPResourceInfo {
      * @return the resource level
      */
     public AFPResourceLevel getLevel() {
-        if (this.level == null) {
+        if (level == null) {
             return DEFAULT_LEVEL;
         }
         return this.level;
@@ -124,12 +120,11 @@ public class AFPResourceInfo {
     /**
      * Sets the resource level
      *
-     * @param resourceLevel
-     *            the resource level
+     * @param resourceLevel the resource level
      */
-    public void setLevel(final AFPResourceLevel resourceLevel) {
+    public void setLevel(AFPResourceLevel resourceLevel) {
         this.level = resourceLevel;
-        this.levelChanged = true;
+        levelChanged = true;
     }
 
     /**
@@ -138,54 +133,44 @@ public class AFPResourceInfo {
      * @return true when the resource level was set
      */
     public boolean levelChanged() {
-        return this.levelChanged;
+        return levelChanged;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "AFPResourceInfo{uri="
-                + this.uri
-                + (this.imageDimension != null ? ", "
-                        + this.imageDimension.width + "x"
-                        + this.imageDimension.height : "")
-                + (this.name != null ? ", name=" + this.name : "")
-                + (this.level != null ? ", level=" + this.level : "") + "}";
+        return "AFPResourceInfo{uri=" + uri
+            + (imageDimension != null
+                    ? ", " + imageDimension.width + "x" + imageDimension.height : "")
+            + (name != null ? ", name=" + name : "")
+            + (level != null ? ", level=" + level : "")
+            + "}";
 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null || !(obj instanceof AFPResourceInfo)) {
+        if ((obj == null) || !(obj instanceof AFPResourceInfo)) {
             return false;
         }
 
-        final AFPResourceInfo ri = (AFPResourceInfo) obj;
-        return (this.uri == ri.uri || this.uri != null
-                && this.uri.equals(ri.uri))
-                && (this.imageDimension == ri.imageDimension || this.imageDimension != null
-                        && this.imageDimension.equals(ri.imageDimension))
-                && (this.name == ri.name || this.name != null
-                        && this.name.equals(ri.name))
-                && (this.level == ri.level || this.level != null
-                        && this.level.equals(ri.level));
+        AFPResourceInfo ri = (AFPResourceInfo)obj;
+        return (uri == ri.uri || uri != null && uri.equals(ri.uri))
+            && (imageDimension == ri.imageDimension
+                    || (imageDimension != null && imageDimension.equals(ri.imageDimension)))
+            && (name == ri.name || name != null && name.equals(ri.name))
+            && (level == ri.level || level != null && level.equals(ri.level));
     }
 
     /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         int hash = 7;
-        hash = 31 * hash + (null == this.uri ? 0 : this.uri.hashCode());
-        hash = 31
-                * hash
-                + (null == this.imageDimension ? 0 : this.imageDimension
-                        .hashCode());
-        hash = 31 * hash + (null == this.name ? 0 : this.name.hashCode());
-        hash = 31 * hash + (null == this.level ? 0 : this.level.hashCode());
+        hash = 31 * hash + (null == uri ? 0 : uri.hashCode());
+        hash = 31 * hash + (null == imageDimension ? 0 : imageDimension.hashCode());
+        hash = 31 * hash + (null == name ? 0 : name.hashCode());
+        hash = 31 * hash + (null == level ? 0 : level.hashCode());
         return hash;
     }
 }

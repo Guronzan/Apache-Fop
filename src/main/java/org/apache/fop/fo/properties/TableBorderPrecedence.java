@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: TableBorderPrecedence.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TableBorderPrecedence.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.properties;
 
@@ -24,7 +24,11 @@ import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
+/**
+ * A table border preference property maker.
+ */
 public class TableBorderPrecedence extends NumberProperty.Maker {
+
     private static Property num0 = NumberProperty.getInstance(0);
     private static Property num1 = NumberProperty.getInstance(1);
     private static Property num2 = NumberProperty.getInstance(2);
@@ -33,7 +37,11 @@ public class TableBorderPrecedence extends NumberProperty.Maker {
     private static Property num5 = NumberProperty.getInstance(5);
     private static Property num6 = NumberProperty.getInstance(6);
 
-    public TableBorderPrecedence(final int propId) {
+    /**
+     * Construct a table border preference property maker.
+     * @param propId the border's property id
+     */
+    public TableBorderPrecedence(int propId) {
         super(propId);
     }
 
@@ -42,10 +50,8 @@ public class TableBorderPrecedence extends NumberProperty.Maker {
      *
      * {@inheritDoc}
      */
-    @Override
-    public Property make(final PropertyList propertyList)
-            throws PropertyException {
-        final FObj fo = propertyList.getFObj();
+    public Property make(PropertyList propertyList) throws PropertyException {
+        FObj fo = propertyList.getFObj();
         switch (fo.getNameId()) {
         case Constants.FO_TABLE:
             return num6;
@@ -61,7 +67,8 @@ public class TableBorderPrecedence extends NumberProperty.Maker {
             return num1;
         case Constants.FO_TABLE_FOOTER:
             return num0;
+        default:
+            return null;
         }
-        return null;
     }
 }

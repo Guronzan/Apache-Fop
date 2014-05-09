@@ -15,78 +15,71 @@
  * limitations under the License.
  */
 
-/* $Id: TernaryTree.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TernaryTree.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Stack;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
  * <h2>Ternary Search Tree.</h2>
  *
- * <p>
- * A ternary search tree is a hibrid between a binary tree and a digital search
- * tree (trie). Keys are limited to strings. A data value of type char is stored
- * in each leaf node. It can be used as an index (or pointer) to the data.
- * Branches that only contain one key are compressed to one node by storing a
- * pointer to the trailer substring of the key. This class is intended to serve
- * as base class or helper class to implement Dictionary collections or the
- * like. Ternary trees have some nice properties as the following: the tree can
- * be traversed in sorted order, partial matches (wildcard) can be implemented,
- * retrieval of all keys within a given distance from the target, etc. The
- * storage requirements are higher than a binary tree but a lot less than a
- * trie. Performance is comparable with a hash table, sometimes it outperforms a
- * hash function (most of the time can determine a miss faster than a hash).
- * </p>
+ * <p>A ternary search tree is a hibrid between a binary tree and
+ * a digital search tree (trie). Keys are limited to strings.
+ * A data value of type char is stored in each leaf node.
+ * It can be used as an index (or pointer) to the data.
+ * Branches that only contain one key are compressed to one node
+ * by storing a pointer to the trailer substring of the key.
+ * This class is intended to serve as base class or helper class
+ * to implement Dictionary collections or the like. Ternary trees
+ * have some nice properties as the following: the tree can be
+ * traversed in sorted order, partial matches (wildcard) can be
+ * implemented, retrieval of all keys within a given distance
+ * from the target, etc. The storage requirements are higher than
+ * a binary tree but a lot less than a trie. Performance is
+ * comparable with a hash table, sometimes it outperforms a hash
+ * function (most of the time can determine a miss faster than a hash).</p>
  *
- * <p>
- * The main purpose of this java port is to serve as a base for implementing
- * TeX's hyphenation algorithm (see The TeXBook, appendix H). Each language
- * requires from 5000 to 15000 hyphenation patterns which will be keys in this
- * tree. The strings patterns are usually small (from 2 to 5 characters), but
- * each char in the tree is stored in a node. Thus memory usage is the main
- * concern. We will sacrify 'elegance' to keep memory requirenments to the
- * minimum. Using java's char type as pointer (yes, I know pointer it is a
- * forbidden word in java) we can keep the size of the node to be just 8 bytes
- * (3 pointers and the data char). This gives room for about 65000 nodes. In my
- * tests the english patterns took 7694 nodes and the german patterns 10055
- * nodes, so I think we are safe.
- * </p>
+ * <p>The main purpose of this java port is to serve as a base for
+ * implementing TeX's hyphenation algorithm (see The TeXBook,
+ * appendix H). Each language requires from 5000 to 15000 hyphenation
+ * patterns which will be keys in this tree. The strings patterns
+ * are usually small (from 2 to 5 characters), but each char in the
+ * tree is stored in a node. Thus memory usage is the main concern.
+ * We will sacrify 'elegance' to keep memory requirements to the
+ * minimum. Using java's char type as pointer (yes, I know pointer
+ * it is a forbidden word in java) we can keep the size of the node
+ * to be just 8 bytes (3 pointers and the data char). This gives
+ * room for about 65000 nodes. In my tests the english patterns
+ * took 7694 nodes and the german patterns 10055 nodes,
+ * so I think we are safe.</p>
  *
- * <p>
- * All said, this is a map with strings as keys and char as value. Pretty
- * limited!. It can be extended to a general map by using the string
- * representation of an object and using the char value as an index to an array
- * that contains the object values.
- * </p>
+ * <p>All said, this is a map with strings as keys and char as value.
+ * Pretty limited!. It can be extended to a general map by
+ * using the string representation of an object and using the
+ * char value as an index to an array that contains the object
+ * values.</p>
  *
- * @author cav@uniscope.co.jp
+ * <p>This work was authored by Carlos Villegas (cav@uniscope.co.jp).</p>
  */
 
-@Slf4j
 public class TernaryTree implements Cloneable, Serializable {
 
     /**
-     * We use 4 arrays to represent a node. I guess I should have created a
-     * proper node class, but somehow Knuth's pascal code made me forget we now
-     * have a portable language with virtual memory management and automatic
-     * garbage collection! And now is kind of late, furthermore, if it ain't
-     * broken, don't fix it.
+     * We use 4 arrays to represent a node. I guess I should have created
+     * a proper node class, but somehow Knuth's pascal code made me forget
+     * we now have a portable language with virtual memory management and
+     * automatic garbage collection! And now is kind of late, furthermore,
+     * if it ain't broken, don't fix it.
      */
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 3175412271203716160L;
 
     /**
-     * Pointer to low branch and to rest of the key when it is stored directly
-     * in this node, we don't have unions in java!
+     * Pointer to low branch and to rest of the key when it is
+     * stored directly in this node, we don't have unions in java!
      */
     protected char[] lo;
 
@@ -96,25 +89,18 @@ public class TernaryTree implements Cloneable, Serializable {
     protected char[] hi;
 
     /**
-     * Pointer to equal branch and to data when this node is a string
-     * terminator.
+     * Pointer to equal branch and to data when this node is a string terminator.
      */
     protected char[] eq;
 
     /**
-     * <P>
-     * The character stored in this node: splitchar. Two special values are
-     * reserved:
-     * </P>
-     * <ul>
-     * <li>0x0000 as string terminator</li>
-     * <li>0xFFFF to indicate that the branch starting at this node is
-     * compressed</li>
-     * </ul>
-     * <p>
-     * This shouldn't be a problem if we give the usual semantics to strings
-     * since 0xFFFF is garanteed not to be an Unicode character.
-     * </p>
+     * <P>The character stored in this node: splitchar.
+     * Two special values are reserved:</P>
+     * <ul><li>0x0000 as string terminator</li>
+     * <li>0xFFFF to indicate that the branch starting at
+     * this node is compressed</li></ul>
+     * <p>This shouldn't be a problem if we give the usual semantics to
+     * strings since 0xFFFF is garanteed not to be an Unicode character.</p>
      */
     protected char[] sc;
 
@@ -123,133 +109,152 @@ public class TernaryTree implements Cloneable, Serializable {
      */
     protected CharVector kv;
 
+    /** root */
     protected char root;
+    /** free node */
     protected char freenode;
-    protected int length; // number of items in tree
+    /** number of items in tree */
+    protected int length;
 
-    protected static final int BLOCK_SIZE = 2048; // allocation size for arrays
+    /** allocation size for arrays */
+    protected static final int BLOCK_SIZE = 2048;
 
+    /** default constructor */
     TernaryTree() {
         init();
     }
 
+    /** initialize */
     protected void init() {
-        this.root = 0;
-        this.freenode = 1;
-        this.length = 0;
-        this.lo = new char[BLOCK_SIZE];
-        this.hi = new char[BLOCK_SIZE];
-        this.eq = new char[BLOCK_SIZE];
-        this.sc = new char[BLOCK_SIZE];
-        this.kv = new CharVector();
+        root = 0;
+        freenode = 1;
+        length = 0;
+        lo = new char[BLOCK_SIZE];
+        hi = new char[BLOCK_SIZE];
+        eq = new char[BLOCK_SIZE];
+        sc = new char[BLOCK_SIZE];
+        kv = new CharVector();
     }
 
     /**
-     * Branches are initially compressed, needing one node per key plus the size
-     * of the string key. They are decompressed as needed when another key with
-     * same prefix is inserted. This saves a lot of space, specially for long
-     * keys.
+     * Branches are initially compressed, needing
+     * one node per key plus the size of the string
+     * key. They are decompressed as needed when
+     * another key with same prefix
+     * is inserted. This saves a lot of space,
+     * specially for long keys.
+     * @param key the key
+     * @param val a value
      */
-    public void insert(final String key, final char val) {
+    public void insert(String key, char val) {
         // make sure we have enough room in the arrays
-        int len = key.length() + 1; // maximum number of nodes that may be
-        // generated
-        if (this.freenode + len > this.eq.length) {
-            redimNodeArrays(this.eq.length + BLOCK_SIZE);
+        int len = key.length()
+                  + 1;    // maximum number of nodes that may be generated
+        if (freenode + len > eq.length) {
+            redimNodeArrays(eq.length + BLOCK_SIZE);
         }
-        final char strkey[] = new char[len--];
+        char[] strkey = new char[len--];
         key.getChars(0, len, strkey, 0);
         strkey[len] = 0;
-        this.root = insert(this.root, strkey, 0, val);
+        root = insert(root, strkey, 0, val);
     }
 
-    public void insert(final char[] key, final int start, final char val) {
-        final int len = strlen(key) + 1;
-        if (this.freenode + len > this.eq.length) {
-            redimNodeArrays(this.eq.length + BLOCK_SIZE);
+    /**
+     * Insert key.
+     * @param key the key
+     * @param start offset into key array
+     * @param val a value
+     */
+    public void insert(char[] key, int start, char val) {
+        int len = strlen(key) + 1;
+        if (freenode + len > eq.length) {
+            redimNodeArrays(eq.length + BLOCK_SIZE);
         }
-        this.root = insert(this.root, key, start, val);
+        root = insert(root, key, start, val);
     }
 
     /**
      * The actual insertion function, recursive version.
      */
-    private char insert(char p, final char[] key, final int start,
-            final char val) {
-        final int len = strlen(key, start);
+    private char insert(char p, char[] key, int start, char val) {
+        int len = strlen(key, start);
         if (p == 0) {
             // this means there is no branch, this node will start a new branch.
             // Instead of doing that, we store the key somewhere else and create
             // only one node with a pointer to the key
-            p = this.freenode++;
-            this.eq[p] = val; // holds data
-            this.length++;
-            this.hi[p] = 0;
+            p = freenode++;
+            eq[p] = val;           // holds data
+            length++;
+            hi[p] = 0;
             if (len > 0) {
-                this.sc[p] = 0xFFFF; // indicates branch is compressed
-                this.lo[p] = (char) this.kv.alloc(len + 1); // use 'lo' to hold
-                // pointer to key
-                strcpy(this.kv.getArray(), this.lo[p], key, start);
+                sc[p] = 0xFFFF;    // indicates branch is compressed
+                lo[p] = (char)kv.alloc(len
+                                       + 1);    // use 'lo' to hold pointer to key
+                strcpy(kv.getArray(), lo[p], key, start);
             } else {
-                this.sc[p] = 0;
-                this.lo[p] = 0;
+                sc[p] = 0;
+                lo[p] = 0;
             }
             return p;
         }
 
-        if (this.sc[p] == 0xFFFF) {
+        if (sc[p] == 0xFFFF) {
             // branch is compressed: need to decompress
             // this will generate garbage in the external key array
             // but we can do some garbage collection later
-            final char pp = this.freenode++;
-            this.lo[pp] = this.lo[p]; // previous pointer to key
-            this.eq[pp] = this.eq[p]; // previous pointer to data
-            this.lo[p] = 0;
+            char pp = freenode++;
+            lo[pp] = lo[p];    // previous pointer to key
+            eq[pp] = eq[p];    // previous pointer to data
+            lo[p] = 0;
             if (len > 0) {
-                this.sc[p] = this.kv.get(this.lo[pp]);
-                this.eq[p] = pp;
-                this.lo[pp]++;
-                if (this.kv.get(this.lo[pp]) == 0) {
+                sc[p] = kv.get(lo[pp]);
+                eq[p] = pp;
+                lo[pp]++;
+                if (kv.get(lo[pp]) == 0) {
                     // key completly decompressed leaving garbage in key array
-                    this.lo[pp] = 0;
-                    this.sc[pp] = 0;
-                    this.hi[pp] = 0;
+                    lo[pp] = 0;
+                    sc[pp] = 0;
+                    hi[pp] = 0;
                 } else {
                     // we only got first char of key, rest is still there
-                    this.sc[pp] = 0xFFFF;
+                    sc[pp] = 0xFFFF;
                 }
             } else {
                 // In this case we can save a node by swapping the new node
                 // with the compressed node
-                this.sc[pp] = 0xFFFF;
-                this.hi[p] = pp;
-                this.sc[p] = 0;
-                this.eq[p] = val;
-                this.length++;
+                sc[pp] = 0xFFFF;
+                hi[p] = pp;
+                sc[p] = 0;
+                eq[p] = val;
+                length++;
                 return p;
             }
         }
-        final char s = key[start];
-        if (s < this.sc[p]) {
-            this.lo[p] = insert(this.lo[p], key, start, val);
-        } else if (s == this.sc[p]) {
+        char s = key[start];
+        if (s < sc[p]) {
+            lo[p] = insert(lo[p], key, start, val);
+        } else if (s == sc[p]) {
             if (s != 0) {
-                this.eq[p] = insert(this.eq[p], key, start + 1, val);
+                eq[p] = insert(eq[p], key, start + 1, val);
             } else {
                 // key already in tree, overwrite data
-                this.eq[p] = val;
+                eq[p] = val;
             }
         } else {
-            this.hi[p] = insert(this.hi[p], key, start, val);
+            hi[p] = insert(hi[p], key, start, val);
         }
         return p;
     }
 
     /**
      * Compares 2 null terminated char arrays
+     * @param a a character array
+     * @param startA an index into character array
+     * @param b a character array
+     * @param startB an index into character array
+     * @return an integer
      */
-    public static int strcmp(final char[] a, int startA, final char[] b,
-            int startB) {
+    public static int strcmp(char[] a, int startA, char[] b, int startB) {
         for (; a[startA] == b[startB]; startA++, startB++) {
             if (a[startA] == 0) {
                 return 0;
@@ -260,12 +265,17 @@ public class TernaryTree implements Cloneable, Serializable {
 
     /**
      * Compares a string with null terminated char array
+     * @param str a string
+     * @param a a character array
+     * @param start an index into character array
+     * @return an integer
      */
-    public static int strcmp(final String str, final char[] a, final int start) {
-        int i, d;
-        final int len = str.length();
-        for (i = 0; i < len; ++i) {
-            d = str.charAt(i) - a[start + i];
+    public static int strcmp(String str, char[] a, int start) {
+        int i;
+        int d;
+        int len = str.length();
+        for (i = 0; i < len; i++) {
+            d = (int)str.charAt(i) - a[start + i];
             if (d != 0) {
                 return d;
             }
@@ -274,118 +284,150 @@ public class TernaryTree implements Cloneable, Serializable {
             }
         }
         if (a[start + i] != 0) {
-            return -a[start + i];
+            return (int)-a[start + i];
         }
         return 0;
 
     }
 
-    public static void strcpy(final char[] dst, int di, final char[] src, int si) {
+    /**
+     * @param dst a character array
+     * @param di an index into character array
+     * @param src a character array
+     * @param si an index into character array
+     */
+    public static void strcpy(char[] dst, int di, char[] src, int si) {
         while (src[si] != 0) {
             dst[di++] = src[si++];
         }
         dst[di] = 0;
     }
 
-    public static int strlen(final char[] a, final int start) {
+    /**
+     * @param a a character array
+     * @param start an index into character array
+     * @return an integer
+     */
+    public static int strlen(char[] a, int start) {
         int len = 0;
-        for (int i = start; i < a.length && a[i] != 0; ++i) {
+        for (int i = start; i < a.length && a[i] != 0; i++) {
             len++;
         }
         return len;
     }
 
-    public static int strlen(final char[] a) {
+    /**
+     * @param a a character array
+     * @return an integer
+     */
+    public static int strlen(char[] a) {
         return strlen(a, 0);
     }
 
-    public int find(final String key) {
-        final int len = key.length();
-        final char strkey[] = new char[len + 1];
+    /**
+     * Find key.
+     * @param key the key
+     * @return result
+     */
+    public int find(String key) {
+        int len = key.length();
+        char[] strkey = new char[len + 1];
         key.getChars(0, len, strkey, 0);
         strkey[len] = 0;
 
         return find(strkey, 0);
     }
 
-    public int find(final char[] key, final int start) {
+    /**
+     * Find key.
+     * @param key the key
+     * @param start offset into key array
+     * @return result
+     */
+    public int find(char[] key, int start) {
         int d;
-        char p = this.root;
+        char p = root;
         int i = start;
         char c;
 
         while (p != 0) {
-            if (this.sc[p] == 0xFFFF) {
-                if (strcmp(key, i, this.kv.getArray(), this.lo[p]) == 0) {
-                    return this.eq[p];
+            if (sc[p] == 0xFFFF) {
+                if (strcmp(key, i, kv.getArray(), lo[p]) == 0) {
+                    return eq[p];
                 } else {
                     return -1;
                 }
             }
             c = key[i];
-            d = c - this.sc[p];
+            d = c - sc[p];
             if (d == 0) {
                 if (c == 0) {
-                    return this.eq[p];
+                    return eq[p];
                 }
-                ++i;
-                p = this.eq[p];
+                i++;
+                p = eq[p];
             } else if (d < 0) {
-                p = this.lo[p];
+                p = lo[p];
             } else {
-                p = this.hi[p];
+                p = hi[p];
             }
         }
         return -1;
     }
 
-    public boolean knows(final String key) {
-        return find(key) >= 0;
+    /**
+     * @param key a key
+     * @return trye if key present
+     */
+    public boolean knows(String key) {
+        return (find(key) >= 0);
     }
 
     // redimension the arrays
-    private void redimNodeArrays(final int newsize) {
-        final int len = newsize < this.lo.length ? newsize : this.lo.length;
+    private void redimNodeArrays(int newsize) {
+        int len = newsize < lo.length ? newsize : lo.length;
         char[] na = new char[newsize];
-        System.arraycopy(this.lo, 0, na, 0, len);
-        this.lo = na;
+        System.arraycopy(lo, 0, na, 0, len);
+        lo = na;
         na = new char[newsize];
-        System.arraycopy(this.hi, 0, na, 0, len);
-        this.hi = na;
+        System.arraycopy(hi, 0, na, 0, len);
+        hi = na;
         na = new char[newsize];
-        System.arraycopy(this.eq, 0, na, 0, len);
-        this.eq = na;
+        System.arraycopy(eq, 0, na, 0, len);
+        eq = na;
         na = new char[newsize];
-        System.arraycopy(this.sc, 0, na, 0, len);
-        this.sc = na;
+        System.arraycopy(sc, 0, na, 0, len);
+        sc = na;
     }
 
+    /** @return length */
     public int size() {
-        return this.length;
+        return length;
     }
 
-    @Override
-    public Object clone() {
-        final TernaryTree t = new TernaryTree();
-        t.lo = this.lo.clone();
-        t.hi = this.hi.clone();
-        t.eq = this.eq.clone();
-        t.sc = this.sc.clone();
-        t.kv = (CharVector) this.kv.clone();
-        t.root = this.root;
-        t.freenode = this.freenode;
-        t.length = this.length;
+    /** {@inheritDoc} */
+    public Object clone() throws CloneNotSupportedException {
+        TernaryTree t = (TernaryTree) super.clone();
+        t.lo = (char[])this.lo.clone();
+        t.hi = (char[])this.hi.clone();
+        t.eq = (char[])this.eq.clone();
+        t.sc = (char[])this.sc.clone();
+        t.kv = (CharVector)this.kv.clone();
 
         return t;
     }
 
     /**
-     * Recursively insert the median first and then the median of the lower and
-     * upper halves, and so on in order to get a balanced tree. The array of
-     * keys is assumed to be sorted in ascending order.
+     * Recursively insert the median first and then the median of the
+     * lower and upper halves, and so on in order to get a balanced
+     * tree. The array of keys is assumed to be sorted in ascending
+     * order.
+     * @param k array of keys
+     * @param v array of values
+     * @param offset where to insert
+     * @param n count to insert
      */
-    protected void insertBalanced(final String[] k, final char[] v,
-            final int offset, final int n) {
+    protected void insertBalanced(String[] k, char[] v, int offset, int n) {
         int m;
         if (n < 1) {
             return;
@@ -398,39 +440,40 @@ public class TernaryTree implements Cloneable, Serializable {
         insertBalanced(k, v, offset + m + 1, n - m - 1);
     }
 
+
     /**
      * Balance the tree for best search performance
      */
     public void balance() {
-        // System.out.print("Before root splitchar = ");
-        // log.info(sc[root]);
+        // System.out.print("Before root splitchar = "); System.out.println(sc[root]);
 
         int i = 0;
-        final int n = this.length;
-        final String[] k = new String[n];
-        final char[] v = new char[n];
-        final Iterator iter = new Iterator();
+        int n = length;
+        String[] k = new String[n];
+        char[] v = new char[n];
+        Iterator iter = new Iterator();
         while (iter.hasMoreElements()) {
             v[i] = iter.getValue();
-            k[i++] = iter.nextElement();
+            k[i++] = (String)iter.nextElement();
         }
         init();
         insertBalanced(k, v, 0, n);
 
         // With uniform letter distribution sc[root] should be around 'm'
-        // System.out.print("After root splitchar = ");
-        // log.info(sc[root]);
+        // System.out.print("After root splitchar = "); System.out.println(sc[root]);
     }
 
     /**
-     * Each node stores a character (splitchar) which is part of some key(s). In
-     * a compressed branch (one that only contain a single string key) the
-     * trailer of the key which is not already in nodes is stored externally in
-     * the kv array. As items are inserted, key substrings decrease. Some
-     * substrings may completely disappear when the whole branch is totally
-     * decompressed. The tree is traversed to find the key substrings actually
-     * used. In addition, duplicate substrings are removed using a map
-     * (implemented with a TernaryTree!).
+     * Each node stores a character (splitchar) which is part of
+     * some key(s). In a compressed branch (one that only contain
+     * a single string key) the trailer of the key which is not
+     * already in nodes is stored  externally in the kv array.
+     * As items are inserted, key substrings decrease.
+     * Some substrings may completely  disappear when the whole
+     * branch is totally decompressed.
+     * The tree is traversed to find the key substrings actually
+     * used. In addition, duplicate substrings are removed using
+     * a map (implemented with a TernaryTree!).
      *
      */
     public void trimToSize() {
@@ -438,73 +481,82 @@ public class TernaryTree implements Cloneable, Serializable {
         balance();
 
         // redimension the node arrays
-        redimNodeArrays(this.freenode);
+        redimNodeArrays(freenode);
 
         // ok, compact kv array
-        final CharVector kx = new CharVector();
+        CharVector kx = new CharVector();
         kx.alloc(1);
-        final TernaryTree map = new TernaryTree();
-        compact(kx, map, this.root);
-        this.kv = kx;
-        this.kv.trimToSize();
+        TernaryTree map = new TernaryTree();
+        compact(kx, map, root);
+        kv = kx;
+        kv.trimToSize();
     }
 
-    private void compact(final CharVector kx, final TernaryTree map,
-            final char p) {
+    private void compact(CharVector kx, TernaryTree map, char p) {
         int k;
         if (p == 0) {
             return;
         }
-        if (this.sc[p] == 0xFFFF) {
-            k = map.find(this.kv.getArray(), this.lo[p]);
+        if (sc[p] == 0xFFFF) {
+            k = map.find(kv.getArray(), lo[p]);
             if (k < 0) {
-                k = kx.alloc(strlen(this.kv.getArray(), this.lo[p]) + 1);
-                strcpy(kx.getArray(), k, this.kv.getArray(), this.lo[p]);
-                map.insert(kx.getArray(), k, (char) k);
+                k = kx.alloc(strlen(kv.getArray(), lo[p]) + 1);
+                strcpy(kx.getArray(), k, kv.getArray(), lo[p]);
+                map.insert(kx.getArray(), k, (char)k);
             }
-            this.lo[p] = (char) k;
+            lo[p] = (char)k;
         } else {
-            compact(kx, map, this.lo[p]);
-            if (this.sc[p] != 0) {
-                compact(kx, map, this.eq[p]);
+            compact(kx, map, lo[p]);
+            if (sc[p] != 0) {
+                compact(kx, map, eq[p]);
             }
-            compact(kx, map, this.hi[p]);
+            compact(kx, map, hi[p]);
         }
     }
 
-    public Enumeration<String> keys() {
+    /** @return the keys */
+    public Enumeration keys() {
         return new Iterator();
     }
 
-    public class Iterator implements Enumeration<String> {
+    /** an iterator */
+    public class Iterator implements Enumeration {
 
         /**
          * current node index
          */
-        int cur;
+        int cur;                                                // CSOK: VisibilityModifier
 
         /**
          * current key
          */
-        String curkey;
+        String curkey;                                          // CSOK: VisibilityModifier
 
         private class Item implements Cloneable {
-            char parent;
-            char child;
+            /** parent */
+            char parent;                                        // CSOK: VisibilityModifier
+            /** child */
+            char child;                                         // CSOK: VisibilityModifier
 
+            /** default constructor */
             public Item() {
-                this.parent = 0;
-                this.child = 0;
+                parent = 0;
+                child = 0;
             }
 
-            public Item(final char p, final char c) {
-                this.parent = p;
-                this.child = c;
+            /**
+             * Construct item.
+             * @param p a char
+             * @param c a char
+             */
+            public Item(char p, char c) {
+                parent = p;
+                child = c;
             }
 
-            @Override
+            /** {@inheritDoc} */
             public Object clone() {
-                return new Item(this.parent, this.child);
+                return new Item(parent, child);
             }
 
         }
@@ -512,45 +564,48 @@ public class TernaryTree implements Cloneable, Serializable {
         /**
          * Node stack
          */
-        Stack<Item> ns;
+        Stack ns;                                               // CSOK: VisibilityModifier
 
         /**
-         * key stack implemented with a StringBuilder
+         * key stack implemented with a StringBuffer
          */
-        StringBuilder ks;
+        StringBuffer ks;                                        // CSOK: VisibilityModifier
 
+        /** default constructor */
         public Iterator() {
-            this.cur = -1;
-            this.ns = new Stack<>();
-            this.ks = new StringBuilder();
+            cur = -1;
+            ns = new Stack();
+            ks = new StringBuffer();
             rewind();
         }
 
+        /** rewind iterator */
         public void rewind() {
-            this.ns.removeAllElements();
-            this.ks.setLength(0);
-            this.cur = TernaryTree.this.root;
+            ns.removeAllElements();
+            ks.setLength(0);
+            cur = root;
             run();
         }
 
-        @Override
-        public String nextElement() {
-            final String res = new String(this.curkey);
-            this.cur = up();
+        /** @return next element */
+        public Object nextElement() {
+            String res = new String(curkey);
+            cur = up();
             run();
             return res;
         }
 
+        /** @return value */
         public char getValue() {
-            if (this.cur >= 0) {
-                return TernaryTree.this.eq[this.cur];
+            if (cur >= 0) {
+                return eq[cur];
             }
             return 0;
         }
 
-        @Override
+        /** @return true if more elements */
         public boolean hasMoreElements() {
-            return this.cur != -1;
+            return (cur != -1);
         }
 
         /**
@@ -560,44 +615,44 @@ public class TernaryTree implements Cloneable, Serializable {
             Item i = new Item();
             int res = 0;
 
-            if (this.ns.empty()) {
+            if (ns.empty()) {
                 return -1;
             }
 
-            if (this.cur != 0 && TernaryTree.this.sc[this.cur] == 0) {
-                return TernaryTree.this.lo[this.cur];
+            if (cur != 0 && sc[cur] == 0) {
+                return lo[cur];
             }
 
             boolean climb = true;
 
             while (climb) {
-                i = this.ns.pop();
+                i = (Item)ns.pop();
                 i.child++;
                 switch (i.child) {
                 case 1:
-                    if (TernaryTree.this.sc[i.parent] != 0) {
-                        res = TernaryTree.this.eq[i.parent];
-                        this.ns.push((Item) i.clone());
-                        this.ks.append(TernaryTree.this.sc[i.parent]);
+                    if (sc[i.parent] != 0) {
+                        res = eq[i.parent];
+                        ns.push(i.clone());
+                        ks.append(sc[i.parent]);
                     } else {
                         i.child++;
-                        this.ns.push((Item) i.clone());
-                        res = TernaryTree.this.hi[i.parent];
+                        ns.push(i.clone());
+                        res = hi[i.parent];
                     }
                     climb = false;
                     break;
 
                 case 2:
-                    res = TernaryTree.this.hi[i.parent];
-                    this.ns.push((Item) i.clone());
-                    if (this.ks.length() > 0) {
-                        this.ks.setLength(this.ks.length() - 1); // pop
+                    res = hi[i.parent];
+                    ns.push(i.clone());
+                    if (ks.length() > 0) {
+                        ks.setLength(ks.length() - 1);    // pop
                     }
                     climb = false;
                     break;
 
                 default:
-                    if (this.ns.empty()) {
+                    if (ns.empty()) {
                         return -1;
                     }
                     climb = true;
@@ -611,80 +666,89 @@ public class TernaryTree implements Cloneable, Serializable {
          * traverse the tree to find next key
          */
         private int run() {
-            if (this.cur == -1) {
+            if (cur == -1) {
                 return -1;
             }
 
             boolean leaf = false;
             while (true) {
                 // first go down on low branch until leaf or compressed branch
-                while (this.cur != 0) {
-                    if (TernaryTree.this.sc[this.cur] == 0xFFFF) {
+                while (cur != 0) {
+                    if (sc[cur] == 0xFFFF) {
                         leaf = true;
                         break;
                     }
-                    this.ns.push(new Item((char) this.cur, '\u0000'));
-                    if (TernaryTree.this.sc[this.cur] == 0) {
+                    ns.push(new Item((char)cur, '\u0000'));
+                    if (sc[cur] == 0) {
                         leaf = true;
                         break;
                     }
-                    this.cur = TernaryTree.this.lo[this.cur];
+                    cur = lo[cur];
                 }
                 if (leaf) {
                     break;
                 }
                 // nothing found, go up one node and try again
-                this.cur = up();
-                if (this.cur == -1) {
+                cur = up();
+                if (cur == -1) {
                     return -1;
                 }
             }
             // The current node should be a data node and
             // the key should be in the key stack (at least partially)
-            final StringBuilder buf = new StringBuilder(this.ks.toString());
-            if (TernaryTree.this.sc[this.cur] == 0xFFFF) {
-                int p = TernaryTree.this.lo[this.cur];
-                while (TernaryTree.this.kv.get(p) != 0) {
-                    buf.append(TernaryTree.this.kv.get(p++));
+            StringBuffer buf = new StringBuffer(ks.toString());
+            if (sc[cur] == 0xFFFF) {
+                int p = lo[cur];
+                while (kv.get(p) != 0) {
+                    buf.append(kv.get(p++));
                 }
             }
-            this.curkey = buf.toString();
+            curkey = buf.toString();
             return 0;
         }
 
     }
 
+    /**
+     * Print stats (for testing).
+     */
     public void printStats() {
-        log.info("Number of keys = " + Integer.toString(this.length));
-        log.info("Node count = " + Integer.toString(this.freenode));
-        // log.info("Array length = " + Integer.toString(eq.length));
-        log.info("Key Array length = " + Integer.toString(this.kv.length()));
+        System.out.println("Number of keys = " + Integer.toString(length));
+        System.out.println("Node count = " + Integer.toString(freenode));
+        // System.out.println("Array length = " + Integer.toString(eq.length));
+        System.out.println("Key Array length = "
+                           + Integer.toString(kv.length()));
 
         /*
-         * for(int i=0; i<kv.length(); ++i) if ( kv.get(i) != 0 )
-         * System.out.print(kv.get(i)); else log.info(""); log.info("Keys:");
+         * for(int i=0; i<kv.length(); i++)
+         * if ( kv.get(i) != 0 )
+         * System.out.print(kv.get(i));
+         * else
+         * System.out.println("");
+         * System.out.println("Keys:");
          * for(Enumeration enum = keys(); enum.hasMoreElements(); )
-         * log.info(enum.nextElement());
+         * System.out.println(enum.nextElement());
          */
 
     }
 
     /**
-     * @throws IOException
-     * @throws HyphenationException
+     * Main entry point for testing.
+     * @param args not used
+     * @throws Exception if not caught
      */
-    public static void main(final String[] args) throws IOException,
-            HyphenationException {
-        final TernaryTree tt = new TernaryTree();
+    public static void main(String[] args) throws Exception {
+        TernaryTree tt = new TernaryTree();
         tt.insert("Carlos", 'C');
         tt.insert("Car", 'r');
         tt.insert("palos", 'l');
         tt.insert("pa", 'p');
         tt.trimToSize();
-        log.info(String.valueOf((char) tt.find("Car")));
-        log.info(String.valueOf((char) tt.find("Carlos")));
-        log.info(String.valueOf((char) tt.find("alto")));
+        System.out.println((char)tt.find("Car"));
+        System.out.println((char)tt.find("Carlos"));
+        System.out.println((char)tt.find("alto"));
         tt.printStats();
     }
 
 }
+

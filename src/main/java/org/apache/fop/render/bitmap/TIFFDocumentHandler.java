@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-/* $Id: TIFFDocumentHandler.java 820672 2009-10-01 14:48:27Z jeremias $ */
+/* $Id: TIFFDocumentHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.bitmap;
 
-import org.apache.fop.render.intermediate.IFDocumentHandler;
+import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 
 /**
- * {@link IFDocumentHandler} implementation that produces TIFF files.
+ * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation
+ * that produces TIFF files.
  */
 public class TIFFDocumentHandler extends AbstractBitmapDocumentHandler {
 
     /** {@inheritDoc} */
-    @Override
     public String getMimeType() {
-        return org.apache.xmlgraphics.util.MimeConstants.MIME_TIFF;
+        return MimeConstants.MIME_TIFF;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getDefaultExtension() {
         return "tif";
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return new TIFFRendererConfigurator(getUserAgent());
     }

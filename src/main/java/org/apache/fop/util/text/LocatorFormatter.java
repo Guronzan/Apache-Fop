@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-/* $Id: LocatorFormatter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LocatorFormatter.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.util.text;
 
-import org.apache.fop.util.text.AdvancedMessageFormat.ObjectFormatter;
 import org.xml.sax.Locator;
+
+import org.apache.fop.util.text.AdvancedMessageFormat.ObjectFormatter;
 
 /**
  * Object formatter for the SAX Locator object.
@@ -28,16 +29,13 @@ import org.xml.sax.Locator;
 public class LocatorFormatter implements ObjectFormatter {
 
     /** {@inheritDoc} */
-    @Override
-    public void format(final StringBuilder sb, final Object obj) {
-        final Locator loc = (Locator) obj;
-        sb.append(loc.getLineNumber()).append(":")
-                .append(loc.getColumnNumber());
+    public void format(StringBuffer sb, Object obj) {
+        Locator loc = (Locator)obj;
+        sb.append(loc.getLineNumber()).append(":").append(loc.getColumnNumber());
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean supportsObject(final Object obj) {
+    public boolean supportsObject(Object obj) {
         return obj instanceof Locator;
     }
 

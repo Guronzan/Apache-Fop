@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFBatikFlowTextElementBridge.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFBatikFlowTextElementBridge.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.svg;
 
@@ -23,40 +23,37 @@ import org.apache.batik.extension.svg.BatikFlowTextElementBridge;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.TextNode;
 import org.apache.batik.gvt.TextPainter;
+
 import org.apache.fop.fonts.FontInfo;
 
 /**
- * Element Bridge for Batik's flow text extension, so those texts can be painted
- * using PDF primitives.
+ * Element Bridge for Batik's flow text extension, so those texts can be painted using
+ * PDF primitives.
  */
 public class PDFBatikFlowTextElementBridge extends BatikFlowTextElementBridge {
 
-    private final PDFTextPainter textPainter;
+    private PDFTextPainter textPainter;
 
     /**
      * Main Constructor.
-     * 
-     * @param fontInfo
-     *            the font directory
+     * @param fontInfo the font directory
      */
-    public PDFBatikFlowTextElementBridge(final FontInfo fontInfo) {
+    public PDFBatikFlowTextElementBridge(FontInfo fontInfo) {
         this.textPainter = new PDFFlowExtTextPainter(fontInfo);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected GraphicsNode instantiateGraphicsNode() {
-        final GraphicsNode node = super.instantiateGraphicsNode();
+        GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {
-            // Set our own text painter
-            ((TextNode) node).setTextPainter(getTextPainter());
+            //Set our own text painter
+            ((TextNode)node).setTextPainter(getTextPainter());
         }
         return node;
     }
 
     /**
      * Returns the text painter used by this bridge.
-     * 
      * @return the text painter
      */
     public TextPainter getTextPainter() {

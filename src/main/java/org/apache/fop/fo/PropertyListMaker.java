@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PropertyListMaker.java 824686 2009-10-13 10:52:29Z vhennebert $ */
+/* $Id: PropertyListMaker.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo;
 
@@ -23,6 +23,13 @@ package org.apache.fop.fo;
  * A PropertyListMaker is a factory that creates PropertyLists.
  */
 public interface PropertyListMaker {
-    PropertyList make(final FObj fobj, final PropertyList parentPropertyList);
+
+    /**
+     * Make a property list.
+     * @param fobj the FO from which the new property list is associated
+     * @param parentPropertyList the parent property list
+     * @return the new property list
+     */
+    PropertyList make(FObj fobj, PropertyList parentPropertyList);
 
 }

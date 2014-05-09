@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-/* $Id: Leader.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Leader.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.area.inline;
 
 import org.apache.fop.fo.Constants;
 
 /**
- * This is a leader inline area. This class is only used for leader with
- * leader-pattern of rule.
+ * This is a leader inline area.
+ * This class is only used for leader with leader-pattern of rule.
  */
 public class Leader extends InlineArea {
 
@@ -32,10 +32,9 @@ public class Leader extends InlineArea {
     // if space replaced with a space
     // otherwise this is a holder for a line
 
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -8011373048313956301L;
+
     private int ruleStyle = Constants.EN_SOLID;
     private int ruleThickness = 1000;
 
@@ -48,20 +47,17 @@ public class Leader extends InlineArea {
     /**
      * Set the rule style of this leader area.
      *
-     * @param style
-     *            the rule style for the leader line
+     * @param style the rule style for the leader line
      */
-    public void setRuleStyle(final int style) {
-        this.ruleStyle = style;
+    public void setRuleStyle(int style) {
+        ruleStyle = style;
     }
 
     /**
      * Set the rule style of this leader area.
-     * 
-     * @param style
-     *            the rule style for the leader area (XSL enum values)
+     * @param style the rule style for the leader area (XSL enum values)
      */
-    public void setRuleStyle(final String style) {
+    public void setRuleStyle(String style) {
         if ("dotted".equalsIgnoreCase(style)) {
             setRuleStyle(Constants.EN_DOTTED);
         } else if ("dashed".equalsIgnoreCase(style)) {
@@ -82,11 +78,10 @@ public class Leader extends InlineArea {
     /**
      * Set the rule thickness of the rule in miilipoints.
      *
-     * @param rt
-     *            the rule thickness in millipoints
+     * @param rt the rule thickness in millipoints
      */
-    public void setRuleThickness(final int rt) {
-        this.ruleThickness = rt;
+    public void setRuleThickness(int rt) {
+        ruleThickness = rt;
     }
 
     /**
@@ -95,29 +90,21 @@ public class Leader extends InlineArea {
      * @return the rule style
      */
     public int getRuleStyle() {
-        return this.ruleStyle;
+        return ruleStyle;
     }
 
     /** @return the rule style as string */
     public String getRuleStyleAsString() {
         switch (getRuleStyle()) {
-        case Constants.EN_DOTTED:
-            return "dotted";
-        case Constants.EN_DASHED:
-            return "dashed";
-        case Constants.EN_SOLID:
-            return "solid";
-        case Constants.EN_DOUBLE:
-            return "double";
-        case Constants.EN_GROOVE:
-            return "groove";
-        case Constants.EN_RIDGE:
-            return "ridge";
-        case Constants.EN_NONE:
-            return "none";
+        case Constants.EN_DOTTED: return "dotted";
+        case Constants.EN_DASHED: return "dashed";
+        case Constants.EN_SOLID: return "solid";
+        case Constants.EN_DOUBLE: return "double";
+        case Constants.EN_GROOVE: return "groove";
+        case Constants.EN_RIDGE: return "ridge";
+        case Constants.EN_NONE: return "none";
         default:
-            throw new IllegalStateException("Unsupported rule style: "
-                    + getRuleStyle());
+            throw new IllegalStateException("Unsupported rule style: " + getRuleStyle());
         }
     }
 
@@ -127,7 +114,8 @@ public class Leader extends InlineArea {
      * @return the rule thickness in millipoints
      */
     public int getRuleThickness() {
-        return this.ruleThickness;
+        return ruleThickness;
     }
 
 }
+

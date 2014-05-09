@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-/* $Id: Root.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Root.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.pagination;
 
 // java
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FOEventHandler;
@@ -32,23 +34,26 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.extensions.destination.Destination;
 import org.apache.fop.fo.pagination.bookmarks.BookmarkTree;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 
 /**
  * Class modeling the <a href="http://www.w3.org/TR/xsl/#fo_root">
- * <code>fo:root</code></a> formatting object. Contains page masters,
- * page-sequences.
+ * <code>fo:root</code></a> formatting object.
+ * Contains page masters, page-sequences.
  */
-public class Root extends FObj {
-    // The value of properties relevant for fo:root.
+public class Root extends FObj implements CommonAccessibilityHolder {
+
+    private CommonAccessibility commonAccessibility;
+
     private int mediaUsage;
-    // End of property values
 
     private LayoutMasterSet layoutMasterSet;
     private Declarations declarations;
     private BookmarkTree bookmarkTree = null;
     private List<Destination> destinationList;
-    private final List<PageSequence> pageSequences;
+    private List<PageSequence> pageSequences;
+    private Locale locale;
 
     // temporary until above list populated
     private boolean pageSequenceFound = false;
@@ -72,72 +77,83 @@ public class Root extends FObj {
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object Note: parent
-     *            should be null for the fo:root.
+     * @param parent {@link FONode} that is the parent of this object
+     * Note: parent should be null for the fo:root.
      */
-    public Root(final FONode parent) {
+    public Root(FONode parent) {
         super(parent);
-        this.pageSequences = new ArrayList<>();
+        pageSequences = new java.util.ArrayList<PageSequence>();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        this.mediaUsage = pList.get(PR_MEDIA_USAGE).getEnum();
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void endOfNode() throws FOPException {
-        if (!this.pageSequenceFound || this.layoutMasterSet == null) {
-            missingChildElementError("(layout-master-set, declarations?, "
-                    + "bookmark-tree?, (page-sequence|fox:external-document)+)");
+    public void bind(PropertyList pList) throws FOPException {
+        super.bind(pList);
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        mediaUsage = pList.get(PR_MEDIA_USAGE).getEnum();
+        String language = pList.get(PR_LANGUAGE).getString();
+        String country = pList.get(PR_COUNTRY).getString();
+        if (isLocalePropertySet(language)) {
+            if (isLocalePropertySet(country)) {
+                locale = new Locale(language, country);
+            } else {
+                locale = new Locale(language);
+            }
         }
     }
 
+    private boolean isLocalePropertySet(String property) {
+        return property != null && !property.equals("none");
+    }
+
+     /** {@inheritDoc} */
+    protected void startOfNode() throws FOPException {
+        foEventHandler.startRoot(this);
+    }
+
+    /** {@inheritDoc} */
+    protected void endOfNode() throws FOPException {
+        if (!pageSequenceFound || layoutMasterSet == null) {
+            missingChildElementError("(layout-master-set, declarations?, "
+                + "bookmark-tree?, (page-sequence|fox:external-document)+)");
+        }
+        foEventHandler.endRoot(this);
+    }
+
     /**
-     * {@inheritDoc} <br>
-     * XSL 1.0 Spec: (layout-master-set,declarations?,page-sequence+) <br>
-     * FOP: (layout-master-set, declarations?, fox:bookmarks?, page-sequence+)
+     * {@inheritDoc}
+     * <br>XSL 1.0 Spec: (layout-master-set,declarations?,page-sequence+)
+     * <br>FOP: (layout-master-set, declarations?, fox:bookmarks?, page-sequence+)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+        throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (localName.equals("layout-master-set")) {
-                if (this.layoutMasterSet != null) {
+                if (layoutMasterSet != null) {
                     tooManyNodesError(loc, "fo:layout-master-set");
                 }
             } else if (localName.equals("declarations")) {
-                if (this.layoutMasterSet == null) {
-                    nodesOutOfOrderError(loc, "fo:layout-master-set",
-                            "fo:declarations");
-                } else if (this.declarations != null) {
+                if (layoutMasterSet == null) {
+                    nodesOutOfOrderError(loc, "fo:layout-master-set", "fo:declarations");
+                } else if (declarations != null) {
                     tooManyNodesError(loc, "fo:declarations");
-                } else if (this.bookmarkTree != null) {
-                    nodesOutOfOrderError(loc, "fo:declarations",
-                            "fo:bookmark-tree");
-                } else if (this.pageSequenceFound) {
-                    nodesOutOfOrderError(loc, "fo:declarations",
-                            "fo:page-sequence");
+                } else if (bookmarkTree != null) {
+                    nodesOutOfOrderError(loc, "fo:declarations", "fo:bookmark-tree");
+                } else if (pageSequenceFound) {
+                    nodesOutOfOrderError(loc, "fo:declarations", "fo:page-sequence");
                 }
             } else if (localName.equals("bookmark-tree")) {
-                if (this.layoutMasterSet == null) {
-                    nodesOutOfOrderError(loc, "fo:layout-master-set",
-                            "fo:bookmark-tree");
-                } else if (this.bookmarkTree != null) {
+                if (layoutMasterSet == null) {
+                    nodesOutOfOrderError(loc, "fo:layout-master-set", "fo:bookmark-tree");
+                } else if (bookmarkTree != null) {
                     tooManyNodesError(loc, "fo:bookmark-tree");
-                } else if (this.pageSequenceFound) {
-                    nodesOutOfOrderError(loc, "fo:bookmark-tree",
-                            "fo:page-sequence");
+                } else if (pageSequenceFound) {
+                    nodesOutOfOrderError(loc, "fo:bookmark-tree", "fo:page-sequence");
                 }
             } else if (localName.equals("page-sequence")) {
-                if (this.layoutMasterSet == null) {
-                    nodesOutOfOrderError(loc, "fo:layout-master-set",
-                            "fo:page-sequence");
+                if (layoutMasterSet == null) {
+                    nodesOutOfOrderError(loc, "fo:layout-master-set", "fo:page-sequence");
                 } else {
-                    this.pageSequenceFound = true;
+                    pageSequenceFound = true;
                 }
             } else {
                 invalidChildError(loc, nsURI, localName);
@@ -145,128 +161,120 @@ public class Root extends FObj {
         } else {
             if (FOX_URI.equals(nsURI)) {
                 if ("external-document".equals(localName)) {
-                    this.pageSequenceFound = true;
+                    pageSequenceFound = true;
                 }
             }
-            // invalidChildError(loc, nsURI, localName);
-            // Ignore non-FO elements under root
+            //invalidChildError(loc, nsURI, localName);
+            //Ignore non-FO elements under root
         }
     }
 
-    /** @inheritDoc */
-    protected void validateChildNode(final Locator loc, final FONode child) {
+
+    /**
+     * @param loc location in the source file
+     * @param child the {@link FONode} to validate against
+     * @throws ValidationException if the incoming node is not a valid child for the given FO
+     */
+    protected void validateChildNode(Locator loc, FONode child) throws ValidationException {
         if (child instanceof AbstractPageSequence) {
-            this.pageSequenceFound = true;
+            pageSequenceFound = true;
         }
+    }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /**
      * Sets the FOEventHandler object that this Root is attached to
-     *
-     * @param foEventHandler
-     *            the FOEventHandler object
+     * @param foEventHandler the FOEventHandler object
      */
-    public void setFOEventHandler(final FOEventHandler foEventHandler) {
+    public void setFOEventHandler(FOEventHandler foEventHandler) {
         this.foEventHandler = foEventHandler;
     }
 
     /**
      * This method overrides the FONode version. The FONode version calls the
      * method by the same name for the parent object. Since Root is at the top
-     * of the tree, it returns the actual FOEventHandler object. Thus, any
-     * FONode can use this chain to find which FOEventHandler it is being built
-     * for.
-     *
+     * of the tree, it returns the actual FOEventHandler object. Thus, any FONode
+     * can use this chain to find which FOEventHandler it is being built for.
      * @return the FOEventHandler implementation that this Root is attached to
      */
-    @Override
     public FOEventHandler getFOEventHandler() {
-        return this.foEventHandler;
+        return foEventHandler;
     }
 
     /**
      * Sets the builder context for this FO tree.
-     *
-     * @param context
-     *            the builder context to be used
+     * @param context the builder context to be used
      */
-    public void setBuilderContext(final FOTreeBuilderContext context) {
+    public void setBuilderContext(FOTreeBuilderContext context) {
         this.builderContext = context;
     }
 
     /** {@inheritDoc} */
-    @Override
     public FOTreeBuilderContext getBuilderContext() {
         return this.builderContext;
     }
 
     /**
-     * Gets the last page number generated by the previous page-sequence
-     *
-     * @return the last page number, 0 if no page sequences yet generated
-     */
+    * Gets the last page number generated by the previous page-sequence
+    * @return the last page number, 0 if no page sequences yet generated
+    */
     public int getEndingPageNumberOfPreviousSequence() {
-        return this.endingPageNumberOfPreviousSequence;
+        return endingPageNumberOfPreviousSequence;
     }
 
     /**
-     * Returns the total number of pages generated by FOP (May not equal
-     * endingPageNumberOfPreviousSequence due to initial-page-number property on
-     * fo:page-sequences.)
-     *
+     * Returns the total number of pages generated by FOP
+     * (May not equal endingPageNumberOfPreviousSequence due to
+     * initial-page-number property on fo:page-sequences.)
      * @return the last page number, 0 if no page sequences yet generated
      */
     public int getTotalPagesGenerated() {
-        return this.totalPagesGenerated;
+        return totalPagesGenerated;
     }
 
     /**
-     * Notify additional pages generated to increase the totalPagesGenerated
-     * counter
-     *
-     * @param lastPageNumber
-     *            the last page number generated by the sequence
-     * @param additionalPages
-     *            the total pages generated by the sequence (for statistics)
-     * @throws IllegalArgumentException
-     *             for negative additional page counts
+     * Notify additional pages generated to increase the totalPagesGenerated counter
+     * @param lastPageNumber the last page number generated by the sequence
+     * @param additionalPages the total pages generated by the sequence (for statistics)
+     * @throws IllegalArgumentException for negative additional page counts
      */
-    public void notifyPageSequenceFinished(final int lastPageNumber,
-            final int additionalPages) {
+    public void notifyPageSequenceFinished(int lastPageNumber, int additionalPages)
+            throws IllegalArgumentException {
 
         if (additionalPages >= 0) {
-            this.totalPagesGenerated += additionalPages;
-            this.endingPageNumberOfPreviousSequence = lastPageNumber;
+            totalPagesGenerated += additionalPages;
+            endingPageNumberOfPreviousSequence = lastPageNumber;
         } else {
             throw new IllegalArgumentException(
-                    "Number of additional pages must be zero or greater.");
+                "Number of additional pages must be zero or greater.");
         }
     }
 
     /**
      * Returns the number of PageSequence instances.
-     *
      * @return the number of PageSequence instances
      */
     public int getPageSequenceCount() {
-        return this.pageSequences.size();
+        return pageSequences.size();
     }
 
     /**
-     * Some properties, such as 'force-page-count', require a page-sequence to
-     * know about some properties of the next.
-     *
-     * @param current
-     *            the current PageSequence
+     * Some properties, such as 'force-page-count', require a
+     * page-sequence to know about some properties of the next.
+     * @param current the current PageSequence
      * @return succeeding PageSequence; null if none
      */
-    public PageSequence getSucceedingPageSequence(final PageSequence current) {
-        final int currentIndex = this.pageSequences.indexOf(current);
+    public PageSequence getSucceedingPageSequence(PageSequence current) {
+        int currentIndex = pageSequences.indexOf(current);
         if (currentIndex == -1) {
             return null;
         }
-        if (currentIndex < this.pageSequences.size() - 1) {
-            return this.pageSequences.get(currentIndex + 1);
+        if (currentIndex < (pageSequences.size() - 1)) {
+            return pageSequences.get(currentIndex + 1);
         } else {
             return null;
         }
@@ -274,7 +282,6 @@ public class Root extends FObj {
 
     /**
      * Returns the associated LayoutMasterSet.
-     *
      * @return the LayoutMasterSet instance
      */
     public LayoutMasterSet getLayoutMasterSet() {
@@ -283,17 +290,14 @@ public class Root extends FObj {
 
     /**
      * Sets the associated LayoutMasterSet.
-     *
-     * @param layoutMasterSet
-     *            the LayoutMasterSet to use
+     * @param layoutMasterSet the LayoutMasterSet to use
      */
-    public void setLayoutMasterSet(final LayoutMasterSet layoutMasterSet) {
+    public void setLayoutMasterSet(LayoutMasterSet layoutMasterSet) {
         this.layoutMasterSet = layoutMasterSet;
     }
 
     /**
      * Returns the associated Declarations.
-     *
      * @return the Declarations instance
      */
     public Declarations getDeclarations() {
@@ -302,75 +306,69 @@ public class Root extends FObj {
 
     /**
      * Sets the associated Declarations.
-     *
-     * @param declarations
-     *            the Declarations to use
+     * @param declarations the Declarations to use
      */
-    public void setDeclarations(final Declarations declarations) {
+    public void setDeclarations(Declarations declarations) {
         this.declarations = declarations;
     }
 
     /**
      * Set the BookmarkTree object for this FO
-     *
-     * @param bookmarkTree
-     *            the BookmarkTree object
+     * @param bookmarkTree the BookmarkTree object
      */
-    public void setBookmarkTree(final BookmarkTree bookmarkTree) {
+    public void setBookmarkTree(BookmarkTree bookmarkTree) {
         this.bookmarkTree = bookmarkTree;
     }
 
     /**
      * Add a Destination object to this FO
-     *
-     * @param destination
-     *            the Destination object to add
+     * @param destination the Destination object to add
      */
-    public void addDestination(final Destination destination) {
-        if (this.destinationList == null) {
-            this.destinationList = new ArrayList<>();
+    public void addDestination(Destination destination) {
+        if (destinationList == null) {
+          destinationList = new java.util.ArrayList<Destination>();
         }
-        this.destinationList.add(destination);
+        destinationList.add(destination);
     }
 
     /**
      * Public accessor for the list of Destination objects for this FO
-     *
      * @return the Destination object
      */
-    public List<Destination> getDestinationList() {
-        return this.destinationList;
+    public List getDestinationList() {
+        return destinationList;
     }
 
     /**
      * Public accessor for the BookmarkTree object for this FO
-     *
      * @return the BookmarkTree object
      */
     public BookmarkTree getBookmarkTree() {
-        return this.bookmarkTree;
+        return bookmarkTree;
     }
 
     /** {@inheritDoc} */
-    @Override
     public Root getRoot() {
         return this;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "root";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_ROOT}
      */
-    @Override
     public int getNameId() {
         return FO_ROOT;
+    }
+
+
+    /** @return locale proprty. */
+    public Locale getLocale() {
+        return locale;
     }
 
 }

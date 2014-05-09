@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfListContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfListContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,20 +29,16 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Interface for RtfElements that can contain RtfLists
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Interface for RtfElements that can contain RtfLists.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public interface IRtfListContainer {
-    /**
-     * Close the current list, if any, and starts a new one
-     * 
-     * @param attrs
-     *            attributes of new List
+    /** Close the current list, if any, and starts a new one
+     * @param attrs attributes of new List
      * @return new List object
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    RtfList newList(final RtfAttributes attrs) throws IOException;
+    RtfList newList(RtfAttributes attrs) throws IOException;
 }

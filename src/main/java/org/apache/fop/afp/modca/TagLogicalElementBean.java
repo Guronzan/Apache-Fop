@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-/* $Id: TagLogicalElementBean.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: TagLogicalElementBean.java 1039179 2010-11-25 21:04:09Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
 /**
- * The TagLogicalElementBean provides a bean for holding the attributes of a tag
- * logical element as key value pairs.
+ * The TagLogicalElementBean provides a bean for holding the attributes of
+ * a tag logical element as key value pairs.
  * <p/>
  */
 public class TagLogicalElementBean {
 
     /** The key attribute */
-    private final String key;
+    private String key;
 
     /** The value attribute */
-    private final String value;
+    private String value;
 
     /**
      * Constructor for the TagLogicalElementBean.
      *
-     * @param key
-     *            the key attribute
-     * @param value
-     *            the value attribute
+     * @param key the key attribute
+     * @param value the value attribute
      */
-    public TagLogicalElementBean(final String key, final String value) {
+    public TagLogicalElementBean(String key, String value) {
         this.key = key;
         this.value = value;
     }
@@ -51,7 +49,7 @@ public class TagLogicalElementBean {
      * @return the key
      */
     public String getKey() {
-        return this.key;
+        return key;
     }
 
     /**
@@ -60,7 +58,7 @@ public class TagLogicalElementBean {
      * @return the value
      */
     public String getValue() {
-        return this.value;
+        return value;
     }
 
 }

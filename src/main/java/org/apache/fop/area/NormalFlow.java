@@ -15,38 +15,34 @@
  * limitations under the License.
  */
 
-/* $Id: NormalFlow.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: NormalFlow.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.area;
 
 /**
- * The normal-flow-reference-area class. Each span-reference-area contains one
- * or more of these objects See fo:region-body definition in the XSL Rec for
- * more information.
+ * The normal-flow-reference-area class.
+ * Each span-reference-area contains one or more of these objects
+ * See fo:region-body definition in the XSL Rec for more information.
  */
 public class NormalFlow extends BlockParent {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -3753538631016929004L;
 
     /**
      * Constructor.
-     *
-     * @param ipd
-     *            of Normal flow object
+     * @param ipd of Normal flow object
      */
-    public NormalFlow(final int ipd) {
+    public NormalFlow(int ipd) {
         addTrait(Trait.IS_REFERENCE_AREA, Boolean.TRUE);
         setIPD(ipd);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void addBlock(final Block block) {
+    public void addBlock(Block block) {
         super.addBlock(block);
         if (block.isStacked()) {
-            this.bpd += block.getAllocBPD();
+            bpd += block.getAllocBPD();
         }
     }
 }
+

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsLine.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsLine.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -23,37 +23,34 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * A GOCA graphics straight line drawn from the given absolute position
+ * A GOCA graphics straight line drawn from the
+ * given absolute position
  */
 public class GraphicsLine extends AbstractGraphicsCoord {
 
     /**
      * Constructor
      *
-     * @param coords
-     *            the x/y coordinates for this object
+     * @param coords the x/y coordinates for this object
      *
-     * @param relative
-     *            is this a relative drawing order
+     * @param relative is this a relative drawing order
      */
-    public GraphicsLine(final int[] coords, final boolean relative) {
+    public GraphicsLine(int[] coords, boolean relative) {
         super(coords, relative);
     }
 
     /** {@inheritDoc} */
-    @Override
     byte getOrderCode() {
         if (isRelative()) {
-            return (byte) 0x81;
+            return (byte)0x81;
         } else {
-            return (byte) 0xC1;
+            return (byte)0xC1;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
         os.write(data);
     }
 }

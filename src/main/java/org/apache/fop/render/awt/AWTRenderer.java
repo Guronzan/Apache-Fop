@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AWTRenderer.java 803440 2009-08-12 10:46:39Z vhennebert $ */
+/* $Id: AWTRenderer.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.render.awt;
 
@@ -36,6 +36,8 @@ import java.awt.print.Pageable;
 import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.io.IOException;
+
+import org.apache.xmlgraphics.util.UnitConv;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -60,149 +62,109 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     public static final String MIME_TYPE = MimeConstants.MIME_FOP_AWT_PREVIEW;
 
     /** flag for debugging */
-    public boolean debug;
-
-    /** If true, preview dialog is shown. */
-    public boolean dialogDisplay = true;
-
-    /** true if the preview dialog should be the main window of the application */
-    private final boolean previewAsMainWindow;
-
-    /**
-     * Renderable instance that can be used to reload and re-render a document
-     * after modifications.
-     */
-    protected Renderable renderable;
+    public boolean debug;                                       // CSOK: VisibilityModifier
 
     /**
      * Will be notified when rendering progresses
      */
     protected StatusListener statusListener = null;
 
+
     /**
      * Creates a new AWTRenderer instance.
+     *
+     * @param userAgent the user agent that contains configuration data
      */
-    public AWTRenderer() {
-        this(false);
+    public AWTRenderer(FOUserAgent userAgent) {
+        this(userAgent, null, false, false);
     }
 
     /**
      * Creates a new AWTRenderer instance.
      *
-     * @param previewAsMainWindow
-     *            true if the preview dialog created by the renderer should be
-     *            the main window of the application.
+     * @param userAgent the user agent that contains configuration data
+     * @param renderable a Renderable instance can be set so the Preview Dialog can enable the
+     * "Reload" button which causes the current document to be reprocessed and redisplayed.
+     * @param previewAsMainWindow true if the preview dialog created by the renderer should be
+     * the main window of the application.
+     * @param show sets whether the preview dialog should be created and displayed when the
+     * rendering has finished.
      */
-    public AWTRenderer(final boolean previewAsMainWindow) {
-        this.previewAsMainWindow = previewAsMainWindow;
+    public AWTRenderer(FOUserAgent userAgent, Renderable renderable, boolean previewAsMainWindow,
+            boolean show) {
+        super(userAgent);
+        if (show) {
+            // MH: Not sure about this??? If show is false, there's no way for this class
+            // to create a preview dialog... Previously a "setUserAgent" could be called.
+            setStatusListener(PreviewDialog.createPreviewDialog(userAgent, renderable,
+                    previewAsMainWindow));
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @throws FOPException thrown by java2DRenderer
+     */
+    public void renderPage(PageViewport pageViewport) throws IOException, FOPException {
+
+        super.renderPage(pageViewport);
+        if (statusListener != null) {
+            statusListener.notifyPageRendered();
+        }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setUserAgent(final FOUserAgent foUserAgent) {
-        super.setUserAgent(foUserAgent);
-        if (this.dialogDisplay) {
-            setStatusListener(PreviewDialog.createPreviewDialog(this.userAgent,
-                    this.renderable, this.previewAsMainWindow));
-        }
-    }
-
-    /**
-     * A Renderable instance can be set so the Preview Dialog can enable the
-     * "Reload" button which causes the current document to be reprocessed and
-     * redisplayed.
-     *
-     * @param renderable
-     *            the Renderable instance.
-     */
-    public void setRenderable(final Renderable renderable) {
-        this.renderable = renderable;
-    }
-
-    /**
-     * Sets whether the preview dialog should be created and displayed when the
-     * rendering is finished.
-     *
-     * @param show
-     *            If false, preview dialog is not shown. True by default
-     */
-    public void setPreviewDialogDisplayed(final boolean show) {
-        this.dialogDisplay = show;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void renderPage(final PageViewport pageViewport) throws IOException {
-
-        super.renderPage(pageViewport);
-        if (this.statusListener != null) {
-            this.statusListener.notifyPageRendered();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IOException
-     */
-    @Override
     public void stopRenderer() throws IOException {
         super.stopRenderer();
-        if (this.statusListener != null) {
-            this.statusListener.notifyRendererStopped(); // Refreshes view of
-            // page
+        if (statusListener != null) {
+            statusListener.notifyRendererStopped(); // Refreshes view of page
         }
     }
 
     /**
      * @return the dimensions of the specified page
-     * @param pageNum
-     *            the page number
-     * @exception FOPException
-     *                If the page is out of range or has not been rendered.
+     * @param pageNum the page number
+     * @exception FOPException If the page is out of range or has not been rendered.
      */
-    public Dimension getPageImageSize(final int pageNum) throws FOPException {
-        final Rectangle2D bounds = getPageViewport(pageNum).getViewArea();
-        this.pageWidth = (int) Math.round(bounds.getWidth() / 1000f);
-        this.pageHeight = (int) Math.round(bounds.getHeight() / 1000f);
-        double scaleX = this.scaleFactor
-                * (25.4 / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION)
-                / this.userAgent.getTargetPixelUnitToMillimeter();
-        double scaleY = this.scaleFactor
-                * (25.4 / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION)
-                / this.userAgent.getTargetPixelUnitToMillimeter();
+    public Dimension getPageImageSize(int pageNum) throws FOPException {
+        Rectangle2D bounds = getPageViewport(pageNum).getViewArea();
+        pageWidth = (int) Math.round(bounds.getWidth() / 1000f);
+        pageHeight = (int) Math.round(bounds.getHeight() / 1000f);
+        double scaleX = scaleFactor
+                * (UnitConv.IN2MM / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION)
+                / userAgent.getTargetPixelUnitToMillimeter();
+        double scaleY = scaleFactor
+                * (UnitConv.IN2MM / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION)
+                / userAgent.getTargetPixelUnitToMillimeter();
         if (getPageViewport(pageNum).getForeignAttributes() != null) {
-            final String scale = getPageViewport(pageNum)
-                    .getForeignAttributes().get(PageScale.EXT_PAGE_SCALE);
-            final Point2D scales = PageScale.getScale(scale);
+            String scale = (String) getPageViewport(pageNum).getForeignAttributes().get(
+                    PageScale.EXT_PAGE_SCALE);
+            Point2D scales = PageScale.getScale(scale);
             if (scales != null) {
                 scaleX *= scales.getX();
                 scaleY *= scales.getY();
             }
         }
-        final int bitmapWidth = (int) (this.pageWidth * scaleX + 0.5);
-        final int bitmapHeight = (int) (this.pageHeight * scaleY + 0.5);
+        int bitmapWidth = (int) ((pageWidth * scaleX) + 0.5);
+        int bitmapHeight = (int) ((pageHeight * scaleY) + 0.5);
         return new Dimension(bitmapWidth, bitmapHeight);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public PageFormat getPageFormat(final int pageIndex)
+    public PageFormat getPageFormat(int pageIndex)
             throws IndexOutOfBoundsException {
         try {
             if (pageIndex >= getNumberOfPages()) {
                 return null;
             }
 
-            final PageFormat pageFormat = new PageFormat();
+            PageFormat pageFormat = new PageFormat();
 
-            final Paper paper = new Paper();
+            Paper paper = new Paper();
 
-            final Rectangle2D dim = getPageViewport(pageIndex).getViewArea();
-            final double width = dim.getWidth();
-            final double height = dim.getHeight();
+            Rectangle2D dim = getPageViewport(pageIndex).getViewArea();
+            double width = dim.getWidth();
+            double height = dim.getHeight();
 
             // if the width is greater than the height assume lanscape mode
             // and swap the width and height values in the paper format
@@ -217,26 +179,23 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
             }
             pageFormat.setPaper(paper);
             return pageFormat;
-        } catch (final FOPException fopEx) {
+        } catch (FOPException fopEx) {
             throw new IndexOutOfBoundsException(fopEx.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Printable getPrintable(final int pageIndex)
+    public Printable getPrintable(int pageIndex)
             throws IndexOutOfBoundsException {
         return this;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean supportsOutOfOrder() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
@@ -245,24 +204,19 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
      * Draws the background and borders and adds a basic debug view // TODO
      * implement visual-debugging as standalone
      *
-     * {@inheritDoc} float, float, float, float)
+     * {@inheritDoc}
+     * float, float, float, float)
      *
-     * @param area
-     *            the area to get the traits from
-     * @param startx
-     *            the start x position
-     * @param starty
-     *            the start y position
-     * @param width
-     *            the width of the area
-     * @param height
-     *            the height of the area
+     * @param area the area to get the traits from
+     * @param startx the start x position
+     * @param starty the start y position
+     * @param width the width of the area
+     * @param height the height of the area
      */
-    @Override
-    protected void drawBackAndBorders(final Area area, final float startx,
-            final float starty, final float width, final float height) {
+    protected void drawBackAndBorders(Area area, float startx, float starty,
+            float width, float height) {
 
-        if (this.debug) {
+        if (debug) {
             debugBackAndBorders(area, startx, starty, width, height);
         }
 
@@ -270,16 +224,16 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     }
 
     /** Draws a thin border around every area to help debugging */
-    private void debugBackAndBorders(final Area area, final float startx,
-            final float starty, final float width, final float height) {
+    private void debugBackAndBorders(Area area, float startx, float starty,
+            float width, float height) {
 
         // saves the graphics state in a stack
         saveGraphicsState();
 
-        final Color col = new Color(0.7f, 0.7f, 0.7f);
-        this.state.updateColor(col);
-        this.state.updateStroke(0.4f, EN_SOLID);
-        this.state.getGraph().draw(
+        Color col = new Color(0.7f, 0.7f, 0.7f);
+        state.updateColor(col);
+        state.updateStroke(0.4f, EN_SOLID);
+        state.getGraph().draw(
                 new Rectangle2D.Float(startx, starty, width, height));
 
         // restores the last graphics state from the stack
@@ -288,16 +242,14 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
 
     /** @return the StatusListener. */
     public StatusListener getStatusListener() {
-        return this.statusListener;
+        return statusListener;
     }
 
     /**
      * Sets a StatusListener this renderer uses to notify about events.
-     *
-     * @param statusListener
-     *            The StatusListener to set.
+     * @param statusListener The StatusListener to set.
      */
-    public void setStatusListener(final StatusListener statusListener) {
+    public void setStatusListener(StatusListener statusListener) {
         this.statusListener = statusListener;
     }
 

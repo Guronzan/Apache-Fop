@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: BreakPropertySet.java 681307 2008-07-31 09:06:10Z jeremias $ */
+/* $Id: BreakPropertySet.java 1039179 2010-11-25 21:04:09Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
 
 /**
- * Defines property access methods for the break-before and break-after
- * properties.
+ * Defines property access methods for the break-before and break-after properties.
  */
 public interface BreakPropertySet {
 

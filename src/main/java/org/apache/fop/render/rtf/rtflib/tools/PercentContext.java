@@ -15,33 +15,34 @@
  * limitations under the License.
  */
 
-/* $Id: PercentContext.java 681307 2008-07-31 09:06:10Z jeremias $ */
+/* $Id: PercentContext.java 1311081 2012-04-08 20:18:15Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.tools;
 
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.datatypes.PercentBaseContext;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.flow.table.Table;
+import org.apache.fop.fo.flow.table.TableColumn;
 import org.apache.fop.fo.pagination.PageSequence;
 
 /**
- * PercentBaseContext implementation to track base widths for percentage
- * calculations.
+ * <p>PercentBaseContext implementation to track base widths for percentage calculations.</p>
  */
-@Slf4j
 public class PercentContext implements PercentBaseContext {
+    private static Log log = LogFactory.getLog(PercentContext.class);
 
     /** Map containing the FObj and its width */
-    private final Map<FObj, Integer> lengthMap = new java.util.HashMap<>();
+    private Map lengthMap = new java.util.HashMap();
 
     /** Map containing the Tables and their table units */
-    private final Map<Table, Integer> tableUnitMap = new java.util.HashMap<>();
+    private Map tableUnitMap = new java.util.HashMap();
 
     /** Variable to check if a base width is set */
     private boolean baseWidthSet = false;
@@ -50,31 +51,52 @@ public class PercentContext implements PercentBaseContext {
      * Returns the available width for a specific FObj
      *
      * @param lengthBase
-     *            lengthBase not used
+     *                lengthBase not used
      * @param fobj
-     *            the FObj
+     *                the FObj
      * @return Available Width
      */
-    @Override
-    public int getBaseLength(final int lengthBase, final FObj fobj) {
+    public int getBaseLength(int lengthBase, FObj fobj) {
         if (fobj == null) {
             return 0;
         }
+
+        // Special handler for TableColumn width specifications, needs to be
+        // relative to the parent!
+        if ( ( fobj instanceof TableColumn ) && ( fobj.getParent() instanceof FObj ) ) {
+            fobj = (FObj) fobj.getParent();
+        }
+
         switch (lengthBase) {
         case LengthBase.CONTAINING_BLOCK_WIDTH:
         case LengthBase.PARENT_AREA_WIDTH:
         case LengthBase.CONTAINING_REFAREA_WIDTH:
-            final Object width = this.lengthMap.get(fobj);
+            Object width = lengthMap.get(fobj);
             if (width != null) {
                 return Integer.parseInt(width.toString());
-            } else {
-                return -1;
+            } else if (fobj.getParent() != null) {
+              // If the object itself has no width the parent width will be used
+              // because it is the base width of this object
+              width = lengthMap.get(fobj.getParent());
+              if (width != null) {
+                return Integer.parseInt(width.toString());
+              }
             }
+            return 0;
         case LengthBase.TABLE_UNITS:
-            final Object unit = this.tableUnitMap.get(fobj);
-            return unit != null ? ((Integer) unit).intValue() : 0;
+            Object unit = tableUnitMap.get(fobj);
+            if (unit != null) {
+                return ((Integer)unit).intValue();
+            } else if (fobj.getParent() != null) {
+              // If the object itself has no width the parent width will be used
+              unit = tableUnitMap.get(fobj.getParent());
+              if (unit != null) {
+                return ((Integer)unit).intValue();
+              }
+            }
+            return 0;
         default:
-            log.error("Unsupported base type for LengthBase: {}", lengthBase);
+            log.error(new Exception("Unsupported base type for LengthBase:" + lengthBase));
             return 0;
         }
     }
@@ -83,45 +105,40 @@ public class PercentContext implements PercentBaseContext {
      * Elements having a width property can call this function if their width is
      * calculated in RTFHandler
      *
-     * @param fobj
-     *            the FObj
-     * @param width
-     *            width of the FObj (in millipoints)
+     * @param fobj the FObj
+     * @param width width of the FObj (in millipoints)
      */
-    public void setDimension(final FObj fobj, final int width) {
+    public void setDimension(FObj fobj, int width) {
         // TODO ACCEPT only objects above for setting a width
         if (fobj instanceof PageSequence) {
-            this.baseWidthSet = true;
+            baseWidthSet = true;
         }
         // width in mpt
-        this.lengthMap.put(fobj, width);
+        lengthMap.put(fobj, new Integer(width));
     }
 
     /**
      * Records the calculated table unit for a given table.
-     *
-     * @param table
-     *            the table for which the table unit is set
-     * @param tableUnit
-     *            the table unit value (in millipoints)
+     * @param table the table for which the table unit is set
+     * @param tableUnit the table unit value (in millipoints)
      */
-    public void setTableUnit(final Table table, final int tableUnit) {
-        this.tableUnitMap.put(table, tableUnit);
+    public void setTableUnit(Table table, int tableUnit) {
+        tableUnitMap.put(table, new Integer(tableUnit));
     }
 
     /**
      * Searches for the parent object of fobj.
      */
-    private Integer findParent(final FONode fobj) {
+    private Integer findParent(FONode fobj) {
         if (fobj.getRoot() != fobj) {
-            if (this.lengthMap.containsKey(fobj)) {
-                return this.lengthMap.get(fobj);
+            if (lengthMap.containsKey(fobj)) {
+                return new Integer(lengthMap.get(fobj).toString());
             } else {
                 return findParent(fobj.getParent());
             }
         } else {
             log.error("Base Value for element " + fobj.getName() + " not found");
-            return -1;
+            return new Integer(-1);
         }
     }
 
@@ -129,14 +146,13 @@ public class PercentContext implements PercentBaseContext {
      * Elements willing to use this context have to register themselves by
      * calling this function.
      *
-     * @param fobj
-     *            the FObj
+     * @param fobj the FObj
      */
-    public void setDimension(final FObj fobj) {
-        if (this.baseWidthSet) {
-            final Integer width = findParent(fobj.getParent());
+    public void setDimension(FObj fobj) {
+        if (baseWidthSet) {
+            Integer width = findParent(fobj.getParent());
             if (width.intValue() != -1) {
-                this.lengthMap.put(fobj, width);
+                lengthMap.put(fobj, width);
             }
         }
     }

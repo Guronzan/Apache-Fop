@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Page.java 798511 2009-07-28 12:53:58Z jeremias $ */
+/* $Id: Page.java 993357 2010-09-07 13:45:39Z jeremias $ */
 
 package org.apache.fop.layoutmgr;
 
@@ -25,53 +25,40 @@ import org.apache.fop.area.PageViewport;
 import org.apache.fop.fo.pagination.SimplePageMaster;
 
 /**
- * This object is used by the layout engine to represent a page. It provides
- * access to the simple-page-master that was used as a template for this page
- * and it provides access to the PageViewport which is the top-level area tree
- * element. This class helps to decouple the FO tree from the area tree to make
- * the latter easily serializable.
+ * This object is used by the layout engine to represent a page. It provides access to the
+ * simple-page-master that was used as a template for this page and it provides access to the
+ * PageViewport which is the top-level area tree element. This class helps to decouple the
+ * FO tree from the area tree to make the latter easily serializable.
  */
 public class Page {
 
-    private final SimplePageMaster spm;
-    private final PageViewport pageViewport;
+    private SimplePageMaster spm;
+    private PageViewport pageViewport;
 
     /**
      * Main constructor
-     * 
-     * @param spm
-     *            the simple-page-master used for this page
-     * @param pageNumber
-     *            the page number (as an int)
-     * @param pageNumberStr
-     *            the page number (as a String)
-     * @param blank
-     *            true if this is a blank page
+     * @param spm the simple-page-master used for this page
+     * @param pageNumber the page number (as an int)
+     * @param pageNumberStr the page number (as a String)
+     * @param blank true if this is a blank page
+     * @param spanAll true if the first span area spans all columns
      */
-    public Page(final SimplePageMaster spm, final int pageNumber,
-            final String pageNumberStr, final boolean blank) {
+    public Page(SimplePageMaster spm, int pageNumber, String pageNumberStr,
+            boolean blank, boolean spanAll) {
         this.spm = spm;
-        this.pageViewport = new PageViewport(spm, pageNumber, pageNumberStr,
-                blank);
+        this.pageViewport = new PageViewport(spm, pageNumber, pageNumberStr, blank, spanAll);
     }
 
     /**
      * Auxiliary constructor used when there's no SimplePageMaster.
-     * 
-     * @param viewArea
-     *            the view area of the page
-     * @param pageNumber
-     *            the page number (as an int)
-     * @param pageNumberStr
-     *            the page number (as a String)
-     * @param blank
-     *            true if this is a blank page
+     * @param viewArea the view area of the page
+     * @param pageNumber the page number (as an int)
+     * @param pageNumberStr the page number (as a String)
+     * @param blank true if this is a blank page
      */
-    public Page(final Rectangle viewArea, final int pageNumber,
-            final String pageNumberStr, final boolean blank) {
+    public Page(Rectangle viewArea, int pageNumber, String pageNumberStr, boolean blank) {
         this.spm = null;
-        this.pageViewport = new PageViewport(viewArea, pageNumber,
-                pageNumberStr, null, blank);
+        this.pageViewport = new PageViewport(viewArea, pageNumber, pageNumberStr, null, blank);
     }
 
     /** @return the simple-page-master that created this page */

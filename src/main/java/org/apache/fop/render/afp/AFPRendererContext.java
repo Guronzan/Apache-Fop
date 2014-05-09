@@ -22,6 +22,7 @@ package org.apache.fop.render.afp;
 import java.util.Map;
 
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.fop.afp.AFPPaintingState;
 import org.apache.fop.afp.AFPResourceInfo;
 import org.apache.fop.afp.AFPResourceManager;
@@ -30,7 +31,6 @@ import org.apache.fop.render.AbstractRenderer;
 import org.apache.fop.render.ImageHandlerUtil;
 import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RendererContextConstants;
-import org.apache.xmlgraphics.util.QName;
 
 /**
  * AFP-specific renderer context class.
@@ -40,12 +40,10 @@ public class AFPRendererContext extends RendererContext {
     /**
      * Main constructor
      *
-     * @param renderer
-     *            the current renderer
-     * @param mime
-     *            the MIME type of the output that's generated.
+     * @param renderer the current renderer
+     * @param mime the MIME type of the output that's generated.
      */
-    public AFPRendererContext(final AbstractRenderer renderer, final String mime) {
+    public AFPRendererContext(AbstractRenderer renderer, String mime) {
         super(renderer, mime);
     }
 
@@ -55,35 +53,34 @@ public class AFPRendererContext extends RendererContext {
      * @return an AFPInfo for this renderer context
      */
     public AFPInfo getInfo() {
-        final AFPInfo info = new AFPInfo();
-        info.setWidth(((Integer) getProperty(RendererContextConstants.WIDTH))
-                .intValue());
-        info.setHeight(((Integer) getProperty(RendererContextConstants.HEIGHT))
-                .intValue());
-        info.setX(((Integer) getProperty(RendererContextConstants.XPOS))
-                .intValue());
-        info.setY(((Integer) getProperty(RendererContextConstants.YPOS))
-                .intValue());
-        info.setHandlerConfiguration((Configuration) getProperty(RendererContextConstants.HANDLER_CONFIGURATION));
-        info.setFontInfo((org.apache.fop.fonts.FontInfo) getProperty(AFPRendererContextConstants.AFP_FONT_INFO));
-        info.setPaintingState((AFPPaintingState) getProperty(AFPRendererContextConstants.AFP_PAINTING_STATE));
-        info.setResourceManager((AFPResourceManager) getProperty(AFPRendererContextConstants.AFP_RESOURCE_MANAGER));
+        AFPInfo info = new AFPInfo();
+        info.setWidth(((Integer)getProperty(RendererContextConstants.WIDTH)).intValue());
+        info.setHeight(((Integer)getProperty(RendererContextConstants.HEIGHT)).intValue());
+        info.setX(((Integer)getProperty(RendererContextConstants.XPOS)).intValue());
+        info.setY(((Integer)getProperty(RendererContextConstants.YPOS)).intValue());
+        info.setHandlerConfiguration((Configuration)getProperty(
+                RendererContextConstants.HANDLER_CONFIGURATION));
+        info.setFontInfo((org.apache.fop.fonts.FontInfo)getProperty(
+                AFPRendererContextConstants.AFP_FONT_INFO));
+        info.setPaintingState((AFPPaintingState)getProperty(
+                AFPRendererContextConstants.AFP_PAINTING_STATE));
+        info.setResourceManager(((AFPResourceManager)getProperty(
+                AFPRendererContextConstants.AFP_RESOURCE_MANAGER)));
 
-        final Map<QName, String> foreignAttributes = (Map<QName, String>) getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
+        Map foreignAttributes = (Map)getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
         if (foreignAttributes != null) {
-            final boolean paintAsBitmap = ImageHandlerUtil
-                    .isConversionModeBitmap(foreignAttributes);
+            boolean paintAsBitmap = ImageHandlerUtil.isConversionModeBitmap(foreignAttributes);
             info.setPaintAsBitmap(paintAsBitmap);
 
-            final AFPForeignAttributeReader foreignAttributeReader = new AFPForeignAttributeReader();
-            final AFPResourceInfo resourceInfo = foreignAttributeReader
-                    .getResourceInfo(foreignAttributes);
+            AFPForeignAttributeReader foreignAttributeReader
+                = new AFPForeignAttributeReader();
+            AFPResourceInfo resourceInfo
+                = foreignAttributeReader.getResourceInfo(foreignAttributes);
             // set default resource level if an explicit one hasn't been set
             if (!resourceInfo.levelChanged()) {
-                final byte resourceType = paintAsBitmap ? ResourceObject.TYPE_IMAGE
-                        : ResourceObject.TYPE_GRAPHIC;
-                resourceInfo.setLevel(info.getResourceManager()
-                        .getResourceLevelDefaults()
+                byte resourceType = paintAsBitmap
+                    ? ResourceObject.TYPE_IMAGE : ResourceObject.TYPE_GRAPHIC;
+                resourceInfo.setLevel(info.getResourceManager().getResourceLevelDefaults()
                         .getDefaultResourceLevel(resourceType));
             }
             info.setResourceInfo(resourceInfo);

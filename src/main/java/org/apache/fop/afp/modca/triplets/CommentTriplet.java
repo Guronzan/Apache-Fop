@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: CommentTriplet.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: CommentTriplet.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp.modca.triplets;
 
@@ -31,23 +31,25 @@ public class CommentTriplet extends AbstractTriplet {
 
     private final String commentString;
 
-    public CommentTriplet(final byte id, final String commentString) {
+    /**
+     * Construct a triplet.
+     * @param id the triplet identification number
+     * @param commentString a comment
+     */
+    public CommentTriplet(byte id, String commentString) {
         super(id);
         this.commentString = commentString;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
-        return 2 + this.commentString.length();
+        return 2 + commentString.length();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
-        final byte[] strData = this.commentString
-                .getBytes(AFPConstants.EBCIDIC_ENCODING);
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
+        byte[] strData = commentString.getBytes(AFPConstants.EBCIDIC_ENCODING);
         System.arraycopy(strData, 0, data, 2, strData.length);
         os.write(data);
     }

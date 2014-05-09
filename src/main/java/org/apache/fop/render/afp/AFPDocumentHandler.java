@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPDocumentHandler.java 953952 2010-06-12 08:19:48Z jeremias $ */
+/* $Id: AFPDocumentHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.afp;
 
@@ -23,7 +23,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.fop.afp.AFPDitheredRectanglePainter;
@@ -39,6 +40,7 @@ import org.apache.fop.afp.fonts.AFPPageFonts;
 import org.apache.fop.afp.modca.ResourceObject;
 import org.apache.fop.afp.util.DefaultFOPResourceAccessor;
 import org.apache.fop.afp.util.ResourceAccessor;
+import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontEventAdapter;
 import org.apache.fop.fonts.FontInfo;
@@ -47,21 +49,23 @@ import org.apache.fop.render.afp.extensions.AFPElementMapping;
 import org.apache.fop.render.afp.extensions.AFPIncludeFormMap;
 import org.apache.fop.render.afp.extensions.AFPInvokeMediumMap;
 import org.apache.fop.render.afp.extensions.AFPPageOverlay;
+import org.apache.fop.render.afp.extensions.AFPPageSegmentElement;
 import org.apache.fop.render.afp.extensions.AFPPageSetup;
+import org.apache.fop.render.afp.extensions.ExtensionPlacement;
 import org.apache.fop.render.intermediate.AbstractBinaryWritingIFDocumentHandler;
-import org.apache.fop.render.intermediate.IFDocumentHandler;
 import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFPainter;
 
 /**
- * {@link IFDocumentHandler} implementation that produces AFP (MO:DCA).
+ * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation that
+ * produces AFP (MO:DCA).
  */
 public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
-implements AFPCustomizable {
+            implements AFPCustomizable {
 
-    // ** logging instance */
-    // private static Log log = LogFactory.getLog(AFPDocumentHandler.class);
+    //** logging instance */
+    //private static Log log = LogFactory.getLog(AFPDocumentHandler.class);
 
     /** the resource manager */
     private AFPResourceManager resourceManager;
@@ -76,16 +80,18 @@ implements AFPCustomizable {
     private DataStream dataStream;
 
     /** the map of page segments */
-    private final Map<String, String> pageSegmentMap = new HashMap<>();
+    private Map<String, PageSegmentDescriptor> pageSegmentMap
+        = new java.util.HashMap<String, PageSegmentDescriptor>();
 
-    /** Medium Map referenced on previous page **/
-    private String lastMediumMap;
+    private static enum Location {
+        ELSEWHERE, IN_DOCUMENT_HEADER, FOLLOWING_PAGE_SEQUENCE, IN_PAGE_HEADER
+    }
 
-    private static final int LOC_ELSEWHERE = 0;
-    private static final int LOC_FOLLOWING_PAGE_SEQUENCE = 1;
-    private static final int LOC_IN_PAGE_HEADER = 2;
+    private Location location = Location.ELSEWHERE;
 
-    private int location = LOC_ELSEWHERE;
+    /** temporary holds extensions that have to be deferred until the end of the page-sequence */
+    private List<AFPPageSetup> deferredPageSequenceExtensions
+        = new java.util.LinkedList<AFPPageSetup>();
 
     /** the shading mode for filled rectangles */
     private AFPShadingMode shadingMode = AFPShadingMode.COLOR;
@@ -96,38 +102,34 @@ implements AFPCustomizable {
     public AFPDocumentHandler() {
         this.resourceManager = new AFPResourceManager();
         this.paintingState = new AFPPaintingState();
-        this.unitConv = this.paintingState.getUnitConverter();
+        this.unitConv = paintingState.getUnitConverter();
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean supportsPagesOutOfOrder() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getMimeType() {
-        return org.apache.xmlgraphics.util.MimeConstants.MIME_AFP;
+        return MimeConstants.MIME_AFP;
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return new AFPRendererConfigurator(getUserAgent());
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setDefaultFontInfo(final FontInfo fontInfo) {
-        final FontManager fontManager = getUserAgent().getFactory()
-                .getFontManager();
-        final FontCollection[] fontCollections = new FontCollection[] { new AFPFontCollection(
-                getUserAgent().getEventBroadcaster(), null) };
+    public void setDefaultFontInfo(FontInfo fontInfo) {
+        FontManager fontManager = getUserAgent().getFactory().getFontManager();
+        FontCollection[] fontCollections = new FontCollection[] {
+            new AFPFontCollection(getUserAgent().getEventBroadcaster(), null)
+        };
 
-        final FontInfo fi = fontInfo != null ? fontInfo : new FontInfo();
-        fi.setEventListener(new FontEventAdapter(getUserAgent()
-                .getEventBroadcaster()));
+        FontInfo fi = (fontInfo != null ? fontInfo : new FontInfo());
+        fi.setEventListener(new FontEventAdapter(getUserAgent().getEventBroadcaster()));
         fontManager.setup(fi, fontCollections);
         setFontInfo(fi);
     }
@@ -146,10 +148,11 @@ implements AFPCustomizable {
 
     AbstractAFPPainter createRectanglePainter() {
         if (AFPShadingMode.DITHERED.equals(this.shadingMode)) {
-            return new AFPDitheredRectanglePainter(getPaintingState(),
-                    getDataStream(), getResourceManager());
+            return new AFPDitheredRectanglePainter(
+                    getPaintingState(), getDataStream(), getResourceManager());
         } else {
-            return new AFPRectanglePainter(getPaintingState(), getDataStream());
+            return new AFPRectanglePainter(
+                    getPaintingState(), getDataStream());
         }
     }
 
@@ -158,20 +161,29 @@ implements AFPCustomizable {
     public void startDocument() throws IFException {
         super.startDocument();
         try {
-            this.paintingState.setColor(Color.WHITE);
+            paintingState.setColor(Color.WHITE);
 
-            this.dataStream = this.resourceManager.createDataStream(
-                    this.paintingState, this.outputStream);
+            this.dataStream = resourceManager.createDataStream(paintingState, outputStream);
 
             this.dataStream.startDocument();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IFException("I/O error in startDocument()", e);
         }
     }
 
+
     /** {@inheritDoc} */
     @Override
-    public void endDocumentHeader() {
+    public void startDocumentHeader() throws IFException {
+        super.startDocumentHeader();
+        this.location = Location.IN_DOCUMENT_HEADER;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void endDocumentHeader() throws IFException {
+        super.endDocumentHeader();
+        this.location = Location.ELSEWHERE;
     }
 
     /** {@inheritDoc} */
@@ -182,27 +194,43 @@ implements AFPCustomizable {
             this.dataStream = null;
             this.resourceManager.writeToStream();
             this.resourceManager = null;
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endDocument()", ioe);
         }
         super.endDocument();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageSequence(final String id) throws IFException {
+    public void startPageSequence(String id) throws IFException {
         try {
-            this.dataStream.startPageGroup();
-        } catch (final IOException ioe) {
+            dataStream.startPageGroup();
+        } catch (IOException ioe) {
             throw new IFException("I/O error in startPageSequence()", ioe);
         }
-        this.location = LOC_FOLLOWING_PAGE_SEQUENCE;
+        this.location = Location.FOLLOWING_PAGE_SEQUENCE;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPageSequence() {
-        // nop
+    public void endPageSequence() throws IFException {
+        try {
+            //Process deferred page-sequence-level extensions
+            Iterator<AFPPageSetup> iter = this.deferredPageSequenceExtensions.iterator();
+            while (iter.hasNext()) {
+                AFPPageSetup aps = iter.next();
+                iter.remove();
+                if (AFPElementMapping.NO_OPERATION.equals(aps.getElementName())) {
+                    handleNOP(aps);
+                } else {
+                    throw new UnsupportedOperationException("Don't know how to handle " + aps);
+                }
+            }
+
+            //End page sequence
+            dataStream.endPageGroup();
+        } catch (IOException ioe) {
+            throw new IFException("I/O error in endPageSequence()", ioe);
+        }
+        this.location = Location.ELSEWHERE;
     }
 
     /**
@@ -211,33 +239,31 @@ implements AFPCustomizable {
      * @return the base AFP transform
      */
     private AffineTransform getBaseTransform() {
-        final AffineTransform baseTransform = new AffineTransform();
-        final double scale = this.unitConv.mpt2units(1);
+        AffineTransform baseTransform = new AffineTransform();
+        double scale = unitConv.mpt2units(1);
         baseTransform.scale(scale, scale);
         return baseTransform;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPage(final int index, final String name,
-            final String pageMasterName, final Dimension size) {
-        this.location = LOC_ELSEWHERE;
-        this.paintingState.clear();
-        this.pageSegmentMap.clear();
+    public void startPage(int index, String name, String pageMasterName, Dimension size)
+                throws IFException {
+        this.location = Location.ELSEWHERE;
+        paintingState.clear();
 
-        final AffineTransform baseTransform = getBaseTransform();
-        this.paintingState.concatenate(baseTransform);
+        AffineTransform baseTransform = getBaseTransform();
+        paintingState.concatenate(baseTransform);
 
-        final int pageWidth = Math.round(this.unitConv.mpt2units(size.width));
-        this.paintingState.setPageWidth(pageWidth);
+        int pageWidth = Math.round(unitConv.mpt2units(size.width));
+        paintingState.setPageWidth(pageWidth);
 
-        final int pageHeight = Math.round(this.unitConv.mpt2units(size.height));
-        this.paintingState.setPageHeight(pageHeight);
+        int pageHeight = Math.round(unitConv.mpt2units(size.height));
+        paintingState.setPageHeight(pageHeight);
 
-        final int pageRotation = this.paintingState.getPageRotation();
-        final int resolution = this.paintingState.getResolution();
+        int pageRotation = paintingState.getPageRotation();
+        int resolution = paintingState.getResolution();
 
-        this.dataStream.startPage(pageWidth, pageHeight, pageRotation,
+        dataStream.startPage(pageWidth, pageHeight, pageRotation,
                 resolution, resolution);
     }
 
@@ -245,193 +271,251 @@ implements AFPCustomizable {
     @Override
     public void startPageHeader() throws IFException {
         super.startPageHeader();
-        this.location = LOC_IN_PAGE_HEADER;
+        this.location = Location.IN_PAGE_HEADER;
     }
 
     /** {@inheritDoc} */
     @Override
     public void endPageHeader() throws IFException {
-        this.location = LOC_ELSEWHERE;
+        this.location = Location.ELSEWHERE;
         super.endPageHeader();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public IFPainter startPageContent() {
+    public IFPainter startPageContent() throws IFException {
         return new AFPPainter(this);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endPageContent() {
+    public void endPageContent() throws IFException {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endPage() throws IFException {
         try {
-            final AFPPageFonts pageFonts = this.paintingState.getPageFonts();
+            AFPPageFonts pageFonts = paintingState.getPageFonts();
             if (pageFonts != null && !pageFonts.isEmpty()) {
-                this.dataStream.addFontsToCurrentPage(pageFonts);
+                dataStream.addFontsToCurrentPage(pageFonts);
             }
 
-            this.dataStream.endPage();
-        } catch (final IOException ioe) {
+            dataStream.endPage();
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endPage()", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void handleExtensionObject(final Object extension)
-            throws IFException {
+    public void handleExtensionObject(Object extension) throws IFException {
         if (extension instanceof AFPPageSetup) {
-            final AFPPageSetup aps = (AFPPageSetup) extension;
-            final String element = aps.getElementName();
+            AFPPageSetup aps = (AFPPageSetup)extension;
+            String element = aps.getElementName();
             if (AFPElementMapping.TAG_LOGICAL_ELEMENT.equals(element)) {
-                if (this.location != LOC_IN_PAGE_HEADER
-                        && this.location != LOC_FOLLOWING_PAGE_SEQUENCE) {
+                switch (this.location) {
+                case FOLLOWING_PAGE_SEQUENCE:
+                case IN_PAGE_HEADER:
+                    String name = aps.getName();
+                    String value = aps.getValue();
+                    dataStream.createTagLogicalElement(name, value);
+                    break;
+                default:
                     throw new IFException(
-                            "TLE extension must be in the page header or between page-sequence"
-                                    + " and the first page: " + aps, null);
+                        "TLE extension must be in the page header or between page-sequence"
+                            + " and the first page: " + aps, null);
                 }
-                final String name = aps.getName();
-                final String value = aps.getValue();
-                this.dataStream.createTagLogicalElement(name, value);
-            } else {
-                if (this.location != LOC_IN_PAGE_HEADER) {
+            } else if (AFPElementMapping.NO_OPERATION.equals(element)) {
+                switch (this.location) {
+                case FOLLOWING_PAGE_SEQUENCE:
+                    if (aps.getPlacement() == ExtensionPlacement.BEFORE_END) {
+                        this.deferredPageSequenceExtensions.add(aps);
+                        break;
+                    }
+                case IN_DOCUMENT_HEADER:
+                case IN_PAGE_HEADER:
+                    handleNOP(aps);
+                    break;
+                default:
                     throw new IFException(
-                            "AFP page setup extension encountered outside the page header: "
-                                    + aps, null);
+                            "NOP extension must be in the document header, the page header"
+                                + " or between page-sequence"
+                                + " and the first page: " + aps, null);
+                }
+            } else {
+                if (this.location != Location.IN_PAGE_HEADER) {
+                    throw new IFException(
+                        "AFP page setup extension encountered outside the page header: " + aps,
+                        null);
                 }
                 if (AFPElementMapping.INCLUDE_PAGE_SEGMENT.equals(element)) {
-                    final String name = aps.getName();
-                    final String source = aps.getValue();
-                    this.pageSegmentMap.put(source, name);
-                } else if (AFPElementMapping.NO_OPERATION.equals(element)) {
-                    final String content = aps.getContent();
-                    if (content != null) {
-                        this.dataStream.createNoOperation(content);
-                    }
+                    AFPPageSegmentElement.AFPPageSegmentSetup apse
+                        = (AFPPageSegmentElement.AFPPageSegmentSetup)aps;
+                    String name = apse.getName();
+                    String source = apse.getValue();
+                    String uri = apse.getResourceSrc();
+                    pageSegmentMap.put(source, new PageSegmentDescriptor(name, uri));
                 }
             }
         } else if (extension instanceof AFPPageOverlay) {
-            final AFPPageOverlay ipo = (AFPPageOverlay) extension;
-            if (this.location != LOC_IN_PAGE_HEADER) {
-                throw new IFException(
-                        "AFP page overlay extension encountered outside the page header: "
-                                + ipo, null);
+            AFPPageOverlay ipo = (AFPPageOverlay)extension;
+            if (this.location != Location.IN_PAGE_HEADER) {
+                    throw new IFException(
+                        "AFP page overlay extension encountered outside the page header: " + ipo,
+                        null);
             }
-            final String overlay = ipo.getName();
+            String overlay = ipo.getName();
             if (overlay != null) {
-                this.dataStream.createIncludePageOverlay(overlay, ipo.getX(),
-                        ipo.getY());
+                dataStream.createIncludePageOverlay(overlay, ipo.getX(), ipo.getY());
             }
         } else if (extension instanceof AFPInvokeMediumMap) {
-            if (this.location != LOC_FOLLOWING_PAGE_SEQUENCE
-                    && this.location != LOC_IN_PAGE_HEADER) {
+            if (this.location != Location.FOLLOWING_PAGE_SEQUENCE
+                    && this.location != Location.IN_PAGE_HEADER) {
 
                 throw new IFException(
-                        "AFP IMM extension must be between page-sequence"
-                                + " and the first page or child of page-header: "
-                                + extension, null);
+                    "AFP IMM extension must be between page-sequence"
+                    + " and the first page or child of page-header: "
+                    + extension, null);
             }
-            final AFPInvokeMediumMap imm = (AFPInvokeMediumMap) extension;
-            final String mediumMap = imm.getName();
-            if (mediumMap != null && !mediumMap.equals(this.lastMediumMap)) {
-                this.dataStream.createInvokeMediumMap(mediumMap);
-                this.lastMediumMap = mediumMap;
+            AFPInvokeMediumMap imm = (AFPInvokeMediumMap)extension;
+            String mediumMap = imm.getName();
+            if (mediumMap != null) {
+                dataStream.createInvokeMediumMap(mediumMap);
             }
         } else if (extension instanceof AFPIncludeFormMap) {
-            final AFPIncludeFormMap formMap = (AFPIncludeFormMap) extension;
-            final ResourceAccessor accessor = new DefaultFOPResourceAccessor(
+            AFPIncludeFormMap formMap = (AFPIncludeFormMap)extension;
+            ResourceAccessor accessor = new DefaultFOPResourceAccessor(
                     getUserAgent(), null, null);
             try {
-                getResourceManager()
-                .createIncludedResource(formMap.getName(),
+                getResourceManager().createIncludedResource(formMap.getName(),
                         formMap.getSrc(), accessor,
                         ResourceObject.TYPE_FORMDEF);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 throw new IFException(
-                        "I/O error while embedding form map resource: "
-                                + formMap.getName(), ioe);
+                        "I/O error while embedding form map resource: " + formMap.getName(), ioe);
             }
+        }
+    }
+
+    private void handleNOP(AFPPageSetup nop) {
+        String content = nop.getContent();
+        if (content != null) {
+            dataStream.createNoOperation(content);
         }
     }
 
     // ---=== AFPCustomizable ===---
 
     /** {@inheritDoc} */
-    @Override
-    public void setBitsPerPixel(final int bitsPerPixel) {
-        this.paintingState.setBitsPerPixel(bitsPerPixel);
+    public void setBitsPerPixel(int bitsPerPixel) {
+        paintingState.setBitsPerPixel(bitsPerPixel);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setColorImages(final boolean colorImages) {
-        this.paintingState.setColorImages(colorImages);
+    public void setColorImages(boolean colorImages) {
+        paintingState.setColorImages(colorImages);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setNativeImagesSupported(final boolean nativeImages) {
-        this.paintingState.setNativeImagesSupported(nativeImages);
+    public void setNativeImagesSupported(boolean nativeImages) {
+        paintingState.setNativeImagesSupported(nativeImages);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setCMYKImagesSupported(final boolean value) {
-        this.paintingState.setCMYKImagesSupported(value);
+    public void setCMYKImagesSupported(boolean value) {
+        paintingState.setCMYKImagesSupported(value);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setDitheringQuality(final float quality) {
+    public void setDitheringQuality(float quality) {
         this.paintingState.setDitheringQuality(quality);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setShadingMode(final AFPShadingMode shadingMode) {
+    public void setBitmapEncodingQuality(float quality) {
+        this.paintingState.setBitmapEncodingQuality(quality);
+    }
+
+    /** {@inheritDoc} */
+    public void setShadingMode(AFPShadingMode shadingMode) {
         this.shadingMode = shadingMode;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setResolution(final int resolution) {
-        this.paintingState.setResolution(resolution);
+    public void setResolution(int resolution) {
+        paintingState.setResolution(resolution);
     }
 
     /** {@inheritDoc} */
-    @Override
+    public void setLineWidthCorrection(float correction) {
+        paintingState.setLineWidthCorrection(correction);
+    }
+
+    /** {@inheritDoc} */
     public int getResolution() {
-        return this.paintingState.getResolution();
+        return paintingState.getResolution();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setDefaultResourceGroupFilePath(final String filePath) {
-        this.resourceManager.setDefaultResourceGroupFilePath(filePath);
+    public void setGOCAEnabled(boolean enabled) {
+        this.paintingState.setGOCAEnabled(enabled);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setResourceLevelDefaults(final AFPResourceLevelDefaults defaults) {
-        this.resourceManager.setResourceLevelDefaults(defaults);
+    public boolean isGOCAEnabled() {
+        return this.paintingState.isGOCAEnabled();
+    }
+
+    /** {@inheritDoc} */
+    public void setStrokeGOCAText(boolean stroke) {
+        this.paintingState.setStrokeGOCAText(stroke);
+    }
+
+    /** {@inheritDoc} */
+    public boolean isStrokeGOCAText() {
+        return this.paintingState.isStrokeGOCAText();
+    }
+
+    /** {@inheritDoc} */
+    public void setWrapPSeg(boolean pSeg) {
+        paintingState.setWrapPSeg(pSeg);
+    }
+
+    /** {@inheritDoc} */
+    public void setFS45(boolean fs45) {
+        paintingState.setFS45(fs45);
+    }
+
+    /** {@inheritDoc} */
+    public boolean getWrapPSeg() {
+        return  paintingState.getWrapPSeg();
+    }
+
+    /** {@inheritDoc} */
+    public boolean getFS45() {
+        return  paintingState.getFS45();
+    }
+
+    /** {@inheritDoc} */
+    public void setDefaultResourceGroupFilePath(String filePath) {
+        resourceManager.setDefaultResourceGroupFilePath(filePath);
+    }
+
+    /** {@inheritDoc} */
+    public void setResourceLevelDefaults(AFPResourceLevelDefaults defaults) {
+        resourceManager.setResourceLevelDefaults(defaults);
     }
 
     /**
-     * Returns the page segment name for a given URI if it actually represents a
-     * page segment. Otherwise, it just returns null.
-     *
-     * @param uri
-     *            the URI that identifies the page segment
-     * @return the page segment name or null if there's no page segment for the
-     *         given URI
+     * Returns the page segment descriptor for a given URI if it actually represents a page segment.
+     * Otherwise, it just returns null.
+     * @param uri the URI that identifies the page segment
+     * @return the page segment descriptor or null if there's no page segment for the given URI
      */
-    String getPageSegmentNameFor(final String uri) {
-        return this.pageSegmentMap.get(uri);
+    PageSegmentDescriptor getPageSegmentNameFor(String uri) {
+        return pageSegmentMap.get(uri);
+    }
+
+    /** {@inheritDoc} */
+    public void canEmbedJpeg(boolean canEmbed) {
+        paintingState.setCanEmbedJpeg(canEmbed);
     }
 
 }

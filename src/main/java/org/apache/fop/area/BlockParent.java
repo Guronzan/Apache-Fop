@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BlockParent.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BlockParent.java 1062901 2011-01-24 18:06:25Z adelmelle $ */
 
 package org.apache.fop.area;
 
@@ -27,50 +27,46 @@ import java.util.List;
  */
 public class BlockParent extends Area {
 
+    private static final long serialVersionUID = 7076916890348533805L;
+
     // this position is used for absolute position
     // or as an indent
     // this has the size in the block progression dimension
 
     /**
-     *
-     */
-    private static final long serialVersionUID = 7076916890348533805L;
-
-    /**
-     * The x offset position of this block parent. Used for relative (serves as
-     * left-offset trait) and absolute positioning (serves as left-position
-     * trait).
+     * The x offset position of this block parent.
+     * Used for relative (serves as left-offset trait) and absolute positioning
+     * (serves as left-position trait).
      */
     protected int xOffset = 0;
 
     /**
-     * The y offset position of this block parent. Used for relative (serves as
-     * top-offset trait) and absolute positioning (serves as top-position
-     * trait).
+     * The y offset position of this block parent.
+     * Used for relative (serves as top-offset trait) and absolute positioning
+     * (serves as top-position trait).
      */
     protected int yOffset = 0;
 
     /**
      * The children of this block parent area.
      */
-    protected List<Block> children = null;
+    protected List<Area> children = null;
 
     /** {@inheritDoc} */
     @Override
-    public void addChildArea(final Area childArea) {
-        if (this.children == null) {
-            this.children = new ArrayList<>();
+    public void addChildArea(Area childArea) {
+        if (children == null) {
+            children = new ArrayList<Area>();
         }
-        this.children.add((Block) childArea);
+        children.add(childArea);
     }
 
     /**
      * Add the block area to this block parent.
      *
-     * @param block
-     *            the child block area to add
+     * @param block the child block area to add
      */
-    public void addBlock(final Block block) {
+    public void addBlock(Block block) {
         addChildArea(block);
     }
 
@@ -79,8 +75,8 @@ public class BlockParent extends Area {
      *
      * @return the list of child areas
      */
-    public List<Block> getChildAreas() {
-        return this.children;
+    public List getChildAreas() {
+        return children;
     }
 
     /**
@@ -89,27 +85,25 @@ public class BlockParent extends Area {
      * @return the result.
      */
     public boolean isEmpty() {
-        return this.children == null || this.children.size() == 0;
+        return children == null || children.size() == 0;
     }
 
     /**
      * Set the X offset of this block parent area.
      *
-     * @param off
-     *            the x offset of the block parent area
+     * @param off the x offset of the block parent area
      */
-    public void setXOffset(final int off) {
-        this.xOffset = off;
+    public void setXOffset(int off) {
+        xOffset = off;
     }
 
     /**
      * Set the Y offset of this block parent area.
      *
-     * @param off
-     *            the y offset of the block parent area
+     * @param off the y offset of the block parent area
      */
-    public void setYOffset(final int off) {
-        this.yOffset = off;
+    public void setYOffset(int off) {
+        yOffset = off;
     }
 
     /**
@@ -118,7 +112,7 @@ public class BlockParent extends Area {
      * @return the x offset of the block parent area
      */
     public int getXOffset() {
-        return this.xOffset;
+        return xOffset;
     }
 
     /**
@@ -127,6 +121,6 @@ public class BlockParent extends Area {
      * @return the y offset of the block parent area
      */
     public int getYOffset() {
-        return this.yOffset;
+        return yOffset;
     }
 }

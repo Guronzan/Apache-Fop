@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-/* $Id: BlockViewport.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BlockViewport.java 1081822 2011-03-15 15:56:01Z vhennebert $ */
 
 package org.apache.fop.area;
 
+import java.awt.Rectangle;
+
 /**
- * A BlockViewport. This is used for block level Viewport/reference pairs. The
- * block-container creates this area.
+ * A BlockViewport.
+ * This is used for block level Viewport/reference pairs.
+ * The block-container creates this area.
  */
-public class BlockViewport extends Block {
-    /**
-     *
-     */
+public class BlockViewport extends Block implements Viewport  {
+
     private static final long serialVersionUID = -7840580922580735157L;
+
     // clipping for this viewport
     private boolean clip = false;
     // transform if rotated or absolute
@@ -42,52 +44,54 @@ public class BlockViewport extends Block {
 
     /**
      * Create a new block viewport area.
-     * 
-     * @param allowBPDUpdate
-     *            true allows the BPD to be updated when children are added
+     * @param allowBPDUpdate true allows the BPD to be updated when children are added
      */
-    public BlockViewport(final boolean allowBPDUpdate) {
+    public BlockViewport(boolean allowBPDUpdate) {
         this.allowBPDUpdate = allowBPDUpdate;
     }
 
     /**
-     * Set the transform of this viewport. If the viewport is rotated or has an
-     * absolute positioning this transform will do the work.
+     * Set the transform of this viewport.
+     * If the viewport is rotated or has an absolute positioning
+     * this transform will do the work.
      *
-     * @param ctm
-     *            the transformation
+     * @param ctm the transformation
      */
-    public void setCTM(final CTM ctm) {
-        this.viewportCTM = ctm;
+    public void setCTM(CTM ctm) {
+        viewportCTM = ctm;
     }
 
     /**
      * Get the transform of this block viewport.
      *
-     * @return the transformation of this viewport or null if normally stacked
-     *         without rotation
+     * @return the transformation of this viewport
+     *         or null if normally stacked without rotation
      */
     public CTM getCTM() {
-        return this.viewportCTM;
+        return viewportCTM;
     }
 
     /**
      * Set the clipping for this viewport.
      *
-     * @param cl
-     *            the clipping for the viewport
+     * @param cl the clipping for the viewport
      */
-    public void setClip(final boolean cl) {
-        this.clip = cl;
+    public void setClip(boolean cl) {
+        clip = cl;
     }
 
-    /**
-     * Get the clipping for this viewport.
-     *
-     * @return the clipping for the viewport true if the contents should be
-     *         clipped for this viewport
-     */
-    public boolean getClip() {
-        return this.clip;
+    /** {@inheritDoc} */
+    public boolean hasClip() {
+        return clip;
+    }
+
+    /** {@inheritDoc} */
+    public Rectangle getClipRectangle() {
+        if (clip) {
+            return new Rectangle(getIPD(), getBPD());
+        } else {
+            return null;
+        }
     }
 }
+

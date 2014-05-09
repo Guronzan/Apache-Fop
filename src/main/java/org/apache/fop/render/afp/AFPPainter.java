@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPPainter.java 894350 2009-12-29 11:00:41Z cbowditch $ */
+/* $Id: AFPPainter.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.afp;
 
@@ -26,7 +26,14 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
+
+import org.w3c.dom.Document;
+
+import org.apache.xmlgraphics.image.loader.ImageProcessingHints;
+import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 
 import org.apache.fop.afp.AFPBorderPainter;
 import org.apache.fop.afp.AFPPaintingState;
@@ -43,30 +50,30 @@ import org.apache.fop.afp.modca.AbstractPageObject;
 import org.apache.fop.afp.modca.PresentationTextObject;
 import org.apache.fop.afp.ptoca.PtocaBuilder;
 import org.apache.fop.afp.ptoca.PtocaProducer;
+import org.apache.fop.afp.util.DefaultFOPResourceAccessor;
+import org.apache.fop.afp.util.ResourceAccessor;
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
-import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.FontTriplet;
+import org.apache.fop.fonts.Typeface;
 import org.apache.fop.render.RenderingContext;
 import org.apache.fop.render.intermediate.AbstractIFPainter;
 import org.apache.fop.render.intermediate.BorderPainter;
 import org.apache.fop.render.intermediate.IFContext;
 import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFState;
+import org.apache.fop.render.intermediate.IFUtil;
 import org.apache.fop.traits.BorderProps;
 import org.apache.fop.traits.RuleStyle;
 import org.apache.fop.util.CharUtilities;
-import org.apache.xmlgraphics.image.loader.ImageProcessingHints;
-import org.apache.xmlgraphics.image.loader.ImageSessionContext;
-import org.w3c.dom.Document;
 
 /**
  * IFPainter implementation that produces AFP (MO:DCA).
  */
 public class AFPPainter extends AbstractIFPainter {
 
-    // ** logging instance */
-    // private static Log log = LogFactory.getLog(AFPPainter.class);
+    //** logging instance */
+    //private static Log log = LogFactory.getLog(AFPPainter.class);
 
     private static final int X = 0;
     private static final int Y = 1;
@@ -83,16 +90,14 @@ public class AFPPainter extends AbstractIFPainter {
 
     /**
      * Default constructor.
-     *
-     * @param documentHandler
-     *            the parent document handler
+     * @param documentHandler the parent document handler
      */
-    public AFPPainter(final AFPDocumentHandler documentHandler) {
+    public AFPPainter(AFPDocumentHandler documentHandler) {
         super();
         this.documentHandler = documentHandler;
         this.state = IFState.create();
-        this.borderPainter = new AFPBorderPainterAdapter(new AFPBorderPainter(
-                getPaintingState(), getDataStream()));
+        this.borderPainter = new AFPBorderPainterAdapter(
+                new AFPBorderPainter(getPaintingState(), getDataStream()));
         this.rectanglePainter = documentHandler.createRectanglePainter();
         this.unitConv = getPaintingState().getUnitConverter();
     }
@@ -116,64 +121,58 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startViewport(final AffineTransform transform,
-            final Dimension size, final Rectangle clipRect) throws IFException {
-        // AFP doesn't support clipping, so we treat viewport like a group
-        // this is the same code as for startGroup()
+    public void startViewport(AffineTransform transform, Dimension size, Rectangle clipRect)
+            throws IFException {
+        //AFP doesn't support clipping, so we treat viewport like a group
+        //this is the same code as for startGroup()
         try {
             saveGraphicsState();
             concatenateTransformationMatrix(transform);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in startViewport()", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endViewport() throws IFException {
         try {
             restoreGraphicsState();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endViewport()", ioe);
         }
     }
 
-    private void concatenateTransformationMatrix(final AffineTransform at) {
+    private void concatenateTransformationMatrix(AffineTransform at) {
         if (!at.isIdentity()) {
             getPaintingState().concatenate(at);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startGroup(final AffineTransform transform) throws IFException {
+    public void startGroup(AffineTransform transform) throws IFException {
         try {
             saveGraphicsState();
             concatenateTransformationMatrix(transform);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in startGroup()", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endGroup() throws IFException {
         try {
             restoreGraphicsState();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endGroup()", ioe);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    protected Map<Object, Object> createDefaultImageProcessingHints(
-            final ImageSessionContext sessionContext) {
-        final Map<Object, Object> hints = super
-                .createDefaultImageProcessingHints(sessionContext);
+    protected Map createDefaultImageProcessingHints(ImageSessionContext sessionContext) {
+        Map hints = super.createDefaultImageProcessingHints(sessionContext);
 
-        // AFP doesn't support alpha channels
+        //AFP doesn't support alpha channels
         hints.put(ImageProcessingHints.TRANSPARENCY_INTENT,
                 ImageProcessingHints.TRANSPARENCY_INTENT_IGNORE);
         return hints;
@@ -182,65 +181,80 @@ public class AFPPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     protected RenderingContext createRenderingContext() {
-        final AFPRenderingContext psContext = new AFPRenderingContext(
-                getUserAgent(), this.documentHandler.getResourceManager(),
-                getPaintingState(), getFontInfo(), getContext()
-                        .getForeignAttributes());
+        AFPRenderingContext psContext = new AFPRenderingContext(
+                getUserAgent(),
+                documentHandler.getResourceManager(),
+                getPaintingState(),
+                getFontInfo(),
+                getContext().getForeignAttributes());
         return psContext;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void drawImage(final String uri, final Rectangle rect) {
-        final String name = this.documentHandler.getPageSegmentNameFor(uri);
-        if (name != null) {
-            final float[] srcPts = { rect.x, rect.y };
-            final int[] coords = this.unitConv.mpts2units(srcPts);
-            final int width = Math.round(this.unitConv.mpt2units(rect.width));
-            final int height = Math.round(this.unitConv.mpt2units(rect.height));
+    public void drawImage(String uri, Rectangle rect) throws IFException {
+        PageSegmentDescriptor pageSegment = documentHandler.getPageSegmentNameFor(uri);
 
-            getDataStream().createIncludePageSegment(name, coords[X],
-                    coords[Y], width, height);
+        if (pageSegment != null) {
+            float[] srcPts = {rect.x, rect.y};
+            int[] coords = unitConv.mpts2units(srcPts);
+            int width = Math.round(unitConv.mpt2units(rect.width));
+            int height = Math.round(unitConv.mpt2units(rect.height));
+
+            getDataStream().createIncludePageSegment(pageSegment.getName(),
+                    coords[X], coords[Y], width, height);
+
+            //Do we need to embed an external page segment?
+            if (pageSegment.getURI() != null) {
+                ResourceAccessor accessor = new DefaultFOPResourceAccessor (
+                        documentHandler.getUserAgent(), null, null);
+                try {
+                    URI resourceUri = new URI(pageSegment.getURI());
+                    documentHandler.getResourceManager().createIncludedResourceFromExternal(
+                            pageSegment.getName(), resourceUri, accessor);
+
+                } catch (URISyntaxException urie) {
+                    throw new IFException("Could not handle resource url"
+                            + pageSegment.getURI(), urie);
+                } catch (IOException ioe) {
+                    throw new IFException("Could not handle resource" + pageSegment.getURI(), ioe);
+                }
+            }
+
         } else {
             drawImageUsingURI(uri, rect);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void drawImage(final Document doc, final Rectangle rect) {
+    public void drawImage(Document doc, Rectangle rect) throws IFException {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void clipRect(final Rectangle rect) {
-        // Not supported!
+    public void clipRect(Rectangle rect) throws IFException {
+        //Not supported!
     }
 
-    private float toPoint(final int mpt) {
+    private float toPoint(int mpt) {
         return mpt / 1000f;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void fillRect(final Rectangle rect, final Paint fill)
-            throws IFException {
+    public void fillRect(Rectangle rect, Paint fill) throws IFException {
         if (fill == null) {
             return;
         }
         if (rect.width != 0 && rect.height != 0) {
             if (fill instanceof Color) {
-                getPaintingState().setColor((Color) fill);
+                getPaintingState().setColor((Color)fill);
             } else {
                 throw new UnsupportedOperationException("Non-Color paints NYI");
             }
-            final RectanglePaintingInfo rectanglePaintInfo = new RectanglePaintingInfo(
-                    toPoint(rect.x), toPoint(rect.y), toPoint(rect.width),
-                    toPoint(rect.height));
+            RectanglePaintingInfo rectanglePaintInfo = new RectanglePaintingInfo(
+                    toPoint(rect.x), toPoint(rect.y), toPoint(rect.width), toPoint(rect.height));
             try {
-                this.rectanglePainter.paint(rectanglePaintInfo);
-            } catch (final IOException ioe) {
+                rectanglePainter.paint(rectanglePaintInfo);
+            } catch (IOException ioe) {
                 throw new IFException("IO error while painting rectangle", ioe);
             }
         }
@@ -248,227 +262,206 @@ public class AFPPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void drawBorderRect(final Rectangle rect, final BorderProps before,
-            final BorderProps after, final BorderProps start,
-            final BorderProps end) throws IFException {
-        if (before != null || after != null || start != null || end != null) {
+    public void drawBorderRect(Rectangle rect, BorderProps top, BorderProps bottom,
+            BorderProps left, BorderProps right) throws IFException {
+        if (top != null || bottom != null || left != null || right != null) {
             try {
-                this.borderPainter.drawBorders(rect, before, after, start, end);
-            } catch (final IOException ife) {
+                this.borderPainter.drawBorders(rect, top, bottom, left, right);
+            } catch (IOException ife) {
                 throw new IFException("IO error while painting borders", ife);
             }
         }
     }
 
-    // TODO Try to resolve the name-clash between the AFPBorderPainter in the
-    // afp package
-    // and this one. Not done for now to avoid a lot of re-implementation and
-    // code duplication.
+    //TODO Try to resolve the name-clash between the AFPBorderPainter in the afp package
+    //and this one. Not done for now to avoid a lot of re-implementation and code duplication.
     private static class AFPBorderPainterAdapter extends BorderPainter {
 
         private final AFPBorderPainter delegate;
 
-        public AFPBorderPainterAdapter(final AFPBorderPainter borderPainter) {
+        public AFPBorderPainterAdapter(AFPBorderPainter borderPainter) {
             this.delegate = borderPainter;
         }
 
         @Override
         protected void clip() throws IOException {
-            // not supported by AFP
+            //not supported by AFP
         }
 
         @Override
         protected void closePath() throws IOException {
-            // used for clipping only, so not implemented
+            //used for clipping only, so not implemented
         }
 
         @Override
-        protected void moveTo(final int x, final int y) throws IOException {
-            // used for clipping only, so not implemented
+        protected void moveTo(int x, int y) throws IOException {
+            //used for clipping only, so not implemented
         }
 
         @Override
-        protected void lineTo(final int x, final int y) throws IOException {
-            // used for clipping only, so not implemented
+        protected void lineTo(int x, int y) throws IOException {
+            //used for clipping only, so not implemented
         }
 
         @Override
         protected void saveGraphicsState() throws IOException {
-            // used for clipping only, so not implemented
+            //used for clipping only, so not implemented
         }
 
         @Override
         protected void restoreGraphicsState() throws IOException {
-            // used for clipping only, so not implemented
+            //used for clipping only, so not implemented
         }
 
-        private float toPoints(final int mpt) {
+        private float toPoints(int mpt) {
             return mpt / 1000f;
         }
 
         @Override
-        protected void drawBorderLine(final int x1, final int y1, final int x2,
-                final int y2, final boolean horz, final boolean startOrBefore,
-                final int style, final Color color) throws IOException {
-            final BorderPaintingInfo borderPaintInfo = new BorderPaintingInfo(
+        protected void drawBorderLine(                           // CSOK: ParameterNumber
+                int x1, int y1, int x2, int y2, boolean horz,
+                boolean startOrBefore, int style, Color color) throws IOException {
+            BorderPaintingInfo borderPaintInfo = new BorderPaintingInfo(
                     toPoints(x1), toPoints(y1), toPoints(x2), toPoints(y2),
                     horz, style, color);
-            this.delegate.paint(borderPaintInfo);
+            delegate.paint(borderPaintInfo);
         }
 
         @Override
-        public void drawLine(final Point start, final Point end,
-                final int width, final Color color, final RuleStyle style)
+        public void drawLine(Point start, Point end, int width, Color color, RuleStyle style)
                 throws IOException {
             if (start.y != end.y) {
-                // TODO Support arbitrary lines if necessary
+                //TODO Support arbitrary lines if necessary
                 throw new UnsupportedOperationException(
                         "Can only deal with horizontal lines right now");
             }
 
-            // Simply delegates to drawBorderLine() as AFP line painting is not
-            // very sophisticated.
-            final int halfWidth = width / 2;
-            drawBorderLine(start.x, start.y - halfWidth, end.x, start.y
-                    + halfWidth, true, true, style.getEnumValue(), color);
+            //Simply delegates to drawBorderLine() as AFP line painting is not very sophisticated.
+            int halfWidth = width / 2;
+            drawBorderLine(start.x, start.y - halfWidth, end.x, start.y + halfWidth,
+                    true, true, style.getEnumValue(), color);
         }
 
     }
 
     /** {@inheritDoc} */
     @Override
-    public void drawLine(final Point start, final Point end, final int width,
-            final Color color, final RuleStyle style) throws IFException {
+    public void drawLine(Point start, Point end, int width, Color color, RuleStyle style)
+                throws IFException {
         try {
             this.borderPainter.drawLine(start, end, width, color, style);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in drawLine()", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void drawText(final int x, final int y, final int letterSpacing,
-            final int wordSpacing, final int[] dx, final String text)
-            throws IFException {
+    public void drawText(                                        // CSOK: MethodLength
+            int x, int y, final int letterSpacing, final int wordSpacing,
+            final int[][] dp, final String text) throws IFException {
         final int fontSize = this.state.getFontSize();
         getPaintingState().setFontSize(fontSize);
 
-        FontTriplet triplet = new FontTriplet(this.state.getFontFamily(),
-                this.state.getFontStyle(), this.state.getFontWeight());
-        // TODO Ignored: state.getFontVariant()
+        FontTriplet triplet = new FontTriplet(
+                state.getFontFamily(), state.getFontStyle(), state.getFontWeight());
+        //TODO Ignored: state.getFontVariant()
         String fontKey = getFontInfo().getInternalFontKey(triplet);
         if (fontKey == null) {
-            triplet = new FontTriplet("any", Font.STYLE_NORMAL,
-                    Font.WEIGHT_NORMAL);
+            triplet = new FontTriplet("any", Font.STYLE_NORMAL, Font.WEIGHT_NORMAL);
             fontKey = getFontInfo().getInternalFontKey(triplet);
         }
 
         // register font as necessary
-        final Map<String, FontMetrics> fontMetricMap = this.documentHandler
-                .getFontInfo().getFonts();
-        final AFPFont afpFont = (AFPFont) fontMetricMap.get(fontKey);
+        Map<String, Typeface> fontMetricMap = documentHandler.getFontInfo().getFonts();
+        final AFPFont afpFont = (AFPFont)fontMetricMap.get(fontKey);
         final Font font = getFontInfo().getFontInstance(triplet, fontSize);
-        final AFPPageFonts pageFonts = getPaintingState().getPageFonts();
-        final AFPFontAttributes fontAttributes = pageFonts.registerFont(
-                fontKey, afpFont, fontSize);
+        AFPPageFonts pageFonts = getPaintingState().getPageFonts();
+        AFPFontAttributes fontAttributes = pageFonts.registerFont(fontKey, afpFont, fontSize);
 
         final int fontReference = fontAttributes.getFontReference();
 
-        final int[] coords = this.unitConv.mpts2units(new float[] { x, y });
+        final int[] coords = unitConv.mpts2units(new float[] {x, y} );
 
         final CharacterSet charSet = afpFont.getCharacterSet(fontSize);
 
         if (afpFont.isEmbeddable()) {
             try {
-                this.documentHandler.getResourceManager().embedFont(afpFont,
-                        charSet);
-            } catch (final IOException ioe) {
-                throw new IFException("Error while embedding font resources",
-                        ioe);
+                documentHandler.getResourceManager().embedFont(afpFont, charSet);
+            } catch (IOException ioe) {
+                throw new IFException("Error while embedding font resources", ioe);
             }
         }
 
-        final AbstractPageObject page = getDataStream().getCurrentPage();
-        final PresentationTextObject pto = page.getPresentationTextObject();
+        AbstractPageObject page = getDataStream().getCurrentPage();
+        PresentationTextObject pto = page.getPresentationTextObject();
         try {
             pto.createControlSequences(new PtocaProducer() {
 
-                @Override
-                public void produce(final PtocaBuilder builder)
-                        throws IOException {
-                    final Point p = getPaintingState().getPoint(coords[X],
-                            coords[Y]);
+                public void produce(PtocaBuilder builder) throws IOException {
+                    Point p = getPaintingState().getPoint(coords[X], coords[Y]);
                     builder.setTextOrientation(getPaintingState().getRotation());
                     builder.absoluteMoveBaseline(p.y);
                     builder.absoluteMoveInline(p.x);
 
-                    builder.setExtendedTextColor(AFPPainter.this.state
-                            .getTextColor());
-                    builder.setCodedFont((byte) fontReference);
+                    builder.setExtendedTextColor(state.getTextColor());
+                    builder.setCodedFont((byte)fontReference);
 
-                    final int l = text.length();
-                    final int dxl = dx != null ? dx.length : 0;
-                    final StringBuilder sb = new StringBuilder();
+                    int l = text.length();
+                    int[] dx = IFUtil.convertDPToDX ( dp );
+                    int dxl = (dx != null ? dx.length : 0);
+                    StringBuffer sb = new StringBuffer();
 
                     if (dxl > 0 && dx[0] != 0) {
-                        final int dxu = Math.round(AFPPainter.this.unitConv
-                                .mpt2units(dx[0]));
+                        int dxu = Math.round(unitConv.mpt2units(dx[0]));
                         builder.relativeMoveInline(-dxu);
                     }
 
-                    // Following are two variants for glyph placement.
-                    // SVI does not seem to be implemented in the same way
-                    // everywhere, so
-                    // a fallback alternative is preserved here.
+                    //Following are two variants for glyph placement.
+                    //SVI does not seem to be implemented in the same way everywhere, so
+                    //a fallback alternative is preserved here.
                     final boolean usePTOCAWordSpacing = true;
                     if (usePTOCAWordSpacing) {
 
                         int interCharacterAdjustment = 0;
                         if (letterSpacing != 0) {
-                            interCharacterAdjustment = Math
-                                    .round(AFPPainter.this.unitConv
-                                            .mpt2units(letterSpacing));
+                            interCharacterAdjustment = Math.round(unitConv.mpt2units(
+                                    letterSpacing));
                         }
                         builder.setInterCharacterAdjustment(interCharacterAdjustment);
 
-                        final int spaceWidth = font
-                                .getCharWidth(CharUtilities.SPACE);
-                        final int fixedSpaceCharacterIncrement = Math
-                                .round(AFPPainter.this.unitConv
-                                        .mpt2units(spaceWidth + letterSpacing));
+                        int spaceWidth = font.getCharWidth(CharUtilities.SPACE);
+                        int fixedSpaceCharacterIncrement = Math.round(unitConv.mpt2units(
+                                spaceWidth + letterSpacing));
                         int varSpaceCharacterIncrement = fixedSpaceCharacterIncrement;
                         if (wordSpacing != 0) {
-                            varSpaceCharacterIncrement = Math
-                                    .round(AFPPainter.this.unitConv
-                                            .mpt2units(spaceWidth + wordSpacing
-                                                    + letterSpacing));
+                            varSpaceCharacterIncrement = Math.round(unitConv.mpt2units(
+                                    spaceWidth + wordSpacing + letterSpacing));
                         }
                         builder.setVariableSpaceCharacterIncrement(varSpaceCharacterIncrement);
 
                         boolean fixedSpaceMode = false;
 
-                        for (int i = 0; i < l; ++i) {
-                            final char orgChar = text.charAt(i);
+                        for (int i = 0; i < l; i++) {
+                            char orgChar = text.charAt(i);
                             float glyphAdjust = 0;
                             if (CharUtilities.isFixedWidthSpace(orgChar)) {
                                 flushText(builder, sb, charSet);
-                                builder.setVariableSpaceCharacterIncrement(fixedSpaceCharacterIncrement);
+                                builder.setVariableSpaceCharacterIncrement(
+                                        fixedSpaceCharacterIncrement);
                                 fixedSpaceMode = true;
                                 sb.append(CharUtilities.SPACE);
-                                final int charWidth = font
-                                        .getCharWidth(orgChar);
-                                glyphAdjust += charWidth - spaceWidth;
+                                int charWidth = font.getCharWidth(orgChar);
+                                glyphAdjust += (charWidth - spaceWidth);
                             } else {
                                 if (fixedSpaceMode) {
                                     flushText(builder, sb, charSet);
-                                    builder.setVariableSpaceCharacterIncrement(varSpaceCharacterIncrement);
+                                    builder.setVariableSpaceCharacterIncrement(
+                                            varSpaceCharacterIncrement);
                                     fixedSpaceMode = false;
                                 }
                                 char ch;
                                 if (orgChar == CharUtilities.NBSPACE) {
-                                    ch = ' '; // converted to normal space to
-                                    // allow word spacing
+                                    ch = ' '; //converted to normal space to allow word spacing
                                 } else {
                                     ch = orgChar;
                                 }
@@ -481,29 +474,24 @@ public class AFPPainter extends AbstractIFPainter {
 
                             if (glyphAdjust != 0) {
                                 flushText(builder, sb, charSet);
-                                final int increment = Math
-                                        .round(AFPPainter.this.unitConv
-                                                .mpt2units(glyphAdjust));
+                                int increment = Math.round(unitConv.mpt2units(glyphAdjust));
                                 builder.relativeMoveInline(increment);
                             }
                         }
                     } else {
-                        for (int i = 0; i < l; ++i) {
-                            final char orgChar = text.charAt(i);
+                        for (int i = 0; i < l; i++) {
+                            char orgChar = text.charAt(i);
                             float glyphAdjust = 0;
                             if (CharUtilities.isFixedWidthSpace(orgChar)) {
                                 sb.append(CharUtilities.SPACE);
-                                final int spaceWidth = font
-                                        .getCharWidth(CharUtilities.SPACE);
-                                final int charWidth = font
-                                        .getCharWidth(orgChar);
-                                glyphAdjust += charWidth - spaceWidth;
+                                int spaceWidth = font.getCharWidth(CharUtilities.SPACE);
+                                int charWidth = font.getCharWidth(orgChar);
+                                glyphAdjust += (charWidth - spaceWidth);
                             } else {
                                 sb.append(orgChar);
                             }
 
-                            if (wordSpacing != 0
-                                    && CharUtilities.isAdjustableSpace(orgChar)) {
+                            if ((wordSpacing != 0) && CharUtilities.isAdjustableSpace(orgChar)) {
                                 glyphAdjust += wordSpacing;
                             }
                             glyphAdjust += letterSpacing;
@@ -513,9 +501,7 @@ public class AFPPainter extends AbstractIFPainter {
 
                             if (glyphAdjust != 0) {
                                 flushText(builder, sb, charSet);
-                                final int increment = Math
-                                        .round(AFPPainter.this.unitConv
-                                                .mpt2units(glyphAdjust));
+                                int increment = Math.round(unitConv.mpt2units(glyphAdjust));
                                 builder.relativeMoveInline(increment);
                             }
                         }
@@ -523,9 +509,8 @@ public class AFPPainter extends AbstractIFPainter {
                     flushText(builder, sb, charSet);
                 }
 
-                private void flushText(final PtocaBuilder builder,
-                        final StringBuilder sb, final CharacterSet charSet)
-                        throws IOException {
+                private void flushText(PtocaBuilder builder, StringBuffer sb,
+                        final CharacterSet charSet) throws IOException {
                     if (sb.length() > 0) {
                         builder.addTransparentData(charSet.encodeChars(sb));
                         sb.setLength(0);
@@ -533,16 +518,14 @@ public class AFPPainter extends AbstractIFPainter {
                 }
 
             });
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in drawText()", ioe);
         }
     }
 
     /**
      * Saves the graphics state of the rendering engine.
-     *
-     * @throws IOException
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void saveGraphicsState() throws IOException {
         getPaintingState().save();
@@ -550,9 +533,7 @@ public class AFPPainter extends AbstractIFPainter {
 
     /**
      * Restores the last graphics state of the rendering engine.
-     *
-     * @throws IOException
-     *             if an I/O error occurs
+     * @throws IOException if an I/O error occurs
      */
     protected void restoreGraphicsState() throws IOException {
         getPaintingState().restore();

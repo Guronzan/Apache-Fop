@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-/* $Id: RtfString.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfString.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
+
+package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 /*
  * This file is part of the RTF library of the FOP project, which was originally
@@ -24,51 +26,47 @@
  * the FOP project.
  */
 
-package org.apache.fop.render.rtf.rtflib.rtfdoc;
-
 import java.io.IOException;
 import java.io.Writer;
 
 /**
- * Plain text in a RTF file, without any formatings.
- * 
- * @author Peter Herweg, pherweg@web.de
+ * <p>Plain text in a RTF file, without any formatings.</p>
+ *
+ * <p>This work was authored by Peter Herweg (pherweg@web.de).</p>
  */
 
 public class RtfString extends RtfElement {
     private String text = "";
 
-    RtfString(final RtfContainer parent, final Writer w, final String s)
-            throws IOException {
+    RtfString(RtfContainer parent, Writer w, String s)
+    throws IOException {
         super(parent, w);
 
-        this.text = s;
+        text = s;
     }
 
     /**
-     * @return true if this element would generate no "useful" RTF content
-     */
-    @Override
+    * @return true if this element would generate no "useful" RTF content
+    */
     public boolean isEmpty() {
-        return this.text.trim().equals("");
+        return text.trim().equals("");
     }
 
     /**
-     * write RTF code of all our children
-     * 
-     * @throws IOException
-     *             for I/O problems
-     */
-    @Override
+    * write RTF code of all our children
+    * @throws IOException for I/O problems
+    */
     protected void writeRtfContent() throws IOException {
-        RtfStringConverter.getInstance().writeRtfString(this.writer, this.text);
+        RtfStringConverter.getInstance().writeRtfString(writer, text);
     }
 
+    /** @return the text */
     public String getText() {
-        return this.text;
+        return text;
     }
 
-    public void setText(final String s) {
-        this.text = s;
+    /** @param s some text */
+    public void setText(String s) {
+        text = s;
     }
 }

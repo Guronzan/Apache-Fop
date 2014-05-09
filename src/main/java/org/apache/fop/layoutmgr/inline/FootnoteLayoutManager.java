@@ -15,13 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: FootnoteLayoutManager.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FootnoteLayoutManager.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.fo.flow.Footnote;
 import org.apache.fop.layoutmgr.FootnoteBodyLayoutManager;
@@ -32,6 +35,7 @@ import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
 import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.NonLeafPosition;
+import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
 
 /**
@@ -39,7 +43,12 @@ import org.apache.fop.layoutmgr.PositionIterator;
  */
 public class FootnoteLayoutManager extends InlineStackingLayoutManager {
 
-    private final Footnote footnote;
+    /**
+     * logging instance
+     */
+    private static Log log = LogFactory.getLog(FootnoteLayoutManager.class);
+
+    private Footnote footnote;
     private InlineStackingLayoutManager citationLM;
     private FootnoteBodyLayoutManager bodyLM;
     /** Represents the footnote citation **/
@@ -47,60 +56,50 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
 
     /**
      * Create a new footnote layout manager.
-     *
-     * @param node
-     *            footnote to create the layout manager for
+     * @param node footnote to create the layout manager for
      */
-    public FootnoteLayoutManager(final Footnote node) {
+    public FootnoteLayoutManager(Footnote node) {
         super(node);
-        this.footnote = node;
+        footnote = node;
     }
 
     /** {@inheritDoc} */
     @Override
     public void initialize() {
-        // create an InlineStackingLM handling the fo:inline child of
-        // fo:footnote
-        this.citationLM = new InlineLayoutManager(
-                this.footnote.getFootnoteCitation());
+        // create an InlineStackingLM handling the fo:inline child of fo:footnote
+        citationLM = new InlineLayoutManager(footnote.getFootnoteCitation());
 
-        // create a FootnoteBodyLM handling the fo:footnote-body child of
-        // fo:footnote
-        this.bodyLM = new FootnoteBodyLayoutManager(
-                this.footnote.getFootnoteBody());
+        // create a FootnoteBodyLM handling the fo:footnote-body child of fo:footnote
+        bodyLM = new FootnoteBodyLayoutManager(footnote.getFootnoteBody());
     }
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
-            final int alignment) {
+    public List getNextKnuthElements(LayoutContext context,
+                                           int alignment) {
         // for the moment, this LM is set as the citationLM's parent
-        // later on, when this LM will have nothing more to do, the citationLM's
-        // parent
+        // later on, when this LM will have nothing more to do, the citationLM's parent
         // will be set to the fotnoteLM's parent
-        this.citationLM.setParent(this);
-        this.citationLM.initialize();
-        this.bodyLM.setParent(this);
-        this.bodyLM.initialize();
+        citationLM.setParent(this);
+        citationLM.initialize();
+        bodyLM.setParent(this);
+        bodyLM.initialize();
 
         // get Knuth elements representing the footnote citation
-        final List returnedList = new LinkedList<>();
-        while (!this.citationLM.isFinished()) {
-            final List partialList = this.citationLM.getNextKnuthElements(
-                    context, alignment);
+        List returnedList = new LinkedList();
+        while (!citationLM.isFinished()) {
+            List partialList = citationLM.getNextKnuthElements(context, alignment);
             if (partialList != null) {
                 returnedList.addAll(partialList);
             }
         }
         if (returnedList.size() == 0) {
-            // Inline part of the footnote is empty. Need to send back an
-            // auxiliary
-            // zero-width, zero-height inline box so the footnote gets painted.
-            final KnuthSequence seq = new InlineKnuthSequence();
-            // Need to use an aux. box, otherwise, the line height can't be
-            // forced to zero height.
-            this.forcedAnchor = new KnuthInlineBox(0, null, null, true);
-            seq.add(this.forcedAnchor);
+            //Inline part of the footnote is empty. Need to send back an auxiliary
+            //zero-width, zero-height inline box so the footnote gets painted.
+            KnuthSequence seq = new InlineKnuthSequence();
+            //Need to use an aux. box, otherwise, the line height can't be forced to zero height.
+            forcedAnchor = new KnuthInlineBox(0, null, null, true);
+            seq.add(forcedAnchor);
             returnedList.add(seq);
         }
         setFinished(true);
@@ -108,7 +107,7 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
         addAnchor(returnedList);
 
         // "wrap" the Position stored in each list inside returnedList
-        final ListIterator listIterator = returnedList.listIterator();
+        ListIterator listIterator = returnedList.listIterator();
         ListIterator elementIterator = null;
         KnuthSequence list = null;
         ListElement element = null;
@@ -117,52 +116,43 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
             elementIterator = list.listIterator();
             while (elementIterator.hasNext()) {
                 element = (KnuthElement) elementIterator.next();
-                element.setPosition(notifyPos(new NonLeafPosition(this, element
-                        .getPosition())));
+                element.setPosition(notifyPos(new NonLeafPosition(this, element.getPosition())));
             }
         }
 
         return returnedList;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /** {@inheritDoc} */
     @Override
-    public List<ListElement> getChangedKnuthElements(
-            final List<ListElement> oldList, final int alignment) {
-        final List<ListElement> returnedList = super.getChangedKnuthElements(
-                oldList, alignment);
+    public List getChangedKnuthElements(List oldList, int alignment, int depth) {
+        List returnedList = super.getChangedKnuthElements(oldList, alignment, depth);
         addAnchor(returnedList);
         return returnedList;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
+    /** {@inheritDoc} */
     @Override
-    public void addAreas(final PositionIterator posIter,
-            final LayoutContext context) {
+    public void addAreas(PositionIterator posIter, LayoutContext context) {
         // "Unwrap" the NonLeafPositions stored in posIter and put
         // them in a new list, that will be given to the citationLM
-        final LinkedList positionList = new LinkedList<>();
-        NonLeafPosition pos = null;
+        LinkedList<Position> positionList = new LinkedList<Position>();
+        Position pos;
         while (posIter.hasNext()) {
-            pos = (NonLeafPosition) posIter.next();
+            pos = posIter.next();
             if (pos != null && pos.getPosition() != null) {
                 positionList.add(pos.getPosition());
             }
         }
 
         // FootnoteLM does not create any area,
-        // so the citationLM child will add directly to the FootnoteLM parent
-        // area
-        this.citationLM.setParent(getParent());
+        // so the citationLM child will add directly to the FootnoteLM parent area
+        citationLM.setParent(getParent());
 
         // make the citationLM add its areas
-        final LayoutContext childContext = new LayoutContext(context);
-        final StackingIter childPosIter = new StackingIter(
-                positionList.listIterator());
+        LayoutContext childContext = new LayoutContext(context);
+        PositionIterator childPosIter = new PositionIterator(positionList.listIterator());
         LayoutManager childLM;
         while ((childLM = childPosIter.getNextChildLM()) != null) {
             childLM.addAreas(childPosIter, childContext);
@@ -172,46 +162,38 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
     }
 
     /**
-     * Find the last box in the sequence, and add a reference to the
-     * FootnoteBodyLM
-     *
-     * @param citationList
-     *            the list of elements representing the footnote citation
+     * Find the last box in the sequence, and add a reference to the FootnoteBodyLM
+     * @param citationList the list of elements representing the footnote citation
      */
-    private void addAnchor(final List citationList) {
+    private void addAnchor(List citationList) {
         KnuthInlineBox lastBox = null;
         // the list of elements is searched backwards, until we find a box
-        final ListIterator citationIterator = citationList
-                .listIterator(citationList.size());
+        ListIterator citationIterator = citationList.listIterator(citationList.size());
         while (citationIterator.hasPrevious() && lastBox == null) {
-            final Object obj = citationIterator.previous();
+            Object obj = citationIterator.previous();
             if (obj instanceof KnuthElement) {
                 // obj is an element
-                final KnuthElement element = (KnuthElement) obj;
+                KnuthElement element = (KnuthElement)obj;
                 if (element instanceof KnuthInlineBox) {
                     lastBox = (KnuthInlineBox) element;
                 }
             } else {
                 // obj is a sequence of elements
-                final KnuthSequence seq = (KnuthSequence) obj;
-                final ListIterator nestedIterator = seq
-                        .listIterator(seq.size());
+                KnuthSequence seq = (KnuthSequence)obj;
+                ListIterator nestedIterator = seq.listIterator(seq.size());
                 while (nestedIterator.hasPrevious() && lastBox == null) {
-                    final KnuthElement element = (KnuthElement) nestedIterator
-                            .previous();
-                    if (element instanceof KnuthInlineBox
-                            && !element.isAuxiliary()
-                            || element == this.forcedAnchor) {
+                    KnuthElement element = (KnuthElement)nestedIterator.previous();
+                    if (element instanceof KnuthInlineBox && !element.isAuxiliary()
+                            || element == forcedAnchor) {
                         lastBox = (KnuthInlineBox) element;
                     }
                 }
             }
         }
         if (lastBox != null) {
-            lastBox.setFootnoteBodyLM(this.bodyLM);
+            lastBox.setFootnoteBodyLM(bodyLM);
         } else {
-            // throw new
-            // IllegalStateException("No anchor box was found for a footnote.");
+            //throw new IllegalStateException("No anchor box was found for a footnote.");
         }
     }
 }

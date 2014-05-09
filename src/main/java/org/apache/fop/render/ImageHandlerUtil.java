@@ -15,55 +15,52 @@
  * limitations under the License.
  */
 
-/* $Id: ImageHandlerUtil.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: ImageHandlerUtil.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render;
 
 import java.util.Map;
 
-import org.apache.fop.fo.extensions.ExtensionElementMapping;
 import org.apache.xmlgraphics.util.QName;
+
+import org.apache.fop.fo.extensions.ExtensionElementMapping;
 
 /**
  * Utility methods for image handling.
  */
-public class ImageHandlerUtil {
+public final class ImageHandlerUtil {
+
+    private ImageHandlerUtil() {
+    }
 
     /** conversion-mode extension attribute */
     public static final QName CONVERSION_MODE = new QName(
             ExtensionElementMapping.URI, null, "conversion-mode");
 
-    /**
-     * Conversion mode: indicates that the image shall be converted to a bitmap.
-     */
+    /** Conversion mode: indicates that the image shall be converted to a bitmap. */
     public static final String CONVERSION_MODE_BITMAP = "bitmap";
 
     /**
-     * Indicates whether the image conversion mode is set to bitmap mode, i.e.
-     * the image shall be converted to a bitmap.
-     *
-     * @param mode
-     *            the conversion mode
+     * Indicates whether the image conversion mode is set to bitmap mode, i.e. the image shall
+     * be converted to a bitmap.
+     * @param mode the conversion mode
      * @return true if conversion mode is "bitmap"
      */
-    public static boolean isConversionModeBitmap(final String mode) {
+    public static boolean isConversionModeBitmap(String mode) {
         return CONVERSION_MODE_BITMAP.equalsIgnoreCase(mode);
     }
 
     /**
-     * Indicates whether the image conversion mode is set to bitmap mode, i.e.
-     * the image shall be converted to a bitmap.
-     *
-     * @param foreignAttributes
-     *            a map of foreign attributes (Map&lt;QName, Object&gt;)
+     * Indicates whether the image conversion mode is set to bitmap mode, i.e. the image shall
+     * be converted to a bitmap.
+     * @param foreignAttributes a map of foreign attributes (Map&lt;QName, Object&gt;)
      * @return true if conversion mode is "bitmap"
      */
-    public static boolean isConversionModeBitmap(
-            final Map<QName, String> foreignAttributes) {
+    public static boolean isConversionModeBitmap(Map foreignAttributes) {
         if (foreignAttributes == null) {
             return false;
         }
-        final String conversionMode = foreignAttributes.get(CONVERSION_MODE);
+        String conversionMode = (String)foreignAttributes.get(CONVERSION_MODE);
         return isConversionModeBitmap(conversionMode);
     }
 

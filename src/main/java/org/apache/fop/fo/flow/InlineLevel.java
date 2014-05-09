@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: InlineLevel.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: InlineLevel.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
@@ -25,6 +25,8 @@ import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObjMixed;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonFont;
 import org.apache.fop.fo.properties.CommonMarginInline;
@@ -32,11 +34,13 @@ import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.SpaceProperty;
 
 /**
- * Class modelling the commonalities of several inline-level formatting objects.
+ * Class modelling the commonalities of several inline-level
+ * formatting objects.
  */
-public abstract class InlineLevel extends FObjMixed {
+public abstract class InlineLevel extends FObjMixed implements CommonAccessibilityHolder {
 
-    // The value of properties relevant for inline-level FOs.
+    // The value of FO traits (refined properties) that apply to inline level FOs.
+    private CommonAccessibility commonAccessibility;
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     private CommonMarginInline commonMarginInline;
     private CommonFont commonFont;
@@ -44,66 +48,73 @@ public abstract class InlineLevel extends FObjMixed {
     private KeepProperty keepWithNext;
     private KeepProperty keepWithPrevious;
     private SpaceProperty lineHeight;
-
-    // End of property values
+    // End of trait values
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    protected InlineLevel(final FONode parent) {
+    protected InlineLevel(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
-        this.commonMarginInline = pList.getMarginInlineProps();
-        this.commonFont = pList.getFontProps();
-        this.color = pList.get(PR_COLOR).getColor(getUserAgent());
-        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
+        commonMarginInline = pList.getMarginInlineProps();
+        commonFont = pList.getFontProps();
+        color = pList.get(PR_COLOR).getColor(getUserAgent());
+        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+    }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /** @return the {@link CommonMarginInline} */
     public CommonMarginInline getCommonMarginInline() {
-        return this.commonMarginInline;
+        return commonMarginInline;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
     /** @return the {@link CommonFont} */
     public CommonFont getCommonFont() {
-        return this.commonFont;
+        return commonFont;
     }
 
-    /** @return the "color" property */
+    /** @return the "color" trait */
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
-    /** @return the "line-height" property */
+    /** @return the "line-height" trait */
     public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+        return lineHeight;
     }
 
-    /** @return the "keep-with-next" property */
+    /** @return the "keep-with-next" trait */
     public KeepProperty getKeepWithNext() {
-        return this.keepWithNext;
+        return keepWithNext;
     }
 
-    /** @return the "keep-with-previous" property */
+    /** @return the "keep-with-previous" trait */
     public KeepProperty getKeepWithPrevious() {
-        return this.keepWithPrevious;
+        return keepWithPrevious;
+    }
+
+    @Override
+    public boolean isDelimitedTextRangeBoundary ( int boundary ) {
+        return false;
     }
 
 }

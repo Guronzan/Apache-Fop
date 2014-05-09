@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: InvokeMediumMap.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: InvokeMediumMap.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -27,30 +27,28 @@ import org.apache.fop.afp.util.BinaryUtils;
 /**
  * The Invoke Medium Map structured field identifies the Medium Map that is to
  * become active for the document. An Invoke Medium Map structured field affects
- * the document's current environment. The Medium Map's effect on current
- * environment parameter values lasts until a new Medium Map is invoked.
+ * the document's current environment. The Medium Map's effect on current environment
+ * parameter values lasts until a new Medium Map is invoked.
  */
 public class InvokeMediumMap extends AbstractNamedAFPObject {
 
     /**
      * Constructor for the Invoke Medium Map
      *
-     * @param name
-     *            the name of the medium map
+     * @param name the name of the medium map
      */
-    public InvokeMediumMap(final String name) {
+    public InvokeMediumMap(String name) {
         super(name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
+    public void writeToStream(OutputStream os) throws IOException {
 
-        final byte[] data = new byte[17];
+        byte[] data = new byte[17];
         copySF(data, Type.MAP, Category.MEDIUM_MAP);
 
         // Set the total record length
-        final byte[] len = BinaryUtils.convert(16, 2); // Ignore first byte
+        byte[] len = BinaryUtils.convert(16, 2); //Ignore first byte
         data[1] = len[0];
         data[2] = len[1];
 

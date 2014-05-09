@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PageNumberCitationLayoutManager.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PageNumberCitationLayoutManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
@@ -29,53 +29,55 @@ import org.apache.fop.layoutmgr.LayoutContext;
 /**
  * LayoutManager for the fo:page-number-citation formatting object
  */
-public class PageNumberCitationLayoutManager extends
-        AbstractPageNumberCitationLayoutManager {
+public class PageNumberCitationLayoutManager extends AbstractPageNumberCitationLayoutManager {
 
     /**
      * Constructor
      *
-     * @param node
-     *            the formatting object that creates this area
-     * @todo better retrieval of font info
+     * @param node the formatting object that creates this area
+     * TODO better retrieval of font info
      */
-    public PageNumberCitationLayoutManager(final PageNumberCitation node) {
+    public PageNumberCitationLayoutManager(PageNumberCitation node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public InlineArea get(final LayoutContext context) {
-        this.curArea = getPageNumberCitationInlineArea();
-        return this.curArea;
+    public InlineArea get(LayoutContext context) {
+        curArea = getPageNumberCitationInlineArea();
+        return curArea;
     }
 
     /**
-     * if id can be resolved then simply return a word, otherwise return a
-     * resolvable area
+     * if id can be resolved then simply return a word, otherwise
+     * return a resolvable area
+     *
+     * TODO: [GA] May need to run bidi algorithm and script processor
+     * on resolved page number.
      */
     private InlineArea getPageNumberCitationInlineArea() {
-        final PageViewport page = getPSLM().getFirstPVWithID(
-                this.fobj.getRefId());
+        PageViewport page = getPSLM().getFirstPVWithID(fobj.getRefId());
         TextArea text = null;
+        int level = getBidiLevel();
         if (page != null) {
-            final String str = page.getPageNumberString();
+            String str = page.getPageNumberString();
             // get page string from parent, build area
             text = new TextArea();
-            final int width = getStringWidth(str);
-            text.addWord(str, 0);
-            text.setIPD(width);
-            this.resolved = true;
+            int width = getStringWidth(str);    // TODO: [GA] !I18N!
+            text.setBidiLevel(level);
+            text.addWord(str, 0, level);
+            text.setIPD(width);                 // TODO: [GA] !I18N!
+            resolved = true;
         } else {
-            this.resolved = false;
-            text = new UnresolvedPageNumber(this.fobj.getRefId(), this.font);
-            final String str = "MMM"; // reserve three spaces for page number
-            final int width = getStringWidth(str);
-            text.setIPD(width);
+            text = new UnresolvedPageNumber(fobj.getRefId(), font);
+            String str = "MMM"; // reserve three spaces for page number
+            int width = getStringWidth(str);    // TODO: [GA] !I18N!
+            text.setBidiLevel(level);
+            text.setIPD(width);                 // TODO: [GA] !I18N!
+            resolved = false;
         }
         updateTextAreaTraits(text);
-
         return text;
     }
 
 }
+

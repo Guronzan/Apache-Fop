@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-/* $Id: XMPMetadata.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: XMPMetadata.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.xmp;
 
 import java.io.Serializable;
 
-import org.apache.fop.fo.extensions.ExtensionAttachment;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
 import org.apache.xmlgraphics.util.XMLizable;
 import org.apache.xmlgraphics.xmp.Metadata;
 import org.apache.xmlgraphics.xmp.XMPConstants;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.SAXException;
+
+import org.apache.fop.fo.extensions.ExtensionAttachment;
 
 /**
  * This is the pass-through value object for the XMP metadata extension.
  */
-public class XMPMetadata implements ExtensionAttachment, Serializable,
-        XMLizable {
+public class XMPMetadata implements ExtensionAttachment, Serializable, XMLizable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 591347206217931578L;
 
     /** The category URI for this extension attachment. */
@@ -49,16 +47,14 @@ public class XMPMetadata implements ExtensionAttachment, Serializable,
      * No-argument contructor.
      */
     public XMPMetadata() {
-        // nop
+        //nop
     }
 
     /**
      * Default constructor.
-     * 
-     * @param metadata
-     *            the XMP metadata
+     * @param metadata the XMP metadata
      */
-    public XMPMetadata(final Metadata metadata) {
+    public XMPMetadata(Metadata metadata) {
         this.meta = metadata;
     }
 
@@ -69,38 +65,32 @@ public class XMPMetadata implements ExtensionAttachment, Serializable,
 
     /**
      * Sets the XMP metadata.
-     * 
-     * @param metadata
-     *            the XMP metadata
+     * @param metadata the XMP metadata
      */
-    public void setMetadata(final Metadata metadata) {
+    public void setMetadata(Metadata metadata) {
         this.meta = metadata;
     }
 
     /** @return true if the XMP metadata is marked read-only. */
     public boolean isReadOnly() {
-        return this.readOnly;
+        return readOnly;
     }
 
     /**
      * Sets the flag that decides whether a metadata packet may be modified.
-     * 
-     * @param readOnly
-     *            true if the XMP metadata packet should be marked read-only.
+     * @param readOnly true if the XMP metadata packet should be marked read-only.
      */
-    public void setReadOnly(final boolean readOnly) {
+    public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getCategory() {
         return CATEGORY;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
+    public void toSAX(ContentHandler handler) throws SAXException {
         getMetadata().toSAX(handler);
     }
 

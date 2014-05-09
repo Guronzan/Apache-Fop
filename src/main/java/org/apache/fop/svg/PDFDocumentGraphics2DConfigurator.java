@@ -15,23 +15,25 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDocumentGraphics2DConfigurator.java 766594 2009-04-20 06:50:59Z jeremias $ */
+/* $Id: PDFDocumentGraphics2DConfigurator.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.svg;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
+
 import org.apache.fop.apps.FOPException;
-import org.apache.fop.fonts.EmbedFontInfo;
+import org.apache.fop.fonts.CustomFontCollection;
+import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontEventListener;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontInfoConfigurator;
 import org.apache.fop.fonts.FontManager;
+import org.apache.fop.fonts.FontManagerConfigurator;
 import org.apache.fop.fonts.FontResolver;
-import org.apache.fop.fonts.FontSetup;
+import org.apache.fop.fonts.base14.Base14FontCollection;
 import org.apache.fop.pdf.PDFDocument;
 import org.apache.fop.render.pdf.PDFRendererConfigurator;
 
@@ -41,71 +43,65 @@ import org.apache.fop.render.pdf.PDFRendererConfigurator;
 public class PDFDocumentGraphics2DConfigurator {
 
     /**
-     * Configures a PDFDocumentGraphics2D instance using an Avalon Configuration
-     * object.
-     *
-     * @param graphics
-     *            the PDFDocumentGraphics2D instance
-     * @param cfg
-     *            the configuration
-     * @throws ConfigurationException
-     *             if an error occurs while configuring the object
+     * Configures a PDFDocumentGraphics2D instance using an Avalon Configuration object.
+     * @param graphics the PDFDocumentGraphics2D instance
+     * @param cfg the configuration
+     * @param useComplexScriptFeatures true if complex script features enabled
+     * @throws ConfigurationException if an error occurs while configuring the object
      */
-    public void configure(final PDFDocumentGraphics2D graphics,
-            final Configuration cfg) throws ConfigurationException {
-        final PDFDocument pdfDoc = graphics.getPDFDocument();
+    public void configure(PDFDocumentGraphics2D graphics, Configuration cfg,
+                          boolean useComplexScriptFeatures )
+            throws ConfigurationException {
+        PDFDocument pdfDoc = graphics.getPDFDocument();
 
-        // Filter map
-        pdfDoc.setFilterMap(PDFRendererConfigurator
-                .buildFilterMapFromConfiguration(cfg));
+        //Filter map
+        pdfDoc.setFilterMap(
+                PDFRendererConfigurator.buildFilterMapFromConfiguration(cfg));
 
-        // Fonts
+        //Fonts
         try {
-            final FontInfo fontInfo = createFontInfo(cfg);
+            FontInfo fontInfo = createFontInfo(cfg, useComplexScriptFeatures);
             graphics.setFontInfo(fontInfo);
-        } catch (final FOPException e) {
+        } catch (FOPException e) {
             throw new ConfigurationException("Error while setting up fonts", e);
         }
     }
 
     /**
      * Creates the {@link FontInfo} instance for the given configuration.
-     *
-     * @param cfg
-     *            the configuration
+     * @param cfg the configuration
+     * @param useComplexScriptFeatures true if complex script features enabled
      * @return the font collection
-     * @throws FOPException
-     *             if an error occurs while setting up the fonts
+     * @throws FOPException if an error occurs while setting up the fonts
      */
-    public static FontInfo createFontInfo(final Configuration cfg)
-            throws FOPException {
-        final FontInfo fontInfo = new FontInfo();
+    public static FontInfo createFontInfo(Configuration cfg, boolean useComplexScriptFeatures)
+        throws FOPException {
+        FontInfo fontInfo = new FontInfo();
+        final boolean strict = false;
+        FontResolver fontResolver = FontManager.createMinimalFontResolver(useComplexScriptFeatures);
+        //TODO The following could be optimized by retaining the FontManager somewhere
+        FontManager fontManager = new FontManager();
         if (cfg != null) {
-            final FontResolver fontResolver = FontManager
-                    .createMinimalFontResolver();
-            // TODO The following could be optimized by retaining the
-            // FontManager somewhere
-            final FontManager fontManager = new FontManager();
-
-            // TODO Make use of fontBaseURL, font substitution and referencing
-            // configuration
-            // Requires a change to the expected configuration layout
-
-            // TODO Wire in the FontEventListener
-            final FontEventListener listener = null;
-            final boolean strict = false;
-            final FontInfoConfigurator fontInfoConfigurator = new FontInfoConfigurator(
-                    cfg, fontManager, fontResolver, listener, strict);
-            final List<EmbedFontInfo> fontInfoList = new ArrayList<>();
-            fontInfoConfigurator.configure(fontInfoList);
-
-            if (fontManager.useCache()) {
-                fontManager.getFontCache().save();
-            }
-            FontSetup.setup(fontInfo, fontInfoList, fontResolver);
-        } else {
-            FontSetup.setup(fontInfo);
+            FontManagerConfigurator fmConfigurator = new FontManagerConfigurator(cfg);
+            fmConfigurator.configure(fontManager, strict);
         }
+
+        List fontCollections = new java.util.ArrayList();
+        fontCollections.add(new Base14FontCollection(fontManager.isBase14KerningEnabled()));
+
+        if (cfg != null) {
+            //TODO Wire in the FontEventListener
+            FontEventListener listener = null; //new FontEventAdapter(eventBroadcaster);
+            FontInfoConfigurator fontInfoConfigurator
+                = new FontInfoConfigurator(cfg, fontManager, fontResolver, listener, strict);
+            List/*<EmbedFontInfo>*/ fontInfoList = new java.util.ArrayList/*<EmbedFontInfo>*/();
+            fontInfoConfigurator.configure(fontInfoList);
+            fontCollections.add(new CustomFontCollection(fontResolver, fontInfoList,
+                                fontResolver.isComplexScriptFeaturesEnabled()));
+        }
+        fontManager.setup(fontInfo,
+                (FontCollection[])fontCollections.toArray(
+                        new FontCollection[fontCollections.size()]));
         return fontInfo;
     }
 

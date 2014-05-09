@@ -27,40 +27,37 @@ import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.gvt.TextNode;
 import org.apache.batik.gvt.TextPainter;
 import org.apache.batik.gvt.flow.FlowTextPainter;
+
 import org.apache.fop.fonts.FontInfo;
 
 /**
- * Element Bridge for SVG 1.2 flow text, so those texts can be painted using PDF
- * primitives.
+ * Element Bridge for SVG 1.2 flow text, so those texts can be painted using
+ * PDF primitives.
  */
 public class PSSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
 
-    private final PSTextPainter textPainter;
+    private PSTextPainter textPainter;
 
     /**
      * Main Constructor.
-     * 
-     * @param fontInfo
-     *            the font directory
+     * @param fontInfo the font directory
      */
-    public PSSVGFlowRootElementBridge(final FontInfo fontInfo) {
+    public PSSVGFlowRootElementBridge(FontInfo fontInfo) {
         this.textPainter = new PSFlowTextPainter(fontInfo);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected GraphicsNode instantiateGraphicsNode() {
-        final GraphicsNode node = super.instantiateGraphicsNode();
+        GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {
-            // Set our own text painter
-            ((TextNode) node).setTextPainter(getTextPainter());
+            //Set our own text painter
+            ((TextNode)node).setTextPainter(getTextPainter());
         }
         return node;
     }
 
     /**
      * Returns the text painter used by this bridge.
-     * 
      * @return the text painter
      */
     public TextPainter getTextPainter() {
@@ -71,22 +68,16 @@ public class PSSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
 
         /**
          * Main constructor
-         * 
-         * @param fontInfo
-         *            the font directory
+         * @param fontInfo the font directory
          */
-        public PSFlowTextPainter(final FontInfo fontInfo) {
+        public PSFlowTextPainter(FontInfo fontInfo) {
             super(fontInfo);
         }
 
         /** {@inheritDoc} */
-        @Override
-        public List getTextRuns(final TextNode node,
-                final AttributedCharacterIterator aci) {
-            // Text runs are delegated to the normal FlowTextPainter, we just
-            // paint the text.
-            final FlowTextPainter delegate = (FlowTextPainter) FlowTextPainter
-                    .getInstance();
+        public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
+            //Text runs are delegated to the normal FlowTextPainter, we just paint the text.
+            FlowTextPainter delegate = (FlowTextPainter)FlowTextPainter.getInstance();
             return delegate.getTextRuns(node, aci);
         }
 

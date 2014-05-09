@@ -15,46 +15,42 @@
  * limitations under the License.
  */
 
-/* $Id: LinkResolver.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: LinkResolver.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.area;
 
-// Java
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
-// FOP
 
 /**
  * Link resolving for resolving internal links.
  */
 public class LinkResolver implements Resolvable, Serializable {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = -7102134165192960718L;
+
     private boolean resolved = false;
-    private final String idRef;
-    private final Area area;
+    private String idRef;
+    private Area area;
+    private transient List<Resolvable> dependents = null;
 
     /**
      * Create a new link resolver.
      *
-     * @param id
-     *            the id to resolve
-     * @param a
-     *            the area that will have the link attribute
+     * @param id the id to resolve
+     * @param a the area that will have the link attribute
      */
-    public LinkResolver(final String id, final Area a) {
-        this.idRef = id;
-        this.area = a;
+    public LinkResolver(String id, Area a) {
+        idRef = id;
+        area = a;
     }
 
     /**
      * @return true if this link is resolved
      */
-    @Override
     public boolean isResolved() {
-        return this.resolved;
+        return resolved;
     }
 
     /**
@@ -62,9 +58,8 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * @return the String array of references.
      */
-    @Override
     public String[] getIDRefs() {
-        return new String[] { this.idRef };
+        return new String[] {idRef};
     }
 
     /**
@@ -72,25 +67,48 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * {@inheritDoc}
      */
-    @Override
-    public void resolveIDRef(final String id, final List pages) {
-        resolveIDRef(id, (PageViewport) pages.get(0));
+    public void resolveIDRef(String id, List<PageViewport> pages) {
+        resolveIDRef(id, pages.get(0));
     }
 
     /**
      * Resolve by adding an InternalLink trait to the area
      *
-     * @param id
-     *            the target id (should be equal to the object's idRef)
-     * @param pv
-     *            the PageViewport containing the first area with the given id
+     * @param id the target id (should be equal to the object's idRef)
+     * @param pv the PageViewport containing the first area with the given id
      */
-    public void resolveIDRef(final String id, final PageViewport pv) {
-        if (this.idRef.equals(id) && pv != null) {
-            this.resolved = true;
-            final Trait.InternalLink iLink = new Trait.InternalLink(
-                    pv.getKey(), this.idRef);
-            this.area.addTrait(Trait.INTERNAL_LINK, iLink);
+    public void resolveIDRef(String id, PageViewport pv) {
+        if (idRef.equals(id) && pv != null) {
+            resolved = true;
+            if ( area != null ) {
+                Trait.InternalLink iLink = new Trait.InternalLink(pv.getKey(), idRef);
+                area.addTrait(Trait.INTERNAL_LINK, iLink);
+                area = null; // break circular reference from basic link area to this resolver
+            }
+            resolveDependents(id, pv);
         }
     }
+
+    /**
+     * Add dependent resolvable. Used to resolve second-order resolvables that
+     * depend on resolution of this resolver.
+     * @param dependent resolvable
+     */
+    public void addDependent(Resolvable dependent) {
+        if ( dependents == null ) {
+            dependents = new ArrayList<Resolvable>();
+        }
+        dependents.add(dependent);
+    }
+
+    private void resolveDependents(String id, PageViewport pv) {
+        if ( dependents != null ) {
+            List<PageViewport> pages = new ArrayList<PageViewport>();
+            pages.add(pv);
+            for ( Resolvable r : dependents ) {
+                r.resolveIDRef(id, pages);
+            }
+        }
+    }
+
 }

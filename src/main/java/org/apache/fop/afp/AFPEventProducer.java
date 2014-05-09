@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: AFPEventProducer.java 1204579 2011-11-21 16:35:41Z mehdi $ */
 
 package org.apache.fop.afp;
 
@@ -28,69 +28,89 @@ import org.apache.fop.events.EventProducer;
 public interface AFPEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    static final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static AFPEventProducer get(final EventBroadcaster broadcaster) {
-            return (AFPEventProducer) broadcaster
-                    .getEventProducerFor(AFPEventProducer.class);
+        public static AFPEventProducer get(EventBroadcaster broadcaster) {
+            return (AFPEventProducer) broadcaster.getEventProducerFor(AFPEventProducer.class);
         }
     }
 
     /**
      * Warn about using default font setup.
      *
-     * @param source
-     *            the event source
+     * @param source the event source
      * @event.severity WARN
      */
-    void warnDefaultFontSetup(final Object source);
+    void warnDefaultFontSetup(Object source);
 
     /**
      * Warn about a missing default "any" font configuration.
      *
-     * @param source
-     *            the event source
-     * @param style
-     *            the font style
-     * @param weight
-     *            the font weight
+     * @param source the event source
+     * @param style the font style
+     * @param weight the font weight
      * @event.severity WARN
      */
-    void warnMissingDefaultFont(final Object source, final String style,
-            final int weight);
+    void warnMissingDefaultFont(Object source, String style, int weight);
 
     /**
      * A character set encoding error occurred.
      *
-     * @param source
-     *            the event source
-     * @param charSetName
-     *            the character set name
-     * @param encoding
-     *            the encoding
+     * @param source the event source
+     * @param charSetName the character set name
+     * @param encoding the encoding
      * @event.severity ERROR
      */
-    void characterSetEncodingError(final Object source,
-            final String charSetName, final String encoding);
+    void characterSetEncodingError(Object source, String charSetName, String encoding);
 
     /**
      * Triggered when an external resource fails to be embedded.
      *
-     * @param source
-     *            the event source
-     * @param resourceName
-     *            the name of the resource where the error occurred
-     * @param e
-     *            the original exception
+     * @param source the event source
+     * @param resourceName the name of the resource where the error occurred
+     * @param e the original exception
      * @event.severity ERROR
      */
-    void resourceEmbeddingError(final Object source, final String resourceName,
-            final Exception e);
+    void resourceEmbeddingError(Object source, String resourceName, Exception e);
+
+    /**
+     * A mandatory font configuration node is missing at location.
+     * @param source the event source
+     * @param missingConfig the expected configuration element
+     * @param location the position of the missing element within the config file.
+     * @event.severity ERROR
+     */
+    void fontConfigMissing(Object source, String missingConfig, String location);
+
+    /**
+     * The character set given has an invalid name.
+     * @param source the event source
+     * @param msg the error message
+     * @event.severity ERROR
+     */
+    void characterSetNameInvalid(Object source, String msg);
+
+    /**
+     * The code page for an AFP font could not be found.
+     * @param source the event source
+     * @param e the original exception
+     * @event.severity ERROR
+     */
+    void codePageNotFound(Object source, Exception e);
+
+    /**
+     * This is a generic event for invalid configuration errors.
+     * @param source the event source
+     * @param e the original exception
+     * @event.severity ERROR
+     */
+    void invalidConfiguration(Object source, Exception e);
 }

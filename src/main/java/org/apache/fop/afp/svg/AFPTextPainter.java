@@ -15,39 +15,36 @@
  * limitations under the License.
  */
 
-/* $Id: AFPTextPainter.java 820689 2009-10-01 15:36:10Z jeremias $ */
+/* $Id: AFPTextPainter.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp.svg;
 
 import java.awt.Graphics2D;
 
-import org.apache.batik.gvt.TextNode;
 import org.apache.fop.afp.AFPGraphics2D;
 import org.apache.fop.svg.AbstractFOPTextPainter;
 import org.apache.fop.svg.FOPTextHandler;
 
 /**
- * Renders the attributed character iterator of a {@link TextNode}. This class
- * draws the text directly into the AFPGraphics2D so that the text is not drawn
- * using shapes. If the text is simple enough to draw then it sets the font and
- * calls drawString. If the text is complex or the cannot be translated into a
- * simple drawString the StrokingTextPainter is used instead.
+ * Renders the attributed character iterator of some text.
+ * This class draws the text directly into the AFPGraphics2D so that
+ * the text is not drawn using shapes.
+ * If the text is simple enough to draw then it sets the font and calls
+ * drawString. If the text is complex or the cannot be translated
+ * into a simple drawString the StrokingTextPainter is used instead.
  */
 public class AFPTextPainter extends AbstractFOPTextPainter {
 
     /**
      * Create a new text painter with the given font information.
-     * 
-     * @param nativeTextHandler
-     *            the NativeTextHandler instance used for text painting
+     * @param nativeTextHandler the NativeTextHandler instance used for text painting
      */
-    public AFPTextPainter(final FOPTextHandler nativeTextHandler) {
+    public AFPTextPainter(FOPTextHandler nativeTextHandler) {
         super(nativeTextHandler);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected boolean isSupportedGraphics2D(final Graphics2D g2d) {
+    protected boolean isSupportedGraphics2D(Graphics2D g2d) {
         return g2d instanceof AFPGraphics2D;
     }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PSSVGHandler.java 766594 2009-04-20 06:50:59Z jeremias $ */
+/* $Id: PSSVGHandler.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.ps;
 
@@ -24,12 +24,17 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
 
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.gvt.GraphicsNode;
+
+import org.apache.xmlgraphics.java2d.ps.PSGraphics2D;
+import org.apache.xmlgraphics.ps.PSGenerator;
+
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.image.loader.batik.BatikUtil;
 import org.apache.fop.render.AbstractGenericSVGHandler;
@@ -39,21 +44,17 @@ import org.apache.fop.render.RendererContext;
 import org.apache.fop.render.RendererContextConstants;
 import org.apache.fop.svg.SVGEventProducer;
 import org.apache.fop.svg.SVGUserAgent;
-import org.apache.xmlgraphics.java2d.ps.PSGraphics2D;
-import org.apache.xmlgraphics.ps.PSGenerator;
-import org.w3c.dom.Document;
 
 /**
- * PostScript XML handler for SVG. Uses Apache Batik for SVG processing. This
- * handler handles XML for foreign objects when rendering to PostScript. It
- * renders SVG to the PostScript document using the PSGraphics2D. The properties
- * from the PostScript renderer are subject to change.
+ * PostScript XML handler for SVG. Uses Apache Batik for SVG processing.
+ * This handler handles XML for foreign objects when rendering to PostScript.
+ * It renders SVG to the PostScript document using the PSGraphics2D.
+ * The properties from the PostScript renderer are subject to change.
  *
- * @version $Id: PSSVGHandler.java 766594 2009-04-20 06:50:59Z jeremias $
+ * @version $Id: PSSVGHandler.java 1296526 2012-03-03 00:18:45Z gadams $
  */
-@Slf4j
-public class PSSVGHandler extends AbstractGenericSVGHandler implements
-PSRendererContextConstants {
+public class PSSVGHandler extends AbstractGenericSVGHandler
+            implements PSRendererContextConstants {
 
     /**
      * Create a new PostScript XML handler for use by the PostScript renderer.
@@ -64,20 +65,18 @@ PSRendererContextConstants {
     /**
      * Get the pdf information from the render context.
      *
-     * @param context
-     *            the renderer context
+     * @param context the renderer context
      * @return the pdf information retrieved from the context
      */
-    public static PSInfo getPSInfo(final RendererContext context) {
-        final PSInfo psi = new PSInfo();
-        psi.psGenerator = (PSGenerator) context.getProperty(PS_GENERATOR);
-        psi.fontInfo = (org.apache.fop.fonts.FontInfo) context
-                .getProperty(PS_FONT_INFO);
-        psi.width = ((Integer) context.getProperty(WIDTH)).intValue();
-        psi.height = ((Integer) context.getProperty(HEIGHT)).intValue();
-        psi.currentXPosition = ((Integer) context.getProperty(XPOS)).intValue();
-        psi.currentYPosition = ((Integer) context.getProperty(YPOS)).intValue();
-        psi.cfg = (Configuration) context.getProperty(HANDLER_CONFIGURATION);
+    public static PSInfo getPSInfo(RendererContext context) {
+        PSInfo psi = new PSInfo();
+        psi.psGenerator = (PSGenerator)context.getProperty(PS_GENERATOR);
+        psi.fontInfo = (org.apache.fop.fonts.FontInfo) context.getProperty(PS_FONT_INFO);
+        psi.width = ((Integer)context.getProperty(WIDTH)).intValue();
+        psi.height = ((Integer)context.getProperty(HEIGHT)).intValue();
+        psi.currentXPosition = ((Integer)context.getProperty(XPOS)).intValue();
+        psi.currentYPosition = ((Integer)context.getProperty(YPOS)).intValue();
+        psi.cfg = (Configuration)context.getProperty(HANDLER_CONFIGURATION);
         return psi;
     }
 
@@ -103,121 +102,102 @@ PSRendererContextConstants {
 
         /**
          * Returns the PSGenerator.
-         *
          * @return PSGenerator
          */
         public PSGenerator getPSGenerator() {
-            return this.psGenerator;
+            return psGenerator;
         }
 
         /**
          * Sets the PSGenerator.
-         *
-         * @param psGenerator
-         *            The PSGenerator to set
+         * @param psGenerator The PSGenerator to set
          */
-        public void setPsGenerator(final PSGenerator psGenerator) {
+        public void setPsGenerator(PSGenerator psGenerator) {
             this.psGenerator = psGenerator;
         }
 
         /**
          * Returns the fontInfo.
-         *
          * @return FontInfo
          */
         public FontInfo getFontInfo() {
-            return this.fontInfo;
+            return fontInfo;
         }
 
         /**
          * Sets the fontInfo.
-         *
-         * @param fontInfo
-         *            The fontInfo to set
+         * @param fontInfo The fontInfo to set
          */
-        public void setFontInfo(final FontInfo fontInfo) {
+        public void setFontInfo(FontInfo fontInfo) {
             this.fontInfo = fontInfo;
         }
 
         /**
          * Returns the currentXPosition.
-         *
          * @return int
          */
         public int getCurrentXPosition() {
-            return this.currentXPosition;
+            return currentXPosition;
         }
 
         /**
          * Sets the currentXPosition.
-         *
-         * @param currentXPosition
-         *            The currentXPosition to set
+         * @param currentXPosition The currentXPosition to set
          */
-        public void setCurrentXPosition(final int currentXPosition) {
+        public void setCurrentXPosition(int currentXPosition) {
             this.currentXPosition = currentXPosition;
         }
 
         /**
          * Returns the currentYPosition.
-         *
          * @return int
          */
         public int getCurrentYPosition() {
-            return this.currentYPosition;
+            return currentYPosition;
         }
 
         /**
          * Sets the currentYPosition.
-         *
-         * @param currentYPosition
-         *            The currentYPosition to set
+         * @param currentYPosition The currentYPosition to set
          */
-        public void setCurrentYPosition(final int currentYPosition) {
+        public void setCurrentYPosition(int currentYPosition) {
             this.currentYPosition = currentYPosition;
         }
 
         /**
          * Returns the width.
-         *
          * @return int
          */
         public int getWidth() {
-            return this.width;
+            return width;
         }
 
         /**
          * Sets the width.
-         *
-         * @param width
-         *            The pageWidth to set
+         * @param width The pageWidth to set
          */
-        public void setWidth(final int width) {
+        public void setWidth(int width) {
             this.width = width;
         }
 
         /**
          * Returns the height.
-         *
          * @return int
          */
         public int getHeight() {
-            return this.height;
+            return height;
         }
 
         /**
          * Sets the height.
-         *
-         * @param height
-         *            The height to set
+         * @param height The height to set
          */
-        public void setHeight(final int height) {
+        public void setHeight(int height) {
             this.height = height;
         }
 
         /**
          * Returns the height.
-         *
          * @return int
          */
         public Configuration getHandlerConfiguration() {
@@ -226,11 +206,9 @@ PSRendererContextConstants {
 
         /**
          * Sets the handler configuration.
-         *
-         * @param cfg
-         *            the configuration object
+         * @param cfg the configuration object
          */
-        public void setHandlerConfiguration(final Configuration cfg) {
+        public void setHandlerConfiguration(Configuration cfg) {
             this.cfg = cfg;
         }
 
@@ -238,78 +216,70 @@ PSRendererContextConstants {
 
     /**
      * Render the svg document.
-     *
-     * @param context
-     *            the renderer context
-     * @param doc
-     *            the svg document
+     * @param context the renderer context
+     * @param doc the svg document
      */
-    @Override
-    protected void renderSVGDocument(final RendererContext context,
-            final Document doc) {
-        final PSInfo psInfo = getPSInfo(context);
-        final int xOffset = psInfo.currentXPosition;
-        final int yOffset = psInfo.currentYPosition;
-        final PSGenerator gen = psInfo.psGenerator;
+    protected void renderSVGDocument(RendererContext context,
+            Document doc) {
+        PSInfo psInfo = getPSInfo(context);
+        int xOffset = psInfo.currentXPosition;
+        int yOffset = psInfo.currentYPosition;
+        PSGenerator gen = psInfo.psGenerator;
 
         boolean paintAsBitmap = false;
         if (context != null) {
-            final Map foreign = (Map) context
-                    .getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
+            Map foreign = (Map)context.getProperty(RendererContextConstants.FOREIGN_ATTRIBUTES);
             paintAsBitmap = ImageHandlerUtil.isConversionModeBitmap(foreign);
         }
         if (paintAsBitmap) {
             try {
                 super.renderSVGDocument(context, doc);
-            } catch (final IOException ioe) {
-                final SVGEventProducer eventProducer = SVGEventProducer.Provider
-                        .get(context.getUserAgent().getEventBroadcaster());
+            } catch (IOException ioe) {
+                SVGEventProducer eventProducer = SVGEventProducer.Provider.get(
+                        context.getUserAgent().getEventBroadcaster());
                 eventProducer.svgRenderingError(this, ioe, getDocumentURI(doc));
             }
             return;
         }
 
-        // Controls whether text painted by Batik is generated using text or
-        // path operations
+        //Controls whether text painted by Batik is generated using text or path operations
         boolean strokeText = false;
-        final Configuration cfg = psInfo.getHandlerConfiguration();
+        Configuration cfg = psInfo.getHandlerConfiguration();
         if (cfg != null) {
-            strokeText = cfg.getChild("stroke-text", true).getValueAsBoolean(
-                    strokeText);
+            strokeText = cfg.getChild("stroke-text", true).getValueAsBoolean(strokeText);
         }
 
-        final SVGUserAgent ua = new SVGUserAgent(context.getUserAgent(),
-                new AffineTransform());
+        SVGUserAgent ua
+             = new SVGUserAgent(context.getUserAgent(), new AffineTransform());
 
-        final PSGraphics2D graphics = new PSGraphics2D(strokeText, gen);
+        PSGraphics2D graphics = new PSGraphics2D(strokeText, gen);
         graphics.setGraphicContext(new org.apache.xmlgraphics.java2d.GraphicContext());
 
-        BridgeContext ctx = new PSBridgeContext(ua, strokeText ? null
-                : psInfo.fontInfo, context.getUserAgent().getFactory()
-                .getImageManager(), context.getUserAgent()
-                .getImageSessionContext());
+        BridgeContext ctx = new PSBridgeContext(ua,
+                (strokeText ? null : psInfo.fontInfo),
+                context.getUserAgent().getFactory().getImageManager(),
+                context.getUserAgent().getImageSessionContext());
 
-        // Cloning SVG DOM as Batik attaches non-thread-safe facilities (like
-        // the CSS engine)
-        // to it.
-        final Document clonedDoc = BatikUtil.cloneSVGDocument(doc);
+        //Cloning SVG DOM as Batik attaches non-thread-safe facilities (like the CSS engine)
+        //to it.
+        Document clonedDoc = BatikUtil.cloneSVGDocument(doc);
 
         GraphicsNode root;
         try {
-            final GVTBuilder builder = new GVTBuilder();
+            GVTBuilder builder = new GVTBuilder();
             root = builder.build(ctx, clonedDoc);
-        } catch (final Exception e) {
-            final SVGEventProducer eventProducer = SVGEventProducer.Provider
-                    .get(context.getUserAgent().getEventBroadcaster());
+        } catch (Exception e) {
+            SVGEventProducer eventProducer = SVGEventProducer.Provider.get(
+                    context.getUserAgent().getEventBroadcaster());
             eventProducer.svgNotBuilt(this, e, getDocumentURI(doc));
             return;
         }
         // get the 'width' and 'height' attributes of the SVG document
-        final float w = (float) ctx.getDocumentSize().getWidth() * 1000f;
-        final float h = (float) ctx.getDocumentSize().getHeight() * 1000f;
+        float w = (float)ctx.getDocumentSize().getWidth() * 1000f;
+        float h = (float)ctx.getDocumentSize().getHeight() * 1000f;
 
-        final float sx = psInfo.getWidth() / w;
-        final float sy = psInfo.getHeight() / h;
+        float sx = psInfo.getWidth() / w;
+        float sy = psInfo.getHeight() / h;
 
         ctx = null;
 
@@ -317,8 +287,9 @@ PSRendererContextConstants {
             gen.commentln("%FOPBeginSVG");
             gen.saveGraphicsState();
             /*
-             * Clip to the svg area. Note: To have the svg overlay (under) a
-             * text area then use an fo:block-container
+             * Clip to the svg area.
+             * Note: To have the svg overlay (under) a text area then use
+             * an fo:block-container
              */
             gen.writeln("newpath");
             gen.defineRect(xOffset / 1000f, yOffset / 1000f,
@@ -331,38 +302,40 @@ PSRendererContextConstants {
             gen.concatMatrix(sx, 0, 0, sy, xOffset / 1000f, yOffset / 1000f);
 
             /*
-             * SVGSVGElement svg = ((SVGDocument)doc).getRootElement();
-             * AffineTransform at = ViewBox.getPreserveAspectRatioTransform(svg,
-             * psInfo.getWidth() / 1000f, psInfo.getHeight() / 1000f, ctx); if
-             * (!at.isIdentity()) { double[] vals = new double[6];
-             * at.getMatrix(vals); gen.concatMatrix(vals); }
-             */
+            SVGSVGElement svg = ((SVGDocument)doc).getRootElement();
+            AffineTransform at = ViewBox.getPreserveAspectRatioTransform(svg,
+                    psInfo.getWidth() / 1000f, psInfo.getHeight() / 1000f, ctx);
+            if (!at.isIdentity()) {
+                double[] vals = new double[6];
+                at.getMatrix(vals);
+                gen.concatMatrix(vals);
+            }*/
 
-            final AffineTransform transform = new AffineTransform();
+            AffineTransform transform = new AffineTransform();
             // scale to viewbox
             transform.translate(xOffset, yOffset);
             gen.getCurrentState().concatMatrix(transform);
             try {
                 root.paint(graphics);
-            } catch (final Exception e) {
-                final SVGEventProducer eventProducer = SVGEventProducer.Provider
-                        .get(context.getUserAgent().getEventBroadcaster());
+            } catch (Exception e) {
+                SVGEventProducer eventProducer = SVGEventProducer.Provider.get(
+                        context.getUserAgent().getEventBroadcaster());
                 eventProducer.svgRenderingError(this, e, getDocumentURI(doc));
             }
 
             gen.restoreGraphicsState();
             gen.commentln("%FOPEndSVG");
-        } catch (final IOException ioe) {
-            final SVGEventProducer eventProducer = SVGEventProducer.Provider
-                    .get(context.getUserAgent().getEventBroadcaster());
+        } catch (IOException ioe) {
+            SVGEventProducer eventProducer = SVGEventProducer.Provider.get(
+                    context.getUserAgent().getEventBroadcaster());
             eventProducer.svgRenderingError(this, ioe, getDocumentURI(doc));
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean supportsRenderer(final Renderer renderer) {
-        return renderer instanceof PSRenderer;
+    public boolean supportsRenderer(Renderer renderer) {
+        return false;
     }
 
 }
+

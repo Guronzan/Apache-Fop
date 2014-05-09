@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: CustomFontCollection.java 677543 2008-07-17 09:11:09Z jeremias $ */
+/* $Id: CustomFontCollection.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.fonts;
 
@@ -31,51 +31,48 @@ public class CustomFontCollection implements FontCollection {
 
     /**
      * Main constructor.
-     *
-     * @param fontResolver
-     *            a font resolver
-     * @param customFonts
-     *            the list of custom fonts
+     * @param fontResolver a font resolver
+     * @param customFonts the list of custom fonts
+     * @param useComplexScriptFeatures true if complex script features enabled
      */
-    public CustomFontCollection(final FontResolver fontResolver,
-            final List<EmbedFontInfo> customFonts) {
+    public CustomFontCollection(FontResolver fontResolver,
+           List<EmbedFontInfo> customFonts, boolean useComplexScriptFeatures) {
         this.fontResolver = fontResolver;
         if (this.fontResolver == null) {
-            // Ensure that we have minimal font resolution capabilities
-            this.fontResolver = FontManager.createMinimalFontResolver();
+            //Ensure that we have minimal font resolution capabilities
+            this.fontResolver = FontManager.createMinimalFontResolver(useComplexScriptFeatures);
         }
         this.embedFontInfoList = customFonts;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int setup(final int inNum, final FontInfo fontInfo) {
-        int num = inNum;
-        if (this.embedFontInfoList == null) {
-            return num; // No fonts to process
+    public int setup(int num, FontInfo fontInfo) {
+        if (embedFontInfoList == null) {
+            return num; //No fonts to process
         }
 
         String internalName = null;
-        // FontReader reader = null;
+        //FontReader reader = null;
 
-        for (int i = 0; i < this.embedFontInfoList.size(); ++i) {
-            final EmbedFontInfo embedFontInfo = this.embedFontInfoList.get(i);
+        for (int i = 0; i < embedFontInfoList.size(); i++) {
+            EmbedFontInfo embedFontInfo = embedFontInfoList.get(i);
 
-            // String metricsFile = configFontInfo.getMetricsFile();
+            //String metricsFile = configFontInfo.getMetricsFile();
             internalName = "F" + num;
-            ++num;
+            num++;
             /*
-             * reader = new FontReader(metricsFile);
-             * reader.useKerning(configFontInfo.getKerning());
-             * reader.setFontEmbedPath(configFontInfo.getEmbedFile());
-             * fontInfo.addMetrics(internalName, reader.getFont());
-             */
+            reader = new FontReader(metricsFile);
+            reader.useKerning(configFontInfo.getKerning());
+            reader.setFontEmbedPath(configFontInfo.getEmbedFile());
+            fontInfo.addMetrics(internalName, reader.getFont());
+            */
 
-            final LazyFont font = new LazyFont(embedFontInfo, this.fontResolver);
+            LazyFont font = new LazyFont(embedFontInfo, this.fontResolver);
             fontInfo.addMetrics(internalName, font);
 
-            final List<FontTriplet> triplets = embedFontInfo.getFontTriplets();
-            for (final FontTriplet triplet : triplets) {
+            List<FontTriplet> triplets = embedFontInfo.getFontTriplets();
+            for (int tripletIndex = 0; tripletIndex < triplets.size(); tripletIndex++) {
+                FontTriplet triplet = triplets.get(tripletIndex);
                 fontInfo.addFontProperties(internalName, triplet);
             }
         }

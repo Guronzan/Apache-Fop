@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-/* $Id: FromParentFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FromParentFunction.java 1328963 2012-04-22 20:09:42Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
 import org.apache.fop.fo.FOPropertyMapping;
 import org.apache.fop.fo.properties.Property;
+
 
 /**
  * Class modelling the from-parent Property Value function. See Sec. 5.10.4 of
@@ -28,54 +29,46 @@ import org.apache.fop.fo.properties.Property;
  */
 public class FromParentFunction extends FunctionBase {
 
-    /**
-     * @return 1 (maximum arguments for the from-parent function)
-     */
+    /** {@inheritDoc} */
+    public int getRequiredArgsCount() {
+        return 0;
+    }
+
     @Override
-    public int nbArgs() {
+    /** {@inheritDoc} */
+    public int getOptionalArgsCount() {
         return 1;
     }
 
-    /**
-     * @return true (allow padding of arglist with property name)
-     */
     @Override
-    public boolean padArgsWithPropertyName() {
-        return true;
+    /** {@inheritDoc} */
+    public Property getOptionalArgDefault(int index, PropertyInfo pi) throws PropertyException {
+        if ( index == 0 ) {
+            return getPropertyName ( pi );
+        } else {
+            return super.getOptionalArgDefault ( index, pi );
+        }
     }
 
-    /**
-     * @param args
-     *            array of arguments, which should either be empty, or the first
-     *            of which should contain an NCName corresponding to property
-     *            name
-     * @param pInfo
-     *            PropertyInfo object to be evaluated
-     * @return property containing the computed value
-     * @throws PropertyException
-     *             if the arguments are incorrect
-     */
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo pInfo)
-            throws PropertyException {
-        final String propName = args[0].getString();
+    /** {@inheritDoc} */
+    public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
+        String propName = args[0].getString();
         if (propName == null) {
-            throw new PropertyException(
-                    "Incorrect parameter to from-parent function");
+            throw new PropertyException("Incorrect parameter to from-parent function");
         }
         // NOTE: special cases for shorthand property
         // Should return COMPUTED VALUE
         /*
-         * For now, this is the same as inherited-property-value(propName) (The
-         * only difference I can see is that this could work for non-inherited
-         * properties too. Perhaps the result is different for a property line
-         * line-height which "inherits specified"???
+         * For now, this is the same as inherited-property-value(propName)
+         * (The only difference I can see is that this could work for
+         * non-inherited properties too. Perhaps the result is different for
+         * a property line line-height which "inherits specified"???
          */
-        final int propId = FOPropertyMapping.getPropertyId(propName);
+        int propId = FOPropertyMapping.getPropertyId(propName);
         if (propId < 0) {
             throw new PropertyException(
                     "Unknown property name used with inherited-property-value function: "
-                            + propName);
+                        + propName);
         }
         return pInfo.getPropertyList().getFromParent(propId);
     }

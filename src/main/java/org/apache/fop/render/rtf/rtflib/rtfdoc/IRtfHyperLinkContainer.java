@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfHyperLinkContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfHyperLinkContainer.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -29,22 +29,17 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * interface for RtfElements that can contain RtfHyperLinks
- * 
- * @author Andreas Putz a.putz@skynamics.com
+ * <p>Interface for RtfElements that can contain RtfHyperLinks.</p>
+ *
+ * <p>This work was authored by Andreas Putz (a.putz@skynamics.com).</p>
  */
 public interface IRtfHyperLinkContainer extends IRtfTextContainer {
     /**
      * Creates a new hyperlink.
-     * 
-     * @param str
-     *            Hyperlink string
-     * @param attr
-     *            Hyperlink attributes
-     * @exception IOException
-     *                on error
+     * @param str Hyperlink string
+     * @param attr Hyperlink attributes
+     * @exception IOException on error
      * @return new Hyperlink object
      */
-    RtfHyperLink newHyperLink(final String str, final RtfAttributes attr)
-            throws IOException;
+    RtfHyperLink newHyperLink (String str, RtfAttributes attr) throws IOException;
 }

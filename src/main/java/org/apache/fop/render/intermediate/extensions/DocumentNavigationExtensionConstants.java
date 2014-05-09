@@ -19,8 +19,9 @@
 
 package org.apache.fop.render.intermediate.extensions;
 
-import org.apache.fop.render.intermediate.IFConstants;
 import org.apache.xmlgraphics.util.QName;
+
+import org.apache.fop.render.intermediate.IFConstants;
 
 /**
  * Constants for the IF document-level navigation extension.
@@ -47,5 +48,6 @@ public interface DocumentNavigationExtensionConstants {
     QName GOTO_XY = new QName(NAMESPACE, PREFIX, "goto-xy");
     /** the goto-uri element */
     QName GOTO_URI = new QName(NAMESPACE, PREFIX, "goto-uri");
+
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPPageFonts.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPPageFonts.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.fonts;
 
@@ -35,34 +35,28 @@ public class AFPPageFonts extends java.util.HashMap {
     /**
      * Parameterized constructor
      *
-     * @param fonts
-     *            an existing set of afp page fonts
+     * @param fonts an existing set of afp page fonts
      */
-    public AFPPageFonts(final AFPPageFonts fonts) {
+    public AFPPageFonts(AFPPageFonts fonts) {
         super(fonts);
     }
 
     /**
      * Registers a font on the current page and returns font attributes
      *
-     * @param fontName
-     *            the internal font name
-     * @param font
-     *            the AFPFont
-     * @param fontSize
-     *            the font point size
+     * @param fontName the internal font name
+     * @param font the AFPFont
+     * @param fontSize the font point size
      * @return newly registered AFPFontAttributes
      */
-    public AFPFontAttributes registerFont(final String fontName,
-            final AFPFont font, final int fontSize) {
-        final String pageFontKey = fontName + "_" + fontSize;
-        AFPFontAttributes afpFontAttributes = (AFPFontAttributes) super
-                .get(pageFontKey);
+    public AFPFontAttributes registerFont(String fontName, AFPFont font, int fontSize) {
+        String pageFontKey = fontName + "_" + fontSize;
+        AFPFontAttributes afpFontAttributes = (AFPFontAttributes)super.get(pageFontKey);
         // Add to page font mapping if not already present
         if (afpFontAttributes == null) {
             afpFontAttributes = new AFPFontAttributes(fontName, font, fontSize);
             super.put(pageFontKey, afpFontAttributes);
-            final int fontRef = super.size();
+            int fontRef = super.size();
             afpFontAttributes.setFontReference(fontRef);
         }
         return afpFontAttributes;

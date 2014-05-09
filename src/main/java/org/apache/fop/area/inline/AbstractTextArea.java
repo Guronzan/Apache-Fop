@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractTextArea.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AbstractTextArea.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.area.inline;
 
@@ -24,41 +24,31 @@ package org.apache.fop.area.inline;
  */
 public abstract class AbstractTextArea extends InlineParent {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -1246306443569094371L;
 
     /**
-     * this class stores information about spaces and potential adjustments that
-     * can be used in order to re-compute adjustments when a page-number or a
-     * page-number-citation is resolved
+     * this class stores information about spaces and potential adjustments
+     * that can be used in order to re-compute adjustments when a
+     * page-number or a page-number-citation is resolved
      */
     protected class TextAdjustingInfo extends InlineAdjustingInfo {
 
-        /**
-         *
-         */
         private static final long serialVersionUID = -2412095162983479947L;
-        /**
-         * difference between the optimal width of a space and the default width
-         * of a space according to the font (this is equivalent to the property
-         * word-spacing.optimum)
+
+        /** difference between the optimal width of a space
+         * and the default width of a space according to the font
+         * (this is equivalent to the property word-spacing.optimum)
          */
         protected int spaceDifference = 0;
 
         /**
          * Constructor
          *
-         * @param stretch
-         *            the available space for stretching
-         * @param shrink
-         *            the available space for shrinking
-         * @param adj
-         *            space adjustment type
+         * @param stretch the available space for stretching
+         * @param shrink the available space for shrinking
+         * @param adj space adjustment type
          */
-        protected TextAdjustingInfo(final int stretch, final int shrink,
-                final int adj) {
+        protected TextAdjustingInfo(int stretch, int shrink, int adj) {
             super(stretch, shrink, adj);
         }
     }
@@ -75,17 +65,14 @@ public abstract class AbstractTextArea extends InlineParent {
     }
 
     /**
-     * Constructor with extra parameters: create a TextAdjustingInfo object
-     *
-     * @param stretch
-     *            the available stretch of the text
-     * @param shrink
-     *            the available shrink of the text
-     * @param adj
-     *            the current adjustment of the area
+     * Constructor with extra parameters:
+     * create a TextAdjustingInfo object
+     * @param stretch  the available stretch of the text
+     * @param shrink   the available shrink of the text
+     * @param adj      the current adjustment of the area
      */
-    public AbstractTextArea(final int stretch, final int shrink, final int adj) {
-        this.textAdjustingInfo = new TextAdjustingInfo(stretch, shrink, adj);
+    public AbstractTextArea(int stretch, int shrink, int adj) {
+        textAdjustingInfo = new TextAdjustingInfo(stretch, shrink, adj);
     }
 
     /**
@@ -94,16 +81,15 @@ public abstract class AbstractTextArea extends InlineParent {
      * @return the text word space adjustment
      */
     public int getTextWordSpaceAdjust() {
-        return this.textWordSpaceAdjust;
+        return textWordSpaceAdjust;
     }
 
     /**
      * Set text word space adjust.
      *
-     * @param textWordSpaceAdjust
-     *            the text word space adjustment
+     * @param textWordSpaceAdjust the text word space adjustment
      */
-    public void setTextWordSpaceAdjust(final int textWordSpaceAdjust) {
+    public void setTextWordSpaceAdjust(int textWordSpaceAdjust) {
         this.textWordSpaceAdjust = textWordSpaceAdjust;
     }
 
@@ -113,46 +99,39 @@ public abstract class AbstractTextArea extends InlineParent {
      * @return the text letter space adjustment
      */
     public int getTextLetterSpaceAdjust() {
-        return this.textLetterSpaceAdjust;
+        return textLetterSpaceAdjust;
     }
 
     /**
      * Set text letter space adjust.
      *
-     * @param textLetterSpaceAdjust
-     *            the text letter space adjustment
+     * @param textLetterSpaceAdjust the text letter space adjustment
      */
-    public void setTextLetterSpaceAdjust(final int textLetterSpaceAdjust) {
+    public void setTextLetterSpaceAdjust(int textLetterSpaceAdjust) {
         this.textLetterSpaceAdjust = textLetterSpaceAdjust;
     }
 
     /**
-     * Set the difference between optimal width of a space and default width of
-     * a space according to the font; this part of the space adjustment is fixed
-     * and must not be multiplied by the variation factor.
-     *
-     * @param spaceDiff
-     *            the space difference
+     * Set the difference between optimal width of a space and
+     * default width of a space according to the font; this part
+     * of the space adjustment is fixed and must not be
+     * multiplied by the variation factor.
+     * @param spaceDiff the space difference
      */
-    public void setSpaceDifference(final int spaceDiff) {
-        this.textAdjustingInfo.spaceDifference = spaceDiff;
+    public void setSpaceDifference(int spaceDiff) {
+        textAdjustingInfo.spaceDifference = spaceDiff;
     }
 
     /**
      * recursively apply the variation factor to all descendant areas
-     *
-     * @param variationFactor
-     *            the variation factor that must be applied to adjustments
-     * @param lineStretch
-     *            the total stretch of the line
-     * @param lineShrink
-     *            the total shrink of the line
+     * @param variationFactor the variation factor that must be applied to adjustments
+     * @param lineStretch     the total stretch of the line
+     * @param lineShrink      the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
      */
-    @Override
-    public boolean applyVariationFactor(final double variationFactor,
-            final int lineStretch, final int lineShrink) {
-        if (this.textAdjustingInfo != null) {
+    public boolean applyVariationFactor(double variationFactor,
+                                        int lineStretch, int lineShrink) {
+        if (textAdjustingInfo != null) {
             // compute the new adjustments:
             // if the variation factor is negative, it means that before
             // the ipd variation the line had to stretch and now it has
@@ -162,48 +141,59 @@ public abstract class AbstractTextArea extends InlineParent {
             // balancing factor
             double balancingFactor = 1.0;
             if (variationFactor < 0) {
-                if (this.textWordSpaceAdjust < 0) {
+                if (textWordSpaceAdjust < 0) {
                     // from a negative adjustment to a positive one
-                    balancingFactor = (double) this.textAdjustingInfo.availableStretch
-                            / this.textAdjustingInfo.availableShrink
+                    balancingFactor
+                        = ((double) textAdjustingInfo.availableStretch
+                           / textAdjustingInfo.availableShrink)
                             * ((double) lineShrink / lineStretch);
                 } else {
                     // from a positive adjustment to a negative one
-                    balancingFactor = (double) this.textAdjustingInfo.availableShrink
-                            / this.textAdjustingInfo.availableStretch
+                    balancingFactor
+                        = ((double) textAdjustingInfo.availableShrink
+                           / textAdjustingInfo.availableStretch)
                             * ((double) lineStretch / lineShrink);
                 }
             }
-            this.textWordSpaceAdjust = (int) ((this.textWordSpaceAdjust - this.textAdjustingInfo.spaceDifference)
+            textWordSpaceAdjust = (int) ((textWordSpaceAdjust - textAdjustingInfo.spaceDifference)
                     * variationFactor * balancingFactor)
-                    + this.textAdjustingInfo.spaceDifference;
-            this.textLetterSpaceAdjust *= variationFactor;
+                    + textAdjustingInfo.spaceDifference;
+            textLetterSpaceAdjust *= variationFactor;
             // update the ipd of the area
-            final int oldAdjustment = this.textAdjustingInfo.adjustment;
-            this.textAdjustingInfo.adjustment *= balancingFactor
-                    * variationFactor;
-            this.ipd += this.textAdjustingInfo.adjustment - oldAdjustment;
+            int oldAdjustment = textAdjustingInfo.adjustment;
+            textAdjustingInfo.adjustment *= balancingFactor * variationFactor;
+            ipd += textAdjustingInfo.adjustment - oldAdjustment;
         }
         return false;
     }
 
     /**
-     * Get baseline offset, i.e. the distance from the before edge of this area
-     * to the nominal baseline.
+     * Get baseline offset, i.e. the distance from the before edge
+     * of this area to the nominal baseline.
      *
      * @return the baseline offset
      */
     public int getBaselineOffset() {
-        return this.baselineOffset;
+        return baselineOffset;
     }
 
     /**
      * Set the baseline offset.
      *
-     * @param baselineOffset
-     *            the baseline offset
+     * @param baselineOffset the baseline offset
      */
-    public void setBaselineOffset(final int baselineOffset) {
+    public void setBaselineOffset(int baselineOffset) {
         this.baselineOffset = baselineOffset;
+    }
+
+    @Override
+    int getVirtualOffset() {
+        return getBlockProgressionOffset();
+    }
+
+    @Override
+    int getVirtualBPD() {
+        /* Word and space areas don't have a properly set bpd; return this area's bpd instead. */
+        return getBPD();
     }
 }

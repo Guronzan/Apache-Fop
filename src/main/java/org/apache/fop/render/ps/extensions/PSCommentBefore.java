@@ -31,11 +31,9 @@ public class PSCommentBefore extends PSExtensionAttachment {
 
     /**
      * Default constructor
-     * 
-     * @param content
-     *            the actual comment
+     * @param content the actual comment
      */
-    public PSCommentBefore(final String content) {
+    public PSCommentBefore(String content) {
         super(content);
     }
 
@@ -49,7 +47,6 @@ public class PSCommentBefore extends PSExtensionAttachment {
     /**
      * @return element name
      */
-    @Override
     protected String getElement() {
         return ELEMENT;
     }

@@ -22,8 +22,7 @@ package org.apache.fop.render.pcl;
 import org.apache.fop.render.RendererContextConstants;
 
 /**
- * Defines a number of standard constants (keys) for use by the RendererContext
- * class.
+ * Defines a number of standard constants (keys) for use by the RendererContext class.
  */
 public interface PCLRendererContextConstants extends RendererContextConstants {
 

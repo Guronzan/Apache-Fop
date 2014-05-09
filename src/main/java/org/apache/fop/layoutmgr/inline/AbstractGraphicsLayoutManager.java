@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractGraphicsLayoutManager.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: AbstractGraphicsLayoutManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
@@ -24,7 +24,7 @@ import java.awt.Rectangle;
 import java.util.List;
 
 import org.apache.fop.area.Area;
-import org.apache.fop.area.inline.Viewport;
+import org.apache.fop.area.inline.InlineViewport;
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.flow.AbstractGraphics;
@@ -32,12 +32,12 @@ import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.TraitSetter;
 
+
 /**
  * LayoutManager handling the common tasks for the fo:instream-foreign-object
  * and fo:external-graphics formatting objects
  */
-public abstract class AbstractGraphicsLayoutManager extends
-        LeafNodeLayoutManager {
+public abstract class AbstractGraphicsLayoutManager extends LeafNodeLayoutManager {
 
     /**
      * Constructor.
@@ -45,7 +45,7 @@ public abstract class AbstractGraphicsLayoutManager extends
      * @param node
      *            the formatting object that creates this area
      */
-    public AbstractGraphicsLayoutManager(final AbstractGraphics node) {
+    public AbstractGraphicsLayoutManager(AbstractGraphics node) {
         super(node);
     }
 
@@ -54,85 +54,86 @@ public abstract class AbstractGraphicsLayoutManager extends
      *
      * @return the viewport inline area
      */
-    private Viewport getInlineArea() {
-        final AbstractGraphics fobj = (AbstractGraphics) this.fobj;
-        final Dimension intrinsicSize = new Dimension(fobj.getIntrinsicWidth(),
+    private InlineViewport getInlineArea() {
+        final AbstractGraphics fobj = (AbstractGraphics)this.fobj;
+        Dimension intrinsicSize = new Dimension(
+                fobj.getIntrinsicWidth(),
                 fobj.getIntrinsicHeight());
+        int bidiLevel = fobj.getBidiLevel();
 
-        // TODO Investigate if the line-height property has to be taken into the
-        // calculation
-        // somehow. There was some code here that hints in this direction but it
-        // was disabled.
+        //TODO Investigate if the line-height property has to be taken into the calculation
+        //somehow. There was some code here that hints in this direction but it was disabled.
 
-        final ImageLayout imageLayout = new ImageLayout(fobj, this,
-                intrinsicSize);
-        final Rectangle placement = imageLayout.getPlacement();
+        ImageLayout imageLayout = new ImageLayout(fobj, this, intrinsicSize);
+        Rectangle placement = imageLayout.getPlacement();
 
-        final CommonBorderPaddingBackground borderProps = fobj
-                .getCommonBorderPaddingBackground();
+        CommonBorderPaddingBackground borderProps = fobj.getCommonBorderPaddingBackground();
+        setCommonBorderPaddingBackground(borderProps);
 
-        // Determine extra BPD from borders and padding
-        int beforeBPD = borderProps.getPadding(
-                CommonBorderPaddingBackground.BEFORE, false, this);
-        beforeBPD += borderProps.getBorderWidth(
-                CommonBorderPaddingBackground.BEFORE, false);
+        //Determine extra BPD from borders and padding
+        int beforeBPD = borderProps.getPadding(CommonBorderPaddingBackground.BEFORE, false, this);
+        beforeBPD += borderProps.getBorderWidth(CommonBorderPaddingBackground.BEFORE, false);
 
         placement.y += beforeBPD;
 
-        // Determine extra IPD from borders and padding
-        int startIPD = borderProps.getPadding(
-                CommonBorderPaddingBackground.START, false, this);
-        startIPD += borderProps.getBorderWidth(
-                CommonBorderPaddingBackground.START, false);
+        //Determine extra IPD from borders and padding
+        if ( ( bidiLevel == -1 ) || ( ( bidiLevel & 1 ) == 0 ) ) {
+            int startIPD = borderProps.getPadding(CommonBorderPaddingBackground.START, false, this);
+            startIPD += borderProps.getBorderWidth(CommonBorderPaddingBackground.START, false);
+            placement.x += startIPD;
+        } else {
+            int endIPD = borderProps.getPadding(CommonBorderPaddingBackground.END, false, this);
+            endIPD += borderProps.getBorderWidth(CommonBorderPaddingBackground.END, false);
+            placement.x += endIPD;
+        }
 
-        placement.x += startIPD;
-
-        final Area viewportArea = getChildArea();
+        Area viewportArea = getChildArea();
         TraitSetter.setProducerID(viewportArea, fobj.getId());
         transferForeignAttributes(viewportArea);
 
-        final Viewport vp = new Viewport(viewportArea);
-        TraitSetter.addPtr(vp, fobj.getPtr()); // used for accessibility
+        InlineViewport vp = new InlineViewport(viewportArea, bidiLevel);
+        TraitSetter.addStructureTreeElement(vp, fobj.getStructureTreeElement());
         TraitSetter.setProducerID(vp, fobj.getId());
         vp.setIPD(imageLayout.getViewportSize().width);
         vp.setBPD(imageLayout.getViewportSize().height);
         vp.setContentPosition(placement);
         vp.setClip(imageLayout.isClipped());
-        vp.setOffset(0);
+        vp.setBlockProgressionOffset(0);
 
         // Common Border, Padding, and Background Properties
-        TraitSetter.addBorders(vp, fobj.getCommonBorderPaddingBackground(),
-                false, false, false, false, this);
-        TraitSetter.addPadding(vp, fobj.getCommonBorderPaddingBackground(),
-                false, false, false, false, this);
-        TraitSetter.addBackground(vp, fobj.getCommonBorderPaddingBackground(),
-                this);
+        TraitSetter.addBorders(vp, borderProps
+                                , false, false, false, false, this);
+        TraitSetter.addPadding(vp, borderProps
+                                , false, false, false, false, this);
+        TraitSetter.addBackground(vp, borderProps, this);
 
         return vp;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public List getNextKnuthElements(final LayoutContext context,
-            final int alignment) {
-        final Viewport areaCurrent = getInlineArea();
+    public List getNextKnuthElements(LayoutContext context,
+                                           int alignment) {
+        InlineViewport areaCurrent = getInlineArea();
         setCurrentArea(areaCurrent);
         return super.getNextKnuthElements(context, alignment);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected AlignmentContext makeAlignmentContext(final LayoutContext context) {
-        final AbstractGraphics fobj = (AbstractGraphics) this.fobj;
-        return new AlignmentContext(get(context).getAllocBPD(),
-                fobj.getAlignmentAdjust(), fobj.getAlignmentBaseline(),
-                fobj.getBaselineShift(), fobj.getDominantBaseline(),
-                context.getAlignmentContext());
+    protected AlignmentContext makeAlignmentContext(LayoutContext context) {
+        final AbstractGraphics fobj = (AbstractGraphics)this.fobj;
+        return new AlignmentContext(
+                get(context).getAllocBPD()
+                , fobj.getAlignmentAdjust()
+                , fobj.getAlignmentBaseline()
+                , fobj.getBaselineShift()
+                , fobj.getDominantBaseline()
+                , context.getAlignmentContext()
+            );
     }
 
     /**
-     * Returns the image of foreign object area to be put into the viewport.
-     * 
+     * Returns the image of foreign object area to be put into
+     * the viewport.
      * @return the appropriate area
      */
     protected abstract Area getChildArea();
@@ -142,13 +143,12 @@ public abstract class AbstractGraphicsLayoutManager extends
     /**
      * {@inheritDoc}
      */
-    @Override
-    public int getBaseLength(final int lengthBase, final FObj fobj) {
+    public int getBaseLength(int lengthBase, FObj fobj) {
         switch (lengthBase) {
         case LengthBase.IMAGE_INTRINSIC_WIDTH:
-            return ((AbstractGraphics) fobj).getIntrinsicWidth();
+            return ((AbstractGraphics)fobj).getIntrinsicWidth();
         case LengthBase.IMAGE_INTRINSIC_HEIGHT:
-            return ((AbstractGraphics) fobj).getIntrinsicHeight();
+            return ((AbstractGraphics)fobj).getIntrinsicHeight();
         case LengthBase.ALIGNMENT_ADJUST:
             return get(null).getBPD();
         default: // Delegate to super class
@@ -156,3 +156,4 @@ public abstract class AbstractGraphicsLayoutManager extends
         }
     }
 }
+

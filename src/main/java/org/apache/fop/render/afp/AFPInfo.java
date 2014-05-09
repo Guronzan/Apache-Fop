@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: AFPInfo.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: AFPInfo.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.afp;
 
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.fop.afp.AFPGraphics2D;
 import org.apache.fop.afp.AFPPaintingState;
 import org.apache.fop.afp.AFPResourceInfo;
@@ -66,16 +67,15 @@ public final class AFPInfo {
      * @return the width
      */
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     /**
      * Sets the width.
      *
-     * @param width
-     *            The pageWidth to set
+     * @param width The pageWidth to set
      */
-    public void setWidth(final int width) {
+    public void setWidth(int width) {
         this.width = width;
     }
 
@@ -85,16 +85,15 @@ public final class AFPInfo {
      * @return the height
      */
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     /**
      * Sets the height.
      *
-     * @param height
-     *            The height to set
+     * @param height The height to set
      */
-    public void setHeight(final int height) {
+    public void setHeight(int height) {
         this.height = height;
     }
 
@@ -110,10 +109,9 @@ public final class AFPInfo {
     /**
      * Sets the handler configuration
      *
-     * @param cfg
-     *            the handler configuration
+     * @param cfg the handler configuration
      */
-    public void setHandlerConfiguration(final Configuration cfg) {
+    public void setHandlerConfiguration(Configuration cfg) {
         this.handlerConfiguration = cfg;
     }
 
@@ -159,7 +157,7 @@ public final class AFPInfo {
      * @return the current x position coordinate
      */
     protected int getX() {
-        return this.x;
+        return x;
     }
 
     /**
@@ -168,7 +166,7 @@ public final class AFPInfo {
      * @return the current y position coordinate
      */
     protected int getY() {
-        return this.y;
+        return y;
     }
 
     /**
@@ -182,7 +180,6 @@ public final class AFPInfo {
 
     /**
      * Returns the number of bits per pixel to use
-     * 
      * @return the number of bits per pixel to use
      */
     protected int getBitsPerPixel() {
@@ -192,60 +189,54 @@ public final class AFPInfo {
     /**
      * Sets the current x position coordinate
      *
-     * @param x
-     *            the current x position coordinate
+     * @param x the current x position coordinate
      */
-    protected void setX(final int x) {
+    protected void setX(int x) {
         this.x = x;
     }
 
     /**
      * Sets the current y position coordinate
      *
-     * @param y
-     *            the current y position coordinate
+     * @param y the current y position coordinate
      */
-    protected void setY(final int y) {
+    protected void setY(int y) {
         this.y = y;
     }
 
     /**
      * Sets the current font info
      *
-     * @param fontInfo
-     *            the current font info
+     * @param fontInfo the current font info
      */
-    protected void setFontInfo(final FontInfo fontInfo) {
+    protected void setFontInfo(FontInfo fontInfo) {
         this.fontInfo = fontInfo;
     }
 
     /**
      * Sets the AFP state
      *
-     * @param paintingState
-     *            the AFP state
+     * @param paintingState the AFP state
      */
-    public void setPaintingState(final AFPPaintingState paintingState) {
+    public void setPaintingState(AFPPaintingState paintingState) {
         this.paintingState = paintingState;
     }
 
     /**
      * Sets the AFPResourceManager
      *
-     * @param resourceManager
-     *            the AFPResourceManager
+     * @param resourceManager the AFPResourceManager
      */
-    public void setResourceManager(final AFPResourceManager resourceManager) {
+    public void setResourceManager(AFPResourceManager resourceManager) {
         this.resourceManager = resourceManager;
     }
 
     /**
      * Sets true if SVG should be rendered as a bitmap instead of natively
      *
-     * @param b
-     *            boolean value
+     * @param b boolean value
      */
-    public void setPaintAsBitmap(final boolean b) {
+    public void setPaintAsBitmap(boolean b) {
         this.paintAsBitmap = b;
     }
 
@@ -265,10 +256,9 @@ public final class AFPInfo {
      */
     public boolean strokeText() {
         boolean strokeText = false;
-        if (this.handlerConfiguration != null) {
-            strokeText = this.handlerConfiguration
-                    .getChild("stroke-text", true)
-                    .getValueAsBoolean(strokeText);
+        if (handlerConfiguration != null) {
+            strokeText
+                = handlerConfiguration.getChild("stroke-text", true).getValueAsBoolean(strokeText);
         }
         return strokeText;
     }
@@ -276,10 +266,9 @@ public final class AFPInfo {
     /**
      * Sets the resource information
      *
-     * @param resourceInfo
-     *            the resource information
+     * @param resourceInfo the resource information
      */
-    public void setResourceInfo(final AFPResourceInfo resourceInfo) {
+    public void setResourceInfo(AFPResourceInfo resourceInfo) {
         this.resourceInfo = resourceInfo;
     }
 
@@ -289,34 +278,36 @@ public final class AFPInfo {
      * @return the resource information
      */
     public AFPResourceInfo getResourceInfo() {
-        return this.resourceInfo;
+        return resourceInfo;
     }
 
     /**
      * Creates an AFPGraphics2D implementation
      *
-     * @param textAsShapes
-     *            true when text is painted as shapes
+     * @param textAsShapes true when text is painted as shapes
      * @return a newly created AFPGraphics2D
      */
-    public AFPGraphics2D createGraphics2D(final boolean textAsShapes) {
-        final AFPGraphics2D g2d = new AFPGraphics2D(textAsShapes,
-                this.paintingState, this.resourceManager, this.resourceInfo,
-                this.fontInfo);
+    public AFPGraphics2D createGraphics2D(boolean textAsShapes) {
+        AFPGraphics2D g2d
+            = new AFPGraphics2D
+            (textAsShapes, paintingState, resourceManager, resourceInfo, fontInfo);
         g2d.setGraphicContext(new org.apache.xmlgraphics.java2d.GraphicContext());
         return g2d;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "AFPInfo{width=" + this.width + ", height=" + this.height
-                + ", x=" + this.x + ", y=" + this.y + ", cfg="
-                + this.handlerConfiguration + ", fontInfo=" + this.fontInfo
-                + ", resourceManager=" + this.resourceManager
-                + ", paintingState=" + this.paintingState + ", paintAsBitmap="
-                + this.paintAsBitmap + ", resourceInfo=" + this.resourceInfo
-                + "}";
+        return "AFPInfo{width=" + width
+            + ", height=" + height
+            + ", x=" + x
+            + ", y=" + y
+            + ", cfg=" + handlerConfiguration
+            + ", fontInfo=" + fontInfo
+            + ", resourceManager=" + resourceManager
+            + ", paintingState=" + paintingState
+            + ", paintAsBitmap=" + paintAsBitmap
+            + ", resourceInfo=" + resourceInfo
+        + "}";
     }
 
 }

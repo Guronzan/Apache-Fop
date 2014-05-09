@@ -20,15 +20,17 @@
 package org.apache.fop.tools.fontlist;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.regex.Pattern;
 
-import org.apache.fop.fonts.FontTriplet;
-import org.apache.fop.util.GenerationHelperContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
+import org.apache.fop.fonts.FontTriplet;
+import org.apache.fop.util.GenerationHelperContentHandler;
 
 /**
  * Turns the font list into SAX events.
@@ -52,44 +54,33 @@ public class FontListSerializer {
 
     /**
      * Generates SAX events from the font damily map.
-     *
-     * @param fontFamilies
-     *            the font families
-     * @param handler
-     *            the target SAX handler
-     * @throws SAXException
-     *             if an XML-related exception occurs
+     * @param fontFamilies the font families
+     * @param handler the target SAX handler
+     * @throws SAXException if an XML-related exception occurs
      */
-    public void generateSAX(
-            final SortedMap<String, List<FontSpec>> fontFamilies,
-            final GenerationHelperContentHandler handler) throws SAXException {
+    public void generateSAX(SortedMap fontFamilies,
+            GenerationHelperContentHandler handler) throws SAXException {
         generateSAX(fontFamilies, null, handler);
     }
 
     /**
      * Generates SAX events from the font damily map.
-     *
-     * @param fontFamilies
-     *            the font families
-     * @param singleFamily
-     *            if not null, the output will be filtered so only this single
-     *            font family will be used
-     * @param handler
-     *            the target SAX handler
-     * @throws SAXException
-     *             if an XML-related exception occurs
+     * @param fontFamilies the font families
+     * @param singleFamily if not null, the output will be filtered so only this single font family
+     *                          will be used
+     * @param handler the target SAX handler
+     * @throws SAXException if an XML-related exception occurs
      */
-    public void generateSAX(
-            final SortedMap<String, List<FontSpec>> fontFamilies,
-            final String singleFamily,
-            final GenerationHelperContentHandler handler) throws SAXException {
+    public void generateSAX(SortedMap fontFamilies, String singleFamily,
+            GenerationHelperContentHandler handler) throws SAXException {
         handler.startDocument();
-        final AttributesImpl atts = new AttributesImpl();
+        AttributesImpl atts = new AttributesImpl();
         handler.startElement(FONTS, atts);
 
-        for (final Entry<String, List<FontSpec>> entry : fontFamilies
-                .entrySet()) {
-            final String familyName = entry.getKey();
+        Iterator iter = fontFamilies.entrySet().iterator();
+        while (iter.hasNext()) {
+            Map.Entry entry = (Map.Entry)iter.next();
+            String familyName = (String)entry.getKey();
             if (singleFamily != null && familyName != singleFamily) {
                 continue;
             }
@@ -99,7 +90,7 @@ public class FontListSerializer {
                     stripQuotes(familyName));
             handler.startElement(FAMILY, atts);
 
-            final List<FontSpec> containers = entry.getValue();
+            List containers = (List)entry.getValue();
             generateXMLForFontContainers(handler, containers);
             handler.endElement(FAMILY);
         }
@@ -110,32 +101,34 @@ public class FontListSerializer {
 
     private final Pattern quotePattern = Pattern.compile("'");
 
-    private String stripQuotes(final String name) {
-        return this.quotePattern.matcher(name).replaceAll("");
+    private String stripQuotes(String name) {
+        return quotePattern.matcher(name).replaceAll("");
     }
 
-    private void generateXMLForFontContainers(
-            final GenerationHelperContentHandler handler,
-            final List<FontSpec> containers) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
-        for (final FontSpec cont : containers) {
+    private void generateXMLForFontContainers(GenerationHelperContentHandler handler,
+            List containers) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
+        Iterator fontIter = containers.iterator();
+        while (fontIter.hasNext()) {
+            FontSpec cont = (FontSpec)fontIter.next();
             atts.clear();
             atts.addAttribute(null, KEY, KEY, CDATA, cont.getKey());
-            atts.addAttribute(null, TYPE, TYPE, CDATA, cont.getFontMetrics()
-                    .getFontType().getName());
+            atts.addAttribute(null, TYPE, TYPE, CDATA,
+                    cont.getFontMetrics().getFontType().getName());
             handler.startElement(FONT, atts);
             generateXMLForTriplets(handler, cont.getTriplets());
             handler.endElement(FONT);
         }
     }
 
-    private void generateXMLForTriplets(
-            final GenerationHelperContentHandler handler,
-            final Collection<FontTriplet> triplets) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
+    private void generateXMLForTriplets(GenerationHelperContentHandler handler, Collection triplets)
+                throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
         atts.clear();
         handler.startElement(TRIPLETS, atts);
-        for (final FontTriplet triplet : triplets) {
+        Iterator iter = triplets.iterator();
+        while (iter.hasNext()) {
+            FontTriplet triplet = (FontTriplet)iter.next();
             atts.clear();
             atts.addAttribute(null, NAME, NAME, CDATA, triplet.getName());
             atts.addAttribute(null, STYLE, STYLE, CDATA, triplet.getStyle());

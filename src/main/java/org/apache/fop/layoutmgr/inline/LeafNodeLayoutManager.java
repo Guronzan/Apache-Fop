@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: LeafNodeLayoutManager.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: LeafNodeLayoutManager.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
@@ -23,7 +23,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.area.Area;
 import org.apache.fop.area.inline.InlineArea;
@@ -31,42 +32,39 @@ import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.layoutmgr.AbstractLayoutManager;
 import org.apache.fop.layoutmgr.InlineKnuthSequence;
-import org.apache.fop.layoutmgr.KnuthElement;
 import org.apache.fop.layoutmgr.KnuthGlue;
 import org.apache.fop.layoutmgr.KnuthPenalty;
 import org.apache.fop.layoutmgr.KnuthSequence;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LeafPosition;
-import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
 import org.apache.fop.layoutmgr.TraitSetter;
 import org.apache.fop.traits.MinOptMax;
 
-/**
- * Base LayoutManager for leaf-node FObj, ie: ones which have no children. These
- * are all inline objects. Most of them cannot be split (Text is an exception to
- * this rule.) This class can be extended to handle the creation and adding of
- * the inline area.
- */
-@Slf4j
-public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
-        implements InlineLevelLayoutManager {
 
-    /**
-     * The inline area that this leafnode will add.
-     */
+/**
+ * Base LayoutManager for leaf-node FObj, ie: ones which have no children.
+ * These are all inline objects. Most of them cannot be split (Text is
+ * an exception to this rule.)
+ * This class can be extended to handle the creation and adding of the
+ * inline area.
+ */
+public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
+                                   implements InlineLevelLayoutManager {
+
+    /** logging instance */
+    protected static final Log log = LogFactory.getLog(LeafNodeLayoutManager.class);
+
+    /** The inline area that this leafnode will add. */
     protected InlineArea curArea = null;
     /** Any border, padding and background properties applying to this area */
     protected CommonBorderPaddingBackground commonBorderPaddingBackground = null;
     /** The alignment context applying to this area */
     protected AlignmentContext alignmentContext = null;
 
-    /**
-     * Flag to indicate if something was changed as part of the
-     * getChangeKnuthElements sequence
-     */
-    protected boolean isSomethingChanged = false;
+    /** Flag to indicate if something was changed as part of the getChangeKnuthElements sequence */
+    protected boolean somethingChanged = false;
     /** Our area info for the Knuth elements */
     protected AreaInfo areaInfo = null;
 
@@ -74,16 +72,27 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
      * Store information about the inline area
      */
     protected class AreaInfo {
-        protected short iLScount;
+        /** letter space count */
+        protected short letterSpaces;
+        /** ipd of area */
         protected MinOptMax ipdArea;
-        protected boolean bHyphenated;
+        /** true if hyphenated */
+        protected boolean isHyphenated;
+        /** alignment context */
         protected AlignmentContext alignmentContext;
 
-        public AreaInfo(final short iLS, final MinOptMax ipd,
-                final boolean bHyph, final AlignmentContext alignmentContext) {
-            this.iLScount = iLS;
+        /**
+         * Construct an area information item.
+         * @param letterSpaces letter space count
+         * @param ipd inline progression dimension
+         * @param isHyphenated true if hyphenated
+         * @param alignmentContext an alignment context
+         */
+        public AreaInfo(short letterSpaces, MinOptMax ipd, boolean isHyphenated,
+                        AlignmentContext alignmentContext) {
+            this.letterSpaces = letterSpaces;
             this.ipdArea = ipd;
-            this.bHyphenated = bHyph;
+            this.isHyphenated = isHyphenated;
             this.alignmentContext = alignmentContext;
         }
 
@@ -91,11 +100,9 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
 
     /**
      * Create a Leaf node layout manager.
-     *
-     * @param node
-     *            the FObj to attach to this LM.
+     * @param node the FObj to attach to this LM.
      */
-    public LeafNodeLayoutManager(final FObj node) {
+    public LeafNodeLayoutManager(FObj node) {
         super(node);
     }
 
@@ -107,19 +114,17 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
 
     /**
      * get the inline area.
-     *
-     * @param context
-     *            the context used to create the area
+     * @param context the context used to create the area
      * @return the current inline area for this layout manager
      */
-    public InlineArea get(final LayoutContext context) {
-        return this.curArea;
+    public InlineArea get(LayoutContext context) {
+        return curArea;
     }
 
     /**
-     * Check if this inline area is resolved due to changes in page or ipd.
+     * Check if this inline area is resolved due to changes in
+     * page or ipd.
      * Currently not used.
-     *
      * @return true if the area is resolved when adding
      */
     public boolean resolved() {
@@ -128,85 +133,73 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
 
     /**
      * Set the current inline area.
-     *
-     * @param ia
-     *            the inline area to set for this layout manager
+     * @param ia the inline area to set for this layout manager
      */
-    public void setCurrentArea(final InlineArea ia) {
-        this.curArea = ia;
+    public void setCurrentArea(InlineArea ia) {
+        curArea = ia;
     }
 
     /**
-     * This is a leaf-node, so this method is never called.
-     *
-     * @param childArea
-     *            the childArea to add
+     * This is a leaf-node, so this method should never be called.
+     * @param childArea the childArea to add
      */
     @Override
-    public void addChildArea(final Area childArea) {
+    public void addChildArea(Area childArea) {
+        assert false;
     }
 
     /**
-     * This is a leaf-node, so this method is never called.
-     *
-     * @param childArea
-     *            the childArea to get the parent for
+     * This is a leaf-node, so this method should never be called.
+     * @param childArea the childArea to get the parent for
      * @return the parent area
      */
     @Override
-    public Area getParentArea(final Area childArea) {
+    public Area getParentArea(Area childArea) {
+        assert false;
         return null;
     }
 
     /**
      * Set the border and padding properties of the inline area.
-     *
-     * @param commonBorderPaddingBackground
-     *            the alignment adjust property
+     * @param commonBorderPaddingBackground the alignment adjust property
      */
     protected void setCommonBorderPaddingBackground(
-            final CommonBorderPaddingBackground commonBorderPaddingBackground) {
+            CommonBorderPaddingBackground commonBorderPaddingBackground) {
         this.commonBorderPaddingBackground = commonBorderPaddingBackground;
     }
 
     /**
-     * Get the allocation ipd of the inline area. This method may be overridden
-     * to handle percentage values.
-     *
-     * @param refIPD
-     *            the ipd of the parent reference area
+     * Get the allocation ipd of the inline area.
+     * This method may be overridden to handle percentage values.
+     * @param refIPD the ipd of the parent reference area
      * @return the min/opt/max ipd of the inline area
      */
-    protected MinOptMax getAllocationIPD(final int refIPD) {
-        return MinOptMax.getInstance(this.curArea.getIPD());
+    protected MinOptMax getAllocationIPD(int refIPD) {
+        return MinOptMax.getInstance(curArea.getIPD());
     }
 
     /**
-     * Add the area for this layout manager. This adds the single inline area to
-     * the parent.
-     *
-     * @param posIter
-     *            the position iterator
-     * @param context
-     *            the layout context for adding the area
+     * Add the area for this layout manager.
+     * This adds the single inline area to the parent.
+     * @param posIter the position iterator
+     * @param context the layout context for adding the area
      */
     @Override
-    public void addAreas(final PositionIterator posIter,
-            final LayoutContext context) {
+    public void addAreas(PositionIterator posIter, LayoutContext context) {
         addId();
 
-        final InlineArea area = getEffectiveArea();
+        InlineArea area = getEffectiveArea();
         if (area.getAllocIPD() > 0 || area.getAllocBPD() > 0) {
             offsetArea(area, context);
             widthAdjustArea(area, context);
-            if (this.commonBorderPaddingBackground != null) {
+            if (commonBorderPaddingBackground != null) {
                 // Add border and padding to area
                 TraitSetter.setBorderPaddingTraits(area,
-                        this.commonBorderPaddingBackground, false, false, this);
-                TraitSetter.addBackground(area,
-                        this.commonBorderPaddingBackground, this);
+                                                   commonBorderPaddingBackground,
+                                                   false, false, this);
+                TraitSetter.addBackground(area, commonBorderPaddingBackground, this);
             }
-            this.parentLayoutManager.addChildArea(area);
+            parentLayoutManager.addChildArea(area);
         }
 
         while (posIter.hasNext()) {
@@ -215,91 +208,82 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
     }
 
     /**
-     * @return the effective area to be added to the area tree. Normally, this
-     *         is simply "curArea" but in the case of page-number(-citation)
-     *         curArea is cloned, updated and returned.
+     * @return the effective area to be added to the area tree. Normally, this is simply "curArea"
+     * but in the case of page-number(-citation) curArea is cloned, updated and returned.
      */
     protected InlineArea getEffectiveArea() {
-        return this.curArea;
+        return curArea;
     }
 
     /**
-     * Offset this area. Offset the inline area in the bpd direction when adding
-     * the inline area. This is used for vertical alignment. Subclasses should
-     * override this if necessary.
-     *
-     * @param area
-     *            the inline area to be updated
-     * @param context
-     *            the layout context used for adding the area
+     * Offset this area.
+     * Offset the inline area in the bpd direction when adding the
+     * inline area.
+     * This is used for vertical alignment.
+     * Subclasses should override this if necessary.
+     * @param area the inline area to be updated
+     * @param context the layout context used for adding the area
      */
-    protected void offsetArea(final InlineArea area, final LayoutContext context) {
-        area.setOffset(this.alignmentContext.getOffset());
+    protected void offsetArea(InlineArea area, LayoutContext context) {
+        area.setBlockProgressionOffset(alignmentContext.getOffset());
     }
 
     /**
-     * Creates a new alignment context or returns the current alignment context.
-     * This is used for vertical alignment. Subclasses should override this if
-     * necessary.
-     *
-     * @param context
-     *            the layout context used
+     * Creates a new alignment context or returns the current
+     * alignment context.
+     * This is used for vertical alignment.
+     * Subclasses should override this if necessary.
+     * @param context the layout context used
      * @return the appropriate alignment context
      */
-    protected AlignmentContext makeAlignmentContext(final LayoutContext context) {
+    protected AlignmentContext makeAlignmentContext(LayoutContext context) {
         return context.getAlignmentContext();
     }
 
     /**
-     * Adjust the width of the area when adding. This uses the min/opt/max
-     * values to adjust the with of the inline area by a percentage.
-     *
-     * @param area
-     *            the inline area to be updated
-     * @param context
-     *            the layout context for adding this area
+     * Adjust the width of the area when adding.
+     * This uses the min/opt/max values to adjust the with
+     * of the inline area by a percentage.
+     * @param area the inline area to be updated
+     * @param context the layout context for adding this area
      */
-    protected void widthAdjustArea(final InlineArea area,
-            final LayoutContext context) {
-        final double dAdjust = context.getIPDAdjust();
+    protected void widthAdjustArea(InlineArea area, LayoutContext context) {
+        double dAdjust = context.getIPDAdjust();
         int adjustment = 0;
         if (dAdjust < 0) {
-            adjustment += (int) (dAdjust * this.areaInfo.ipdArea.getShrink());
+            adjustment += (int) (dAdjust * areaInfo.ipdArea.getShrink());
         } else if (dAdjust > 0) {
-            adjustment += (int) (dAdjust * this.areaInfo.ipdArea.getStretch());
+            adjustment += (int) (dAdjust * areaInfo.ipdArea.getStretch());
         }
-        area.setIPD(this.areaInfo.ipdArea.getOpt() + adjustment);
+        area.setIPD(areaInfo.ipdArea.getOpt() + adjustment);
         area.setAdjustment(adjustment);
     }
 
     /** {@inheritDoc} */
     @Override
-    public List<KnuthSequence> getNextKnuthElements(
-            final LayoutContext context, final int alignment) {
-        this.curArea = get(context);
+    public List getNextKnuthElements(LayoutContext context, int alignment) {
+        curArea = get(context);
 
-        if (this.curArea == null) {
+        if (curArea == null) {
             setFinished(true);
             return null;
         }
 
-        this.alignmentContext = makeAlignmentContext(context);
+        alignmentContext = makeAlignmentContext(context);
 
-        final MinOptMax ipd = getAllocationIPD(context.getRefIPD());
+        MinOptMax ipd = getAllocationIPD(context.getRefIPD());
 
         // create the AreaInfo object to store the computed values
-        this.areaInfo = new AreaInfo((short) 0, ipd, false,
-                this.alignmentContext);
+        areaInfo = new AreaInfo((short) 0, ipd, false, alignmentContext);
 
         // node is a fo:ExternalGraphic, fo:InstreamForeignObject,
         // fo:PageNumber or fo:PageNumberCitation
-        final KnuthSequence seq = new InlineKnuthSequence();
+        KnuthSequence seq = new InlineKnuthSequence();
 
         addKnuthElementsForBorderPaddingStart(seq);
 
-        seq.add(new KnuthInlineBox(this.areaInfo.ipdArea.getOpt(),
-                this.alignmentContext, notifyPos(new LeafPosition(this, 0)),
-                false));
+        seq.add(new KnuthInlineBox(areaInfo.ipdArea.getOpt(), alignmentContext,
+                                    notifyPos(new LeafPosition(this, 0)), false));
 
         addKnuthElementsForBorderPaddingEnd(seq);
 
@@ -308,60 +292,65 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
     }
 
     /** {@inheritDoc} */
-    @Override
-    public List<ListElement> addALetterSpaceTo(final List<ListElement> oldList) {
+    public List addALetterSpaceTo(List oldList) {
         // return the unchanged elements
         return oldList;
     }
 
     /**
-     * Remove the word space represented by the given elements
-     *
-     * @param oldList
-     *            the elements representing the word space
+     * {@inheritDoc}
+     * Only TextLM has a meaningful implementation of this method
      */
-    @Override
-    public void removeWordSpace(final List oldList) {
-        // do nothing
-        log.warn(this.getClass().getName()
-                + " should not receive a call to removeWordSpace(list)");
+    public List addALetterSpaceTo(List oldList, int depth) {
+        return addALetterSpaceTo(oldList);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getWordChars(final Position pos) {
+    public String getWordChars(Position pos) {
         return "";
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void hyphenate(final Position pos, final HyphContext hyphContext) {
+    public void hyphenate(Position pos, HyphContext hyphContext) {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean applyChanges(final List oldList) {
+    public boolean applyChanges(List oldList) {
         setFinished(false);
         return false;
     }
 
+    /**
+     * {@inheritDoc}
+     * Only TextLM has a meaningful implementation of this method
+     */
+    public boolean applyChanges(List oldList, int depth) {
+        return applyChanges(oldList);
+    }
+
+    /**
+     * {@inheritDoc}
+     * No subclass has a meaningful implementation of this method
+     */
+    public List getChangedKnuthElements(List oldList, int alignment, int depth) {
+        return getChangedKnuthElements(oldList, alignment);
+    }
+
     /** {@inheritDoc} */
     @Override
-    public List<ListElement> getChangedKnuthElements(
-            final List<ListElement> oldList, final int alignment) {
+    public List getChangedKnuthElements(List oldList, int alignment) {
         if (isFinished()) {
             return null;
         }
 
-        final List<ListElement> returnList = new LinkedList<>();
+        LinkedList returnList = new LinkedList();
 
         addKnuthElementsForBorderPaddingStart(returnList);
 
         // fobj is a fo:ExternalGraphic, fo:InstreamForeignObject,
         // fo:PageNumber or fo:PageNumberCitation
-        returnList.add(new KnuthInlineBox(this.areaInfo.ipdArea.getOpt(),
-                this.areaInfo.alignmentContext, notifyPos(new LeafPosition(
-                        this, 0)), true));
+        returnList.add(new KnuthInlineBox(areaInfo.ipdArea.getOpt(), areaInfo.alignmentContext,
+                                          notifyPos(new LeafPosition(this, 0)), true));
 
         addKnuthElementsForBorderPaddingEnd(returnList);
 
@@ -370,53 +359,40 @@ public abstract class LeafNodeLayoutManager extends AbstractLayoutManager
     }
 
     /**
-     * Creates Knuth elements for start border padding and adds them to the
-     * return list.
-     *
-     * @param returnList
-     *            return list to add the additional elements to
+     * Creates Knuth elements for start border padding and adds them to the return list.
+     * @param returnList return list to add the additional elements to
      */
-    protected void addKnuthElementsForBorderPaddingStart(
-            final List<ListElement> returnList) {
-        // Border and Padding (start)
-        if (this.commonBorderPaddingBackground != null) {
-            final int ipStart = this.commonBorderPaddingBackground
-                    .getBorderStartWidth(false)
-                    + this.commonBorderPaddingBackground.getPaddingStart(false,
-                            this);
+    protected void addKnuthElementsForBorderPaddingStart(List returnList) {
+        //Border and Padding (start)
+        if (commonBorderPaddingBackground != null) {
+            int ipStart = commonBorderPaddingBackground.getBorderStartWidth(false)
+                         + commonBorderPaddingBackground.getPaddingStart(false, this);
             if (ipStart > 0) {
                 // Add a non breakable glue
-                returnList.add(new KnuthPenalty(0, KnuthElement.INFINITE,
-                        false, new LeafPosition(this, -1), true));
-                returnList.add(new KnuthGlue(ipStart, 0, 0, new LeafPosition(
-                        this, -1), true));
+                returnList.add(new KnuthPenalty(0, KnuthPenalty.INFINITE,
+                                                false, new LeafPosition(this, -1), true));
+                returnList.add(new KnuthGlue(ipStart, 0, 0, new LeafPosition(this, -1), true));
             }
         }
     }
 
     /**
-     * Creates Knuth elements for end border padding and adds them to the return
-     * list.
-     *
-     * @param returnList
-     *            return list to add the additional elements to
+     * Creates Knuth elements for end border padding and adds them to the return list.
+     * @param returnList return list to add the additional elements to
      */
-    protected void addKnuthElementsForBorderPaddingEnd(
-            final List<ListElement> returnList) {
-        // Border and Padding (after)
-        if (this.commonBorderPaddingBackground != null) {
-            final int ipEnd = this.commonBorderPaddingBackground
-                    .getBorderEndWidth(false)
-                    + this.commonBorderPaddingBackground.getPaddingEnd(false,
-                            this);
+    protected void addKnuthElementsForBorderPaddingEnd(List returnList) {
+        //Border and Padding (after)
+        if (commonBorderPaddingBackground != null) {
+            int ipEnd = commonBorderPaddingBackground.getBorderEndWidth(false)
+                        + commonBorderPaddingBackground.getPaddingEnd(false, this);
             if (ipEnd > 0) {
                 // Add a non breakable glue
-                returnList.add(new KnuthPenalty(0, KnuthElement.INFINITE,
-                        false, new LeafPosition(this, -1), true));
-                returnList.add(new KnuthGlue(ipEnd, 0, 0, new LeafPosition(
-                        this, -1), true));
+                returnList.add(new KnuthPenalty(0, KnuthPenalty.INFINITE,
+                                                false, new LeafPosition(this, -1), true));
+                returnList.add(new KnuthGlue(ipEnd, 0, 0, new LeafPosition(this, -1), true));
             }
         }
     }
 
 }
+

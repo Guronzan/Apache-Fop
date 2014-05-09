@@ -15,60 +15,59 @@
  * limitations under the License.
  */
 
-/* $Id: MultiToggle.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: MultiToggle.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.flow;
 
 // FOP
+import org.xml.sax.Locator;
+
+import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_multi-toggle">
  * <code>fo:multi-toggle<code></a> property.
  */
 public class MultiToggle extends FObj {
-    // The value of properties relevant for fo:multi-toggle (commented out for
-    // performance).
-    // private CommonAccessibility commonAccessibility;
+    // The value of properties relevant for fo:multi-toggle (commented out for performance).
+    //     private CommonAccessibility commonAccessibility;
     // public ToBeImplementedProperty prSwitchTo;
     // End of property values
 
-    static boolean notImplementedWarningGiven = false;
+    private static boolean notImplementedWarningGiven = false;
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public MultiToggle(final FONode parent) {
+    public MultiToggle(FONode parent) {
         super(parent);
 
         if (!notImplementedWarningGiven) {
-            getFOValidationEventProducer().unimplementedFeature(this,
-                    getName(), getName(), getLocator());
+            getFOValidationEventProducer().unimplementedFeature(this, getName(),
+                    getName(), getLocator());
             notImplementedWarningGiven = true;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) {
+    public void bind(PropertyList pList) throws FOPException {
         // prSwitchTo = pList.get(PR_SWITCH_TO);
 
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: (#PCDATA|%inline;|%block;)*
+     * {@inheritDoc}
+     * <br>XSL Content Model: (#PCDATA|%inline;|%block;)*
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (!isBlockOrInlineItem(nsURI, localName)) {
                 invalidChildError(loc, nsURI, localName);
@@ -77,17 +76,14 @@ public class MultiToggle extends FObj {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "multi-toggle";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_TOGGLE}
      */
-    @Override
     public int getNameId() {
         return FO_MULTI_TOGGLE;
     }

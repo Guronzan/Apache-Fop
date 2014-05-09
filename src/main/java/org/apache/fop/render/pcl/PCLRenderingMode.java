@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-/* $Id: PCLRenderingMode.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PCLRenderingMode.java 1067881 2011-02-07 08:39:46Z jeremias $ */
 
 package org.apache.fop.render.pcl;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /**
@@ -29,29 +30,26 @@ public final class PCLRenderingMode implements Serializable {
     private static final long serialVersionUID = 6359884255324755026L;
 
     /** "Quality" rendering (mixed native and bitmap for improved quality) */
-    public static final PCLRenderingMode QUALITY = new PCLRenderingMode(
-            "quality");
+    public static final PCLRenderingMode QUALITY = new PCLRenderingMode("quality", 1.0f);
+    /** "Speed" rendering (maximum speed with native rendering, reduced visual quality) */
+    public static final PCLRenderingMode SPEED = new PCLRenderingMode("speed", 0.25f);
     /**
-     * "Speed" rendering (maximum speed with native rendering, reduced visual
-     * quality)
+     * "Bitmap" rendering (pages are painted entirely as bitmaps, maximum quality,
+     * reduced performance)
      */
-    public static final PCLRenderingMode SPEED = new PCLRenderingMode("speed");
-    /**
-     * "Bitmap" rendering (pages are painted entirely as bitmaps, maximum
-     * quality, reduced performance)
-     */
-    public static final PCLRenderingMode BITMAP = new PCLRenderingMode("bitmap");
+    public static final PCLRenderingMode BITMAP = new PCLRenderingMode("bitmap", 1.0f);
 
-    private final String name;
+    private String name;
+    private float defaultDitheringQuality;
 
     /**
      * Constructor to add a new named item.
-     *
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
+     * @param defaultDitheringQuality the default dithering quality (0.0f..1.0f)
      */
-    private PCLRenderingMode(final String name) {
+    private PCLRenderingMode(String name, float defaultDitheringQuality) {
         this.name = name;
+        this.defaultDitheringQuality = defaultDitheringQuality;
     }
 
     /** @return the name of the enum */
@@ -60,13 +58,19 @@ public final class PCLRenderingMode implements Serializable {
     }
 
     /**
+     * Returns the default dithering quality for this rendering mode.
+     * @return the default dithering quality (0.0f..1.0f)
+     */
+    public float getDefaultDitheringQuality() {
+        return this.defaultDitheringQuality;
+    }
+
+    /**
      * Returns the enumeration/singleton object based on its name.
-     *
-     * @param name
-     *            the name of the enumeration value
+     * @param name the name of the enumeration value
      * @return the enumeration object
      */
-    public static PCLRenderingMode valueOf(final String name) {
+    public static PCLRenderingMode valueOf(String name) {
         if (QUALITY.getName().equalsIgnoreCase(name)) {
             return QUALITY;
         } else if (SPEED.getName().equalsIgnoreCase(name)) {
@@ -74,18 +78,17 @@ public final class PCLRenderingMode implements Serializable {
         } else if (BITMAP.getName().equalsIgnoreCase(name)) {
             return BITMAP;
         } else {
-            throw new IllegalArgumentException(
-                    "Illegal value for enumeration: " + name);
+            throw new IllegalArgumentException("Illegal value for enumeration: " + name);
         }
     }
 
-    private Object readResolve() {
+    private Object readResolve() throws ObjectStreamException {
         return valueOf(getName());
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "PCLRenderingMode:" + this.name;
+        return "PCLRenderingMode:" + name;
     }
 }

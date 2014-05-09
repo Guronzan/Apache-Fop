@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Container.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Container.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.area.inline;
 
@@ -26,20 +26,19 @@ import org.apache.fop.area.Area;
 import org.apache.fop.area.Block;
 
 /**
- * Container area for inline container. This area should be placed in a viewport
- * as a result of the inline container formatting object. This allows an inline
- * area to have blocks as children.
+ * Container area for inline container.
+ * This area should be placed in a viewport as a result of the
+ * inline container formatting object.
+ * This allows an inline area to have blocks as children.
  */
 public class Container extends Area {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 5256423939348189260L;
 
     /**
      * The list of block areas stacked inside this container
      */
-    protected List<Block> blocks = new ArrayList<>();
+    protected List<Block> blocks = new ArrayList<Block>();
 
     /**
      * The width of this container
@@ -55,11 +54,10 @@ public class Container extends Area {
     /**
      * Add the block to this area.
      *
-     * @param block
-     *            the block area to add
+     * @param block the block area to add
      */
-    public void addBlock(final Block block) {
-        this.blocks.add(block);
+    public void addBlock(Block block) {
+        blocks.add(block);
     }
 
     /**
@@ -67,8 +65,8 @@ public class Container extends Area {
      *
      * @return the list of block areas
      */
-    public List<Block> getBlocks() {
-        return this.blocks;
+    public List getBlocks() {
+        return blocks;
     }
 
     /**
@@ -77,6 +75,7 @@ public class Container extends Area {
      * @return the width
      */
     public int getWidth() {
-        return this.width;
+        return width;
     }
 }
+

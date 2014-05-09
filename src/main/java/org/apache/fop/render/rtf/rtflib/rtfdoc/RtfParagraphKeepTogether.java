@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfParagraphKeepTogether.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfParagraphKeepTogether.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -43,52 +43,48 @@ public class RtfParagraphKeepTogether extends RtfContainer {
 
     private int status = STATUS_NULL;
 
-    /** RtfParagraphKeepTogether */
-    RtfParagraphKeepTogether(final IRtfParagraphContainer parent, final Writer w)
-            throws IOException {
-        super((RtfContainer) parent, w);
+
+    /**    RtfParagraphKeepTogether*/
+    RtfParagraphKeepTogether(IRtfParagraphContainer parent, Writer w) throws IOException {
+        super((RtfContainer)parent, w);
     }
 
     /**
      * Write the content
-     * 
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    @Override
     protected void writeRtfContent() throws IOException {
 
-        // First reet paragraph properties
+        //First reet paragraph properties
         // create a new one with keepn
-        if (this.status == STATUS_OPEN_PARAGRAPH) {
+        if (status == STATUS_OPEN_PARAGRAPH) {
             writeControlWord("pard");
             writeControlWord("par");
             writeControlWord("keepn");
             writeGroupMark(true);
-            this.status = STATUS_NULL;
+            status = STATUS_NULL;
         }
 
-        if (this.status == STATUS_CLOSE_PARAGRAPH) {
+
+        if (status == STATUS_CLOSE_PARAGRAPH) {
             writeGroupMark(false);
-            this.status = STATUS_NULL;
+            status = STATUS_NULL;
         }
 
     }
 
+
     /**
      * set the status
-     * 
-     * @param status
-     *            the status to be set
+     * @param status the status to be set
      */
-    public void setStatus(final int status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
     /**
      * @return true if this element would generate no "useful" RTF content
      */
-    @Override
     public boolean isEmpty() {
         return false;
     }

@@ -29,32 +29,28 @@ import org.apache.fop.apps.FOUserAgent;
  */
 public abstract class AbstractRenderingContext implements RenderingContext {
 
-    private final FOUserAgent userAgent;
+    private FOUserAgent userAgent;
     private Map hints;
 
     /**
      * Main constructor.
-     * 
-     * @param userAgent
-     *            the user agent
+     * @param userAgent the user agent
      */
-    public AbstractRenderingContext(final FOUserAgent userAgent) {
+    public AbstractRenderingContext(FOUserAgent userAgent) {
         this.userAgent = userAgent;
     }
 
     /**
      * Returns the user agent.
      *
-     * @return The user agent
+     * @return   The user agent
      */
-    @Override
     public FOUserAgent getUserAgent() {
-        return this.userAgent;
+        return userAgent;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void putHints(final Map additionalHints) {
+    public void putHints(Map additionalHints) {
         if (additionalHints == null) {
             return;
         }
@@ -65,13 +61,11 @@ public abstract class AbstractRenderingContext implements RenderingContext {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void putHint(final Object key, final Object value) {
+    public void putHint(Object key, Object value) {
         this.hints.put(key, value);
     }
 
     /** {@inheritDoc} */
-    @Override
     public Map getHints() {
         if (this.hints == null) {
             return Collections.EMPTY_MAP;
@@ -81,8 +75,7 @@ public abstract class AbstractRenderingContext implements RenderingContext {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Object getHint(final Object key) {
+    public Object getHint(Object key) {
         if (this.hints == null) {
             return null;
         } else {
@@ -90,3 +83,4 @@ public abstract class AbstractRenderingContext implements RenderingContext {
         }
     }
 }
+

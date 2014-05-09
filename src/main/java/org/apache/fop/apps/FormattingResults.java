@@ -19,7 +19,6 @@
 
 package org.apache.fop.apps;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.pagination.AbstractPageSequence;
@@ -30,7 +29,7 @@ import org.apache.fop.fo.pagination.AbstractPageSequence;
 public class FormattingResults {
 
     private int pageCount = 0;
-    private List<PageSequenceResults> pageSequences = null;
+    private List pageSequences = null;
 
     /**
      * Constructor for the FormattingResults object
@@ -41,7 +40,7 @@ public class FormattingResults {
     /**
      * Gets the number of pages rendered
      *
-     * @return The number of pages overall
+     * @return   The number of pages overall
      */
     public int getPageCount() {
         return this.pageCount;
@@ -50,9 +49,9 @@ public class FormattingResults {
     /**
      * Gets the results for the individual page-sequences.
      *
-     * @return A List with PageSequenceResults objects
+     * @return   A List with PageSequenceResults objects
      */
-    public List<PageSequenceResults> getPageSequences() {
+    public List getPageSequences() {
         return this.pageSequences;
     }
 
@@ -67,20 +66,20 @@ public class FormattingResults {
     }
 
     /**
-     * Reports the result of one page sequence rendering back into this object.
+     * Reports the result of one page sequence rendering
+     * back into this object.
      *
-     * @param pageSequence
-     *            the page sequence which just completed rendering
-     * @param pageCount
-     *            the number of pages rendered for that PageSequence
+     * @param pageSequence  the page sequence which just completed rendering
+     * @param pageCount     the number of pages rendered for that PageSequence
      */
-    public void haveFormattedPageSequence(
-            final AbstractPageSequence pageSequence, final int pageCount) {
+    public void haveFormattedPageSequence(AbstractPageSequence pageSequence, int pageCount) {
         this.pageCount += pageCount;
         if (this.pageSequences == null) {
-            this.pageSequences = new ArrayList<>();
+            this.pageSequences = new java.util.ArrayList();
         }
-        this.pageSequences.add(new PageSequenceResults(pageSequence.getId(),
-                pageCount));
+        this.pageSequences.add(
+                new PageSequenceResults(pageSequence.getId(),
+                                        pageCount));
     }
 }
+

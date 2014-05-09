@@ -15,34 +15,41 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractGraphics.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: AbstractGraphics.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
+import java.util.Stack;
+
+import org.apache.fop.accessibility.StructureTreeElement;
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.GraphicsProperties;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.LengthRangeProperty;
 import org.apache.fop.fo.properties.SpaceProperty;
-import org.apache.fop.fo.properties.StructurePointerPropertySet;
+import org.apache.fop.fo.properties.StructureTreeElementHolder;
+import org.apache.fop.util.CharUtilities;
 
 /**
- * Common base class for the <a
- * href="http://www.w3.org/TR/xsl/#fo_instream-foreign-object">
- * <code>fo:instream-foreign-object</code></a> and <a
- * href="http://www.w3.org/TR/xsl/#fo_external-graphic">
+ * Common base class for the <a href="http://www.w3.org/TR/xsl/#fo_instream-foreign-object">
+ * <code>fo:instream-foreign-object</code></a>
+ * and <a href="http://www.w3.org/TR/xsl/#fo_external-graphic">
  * <code>fo:external-graphic</code></a> flow formatting objects.
  */
-public abstract class AbstractGraphics extends FObj implements
-GraphicsProperties, StructurePointerPropertySet {
+public abstract class AbstractGraphics extends FObj
+        implements GraphicsProperties, StructureTreeElementHolder, CommonAccessibilityHolder {
 
     // The value of properties relevant for fo:instream-foreign-object
     // and external-graphics.
+    private CommonAccessibility commonAccessibility;
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     private Length alignmentAdjust;
     private int alignmentBaseline;
@@ -63,181 +70,178 @@ GraphicsProperties, StructurePointerPropertySet {
     private int scaling;
     private int textAlign;
     private Length width;
-    private String ptr; // used for accessibility
-
+    private String altText;
+    private StructureTreeElement structureTreeElement;
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
-    // private CommonAural commonAural;
-    // private CommonMarginInline commonMarginInline;
-    // private CommonRelativePosition commonRelativePosition;
-    // private String contentType;
-    // private int scalingMethod;
+    //     private CommonAccessibility commonAccessibility;
+    //     private CommonAural commonAural;
+    //     private CommonMarginInline commonMarginInline;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private String contentType;
+    //     private int scalingMethod;
     // End of property values
 
     /**
      * constructs an instream-foreign-object object (called by Maker).
      *
-     * @param parent
-     *            the parent formatting object
+     * @param parent the parent formatting object
      */
-    public AbstractGraphics(final FONode parent) {
+    public AbstractGraphics(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
-        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        this.blockProgressionDimension = pList.get(
-                PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
+    public void bind(PropertyList pList) throws FOPException {
+        commonAccessibility = CommonAccessibility.getInstance(pList);
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
+        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        blockProgressionDimension = pList.get(PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
         // clip = pList.get(PR_CLIP);
-        this.contentHeight = pList.get(PR_CONTENT_HEIGHT).getLength();
-        this.contentWidth = pList.get(PR_CONTENT_WIDTH).getLength();
-        this.displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
-        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
-        this.height = pList.get(PR_HEIGHT).getLength();
-        this.id = pList.get(PR_ID).getString();
-        this.ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
-        this.inlineProgressionDimension = pList.get(
-                PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
-        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        this.overflow = pList.get(PR_OVERFLOW).getEnum();
-        this.scaling = pList.get(PR_SCALING).getEnum();
-        this.textAlign = pList.get(PR_TEXT_ALIGN).getEnum();
-        this.width = pList.get(PR_WIDTH).getLength();
+        contentHeight = pList.get(PR_CONTENT_HEIGHT).getLength();
+        contentWidth = pList.get(PR_CONTENT_WIDTH).getLength();
+        displayAlign = pList.get(PR_DISPLAY_ALIGN).getEnum();
+        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        height = pList.get(PR_HEIGHT).getLength();
+        id = pList.get(PR_ID).getString();
+        inlineProgressionDimension = pList.get(PR_INLINE_PROGRESSION_DIMENSION).getLengthRange();
+        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        overflow = pList.get(PR_OVERFLOW).getEnum();
+        scaling = pList.get(PR_SCALING).getEnum();
+        textAlign = pList.get(PR_TEXT_ALIGN).getEnum();
+        width = pList.get(PR_WIDTH).getLength();
         if (getUserAgent().isAccessibilityEnabled()) {
-            final String altText = pList.get(PR_X_ALT_TEXT).getString();
+            altText = pList.get(PR_X_ALT_TEXT).getString();
             if (altText.equals("")) {
-                getFOValidationEventProducer().altTextMissing(this,
-                        getLocalName(), getLocator());
+                getFOValidationEventProducer().altTextMissing(this, getLocalName(), getLocator());
             }
         }
+    }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /**
      * @return the "id" property.
      */
-    @Override
     public String getId() {
-        return this.id;
+        return id;
     }
 
     /** @return the {@link CommonBorderPaddingBackground} */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
     /** @return the "line-height" property */
     public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+        return lineHeight;
     }
 
     /** @return the "inline-progression-dimension" property */
-    @Override
     public LengthRangeProperty getInlineProgressionDimension() {
-        return this.inlineProgressionDimension;
+        return inlineProgressionDimension;
     }
 
     /** @return the "block-progression-dimension" property */
-    @Override
     public LengthRangeProperty getBlockProgressionDimension() {
-        return this.blockProgressionDimension;
+        return blockProgressionDimension;
     }
 
     /** @return the "height" property */
-    @Override
     public Length getHeight() {
-        return this.height;
+        return height;
     }
 
     /** @return the "width" property */
-    @Override
     public Length getWidth() {
-        return this.width;
+        return width;
     }
 
     /** @return the "content-height" property */
-    @Override
     public Length getContentHeight() {
-        return this.contentHeight;
+        return contentHeight;
     }
 
     /** @return the "content-width" property */
-    @Override
     public Length getContentWidth() {
-        return this.contentWidth;
+        return contentWidth;
     }
 
     /** @return the "scaling" property */
-    @Override
     public int getScaling() {
-        return this.scaling;
+        return scaling;
     }
 
     /** @return the "overflow" property */
-    @Override
     public int getOverflow() {
-        return this.overflow;
+        return overflow;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDisplayAlign() {
-        return this.displayAlign;
+        return displayAlign;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getTextAlign() {
-        return this.textAlign;
+        return textAlign;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        if (this.alignmentAdjust.getEnum() == EN_AUTO) {
-            final Length intrinsicAlignmentAdjust = getIntrinsicAlignmentAdjust();
+        if (alignmentAdjust.getEnum() == EN_AUTO) {
+            final Length intrinsicAlignmentAdjust = this.getIntrinsicAlignmentAdjust();
             if (intrinsicAlignmentAdjust != null) {
                 return intrinsicAlignmentAdjust;
             }
         }
-        return this.alignmentAdjust;
+        return alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return this.alignmentBaseline;
+        return alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return this.baselineShift;
+        return baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return this.dominantBaseline;
+        return dominantBaseline;
     }
 
     /** @return the "keep-with-next" property */
     public KeepProperty getKeepWithNext() {
-        return this.keepWithNext;
+        return keepWithNext;
     }
 
     /** @return the "keep-with-previous" property */
     public KeepProperty getKeepWithPrevious() {
-        return this.keepWithPrevious;
+        return keepWithPrevious;
+    }
+
+    @Override
+    public void setStructureTreeElement(StructureTreeElement structureTreeElement) {
+        this.structureTreeElement = structureTreeElement;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getPtr() {
-        return this.ptr;
+    public StructureTreeElement getStructureTreeElement() {
+        return structureTreeElement;
+    }
+
+    /** @return  the alternative text property. */
+    public String getAltText() {
+        return altText;
     }
 
     /** @return the graphic's intrinsic width in millipoints */
@@ -248,4 +252,18 @@ GraphicsProperties, StructurePointerPropertySet {
 
     /** @return the graphic's intrinsic alignment-adjust */
     public abstract Length getIntrinsicAlignmentAdjust();
+
+    @Override
+    public boolean isDelimitedTextRangeBoundary ( int boundary ) {
+        return false;
+    }
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        if ( currentRange != null ) {
+            currentRange.append ( CharUtilities.OBJECT_REPLACEMENT_CHARACTER, this );
+        }
+        return ranges;
+    }
+
 }

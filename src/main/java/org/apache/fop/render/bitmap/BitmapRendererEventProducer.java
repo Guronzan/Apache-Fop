@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BitmapRendererEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: BitmapRendererEventProducer.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.bitmap;
 
@@ -30,52 +30,42 @@ import org.apache.fop.events.EventProducer;
 public interface BitmapRendererEventProducer extends EventProducer {
 
     /** Provider class for the event producer. */
-    class Provider {
+    final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static BitmapRendererEventProducer get(
-                final EventBroadcaster broadcaster) {
-            return (BitmapRendererEventProducer) broadcaster
-                    .getEventProducerFor(BitmapRendererEventProducer.class);
+        public static BitmapRendererEventProducer get(EventBroadcaster broadcaster) {
+            return (BitmapRendererEventProducer)broadcaster.getEventProducerFor(
+                    BitmapRendererEventProducer.class);
         }
     }
 
     /**
      * No filename information available. Stopping early after the first page.
-     * 
-     * @param source
-     *            the event source
+     * @param source the event source
      * @event.severity WARN
      */
-    void stoppingAfterFirstPageNoFilename(final Object source);
+    void stoppingAfterFirstPageNoFilename(Object source);
 
     /**
-     * Image writer does not support multiple images. Only the first page has
-     * been produced.
-     * 
-     * @param source
-     *            the event source
+     * Image writer does not support multiple images. Only the first page has been produced.
+     * @param source the event source
      * @event.severity WARN
      */
-    void stoppingAfterFirstPageNoMultiWriter(final Object source);
+    void stoppingAfterFirstPageNoMultiWriter(Object source);
 
     /**
      * No ImageWriter found.
-     * 
-     * @param source
-     *            the event source
-     * @param mime
-     *            the target MIME type
-     * @throws IOException
-     *             the I/O error provoked by the method call
+     * @param source the event source
+     * @param mime the target MIME type
+     * @throws IOException the I/O error provoked by the method call
      * @event.severity FATAL
      */
-    void noImageWriterFound(final Object source, final String mime)
-            throws IOException;
+    void noImageWriterFound(Object source, String mime) throws IOException;
 }

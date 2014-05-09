@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: OutlineFont.java 901793 2010-01-21 17:37:07Z jeremias $ */
+/* $Id: OutlineFont.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.fonts;
 
@@ -24,8 +24,12 @@ package org.apache.fop.afp.fonts;
  */
 public class OutlineFont extends AbstractOutlineFont {
 
-    /** {@inheritDoc} */
-    public OutlineFont(final String name, final CharacterSet charSet) {
+    /**
+     * Construct outline font with specified name and character set.
+     * @param name font's name
+     * @param charSet font's character set
+     */
+    public OutlineFont(String name, CharacterSet charSet) {
         super(name, charSet);
     }
 

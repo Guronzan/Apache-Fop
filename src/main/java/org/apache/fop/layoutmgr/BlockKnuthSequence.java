@@ -15,21 +15,20 @@
  * limitations under the License.
  */
 
-/* $Id: BlockKnuthSequence.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BlockKnuthSequence.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.layoutmgr;
 
 import java.util.List;
+
 
 /**
  * Represents a list of block level Knuth elements.
  */
 public class BlockKnuthSequence extends KnuthSequence {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 1648962416582509095L;
+
     private boolean isClosed = false;
 
     /**
@@ -41,44 +40,38 @@ public class BlockKnuthSequence extends KnuthSequence {
 
     /**
      * Creates a new list from an existing list.
-     *
-     * @param list
-     *            The list from which to create the new list.
+     * @param list The list from which to create the new list.
      */
-    public BlockKnuthSequence(final List<ListElement> list) {
+    public BlockKnuthSequence(List list) {
         super(list);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isInlineSequence() {
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean canAppendSequence(final KnuthSequence sequence) {
-        return !sequence.isInlineSequence() && !this.isClosed;
+    public boolean canAppendSequence(KnuthSequence sequence) {
+        return !sequence.isInlineSequence() && !isClosed;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean appendSequence(final KnuthSequence sequence) {
+    public boolean appendSequence(KnuthSequence sequence) {
         // log.debug("Cannot append a sequence without a BreakElement");
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean appendSequence(final KnuthSequence sequence,
-            final boolean keepTogether, final BreakElement breakElement) {
+    public boolean appendSequence(KnuthSequence sequence, boolean keepTogether,
+                                  BreakElement breakElement) {
         if (!canAppendSequence(sequence)) {
             return false;
         }
         if (keepTogether) {
             breakElement.setPenaltyValue(KnuthElement.INFINITE);
             add(breakElement);
-        } else if (!getLast().isGlue()) {
+        } else if (!((ListElement) getLast()).isGlue()) {
             breakElement.setPenaltyValue(0);
             add(breakElement);
         }
@@ -87,9 +80,8 @@ public class BlockKnuthSequence extends KnuthSequence {
     }
 
     /** {@inheritDoc} */
-    @Override
     public KnuthSequence endSequence() {
-        this.isClosed = true;
+        isClosed = true;
         return this;
     }
 

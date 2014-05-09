@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PageableRenderer.java 761596 2009-04-03 10:14:20Z jeremias $ */
+/* $Id: PageableRenderer.java 1237610 2012-01-30 11:46:13Z mehdi $ */
 
 package org.apache.fop.render.print;
 
@@ -34,29 +34,31 @@ import org.apache.fop.area.PageViewport;
 import org.apache.fop.render.java2d.Java2DRenderer;
 
 /**
- * Renderer that prints through java.awt.PrintJob. The actual printing is
- * handled by Java2DRenderer since both PrintRenderer and AWTRenderer need to
+ * Renderer that prints through java.awt.PrintJob.
+ * The actual printing is handled by Java2DRenderer
+ * since both PrintRenderer and AWTRenderer need to
  * support printing.
  */
 public class PageableRenderer extends Java2DRenderer implements Pageable {
 
     /**
-     * Printing parameter: the pages to be printed (all, even or odd), datatype:
-     * the strings "all", "even" or "odd" or one of PagesMode.*
+     * Printing parameter: the pages to be printed (all, even or odd),
+     * datatype: the strings "all", "even" or "odd" or one of PagesMode.*
      */
     public static final String PAGES_MODE = "even-odd";
 
     /**
-     * Printing parameter: the page number (1-based) of the first page to be
-     * printed, datatype: a positive Integer
+     * Printing parameter: the page number (1-based) of the first page to be printed,
+     * datatype: a positive Integer
      */
     public static final String START_PAGE = "start-page";
 
     /**
-     * Printing parameter: the page number (1-based) of the last page to be
-     * printed, datatype: a positive Integer
+     * Printing parameter: the page number (1-based) of the last page to be printed,
+     * datatype: a positive Integer
      */
     public static final String END_PAGE = "end-page";
+
 
     /** first valid page number (1-based) */
     protected int startNumber = 0;
@@ -70,38 +72,32 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
 
     /**
      * Creates a new PageableRenderer.
+     *
+     * @param userAgent the user agent that contains configuration details. This cannot be null.
      */
-    public PageableRenderer() {
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public String getMimeType() {
-        return MimeConstants.MIME_FOP_PRINT;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void setUserAgent(final FOUserAgent agent) {
-        super.setUserAgent(agent);
-
-        final Map rendererOptions = agent.getRendererOptions();
+    public PageableRenderer(FOUserAgent userAgent) {
+        super(userAgent);
+        Map rendererOptions = getUserAgent().getRendererOptions();
         processOptions(rendererOptions);
         this.pageFilter = new DefaultPageFilter();
     }
 
-    private void processOptions(final Map rendererOptions) {
+    /** {@inheritDoc} */
+    public String getMimeType() {
+        return MimeConstants.MIME_FOP_PRINT;
+    }
+
+    private void processOptions(Map rendererOptions) {
         Object o = rendererOptions.get(PageableRenderer.PAGES_MODE);
         if (o != null) {
             if (o instanceof PagesMode) {
-                this.mode = (PagesMode) o;
+                this.mode = (PagesMode)o;
             } else if (o instanceof String) {
-                this.mode = PagesMode.byName((String) o);
+                this.mode = PagesMode.byName((String)o);
             } else {
                 throw new IllegalArgumentException(
-                        "Renderer option "
-                                + PageableRenderer.PAGES_MODE
-                                + " must be an 'all', 'even', 'odd' or a PagesMode instance.");
+                        "Renderer option " + PageableRenderer.PAGES_MODE
+                        + " must be an 'all', 'even', 'odd' or a PagesMode instance.");
             }
         }
 
@@ -119,72 +115,59 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
     }
 
     /**
-     * Converts an object into a positive integer value if possible. The method
-     * throws an {@link IllegalArgumentException} if the value is invalid.
-     *
-     * @param o
-     *            the object to be converted
+     * Converts an object into a positive integer value if possible. The method throws an
+     * {@link IllegalArgumentException} if the value is invalid.
+     * @param o the object to be converted
      * @return the positive integer
      */
-    protected int getPositiveInteger(final Object o) {
+    protected int getPositiveInteger(Object o) {
         if (o instanceof Integer) {
-            final Integer i = (Integer) o;
+            Integer i = (Integer)o;
             if (i.intValue() < 1) {
                 throw new IllegalArgumentException(
                         "Value must be a positive Integer");
             }
             return i.intValue();
         } else if (o instanceof String) {
-            return Integer.parseInt((String) o);
+            return Integer.parseInt((String)o);
         } else {
             throw new IllegalArgumentException(
                     "Value must be a positive integer");
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IOException
-     */
-    @Override
+    /** {@inheritDoc} */
     public void stopRenderer() throws IOException {
         super.stopRenderer();
 
-        if (this.endNumber == -1) {
+        if (endNumber == -1) {
             // was not set on command line
-            this.endNumber = getNumberOfPages();
+            endNumber = getNumberOfPages();
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void rememberPage(final PageViewport pageViewport) {
+    protected void rememberPage(PageViewport pageViewport) {
         if (this.pageFilter.isValid(pageViewport)) {
             super.rememberPage(pageViewport);
         }
     }
 
     private interface PageFilter {
-        boolean isValid(final PageViewport page);
+        boolean isValid(PageViewport page);
     }
 
     private class DefaultPageFilter implements PageFilter {
 
-        @Override
-        public boolean isValid(final PageViewport page) {
-            final int pageNum = page.getPageIndex() + 1;
+        public boolean isValid(PageViewport page) {
+            int pageNum = page.getPageIndex() + 1;
             assert pageNum >= 0;
-            if (pageNum < PageableRenderer.this.startNumber
-                    || PageableRenderer.this.endNumber >= 0
-                    && pageNum > PageableRenderer.this.endNumber) {
+            if (pageNum < startNumber || (endNumber >= 0 && pageNum > endNumber)) {
                 return false;
-            } else if (PageableRenderer.this.mode != PagesMode.ALL) {
-                if (PageableRenderer.this.mode == PagesMode.EVEN
-                        && pageNum % 2 != 0) {
+            } else if (mode != PagesMode.ALL) {
+                if (mode == PagesMode.EVEN && (pageNum % 2 != 0)) {
                     return false;
-                } else if (PageableRenderer.this.mode == PagesMode.ODD
-                        && pageNum % 2 == 0) {
+                } else if (mode == PagesMode.ODD && (pageNum % 2 == 0)) {
                     return false;
                 }
             }
@@ -193,21 +176,20 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public PageFormat getPageFormat(final int pageIndex)
+    public PageFormat getPageFormat(int pageIndex)
             throws IndexOutOfBoundsException {
         try {
             if (pageIndex >= getNumberOfPages()) {
                 return null;
             }
 
-            final PageFormat pageFormat = new PageFormat();
+            PageFormat pageFormat = new PageFormat();
 
-            final Paper paper = new Paper();
+            Paper paper = new Paper();
 
-            final Rectangle2D dim = getPageViewport(pageIndex).getViewArea();
-            final double width = dim.getWidth();
-            final double height = dim.getHeight();
+            Rectangle2D dim = getPageViewport(pageIndex).getViewArea();
+            double width = dim.getWidth();
+            double height = dim.getHeight();
 
             // if the width is greater than the height assume landscape mode
             // and swap the width and height values in the paper format
@@ -222,14 +204,13 @@ public class PageableRenderer extends Java2DRenderer implements Pageable {
             }
             pageFormat.setPaper(paper);
             return pageFormat;
-        } catch (final FOPException fopEx) {
+        } catch (FOPException fopEx) {
             throw new IndexOutOfBoundsException(fopEx.getMessage());
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Printable getPrintable(final int pageIndex)
+    public Printable getPrintable(int pageIndex)
             throws IndexOutOfBoundsException {
         return this;
     }

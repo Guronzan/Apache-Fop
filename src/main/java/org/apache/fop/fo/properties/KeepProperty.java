@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-/* $Id: KeepProperty.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: KeepProperty.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.datatypes.CompoundDatatype;
 import org.apache.fop.fo.FObj;
@@ -29,12 +27,11 @@ import org.apache.fop.fo.expr.PropertyException;
 /**
  * Class for properties that wrap Keep values
  */
-@Slf4j
 public final class KeepProperty extends Property implements CompoundDatatype {
 
-    /** class holding all canonical KeepProperty instances */
-    private static final PropertyCache cache = new PropertyCache(
-            KeepProperty.class);
+    /** class holding all canonical KeepProperty instances*/
+    private static final PropertyCache<KeepProperty> CACHE
+            = new PropertyCache<KeepProperty>();
 
     private boolean isCachedValue = false;
     private Property withinLine;
@@ -47,19 +44,16 @@ public final class KeepProperty extends Property implements CompoundDatatype {
     public static class Maker extends CompoundPropertyMaker {
 
         /**
-         * @param propId
-         *            the id of the property for which a Maker should be created
+         * @param propId the id of the property for which a Maker should be created
          */
-        public Maker(final int propId) {
+        public Maker(int propId) {
             super(propId);
         }
 
         /**
          * Create a new empty instance of KeepProperty.
-         *
          * @return the new instance.
          */
-        @Override
         public Property makeNewProperty() {
             return new KeepProperty();
         }
@@ -67,10 +61,8 @@ public final class KeepProperty extends Property implements CompoundDatatype {
         /**
          * {@inheritDoc}
          */
-        @Override
-        public Property convertProperty(final Property p,
-                final PropertyList propertyList, final FObj fo)
-                        throws PropertyException {
+        public Property convertProperty(Property p, PropertyList propertyList, FObj fo)
+                throws PropertyException {
             if (p instanceof KeepProperty) {
                 return p;
             }
@@ -81,10 +73,9 @@ public final class KeepProperty extends Property implements CompoundDatatype {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void setComponent(final int cmpId, final Property cmpnValue,
-            final boolean bIsDefault) {
-        if (this.isCachedValue) {
+    public void setComponent(int cmpId, Property cmpnValue,
+                             boolean bIsDefault) {
+        if (isCachedValue) {
             log.warn("KeepProperty.setComponent() called on cached value. Ignoring...");
             return;
         }
@@ -100,8 +91,7 @@ public final class KeepProperty extends Property implements CompoundDatatype {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Property getComponent(final int cmpId) {
+    public Property getComponent(int cmpId) {
         if (cmpId == CP_WITHIN_LINE) {
             return getWithinLine();
         } else if (cmpId == CP_WITHIN_COLUMN) {
@@ -114,35 +104,27 @@ public final class KeepProperty extends Property implements CompoundDatatype {
     }
 
     /**
-     * @param withinLine
-     *            withinLine property to set
-     * @param bIsDefault
-     *            not used (??)
+     * @param withinLine withinLine property to set
+     * @param bIsDefault not used (??)
      */
-    public void setWithinLine(final Property withinLine,
-            final boolean bIsDefault) {
+    public void setWithinLine(Property withinLine, boolean bIsDefault) {
         this.withinLine = withinLine;
     }
 
     /**
-     * @param withinColumn
-     *            withinColumn property to set
-     * @param bIsDefault
-     *            not used (??)
+     * @param withinColumn withinColumn property to set
+     * @param bIsDefault not used (??)
      */
-    protected void setWithinColumn(final Property withinColumn,
-            final boolean bIsDefault) {
+    protected void setWithinColumn(Property withinColumn,
+                                   boolean bIsDefault) {
         this.withinColumn = withinColumn;
     }
 
     /**
-     * @param withinPage
-     *            withinPage property to set
-     * @param bIsDefault
-     *            not used (??)
+     * @param withinPage withinPage property to set
+     * @param bIsDefault not used (??)
      */
-    public void setWithinPage(final Property withinPage,
-            final boolean bIsDefault) {
+    public void setWithinPage(Property withinPage, boolean bIsDefault) {
         this.withinPage = withinPage;
     }
 
@@ -169,23 +151,21 @@ public final class KeepProperty extends Property implements CompoundDatatype {
 
     /**
      * Not sure what to do here. There isn't really a meaningful single value.
-     *
      * @return String representation
      */
-    @Override
     public String toString() {
-        return "Keep[" + "withinLine:" + getWithinLine().getObject()
-                + ", withinColumn:" + getWithinColumn().getObject()
-                + ", withinPage:" + getWithinPage().getObject() + "]";
+        return "Keep["
+            + "withinLine:" + getWithinLine().getObject()
+            + ", withinColumn:" + getWithinColumn().getObject()
+            + ", withinPage:" + getWithinPage().getObject() + "]";
     }
 
     /**
-     * @return the canonical KeepProperty instance corresponding to this
-     *         property
+     * @return the canonical KeepProperty instance corresponding to
+     *          this property
      */
-    @Override
     public KeepProperty getKeep() {
-        final KeepProperty keep = (KeepProperty) cache.fetch(this);
+        KeepProperty keep = CACHE.fetch(this);
         /* make sure setComponent() can never alter cached values */
         keep.isCachedValue = true;
         return keep;
@@ -194,38 +174,31 @@ public final class KeepProperty extends Property implements CompoundDatatype {
     /**
      * @return this.keep cast as Object
      */
-    @Override
     public Object getObject() {
         return this;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object o) {
+    public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
 
         if (o instanceof KeepProperty) {
-            final KeepProperty keep = (KeepProperty) o;
-            return keep.withinColumn == this.withinColumn
-                    && keep.withinLine == this.withinLine
-                    && keep.withinPage == this.withinPage;
+            KeepProperty keep = (KeepProperty) o;
+            return (keep.withinColumn == this.withinColumn)
+                && (keep.withinLine == this.withinLine)
+                && (keep.withinPage == this.withinPage);
         }
         return false;
     }
 
     /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         int hash = 17;
-        hash = 37
-                * hash
-                + (this.withinColumn == null ? 0 : this.withinColumn.hashCode());
-        hash = 37 * hash
-                + (this.withinLine == null ? 0 : this.withinLine.hashCode());
-        hash = 37 * hash
-                + (this.withinPage == null ? 0 : this.withinPage.hashCode());
+        hash = 37 * hash + (withinColumn == null ? 0 : withinColumn.hashCode());
+        hash = 37 * hash + (withinLine == null ? 0 : withinLine.hashCode());
+        hash = 37 * hash + (withinPage == null ? 0 : withinPage.hashCode());
         return hash;
     }
 }

@@ -15,11 +15,9 @@
  * limitations under the License.
  */
 
-/* $Id: Java2DUtil.java 820672 2009-10-01 14:48:27Z jeremias $ */
+/* $Id: Java2DUtil.java 1296496 2012-03-02 22:19:46Z gadams $ */
 
 package org.apache.fop.render.java2d;
-
-import java.awt.Graphics2D;
 
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.fonts.FontCollection;
@@ -30,33 +28,33 @@ import org.apache.fop.fonts.FontManager;
 /**
  * Rendering-related utilities for Java2D.
  */
-public class Java2DUtil {
+public final class Java2DUtil {
+
+    private Java2DUtil() {
+    }
 
     /**
-     * Builds a default {@link FontInfo} object for use with output formats
-     * using the Java2D font setup.
-     * 
-     * @param fontInfo
-     *            the font info object to populate
-     * @param userAgent
-     *            the user agent
+     * Builds a default {@link FontInfo} object for use with output formats using the Java2D
+     * font setup.
+     * @param fontInfo the font info object to populate
+     * @param userAgent the user agent
      * @return the populated font information object
      */
     public static FontInfo buildDefaultJava2DBasedFontInfo(
-            final FontInfo fontInfo, final FOUserAgent userAgent) {
-        final Graphics2D graphics2D = Java2DFontMetrics
-                .createFontMetricsGraphics2D();
+            FontInfo fontInfo, FOUserAgent userAgent) {
+        Java2DFontMetrics java2DFontMetrics = new Java2DFontMetrics();
 
-        final FontManager fontManager = userAgent.getFactory().getFontManager();
-        final FontCollection[] fontCollections = new FontCollection[] {
-                new org.apache.fop.render.java2d.Base14FontCollection(
-                        graphics2D), new InstalledFontCollection(graphics2D) };
+        FontManager fontManager = userAgent.getFactory().getFontManager();
+        FontCollection[] fontCollections = new FontCollection[] {
+                new org.apache.fop.render.java2d.Base14FontCollection(java2DFontMetrics),
+                new InstalledFontCollection(java2DFontMetrics)
+        };
 
-        final FontInfo fi = fontInfo != null ? fontInfo : new FontInfo();
-        fi.setEventListener(new FontEventAdapter(userAgent
-                .getEventBroadcaster()));
+        FontInfo fi = (fontInfo != null ? fontInfo : new FontInfo());
+        fi.setEventListener(new FontEventAdapter(userAgent.getEventBroadcaster()));
         fontManager.setup(fi, fontCollections);
         return fi;
     }
+
 
 }

@@ -15,72 +15,74 @@
  * limitations under the License.
  */
 
-/* $Id: Hyphenation.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Hyphenation.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
 /**
- * This class represents a hyphenated word.
+ * <p.This class represents a hyphenated word.</p>
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * <p>This work was authored by Carlos Villegas (cav@uniscope.co.jp).</p>
  */
 public class Hyphenation {
 
-    private final int[] hyphenPoints;
-    private final String word;
+    private int[] hyphenPoints;
+    private String word;
 
     /**
      * number of hyphenation points in word
      */
-    private final int len;
+    private int len;
 
     /**
      * rawWord as made of alternating strings and {@link Hyphen Hyphen}
      * instances
      */
-    Hyphenation(final String word, final int[] points) {
+    Hyphenation(String word, int[] points) {
         this.word = word;
-        this.hyphenPoints = points;
-        this.len = points.length;
+        hyphenPoints = points;
+        len = points.length;
     }
 
     /**
      * @return the number of hyphenation points in the word
      */
     public int length() {
-        return this.len;
+        return len;
     }
 
     /**
+     * @param index an index position
      * @return the pre-break text, not including the hyphen character
      */
-    public String getPreHyphenText(final int index) {
-        return this.word.substring(0, this.hyphenPoints[index]);
+    public String getPreHyphenText(int index) {
+        return word.substring(0, hyphenPoints[index]);
     }
 
     /**
+     * @param index an index position
      * @return the post-break text
      */
-    public String getPostHyphenText(final int index) {
-        return this.word.substring(this.hyphenPoints[index]);
+    public String getPostHyphenText(int index) {
+        return word.substring(hyphenPoints[index]);
     }
 
     /**
      * @return the hyphenation points
      */
     public int[] getHyphenationPoints() {
-        return this.hyphenPoints;
+        return hyphenPoints;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public String toString() {
-        final StringBuilder str = new StringBuilder();
+        StringBuffer str = new StringBuffer();
         int start = 0;
-        for (int i = 0; i < this.len; ++i) {
-            str.append(this.word.substring(start, this.hyphenPoints[i]) + "-");
-            start = this.hyphenPoints[i];
+        for (int i = 0; i < len; i++) {
+            str.append(word.substring(start, hyphenPoints[i]) + "-");
+            start = hyphenPoints[i];
         }
-        str.append(this.word.substring(start));
+        str.append(word.substring(start));
         return str.toString();
     }
 

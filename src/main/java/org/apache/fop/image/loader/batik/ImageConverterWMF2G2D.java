@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ImageConverterWMF2G2D.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ImageConverterWMF2G2D.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.image.loader.batik;
 
@@ -24,10 +24,12 @@ import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.batik.transcoder.wmf.tosvg.WMFPainter;
 import org.apache.batik.transcoder.wmf.tosvg.WMFRecordStore;
+
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.impl.AbstractImageConverter;
@@ -35,73 +37,68 @@ import org.apache.xmlgraphics.image.loader.impl.ImageGraphics2D;
 import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
 
 /**
- * This ImageConverter converts WMF (Windows Metafile) images (represented by
- * Batik's WMFRecordStore) to Java2D.
+ * This ImageConverter converts WMF (Windows Metafile) images (represented by Batik's
+ * WMFRecordStore) to Java2D.
  */
-@Slf4j
 public class ImageConverterWMF2G2D extends AbstractImageConverter {
 
+    /** logger */
+    private static Log log = LogFactory.getLog(ImageConverterWMF2G2D.class);
+
     /** {@inheritDoc} */
-    @Override
-    public Image convert(final Image src, final Map hints) {
+    public Image convert(Image src, Map hints) {
         checkSourceFlavor(src);
-        final ImageWMF wmf = (ImageWMF) src;
+        ImageWMF wmf = (ImageWMF)src;
 
         Graphics2DImagePainter painter;
         painter = new Graphics2DImagePainterWMF(wmf);
 
-        final ImageGraphics2D g2dImage = new ImageGraphics2D(src.getInfo(),
-                painter);
+        ImageGraphics2D g2dImage = new ImageGraphics2D(src.getInfo(), painter);
         return g2dImage;
     }
 
     /** {@inheritDoc} */
-    @Override
     public ImageFlavor getSourceFlavor() {
         return ImageWMF.WMF_IMAGE;
     }
 
     /** {@inheritDoc} */
-    @Override
     public ImageFlavor getTargetFlavor() {
         return ImageFlavor.GRAPHICS2D;
     }
 
-    private static class Graphics2DImagePainterWMF implements
-    Graphics2DImagePainter {
+    private static class Graphics2DImagePainterWMF implements Graphics2DImagePainter {
 
-        private final ImageWMF wmf;
+        private ImageWMF wmf;
 
-        public Graphics2DImagePainterWMF(final ImageWMF wmf) {
+        public Graphics2DImagePainterWMF(ImageWMF wmf) {
             this.wmf = wmf;
         }
 
         /** {@inheritDoc} */
-        @Override
         public Dimension getImageSize() {
-            return this.wmf.getSize().getDimensionMpt();
+            return wmf.getSize().getDimensionMpt();
         }
 
         /** {@inheritDoc} */
-        @Override
-        public void paint(final Graphics2D g2d, final Rectangle2D area) {
-            final WMFRecordStore wmfStore = this.wmf.getRecordStore();
-            final double w = area.getWidth();
-            final double h = area.getHeight();
+        public void paint(Graphics2D g2d, Rectangle2D area) {
+            WMFRecordStore wmfStore = wmf.getRecordStore();
+            double w = area.getWidth();
+            double h = area.getHeight();
 
-            // Fit in paint area
+            //Fit in paint area
             g2d.translate(area.getX(), area.getY());
-            final double sx = w / wmfStore.getVpW();
-            final double sy = h / wmfStore.getVpH();
+            double sx = w / wmfStore.getWidthPixels();
+            double sy = h / wmfStore.getHeightPixels();
             if (sx != 1.0 || sy != 1.0) {
                 g2d.scale(sx, sy);
             }
 
-            final WMFPainter painter = new WMFPainter(wmfStore);
-            final long start = System.currentTimeMillis();
+            WMFPainter painter = new WMFPainter(wmfStore, 1.0f);
+            long start = System.currentTimeMillis();
             painter.paint(g2d);
             if (log.isDebugEnabled()) {
-                final long duration = System.currentTimeMillis() - start;
+                long duration = System.currentTimeMillis() - start;
                 log.debug("Painting WMF took " + duration + " ms.");
             }
         }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ObjectContainer.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: ObjectContainer.java 1195952 2011-11-01 12:20:21Z phancock $ */
 
 package org.apache.fop.afp.modca;
 
@@ -43,24 +43,21 @@ public class ObjectContainer extends AbstractDataObject {
     /**
      * Main constructor
      *
-     * @param factory
-     *            the object factory
-     * @param name
-     *            the name of this object container
+     * @param factory the object factory
+     * @param name the name of this object container
      */
-    public ObjectContainer(final Factory factory, final String name) {
+    public ObjectContainer(Factory factory, String name) {
         super(factory, name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] headerData = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] headerData = new byte[17];
         copySF(headerData, Type.BEGIN, Category.OBJECT_CONTAINER);
 
         // Set the total record length
-        final int containerLen = headerData.length + getTripletDataLength() - 1;
-        final byte[] len = BinaryUtils.convert(containerLen, 2);
+        int containerLen = headerData.length + getTripletDataLength() - 1;
+        byte[] len = BinaryUtils.convert(containerLen, 2);
         headerData[1] = len[0]; // Length byte 1
         headerData[2] = len[1]; // Length byte 2
 
@@ -68,66 +65,59 @@ public class ObjectContainer extends AbstractDataObject {
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
+    protected void writeContent(OutputStream os) throws IOException {
         super.writeContent(os); // write triplets and OEG
 
         // write OCDs
-        final byte[] dataHeader = new byte[9];
+        byte[] dataHeader = new byte[9];
         copySF(dataHeader, SF_CLASS, Type.DATA, Category.OBJECT_CONTAINER);
         final int lengthOffset = 1;
 
-        if (this.data != null) {
-            writeChunksToStream(this.data, dataHeader, lengthOffset,
-                    MAX_DATA_LEN, os);
+        if (data != null) {
+            writeChunksToStream(data, dataHeader, lengthOffset, MAX_DATA_LEN, os);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.OBJECT_CONTAINER);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setViewport(final AFPDataObjectInfo dataObjectInfo) {
-        final AFPResourceInfo resourceInfo = dataObjectInfo.getResourceInfo();
-        final AFPResourceLevel resourceLevel = resourceInfo.getLevel();
+    public void setViewport(AFPDataObjectInfo dataObjectInfo) {
+        AFPResourceInfo resourceInfo = dataObjectInfo.getResourceInfo();
+        AFPResourceLevel resourceLevel = resourceInfo.getLevel();
 
         // only need to set MCD and CDD when OC when is inlined (pre-2000 apps)
         if (resourceLevel.isInline()) {
             super.setViewport(dataObjectInfo);
 
-            final MapContainerData mapContainerData = this.factory
-                    .createMapContainerData(MappingOptionTriplet.SCALE_TO_FIT);
+            MapContainerData mapContainerData
+            = factory.createMapContainerData(MappingOptionTriplet.SCALE_TO_FIT);
             getObjectEnvironmentGroup().setMapContainerData(mapContainerData);
 
-            final int dataWidth = dataObjectInfo.getDataWidth();
-            final int dataHeight = dataObjectInfo.getDataHeight();
+            int dataWidth = dataObjectInfo.getDataWidth();
+            int dataHeight = dataObjectInfo.getDataHeight();
 
-            final AFPObjectAreaInfo objectAreaInfo = dataObjectInfo
-                    .getObjectAreaInfo();
-            final int widthRes = objectAreaInfo.getWidthRes();
-            final int heightRes = objectAreaInfo.getHeightRes();
+            AFPObjectAreaInfo objectAreaInfo = dataObjectInfo.getObjectAreaInfo();
+            int widthRes = objectAreaInfo.getWidthRes();
+            int heightRes = objectAreaInfo.getHeightRes();
 
-            final ContainerDataDescriptor containerDataDescriptor = this.factory
-                    .createContainerDataDescriptor(dataWidth, dataHeight,
-                            widthRes, heightRes);
-            getObjectEnvironmentGroup().setDataDescriptor(
-                    containerDataDescriptor);
+            ContainerDataDescriptor containerDataDescriptor
+                = factory.createContainerDataDescriptor(
+                    dataWidth, dataHeight, widthRes, heightRes);
+            getObjectEnvironmentGroup().setDataDescriptor(containerDataDescriptor);
         }
     }
 
     /**
-     * Sets the inputstream for the the object container data
+     * Sets the data for the object container
      *
-     * @param inputStream
-     *            the inputstream for the object container data
+     * @param data a byte array
      */
-    public void setData(final byte[] data) {
+    public void setData(byte[] data) {
         this.data = data;
     }
 }

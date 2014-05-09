@@ -15,34 +15,32 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractAction.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: AbstractAction.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.render.intermediate.extensions;
 
 import org.apache.xmlgraphics.util.XMLizable;
 
+import org.apache.fop.accessibility.StructureTreeElement;
+
 /**
- * Abstract base class for document actions, like "go-to" actions with absolute
- * page coordinates.
+ * Abstract base class for document actions, like "go-to" actions with absolute page coordinates.
  */
 public abstract class AbstractAction implements XMLizable {
 
     private String id;
-    private String structurePointer;
+    private StructureTreeElement structureTreeElement;
 
     /**
      * Sets an ID to make the action referencable.
-     *
-     * @param id
-     *            the ID
+     * @param id the ID
      */
-    public void setID(final String id) {
+    public void setID(String id) {
         this.id = id;
     }
 
     /**
      * Returns an optional ID for this action.
-     *
      * @return the ID or null
      */
     public String getID() {
@@ -51,26 +49,22 @@ public abstract class AbstractAction implements XMLizable {
 
     /**
      * Sets the structure element corresponding to this action.
-     *
-     * @param structurePointer
-     *            a reference to the structure element
+     * @param structureTreeElement a reference to the structure element
      */
-    public void setStructurePointer(final String structurePointer) {
-        this.structurePointer = structurePointer;
+    public void setStructureTreeElement(StructureTreeElement structureTreeElement) {
+        this.structureTreeElement = structureTreeElement;
     }
 
     /**
      * Returns the structure element corresponding to this action.
-     *
      * @return the reference to the structure element
      */
-    public String getStructurePointer() {
-        return this.structurePointer;
+    public StructureTreeElement getStructureTreeElement() {
+        return structureTreeElement;
     }
 
     /**
      * Indicates whether the action has an ID and is therefore referencable.
-     *
      * @return true if the action has an ID
      */
     public boolean hasID() {
@@ -80,17 +74,14 @@ public abstract class AbstractAction implements XMLizable {
     /**
      * Indicates whether two action are equal. Note: this is not the same as
      * {@link Object#equals(Object)}!
-     *
-     * @param other
-     *            the other action to compare to
+     * @param other the other action to compare to
      * @return true if the actions are equal
      */
-    public abstract boolean isSame(final AbstractAction other);
+    public abstract boolean isSame(AbstractAction other);
 
     /**
-     * Indicates whether the action is complete, i.e has all the required
-     * information to be rendered in the target format.
-     *
+     * Indicates whether the action is complete, i.e has all the required information to be
+     * rendered in the target format.
      * @return true if the action is complete
      */
     public boolean isComplete() {
@@ -99,7 +90,6 @@ public abstract class AbstractAction implements XMLizable {
 
     /**
      * Returns a string that is used to prefix a generated ID to make it unique.
-     *
      * @return the prefix string
      */
     public String getIDPrefix() {

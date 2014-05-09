@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractPageSequence.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: AbstractPageSequence.java 1342680 2012-05-25 15:15:28Z vhennebert $ */
 
 package org.apache.fop.fo.pagination;
 
@@ -24,66 +24,68 @@ import org.apache.fop.datatypes.Numeric;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
-import org.apache.fop.fo.ValidationException;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 
 /**
- * Abstract base class for the <a
- * href="http://www.w3.org/TR/xsl/#fo_page-sequence">
- * <code>fo:page-sequence</code></a> formatting object and the <a href=
- * "http://xmlgraphics.apache.org/fop/0.95/extensions.html#external-document">
+ * Abstract base class for the <a href="http://www.w3.org/TR/xsl/#fo_page-sequence">
+ * <code>fo:page-sequence</code></a> formatting object and the
+ * <a href="http://xmlgraphics.apache.org/fop/0.95/extensions.html#external-document">
  * <code>fox:external-document</code></a> extension object.
  */
-public abstract class AbstractPageSequence extends FObj {
+public abstract class AbstractPageSequence extends FObj implements CommonAccessibilityHolder {
 
-    // The value of properties relevant for fo:page-sequence.
+    /** initial page number */
     protected Numeric initialPageNumber;
+    /** forced page count */
     protected int forcePageCount;
     private String format;
     private int letterValue;
     private char groupingSeparator;
     private int groupingSize;
-    private Numeric referenceOrientation; // XSL 1.1
-    // End of property values
+    private Numeric referenceOrientation;
+    private String language;
+    private String country;
+    private String numberConversionFeatures;
+
+    private CommonAccessibility commonAccessibility;
 
     private PageNumberGenerator pageNumberGenerator;
 
+    /** starting page number */
     protected int startingPageNumber = 0;
 
     /**
-     * Create an AbstractPageSequence that is a child of the given parent
-     * {@link FONode}.
+     * Create an AbstractPageSequence that is a child
+     * of the given parent {@link FONode}.
      *
-     * @param parent
-     *            the parent {@link FONode}
+     * @param parent the parent {@link FONode}
      */
-    public AbstractPageSequence(final FONode parent) {
+    public AbstractPageSequence(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.initialPageNumber = pList.get(PR_INITIAL_PAGE_NUMBER).getNumeric();
-        this.forcePageCount = pList.get(PR_FORCE_PAGE_COUNT).getEnum();
-        this.format = pList.get(PR_FORMAT).getString();
-        this.letterValue = pList.get(PR_LETTER_VALUE).getEnum();
-        this.groupingSeparator = pList.get(PR_GROUPING_SEPARATOR)
-                .getCharacter();
-        this.groupingSize = pList.get(PR_GROUPING_SIZE).getNumber().intValue();
-        this.referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION)
-                .getNumeric();
+        initialPageNumber = pList.get(PR_INITIAL_PAGE_NUMBER).getNumeric();
+        forcePageCount = pList.get(PR_FORCE_PAGE_COUNT).getEnum();
+        format = pList.get(PR_FORMAT).getString();
+        letterValue = pList.get(PR_LETTER_VALUE).getEnum();
+        groupingSeparator = pList.get(PR_GROUPING_SEPARATOR).getCharacter();
+        groupingSize = pList.get(PR_GROUPING_SIZE).getNumber().intValue();
+        referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION).getNumeric();
+        language = pList.get(PR_LANGUAGE).getString();
+        country = pList.get(PR_COUNTRY).getString();
+        numberConversionFeatures = pList.get(PR_X_NUMBER_CONVERSION_FEATURES).getString();
+        commonAccessibility = CommonAccessibility.getInstance(pList);
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws ValidationException
-     */
-    @Override
-    protected void startOfNode() throws ValidationException {
-        this.pageNumberGenerator = new PageNumberGenerator(this.format,
-                this.groupingSeparator, this.groupingSize, this.letterValue);
+    /** {@inheritDoc} */
+    protected void startOfNode() throws FOPException {
+        this.pageNumberGenerator = new PageNumberGenerator(
+                format, groupingSeparator, groupingSize, letterValue,
+                numberConversionFeatures, language, country);
 
     }
 
@@ -93,24 +95,22 @@ public abstract class AbstractPageSequence extends FObj {
     public void initPageNumber() {
         int pageNumberType = 0;
 
-        if (this.initialPageNumber.getEnum() != 0) {
+        if (initialPageNumber.getEnum() != 0) {
             // auto | auto-odd | auto-even.
-            this.startingPageNumber = getRoot()
-                    .getEndingPageNumberOfPreviousSequence() + 1;
-            pageNumberType = this.initialPageNumber.getEnum();
+            startingPageNumber = getRoot().getEndingPageNumberOfPreviousSequence() + 1;
+            pageNumberType = initialPageNumber.getEnum();
             if (pageNumberType == EN_AUTO_ODD) {
-                if (this.startingPageNumber % 2 == 0) {
-                    this.startingPageNumber++;
+                if (startingPageNumber % 2 == 0) {
+                    startingPageNumber++;
                 }
             } else if (pageNumberType == EN_AUTO_EVEN) {
-                if (this.startingPageNumber % 2 == 1) {
-                    this.startingPageNumber++;
+                if (startingPageNumber % 2 == 1) {
+                    startingPageNumber++;
                 }
             }
         } else { // <integer> for explicit page number
-            final int pageStart = this.initialPageNumber.getValue();
-            this.startingPageNumber = pageStart > 0 ? pageStart : 1; // spec
-            // rule
+            int pageStart = initialPageNumber.getValue();
+            startingPageNumber = (pageStart > 0) ? pageStart : 1; // spec rule
         }
     }
 
@@ -120,57 +120,54 @@ public abstract class AbstractPageSequence extends FObj {
      * @return the starting page number
      */
     public int getStartingPageNumber() {
-        return this.startingPageNumber;
+        return startingPageNumber;
     }
 
     /**
-     * Retrieves the string representation of a page number applicable for this
-     * page sequence
-     *
-     * @param pageNumber
-     *            the page number
+     * Retrieves the string representation of a page number applicable
+     * for this page sequence
+     * @param pageNumber the page number
      * @return string representation of the page number
      */
-    public String makeFormattedPageNumber(final int pageNumber) {
-        return this.pageNumberGenerator.makeFormattedPageNumber(pageNumber);
+    public String makeFormattedPageNumber(int pageNumber) {
+        return pageNumberGenerator.makeFormattedPageNumber(pageNumber);
+    }
+
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
     }
 
     /**
      * Public accessor for the ancestor Root.
-     *
      * @return the ancestor Root
      */
-    @Override
     public Root getRoot() {
-        return (Root) getParent();
+        return (Root)this.getParent();
     }
 
     /**
      * Get the value of the <code>force-page-count</code> property.
-     *
      * @return the force-page-count value
      */
     public int getForcePageCount() {
-        return this.forcePageCount;
+        return forcePageCount;
     }
 
     /**
      * Get the value of the <code>initial-page-number</code> property.
-     *
      * @return the initial-page-number property value
      */
     public Numeric getInitialPageNumber() {
-        return this.initialPageNumber;
+        return initialPageNumber;
     }
 
     /**
      * Get the value of the <code>reference-orientation</code> property.
-     *
      * @return the "reference-orientation" property
      * @since XSL 1.1
      */
     public int getReferenceOrientation() {
-        return this.referenceOrientation.getValue();
+        return referenceOrientation.getValue();
     }
 
 }

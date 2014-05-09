@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractDataObject.java 769436 2009-04-28 15:34:47Z vhennebert $ */
+/* $Id: AbstractDataObject.java 1195952 2011-11-01 12:20:21Z phancock $ */
 
 package org.apache.fop.afp.modca;
 
@@ -52,12 +52,10 @@ public abstract class AbstractDataObject extends AbstractNamedAFPObject
     /**
      * Named constructor
      *
-     * @param factory
-     *            the object factory
-     * @param name
-     *            data object name
+     * @param factory the object factory
+     * @param name data object name
      */
-    public AbstractDataObject(final Factory factory, final String name) {
+    public AbstractDataObject(Factory factory, String name) {
         super(name);
         this.factory = factory;
     }
@@ -68,38 +66,33 @@ public abstract class AbstractDataObject extends AbstractNamedAFPObject
      * @param dataObjectInfo
      *            the object area info
      */
-    public void setViewport(final AFPDataObjectInfo dataObjectInfo) {
-        final AFPObjectAreaInfo objectAreaInfo = dataObjectInfo
-                .getObjectAreaInfo();
+    public void setViewport(AFPDataObjectInfo dataObjectInfo) {
+        AFPObjectAreaInfo objectAreaInfo = dataObjectInfo.getObjectAreaInfo();
 
         // object area descriptor
-        final int width = objectAreaInfo.getWidth();
-        final int height = objectAreaInfo.getHeight();
-        final int widthRes = objectAreaInfo.getWidthRes();
-        final int heightRes = objectAreaInfo.getHeightRes();
-        final ObjectAreaDescriptor objectAreaDescriptor = this.factory
-                .createObjectAreaDescriptor(width, height, widthRes, heightRes);
-        getObjectEnvironmentGroup().setObjectAreaDescriptor(
-                objectAreaDescriptor);
+        int width = objectAreaInfo.getWidth();
+        int height = objectAreaInfo.getHeight();
+        int widthRes = objectAreaInfo.getWidthRes();
+        int heightRes = objectAreaInfo.getHeightRes();
+        ObjectAreaDescriptor objectAreaDescriptor = factory.createObjectAreaDescriptor(width,
+                height, widthRes, heightRes);
+        getObjectEnvironmentGroup().setObjectAreaDescriptor(objectAreaDescriptor);
 
         // object area position
-        final AFPResourceInfo resourceInfo = dataObjectInfo.getResourceInfo();
-        final AFPResourceLevel resourceLevel = resourceInfo.getLevel();
+        AFPResourceInfo resourceInfo = dataObjectInfo.getResourceInfo();
+        AFPResourceLevel resourceLevel = resourceInfo.getLevel();
         ObjectAreaPosition objectAreaPosition = null;
-        final int rotation = objectAreaInfo.getRotation();
+        int rotation = objectAreaInfo.getRotation();
         if (resourceLevel.isInline()) {
-            final int x = objectAreaInfo.getX();
-            final int y = objectAreaInfo.getY();
-            objectAreaPosition = this.factory.createObjectAreaPosition(x, y,
-                    rotation);
+            int x = objectAreaInfo.getX();
+            int y = objectAreaInfo.getY();
+            objectAreaPosition = factory.createObjectAreaPosition(x, y, rotation);
         } else {
-            // positional values are specified in the oaOffset of the include
-            // object
-            objectAreaPosition = this.factory.createObjectAreaPosition(0, 0,
-                    rotation);
+            // positional values are specified in the oaOffset of the include object
+            objectAreaPosition = factory.createObjectAreaPosition(0, 0, rotation);
         }
-        objectAreaPosition
-        .setReferenceCoordinateSystem(ObjectAreaPosition.REFCSYS_PAGE_SEGMENT_RELATIVE);
+        objectAreaPosition.setReferenceCoordinateSystem(
+                ObjectAreaPosition.REFCSYS_PAGE_SEGMENT_RELATIVE);
         getObjectEnvironmentGroup().setObjectAreaPosition(objectAreaPosition);
     }
 
@@ -109,48 +102,41 @@ public abstract class AbstractDataObject extends AbstractNamedAFPObject
      * @return the object environment group
      */
     public ObjectEnvironmentGroup getObjectEnvironmentGroup() {
-        if (this.objectEnvironmentGroup == null) {
-            this.objectEnvironmentGroup = this.factory
-                    .createObjectEnvironmentGroup();
+        if (objectEnvironmentGroup == null) {
+            this.objectEnvironmentGroup = factory.createObjectEnvironmentGroup();
         }
-        return this.objectEnvironmentGroup;
+        return objectEnvironmentGroup;
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
+    protected void writeStart(OutputStream os) throws IOException {
         setStarted(true);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
+    protected void writeContent(OutputStream os) throws IOException {
         writeTriplets(os);
-        if (this.objectEnvironmentGroup != null) {
-            this.objectEnvironmentGroup.writeToStream(os);
+        if (objectEnvironmentGroup != null) {
+            objectEnvironmentGroup.writeToStream(os);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setStarted(final boolean started) {
+    public void setStarted(boolean started) {
         this.started = started;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isStarted() {
         return this.started;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setComplete(final boolean complete) {
+    public void setComplete(boolean complete) {
         this.complete = complete;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isComplete() {
         return this.complete;
     }

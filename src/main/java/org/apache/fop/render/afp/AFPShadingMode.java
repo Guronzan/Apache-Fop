@@ -19,6 +19,7 @@
 
 package org.apache.fop.render.afp;
 
+import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 /** Enumeration class for the AFP shading mode. */
@@ -31,15 +32,13 @@ public final class AFPShadingMode implements Serializable {
     /** the dithered mode */
     public static final AFPShadingMode DITHERED = new AFPShadingMode("DITHERED");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     *
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private AFPShadingMode(final String name) {
+    private AFPShadingMode(String name) {
         this.name = name;
     }
 
@@ -50,30 +49,26 @@ public final class AFPShadingMode implements Serializable {
 
     /**
      * Returns the enumeration/singleton object based on its name.
-     *
-     * @param name
-     *            the name of the enumeration value
+     * @param name the name of the enumeration value
      * @return the enumeration object
      */
-    public static AFPShadingMode valueOf(final String name) {
+    public static AFPShadingMode valueOf(String name) {
         if (COLOR.getName().equalsIgnoreCase(name)) {
             return COLOR;
         } else if (DITHERED.getName().equalsIgnoreCase(name)) {
             return DITHERED;
         } else {
-            throw new IllegalArgumentException(
-                    "Illegal value for enumeration: " + name);
+            throw new IllegalArgumentException("Illegal value for enumeration: " + name);
         }
     }
 
-    private Object readResolve() {
+    private Object readResolve() throws ObjectStreamException {
         return valueOf(getName());
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return getClass().getName() + ":" + this.name;
+        return getClass().getName() + ":" + name;
     }
 
 }

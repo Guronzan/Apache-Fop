@@ -15,34 +15,39 @@
  * limitations under the License.
  */
 
-/* $Id: PageSequence.java 758234 2009-03-25 12:08:04Z acumiskey $ */
+/* $Id: PageSequence.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.pagination;
 
-// Java
 import java.util.Map;
+import java.util.Stack;
 
-import lombok.extern.slf4j.Slf4j;
+import org.xml.sax.Locator;
 
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
+import org.apache.fop.datatypes.Numeric;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
+import org.apache.fop.traits.Direction;
+import org.apache.fop.traits.WritingMode;
+import org.apache.fop.traits.WritingModeTraits;
+import org.apache.fop.traits.WritingModeTraitsGetter;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_page-sequence">
  * <code>fo:page-sequence</code></a> object.
  */
-@Slf4j
-public class PageSequence extends AbstractPageSequence {
+public class PageSequence extends AbstractPageSequence implements WritingModeTraitsGetter {
 
-    // The value of properties relevant for fo:page-sequence.
+    // The value of FO traits (refined properties) that apply to fo:page-sequence.
     private String country;
     private String language;
     private String masterReference;
-    // private int writingMode; //XSL 1.1
-    // End of property values
+    private Numeric referenceOrientation;
+    private WritingModeTraits writingModeTraits;
+    // End of trait values
 
     // There doesn't seem to be anything in the spec requiring flows
     // to be in the order given, only that they map to the regions
@@ -53,10 +58,10 @@ public class PageSequence extends AbstractPageSequence {
     private Map<String, FONode> flowMap;
 
     /**
-     * The currentSimplePageMaster is either the page master for the whole page
-     * sequence if master-reference refers to a simple-page-master, or the
-     * simple page master produced by the page sequence master otherwise. The
-     * pageSequenceMaster is null if master-reference refers to a
+     * The currentSimplePageMaster is either the page master for the
+     * whole page sequence if master-reference refers to a simple-page-master,
+     * or the simple page master produced by the page sequence master otherwise.
+     * The pageSequenceMaster is null if master-reference refers to a
      * simple-page-master.
      */
     private SimplePageMaster simplePageMaster;
@@ -73,84 +78,77 @@ public class PageSequence extends AbstractPageSequence {
     private Flow mainFlow = null;
 
     /**
-     * Create a PageSequence instance that is a child of the given
-     * {@link FONode}.
+     * Create a PageSequence instance that is a child of the
+     * given {@link FONode}.
      *
-     * @param parent
-     *            the parent {@link FONode}
+     * @param parent the parent {@link FONode}
      */
-    public PageSequence(final FONode parent) {
+    public PageSequence(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.country = pList.get(PR_COUNTRY).getString();
-        this.language = pList.get(PR_LANGUAGE).getString();
-        this.masterReference = pList.get(PR_MASTER_REFERENCE).getString();
-        // writingMode = pList.getWritingMode();
-
-        if (this.masterReference == null || this.masterReference.equals("")) {
+        country = pList.get(PR_COUNTRY).getString();
+        language = pList.get(PR_LANGUAGE).getString();
+        masterReference = pList.get(PR_MASTER_REFERENCE).getString();
+        referenceOrientation = pList.get(PR_REFERENCE_ORIENTATION).getNumeric();
+        writingModeTraits = new WritingModeTraits
+            ( WritingMode.valueOf(pList.get(PR_WRITING_MODE).getEnum()) );
+        if (masterReference == null || masterReference.equals("")) {
             missingPropertyError("master-reference");
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws ValidationException
-     */
-    @Override
-    protected void startOfNode() throws ValidationException {
+    /** {@inheritDoc} */
+    protected void startOfNode() throws FOPException {
         super.startOfNode();
-        this.flowMap = new java.util.HashMap<>();
+        flowMap = new java.util.HashMap<String, FONode>();
 
-        this.simplePageMaster = getRoot().getLayoutMasterSet()
-                .getSimplePageMaster(this.masterReference);
-        if (this.simplePageMaster == null) {
-            this.pageSequenceMaster = getRoot().getLayoutMasterSet()
-                    .getPageSequenceMaster(this.masterReference);
-            if (this.pageSequenceMaster == null) {
+        this.simplePageMaster
+            = getRoot().getLayoutMasterSet().getSimplePageMaster(masterReference);
+        if (simplePageMaster == null) {
+            this.pageSequenceMaster
+                = getRoot().getLayoutMasterSet().getPageSequenceMaster(masterReference);
+            if (pageSequenceMaster == null) {
                 getFOValidationEventProducer().masterNotFound(this, getName(),
-                        this.masterReference, getLocator());
+                        masterReference, getLocator());
             }
         }
         getFOEventHandler().startPageSequence(this);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (this.mainFlow == null) {
-            missingChildElementError("(title?,static-content*,flow)");
+        if (mainFlow == null) {
+           missingChildElementError("(title?,static-content*,flow)");
         }
 
         getFOEventHandler().endPageSequence(this);
     }
 
     /**
-     * {@inheritDoc} XSL Content Model: (title?,static-content*,flow)
+     * {@inheritDoc}
+        XSL Content Model: (title?,static-content*,flow)
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if ("title".equals(localName)) {
-                if (this.titleFO != null) {
+                if (titleFO != null) {
                     tooManyNodesError(loc, "fo:title");
-                } else if (!this.flowMap.isEmpty()) {
+                } else if (!flowMap.isEmpty()) {
                     nodesOutOfOrderError(loc, "fo:title", "fo:static-content");
-                } else if (this.mainFlow != null) {
+                } else if (mainFlow != null) {
                     nodesOutOfOrderError(loc, "fo:title", "fo:flow");
                 }
             } else if ("static-content".equals(localName)) {
-                if (this.mainFlow != null) {
+                if (mainFlow != null) {
                     nodesOutOfOrderError(loc, "fo:static-content", "fo:flow");
                 }
             } else if ("flow".equals(localName)) {
-                if (this.mainFlow != null) {
+                if (mainFlow != null) {
                     tooManyNodesError(loc, "fo:flow");
                 }
             } else {
@@ -161,25 +159,23 @@ public class PageSequence extends AbstractPageSequence {
 
     /**
      * {@inheritDoc}
-     *
-     * @todo see if addChildNode() should also be called for fo's other than
-     *       fo:flow.
+     * TODO see if addChildNode() should also be called for fo's other than
+     *  fo:flow.
      */
-    @Override
-    public void addChildNode(final FONode child) throws FOPException {
-        final int childId = child.getNameId();
+    public void addChildNode(FONode child) throws FOPException {
+        int childId = child.getNameId();
 
         switch (childId) {
         case FO_TITLE:
-            this.titleFO = (Title) child;
+            this.titleFO = (Title)child;
             break;
         case FO_FLOW:
-            this.mainFlow = (Flow) child;
-            addFlow(this.mainFlow);
+            this.mainFlow = (Flow)child;
+            addFlow(mainFlow);
             break;
         case FO_STATIC_CONTENT:
-            addFlow((StaticContent) child);
-            this.flowMap.put(((StaticContent) child).getFlowName(), child);
+            addFlow((StaticContent)child);
+            flowMap.put(((Flow)child).getFlowName(), (Flow)child);
             break;
         default:
             super.addChildNode(child);
@@ -187,75 +183,67 @@ public class PageSequence extends AbstractPageSequence {
     }
 
     /**
-     * Add a flow or static content, mapped by its flow-name. The flow-name is
-     * used to associate the flow with a region on a page, based on the
-     * region-names given to the regions in the page-master used to generate
-     * that page.
-     *
-     * @param flow
-     *            the {@link Flow} instance to be added
-     * @throws org.apache.fop.fo.ValidationException
-     *             if the fo:flow maps to an invalid page-region
+     * Add a flow or static content, mapped by its flow-name.
+     * The flow-name is used to associate the flow with a region on a page,
+     * based on the region-names given to the regions in the page-master
+     * used to generate that page.
+     * @param flow  the {@link Flow} instance to be added
+     * @throws org.apache.fop.fo.ValidationException if the fo:flow maps
+     * to an invalid page-region
      */
-    private void addFlow(final Flow flow) throws ValidationException {
-        final String flowName = flow.getFlowName();
+     private void addFlow(Flow flow) throws ValidationException {
+        String flowName = flow.getFlowName();
 
         if (hasFlowName(flowName)) {
-            getFOValidationEventProducer().duplicateFlowNameInPageSequence(
-                    this, flow.getName(), flowName, flow.getLocator());
+            getFOValidationEventProducer().duplicateFlowNameInPageSequence(this, flow.getName(),
+                    flowName, flow.getLocator());
         }
 
         if (!getRoot().getLayoutMasterSet().regionNameExists(flowName)
-                && !flowName.equals("xsl-before-float-separator")
-                && !flowName.equals("xsl-footnote-separator")) {
-            getFOValidationEventProducer().flowNameNotMapped(this,
-                    flow.getName(), flowName, flow.getLocator());
+            && !flowName.equals("xsl-before-float-separator")
+            && !flowName.equals("xsl-footnote-separator")) {
+            getFOValidationEventProducer().flowNameNotMapped(this, flow.getName(),
+                    flowName, flow.getLocator());
         }
     }
 
     /**
-     * Get the static content FO node from the flow map. This gets the static
-     * content flow for the given flow name.
+     * Get the static content FO node from the flow map.
+     * This gets the static content flow for the given flow name.
      *
-     * @param name
-     *            the flow name to find
+     * @param name the flow name to find
      * @return the static content FO node
      */
-    public StaticContent getStaticContent(final String name) {
-        return (StaticContent) this.flowMap.get(name);
+    public StaticContent getStaticContent(String name) {
+        return (StaticContent) flowMap.get(name);
     }
 
     /**
      * Accessor method for the fo:title associated with this fo:page-sequence
-     *
      * @return titleFO for this object
      */
     public Title getTitleFO() {
-        return this.titleFO;
+        return titleFO;
     }
 
     /**
      * Public accessor for getting the MainFlow to which this PageSequence is
      * attached.
-     *
      * @return the MainFlow object to which this PageSequence is attached.
      */
     public Flow getMainFlow() {
-        return this.mainFlow;
+        return mainFlow;
     }
 
     /**
-     * Determine if this PageSequence already has a flow with the given
-     * flow-name Used for validation of incoming fo:flow or fo:static-content
-     * objects
-     *
-     * @param flowName
-     *            The flow-name to search for
+     * Determine if this PageSequence already has a flow with the given flow-name
+     * Used for validation of incoming fo:flow or fo:static-content objects
+     * @param flowName The flow-name to search for
      * @return true if flow-name already defined within this page sequence,
-     *         false otherwise
+     *    false otherwise
      */
-    public boolean hasFlowName(final String flowName) {
-        return this.flowMap.containsKey(flowName);
+    public boolean hasFlowName(String flowName) {
+        return flowMap.containsKey(flowName);
     }
 
     /** @return the flow map for this page-sequence */
@@ -264,116 +252,190 @@ public class PageSequence extends AbstractPageSequence {
     }
 
     /**
-     * Public accessor for determining the next page master to use within this
-     * page sequence.
-     *
-     * @param page
-     *            the page number of the page to be created
-     * @param isFirstPage
-     *            indicator whether this page is the first page of the page
-     *            sequence
-     * @param isLastPage
-     *            indicator whether this page is the last page of the page
-     *            sequence
-     * @param isBlank
-     *            indicator whether the page will be blank
+     * Public accessor for determining the next page master to use within this page sequence.
+     * @param page the page number of the page to be created
+     * @param isFirstPage indicator whether this page is the first page of the
+     *      page sequence
+     * @param isLastPage indicator whether this page is the last page of the
+     *      page sequence
+     * @param isBlank indicator whether the page will be blank
      * @return the SimplePageMaster to use for this page
-     * @throws PageProductionException
-     *             if there's a problem determining the page master
+     * @throws PageProductionException if there's a problem determining the page master
      */
-    public SimplePageMaster getNextSimplePageMaster(final int page,
-            final boolean isFirstPage, final boolean isLastPage,
-            final boolean isBlank) throws PageProductionException {
+    public SimplePageMaster getNextSimplePageMaster
+        (int page, boolean isFirstPage, boolean isLastPage, boolean isBlank)
+        throws PageProductionException {
 
-        if (this.pageSequenceMaster == null) {
-            return this.simplePageMaster;
+        if (pageSequenceMaster == null) {
+            return simplePageMaster;
         }
-        final boolean isOddPage = page % 2 == 1;
+        boolean isOddPage = ((page % 2) == 1);
         if (log.isDebugEnabled()) {
-            log.debug("getNextSimplePageMaster(page=" + page + " isOdd="
-                    + isOddPage + " isFirst=" + isFirstPage + " isLast="
-                    + isLastPage + " isBlank=" + isBlank + ")");
+            log.debug("getNextSimplePageMaster(page=" + page
+                    + " isOdd=" + isOddPage
+                    + " isFirst=" + isFirstPage
+                    + " isLast=" + isLastPage
+                    + " isBlank=" + isBlank + ")");
         }
-        return this.pageSequenceMaster.getNextSimplePageMaster(isOddPage,
-                isFirstPage, isLastPage, isBlank);
+        return pageSequenceMaster.getNextSimplePageMaster(isOddPage,
+            isFirstPage, isLastPage, isBlank, getMainFlow().getFlowName());
     }
 
     /**
-     * Used to set the "cursor position" for the page masters to the previous
-     * item.
-     *
-     * @return true if there is a previous item, false if the current one was
-     *         the first one.
+     * Used to set the "cursor position" for the page masters to the previous item.
+     * @return true if there is a previous item, false if the current one was the first one.
      */
     public boolean goToPreviousSimplePageMaster() {
-        return this.pageSequenceMaster == null
-                || this.pageSequenceMaster.goToPreviousSimplePageMaster();
+        return pageSequenceMaster == null || pageSequenceMaster.goToPreviousSimplePageMaster();
     }
 
-    /**
-     * @return true if the page-sequence has a page-master with
-     *         page-position="last"
-     */
+    /** @return true if the page-sequence has a page-master with page-position="last" */
     public boolean hasPagePositionLast() {
-        return this.pageSequenceMaster != null
-                && this.pageSequenceMaster.hasPagePositionLast();
+        return pageSequenceMaster != null && pageSequenceMaster.hasPagePositionLast();
     }
 
-    /**
-     * @return true if the page-sequence has a page-master with
-     *         page-position="only"
-     */
+    /** @return true if the page-sequence has a page-master with page-position="only" */
     public boolean hasPagePositionOnly() {
-        return this.pageSequenceMaster != null
-                && this.pageSequenceMaster.hasPagePositionOnly();
+        return pageSequenceMaster != null && pageSequenceMaster.hasPagePositionOnly();
     }
 
     /**
-     * Get the value of the <code>master-reference</code> property.
-     *
-     * @return the "master-reference" property
+     * Get the value of the <code>master-reference</code> trait.
+     * @return the "master-reference" trait
      */
     public String getMasterReference() {
-        return this.masterReference;
+        return masterReference;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "page-sequence";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_PAGE_SEQUENCE}
      */
-    @Override
     public int getNameId() {
         return FO_PAGE_SEQUENCE;
     }
 
     /**
-     * Get the value of the <code>country</code> property.
-     *
-     * @return the country property value
+     * Get the value of the <code>country</code> trait.
+     * @return the country trait value
      */
     public String getCountry() {
         return this.country;
     }
 
     /**
-     * Get the value of the <code>language</code> property.
-     *
-     * @return the language property value
+     * Get the value of the <code>language</code> trait.
+     * @return the language trait value
      */
     public String getLanguage() {
         return this.language;
     }
 
     /**
-     * Releases a page-sequence's children after the page-sequence has been
-     * fully processed.
+     * Get the value of the <code>reference-orientation</code> trait.
+     * @return the reference orientation trait value
+     */
+    public int getReferenceOrientation() {
+        if ( referenceOrientation != null ) {
+            return referenceOrientation.getValue();
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Direction getInlineProgressionDirection() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getInlineProgressionDirection();
+        } else {
+            return Direction.LR;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Direction getBlockProgressionDirection() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getBlockProgressionDirection();
+        } else {
+            return Direction.TB;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Direction getColumnProgressionDirection() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getColumnProgressionDirection();
+        } else {
+            return Direction.LR;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Direction getRowProgressionDirection() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getRowProgressionDirection();
+        } else {
+            return Direction.TB;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Direction getShiftDirection() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getShiftDirection();
+        } else {
+            return Direction.TB;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public WritingMode getWritingMode() {
+        if ( writingModeTraits != null ) {
+            return writingModeTraits.getWritingMode();
+        } else {
+            return WritingMode.LR_TB;
+        }
+    }
+
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        // collect ranges from static content flows
+        Map<String, FONode> flows = getFlowMap();
+        if ( flows != null ) {
+            for ( FONode fn : flows.values() ) {
+                if ( fn instanceof StaticContent ) {
+                    ranges = ( (StaticContent) fn ).collectDelimitedTextRanges ( ranges );
+                }
+            }
+        }
+        // collect ranges in main flow
+        Flow main = getMainFlow();
+        if ( main != null ) {
+            ranges = main.collectDelimitedTextRanges ( ranges );
+        }
+        return ranges;
+    }
+
+    /**
+     * Releases a page-sequence's children after the page-sequence has been fully processed.
      */
     public void releasePageSequence() {
         this.mainFlow = null;

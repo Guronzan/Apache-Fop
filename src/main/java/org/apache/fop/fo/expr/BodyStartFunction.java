@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BodyStartFunction.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BodyStartFunction.java 1328964 2012-04-22 20:09:49Z gadams $ */
 
 package org.apache.fop.fo.expr;
 
@@ -31,42 +31,26 @@ import org.apache.fop.fo.properties.Property;
  */
 public class BodyStartFunction extends FunctionBase {
 
-    /**
-     * @return 0 (there are no arguments for body-start)
-     */
-    @Override
-    public int nbArgs() {
+    /** {@inheritDoc} */
+    public int getRequiredArgsCount() {
         return 0;
     }
 
-    /**
-     * @param args
-     *            array of arguments (none are used, but this is required by the
-     *            Function interface)
-     * @param pInfo
-     *            PropertyInfo object to be evaluated
-     * @return numeric object containing the calculated body-start value
-     * @throws PropertyException
-     *             if called from outside of an fo:list-item
-     */
-    @Override
-    public Property eval(final Property[] args, final PropertyInfo pInfo)
-            throws PropertyException {
-        final Numeric distance = pInfo.getPropertyList()
-                .get(Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS)
-                .getNumeric();
+    /** {@inheritDoc} */
+    public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
+        Numeric distance
+            = pInfo.getPropertyList()
+              .get(Constants.PR_PROVISIONAL_DISTANCE_BETWEEN_STARTS).getNumeric();
 
         PropertyList pList = pInfo.getPropertyList();
         while (pList != null && !(pList.getFObj() instanceof ListItem)) {
             pList = pList.getParentPropertyList();
         }
         if (pList == null) {
-            throw new PropertyException(
-                    "body-start() called from outside an fo:list-item");
+            throw new PropertyException("body-start() called from outside an fo:list-item");
         }
 
-        final Numeric startIndent = pList.get(Constants.PR_START_INDENT)
-                .getNumeric();
+        Numeric startIndent = pList.get(Constants.PR_START_INDENT).getNumeric();
 
         return (Property) NumericOp.addition(distance, startIndent);
     }

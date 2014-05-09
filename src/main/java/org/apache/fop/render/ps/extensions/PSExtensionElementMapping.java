@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PSExtensionElementMapping.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: PSExtensionElementMapping.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.ps.extensions;
 
@@ -23,8 +23,7 @@ import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
 
 /**
- * This class provides the element mapping for the PostScript-specific
- * extensions.
+ * This class provides the element mapping for the PostScript-specific extensions.
  */
 public class PSExtensionElementMapping extends ElementMapping {
 
@@ -37,52 +36,50 @@ public class PSExtensionElementMapping extends ElementMapping {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void initialize() {
-        if (this.foObjs == null) {
-            this.foObjs = new java.util.HashMap();
-            this.foObjs.put(PSSetupCodeElement.ELEMENT, new PSSetupCodeMaker());
-            this.foObjs.put(PSPageSetupCodeElement.ELEMENT,
-                    new PSPageSetupCodeMaker());
-            this.foObjs.put(PSSetPageDeviceElement.ELEMENT,
-                    new PSSetPageDeviceMaker());
-            this.foObjs
-                    .put(PSCommentBefore.ELEMENT, new PSCommentBeforeMaker());
-            this.foObjs.put(PSCommentAfter.ELEMENT, new PSCommentAfterMaker());
+        if (foObjs == null) {
+            foObjs = new java.util.HashMap<String, Maker>();
+            foObjs.put(PSSetupCodeElement.ELEMENT, new PSSetupCodeMaker());
+            foObjs.put(PSPageSetupCodeElement.ELEMENT, new PSPageSetupCodeMaker());
+            foObjs.put(PSPageTrailerCodeBefore.ELEMENT, new PSPageTrailerCodeBeforeMaker());
+            foObjs.put(PSSetPageDeviceElement.ELEMENT, new PSSetPageDeviceMaker());
+            foObjs.put(PSCommentBefore.ELEMENT, new PSCommentBeforeMaker());
+            foObjs.put(PSCommentAfter.ELEMENT, new PSCommentAfterMaker());
         }
     }
 
     static class PSSetupCodeMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new PSSetupCodeElement(parent);
         }
     }
 
     static class PSPageSetupCodeMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new PSPageSetupCodeElement(parent);
         }
     }
 
+    static class PSPageTrailerCodeBeforeMaker extends ElementMapping.Maker {
+        public FONode make(FONode parent) {
+            return new PSPageTrailerCodeBeforeElement(parent);
+        }
+    }
+
     static class PSSetPageDeviceMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new PSSetPageDeviceElement(parent);
         }
     }
 
     static class PSCommentBeforeMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new PSCommentBeforeElement(parent);
         }
     }
 
     static class PSCommentAfterMaker extends ElementMapping.Maker {
-        @Override
-        public FONode make(final FONode parent) {
+        public FONode make(FONode parent) {
             return new PSCommentAfterElement(parent);
         }
     }

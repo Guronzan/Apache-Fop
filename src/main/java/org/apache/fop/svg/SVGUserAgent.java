@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: SVGUserAgent.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: SVGUserAgent.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.svg;
 
@@ -28,37 +28,29 @@ import org.apache.fop.apps.FOUserAgent;
  */
 public class SVGUserAgent extends SimpleSVGUserAgent {
 
-    private final SVGEventProducer eventProducer;
+    private SVGEventProducer eventProducer;
     private Exception lastException;
 
     /**
      * Creates a new SVGUserAgent.
-     * 
-     * @param foUserAgent
-     *            the FO user agent to associate with this SVG user agent
-     * @param at
-     *            the current transform
+     * @param foUserAgent the FO user agent to associate with this SVG user agent
+     * @param at the current transform
      */
-    public SVGUserAgent(final FOUserAgent foUserAgent, final AffineTransform at) {
+    public SVGUserAgent(FOUserAgent foUserAgent, AffineTransform at) {
         super(foUserAgent.getSourcePixelUnitToMillimeter(), at);
-        this.eventProducer = SVGEventProducer.Provider.get(foUserAgent
-                .getEventBroadcaster());
+        this.eventProducer = SVGEventProducer.Provider.get(foUserAgent.getEventBroadcaster());
     }
 
     /**
      * Creates a new SVGUserAgent.
-     * 
-     * @param foUserAgent
-     *            the FO user agent to associate with this SVG user agent
+     * @param foUserAgent the FO user agent to associate with this SVG user agent
      */
-    public SVGUserAgent(final FOUserAgent foUserAgent) {
+    public SVGUserAgent(FOUserAgent foUserAgent) {
         this(foUserAgent, new AffineTransform());
     }
 
     /**
-     * Returns the last exception sent to the {@link #displayError(Exception)}
-     * method.
-     * 
+     * Returns the last exception sent to the {@link #displayError(Exception)} method.
      * @return the last exception or null if no exception occurred
      */
     public Exception getLastException() {
@@ -67,47 +59,35 @@ public class SVGUserAgent extends SimpleSVGUserAgent {
 
     /**
      * Displays an error message.
-     * 
-     * @param message
-     *            the message to display
+     * @param message the message to display
      */
-    @Override
-    public void displayError(final String message) {
+    public void displayError(String message) {
         this.eventProducer.error(this, message, null);
     }
 
     /**
      * Displays an error resulting from the specified Exception.
-     * 
-     * @param ex
-     *            the exception to display
+     * @param ex the exception to display
      */
-    @Override
-    public void displayError(final Exception ex) {
+    public void displayError(Exception ex) {
         this.lastException = ex;
         this.eventProducer.error(this, ex.getLocalizedMessage(), ex);
     }
 
     /**
-     * Displays a message in the User Agent interface. The given message is
-     * typically displayed in a status bar.
-     * 
-     * @param message
-     *            the message to display
+     * Displays a message in the User Agent interface.
+     * The given message is typically displayed in a status bar.
+     * @param message the message to display
      */
-    @Override
-    public void displayMessage(final String message) {
+    public void displayMessage(String message) {
         this.eventProducer.info(this, message);
     }
 
     /**
      * Shows an alert dialog box.
-     * 
-     * @param message
-     *            the message to display
+     * @param message the message to display
      */
-    @Override
-    public void showAlert(final String message) {
+    public void showAlert(String message) {
         this.eventProducer.alert(this, message);
     }
 

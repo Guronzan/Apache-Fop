@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PCLSVGHandler.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PCLSVGHandler.java 989178 2010-08-25 15:43:55Z vhennebert $ */
 
 package org.apache.fop.render.pcl;
 
@@ -25,27 +25,23 @@ import org.apache.fop.render.Renderer;
 import org.apache.fop.render.RendererContext;
 
 /**
- * PCL XML handler for SVG. Uses Apache Batik for SVG processing. This handler
- * handles XML for foreign objects when rendering to HP GL/2. It renders SVG to
- * HP GL/2 using the PCLGraphics2D.
- * 
- * @see PCLGraphics2DAdapter
+ * PCL XML handler for SVG. Uses Apache Batik for SVG processing.
+ * This handler handles XML for foreign objects when rendering to HP GL/2.
+ * It renders SVG to HP GL/2 using the PCLGraphics2D.
  */
 public class PCLSVGHandler extends AbstractGenericSVGHandler {
 
     /** {@inheritDoc} */
-    @Override
-    public boolean supportsRenderer(final Renderer renderer) {
-        return renderer instanceof PCLRenderer;
+    public boolean supportsRenderer(Renderer renderer) {
+        return false;
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void updateRendererContext(final RendererContext context) {
-        // Work around a problem in Batik: Gradients cannot be done in
-        // ColorSpace.CS_GRAY
+    protected void updateRendererContext(RendererContext context) {
+        //Work around a problem in Batik: Gradients cannot be done in ColorSpace.CS_GRAY
         context.setProperty(PCLRendererContextConstants.PCL_COLOR_CANVAS,
                 Boolean.TRUE);
     }
 
 }
+

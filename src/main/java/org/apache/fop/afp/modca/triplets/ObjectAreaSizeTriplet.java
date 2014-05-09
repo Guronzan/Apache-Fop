@@ -37,15 +37,12 @@ public class ObjectAreaSizeTriplet extends AbstractTriplet {
     /**
      * Main constructor
      *
-     * @param x
-     *            the object area extent for the X axis
-     * @param y
-     *            the object area extent for the Y axis
-     * @param type
-     *            the object area size type
+     * @param x the object area extent for the X axis
+     * @param y the object area extent for the Y axis
+     * @param type the object area size type
      */
-    public ObjectAreaSizeTriplet(final int x, final int y, final byte type) {
-        super(Triplet.OBJECT_AREA_SIZE);
+    public ObjectAreaSizeTriplet(int x, int y, byte type) {
+        super(AbstractTriplet.OBJECT_AREA_SIZE);
         this.x = x;
         this.y = y;
         this.type = type;
@@ -54,34 +51,30 @@ public class ObjectAreaSizeTriplet extends AbstractTriplet {
     /**
      * Main constructor
      *
-     * @param x
-     *            the object area extent for the X axis
-     * @param y
-     *            the object area extent for the Y axis
+     * @param x the object area extent for the X axis
+     * @param y the object area extent for the Y axis
      */
-    public ObjectAreaSizeTriplet(final int x, final int y) {
-        this(x, y, (byte) 0x02);
+    public ObjectAreaSizeTriplet(int x, int y) {
+        this(x, y, (byte)0x02);
     }
 
     /** {@inheritDoc} */
-    @Override
     public int getDataLength() {
         return 9;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = getData();
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = getData();
 
-        data[2] = this.type; // SizeType
+        data[2] = type; // SizeType
 
-        final byte[] xOASize = BinaryUtils.convert(this.x, 3);
+        byte[] xOASize = BinaryUtils.convert(x, 3);
         data[3] = xOASize[0]; // XoaSize - Object area extent for X axis
         data[4] = xOASize[1];
         data[5] = xOASize[2];
 
-        final byte[] yOASize = BinaryUtils.convert(this.y, 3);
+        byte[] yOASize = BinaryUtils.convert(y, 3);
         data[6] = yOASize[0]; // YoaSize - Object area extent for Y axis
         data[7] = yOASize[1];
         data[8] = yOASize[2];

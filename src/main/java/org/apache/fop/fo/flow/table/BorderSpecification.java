@@ -24,36 +24,32 @@ import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground.BorderInfo;
 
 /**
- * A border's informations, along with the FO element which declared it. Used
- * for border resolution in the collapsing-border model.
+ * A border's informations, along with the FO element which declared it. Used for border
+ * resolution in the collapsing-border model.
  */
-public/* TODO */class BorderSpecification {
+public/*TODO*/ class BorderSpecification {
 
     private static BorderSpecification defaultBorder;
 
-    private final BorderInfo borderInfo;
+    private BorderInfo borderInfo;
 
-    private final int holder;
+    private int holder;
 
     /**
      * Creates a new border specification.
      *
-     * @param borderInfo
-     *            the border's informations
-     * @param holder
-     *            the FO element declaring this border
+     * @param borderInfo the border's informations
+     * @param holder the FO element declaring this border
      */
-    public/* TODO */BorderSpecification(final BorderInfo borderInfo,
-            final int holder) {
+    public/*TODO*/ BorderSpecification(BorderInfo borderInfo, int holder) {
         this.borderInfo = borderInfo;
         this.holder = holder;
     }
 
     static synchronized BorderSpecification getDefaultBorder() {
         if (defaultBorder == null) {
-            defaultBorder = new BorderSpecification(
-                    CommonBorderPaddingBackground.getDefaultBorderInfo(),
-                    Constants.FO_TABLE_CELL);
+            defaultBorder = new BorderSpecification(CommonBorderPaddingBackground
+                    .getDefaultBorderInfo(), Constants.FO_TABLE_CELL);
         }
         return defaultBorder;
     }
@@ -63,53 +59,35 @@ public/* TODO */class BorderSpecification {
      *
      * @return this border's informations
      */
-    public/* TODO */BorderInfo getBorderInfo() {
-        return this.borderInfo;
+    public/*TODO*/ BorderInfo getBorderInfo() {
+        return borderInfo;
     }
 
     /**
      * Returns the FO element declaring this border.
      *
-     * @return one of {@link Constants#FO_TABLE},
-     *         {@link Constants#FO_TABLE_COLUMN},
-     *         {@link Constants#FO_TABLE_HEADER},
-     *         {@link Constants#FO_TABLE_FOOTER},
-     *         {@link Constants#FO_TABLE_BODY}, {@link Constants#FO_TABLE_ROW},
-     *         {@link Constants#FO_TABLE_CELL}
+     * @return one of {@link Constants#FO_TABLE}, {@link Constants#FO_TABLE_COLUMN},
+     * {@link Constants#FO_TABLE_HEADER}, {@link Constants#FO_TABLE_FOOTER},
+     * {@link Constants#FO_TABLE_BODY}, {@link Constants#FO_TABLE_ROW},
+     * {@link Constants#FO_TABLE_CELL}
      */
-    public/* TODO */int getHolder() {
-        return this.holder;
+    public/*TODO*/ int getHolder() {
+        return holder;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         String holderName = "";
-        switch (this.holder) {
-        case Constants.FO_TABLE:
-            holderName = "table";
-            break;
-        case Constants.FO_TABLE_COLUMN:
-            holderName = "table-column";
-            break;
-        case Constants.FO_TABLE_HEADER:
-            holderName = "table-header";
-            break;
-        case Constants.FO_TABLE_FOOTER:
-            holderName = "table-footer";
-            break;
-        case Constants.FO_TABLE_BODY:
-            holderName = "table-body";
-            break;
-        case Constants.FO_TABLE_ROW:
-            holderName = "table-row";
-            break;
-        case Constants.FO_TABLE_CELL:
-            holderName = "table-cell";
-            break;
-        default:
-            assert false;
+        switch (holder) {
+        case Constants.FO_TABLE: holderName = "table"; break;
+        case Constants.FO_TABLE_COLUMN: holderName = "table-column"; break;
+        case Constants.FO_TABLE_HEADER: holderName = "table-header"; break;
+        case Constants.FO_TABLE_FOOTER: holderName = "table-footer"; break;
+        case Constants.FO_TABLE_BODY: holderName = "table-body"; break;
+        case Constants.FO_TABLE_ROW: holderName = "table-row"; break;
+        case Constants.FO_TABLE_CELL: holderName = "table-cell"; break;
+        default: assert false;
         }
-        return "{" + this.borderInfo + ", " + holderName + "}";
+        return "{" + borderInfo + ", " + holderName + "}";
     }
 }

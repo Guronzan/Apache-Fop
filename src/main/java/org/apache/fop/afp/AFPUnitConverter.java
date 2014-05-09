@@ -21,6 +21,8 @@ package org.apache.fop.afp;
 
 import java.awt.geom.AffineTransform;
 
+
+
 /**
  * AFP Unit converter
  */
@@ -32,96 +34,82 @@ public class AFPUnitConverter {
     /**
      * Unit converter
      *
-     * @param paintingState
-     *            the AFP painting state
+     * @param paintingState the AFP painting state
      */
-    public AFPUnitConverter(final AFPPaintingState paintingState) {
+    public AFPUnitConverter(AFPPaintingState paintingState) {
         this.paintingState = paintingState;
     }
 
     /**
      * Converts millipoints to units
      *
-     * @param srcPts
-     *            source points
-     * @param dstPts
-     *            destination points
+     * @param srcPts source points
+     * @param dstPts destination points
      * @return transformed points
      */
-    public int[] mpts2units(final float[] srcPts, final float[] dstPts) {
+    public int[] mpts2units(float[] srcPts, float[] dstPts) {
         return transformPoints(srcPts, dstPts, true);
     }
 
     /**
      * Converts points to units
      *
-     * @param srcPts
-     *            source points
-     * @param dstPts
-     *            destination points
+     * @param srcPts source points
+     * @param dstPts destination points
      * @return transformed points
      */
-    public int[] pts2units(final float[] srcPts, final float[] dstPts) {
+    public int[] pts2units(float[] srcPts, float[] dstPts) {
         return transformPoints(srcPts, dstPts, false);
     }
 
     /**
      * Converts millipoints to units
      *
-     * @param srcPts
-     *            source points
+     * @param srcPts source points
      * @return transformed points
      */
-    public int[] mpts2units(final float[] srcPts) {
+    public int[] mpts2units(float[] srcPts) {
         return transformPoints(srcPts, null, true);
     }
 
     /**
      * Converts points to units
      *
-     * @param srcPts
-     *            source points
+     * @param srcPts source points
      * @return transformed points
      */
-    public int[] pts2units(final float[] srcPts) {
+    public int[] pts2units(float[] srcPts) {
         return transformPoints(srcPts, null, false);
     }
 
     /**
      * Converts point to unit
      *
-     * @param pt
-     *            point
+     * @param pt point
      * @return transformed point
      */
-    public float pt2units(final float pt) {
-        return pt
-                / ((float) AFPConstants.DPI_72 / this.paintingState
-                        .getResolution());
+    public float pt2units(float pt) {
+        return pt / ((float)AFPConstants.DPI_72 / paintingState.getResolution());
     }
 
     /**
      * Converts millipoint to unit
      *
-     * @param mpt
-     *            millipoint
+     * @param mpt millipoint
      * @return transformed point
      */
-    public float mpt2units(final float mpt) {
-        return mpt
-                / ((float) AFPConstants.DPI_72_MPTS / this.paintingState
-                        .getResolution());
+    public float mpt2units(float mpt) {
+        return mpt / ((float)AFPConstants.DPI_72_MPTS / paintingState.getResolution());
     }
 
-    private int[] transformPoints(final float[] srcPts, float[] dstPts,
-            final boolean milli) {
+    private int[] transformPoints(float[] srcPts, float[] dstPts, boolean milli) {
         if (dstPts == null) {
             dstPts = new float[srcPts.length];
         }
-        final AffineTransform at = this.paintingState.getData().getTransform();
+        AffineTransform at = paintingState.getData().getTransform();
         at.transform(srcPts, 0, dstPts, 0, srcPts.length / 2);
-        final int[] coords = new int[srcPts.length];
-        for (int i = 0; i < srcPts.length; ++i) {
+        int[] coords = new int[srcPts.length];
+        for (int i = 0; i < srcPts.length; i++) {
             if (!milli) {
                 dstPts[i] *= 1000;
             }

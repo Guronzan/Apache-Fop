@@ -19,8 +19,9 @@
 
 package org.apache.fop.render.pcl;
 
-import org.apache.fop.fo.extensions.ExtensionElementMapping;
 import org.apache.xmlgraphics.util.QName;
+
+import org.apache.fop.fo.extensions.ExtensionElementMapping;
 
 /**
  * Constants used for PCL output.
@@ -28,18 +29,12 @@ import org.apache.xmlgraphics.util.QName;
 interface PCLConstants {
 
     /** Source transparency mode */
-    QName SRC_TRANSPARENCY = new QName(ExtensionElementMapping.URI, null,
-            "source-transparency");
+    QName SRC_TRANSPARENCY = new QName(ExtensionElementMapping.URI, null, "source-transparency");
 
     /** Disable clipping */
-    Object DISABLE_CLIPPING = new QName(ExtensionElementMapping.URI, null,
-            "disable-clipping");
+    Object DISABLE_CLIPPING = new QName(ExtensionElementMapping.URI, null, "disable-clipping");
 
-    /**
-     * Enables/Disables a color canvas for bitmap production (required for SVG,
-     * for example)
-     */
-    Object COLOR_CANVAS = new QName(ExtensionElementMapping.URI, null,
-            "color-canvas");
+    /** Enables/Disables a color canvas for bitmap production (required for SVG, for example) */
+    Object COLOR_CANVAS = new QName(ExtensionElementMapping.URI, null, "color-canvas");
 
 }

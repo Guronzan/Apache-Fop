@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-/* $Id: Leader.java 749012 2009-03-01 12:25:29Z jeremias $ */
+/* $Id: Leader.java 1310717 2012-04-07 09:24:11Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
+import java.util.Stack;
+
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.properties.LengthRangeProperty;
+import org.apache.fop.util.CharUtilities;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_leader">
- * <code>fo:leader</code></a> object. The main property of
- * <code>fo:leader</code> is leader-pattern. The following patterns are treated:
- * rule, space, dots and use-content.
- *
- * @todo implement validateChildNode()
+ * <code>fo:leader</code></a> object.
+ * The main property of <code>fo:leader</code> is leader-pattern.
+ * The following patterns are treated: rule, space, dots and use-content.
  */
 public class Leader extends InlineLevel {
     // The value of properties relevant for fo:leader.
@@ -46,47 +51,46 @@ public class Leader extends InlineLevel {
     private Length leaderPatternWidth;
     private int ruleStyle;
     private Length ruleThickness;
-
     // private ToBeImplementedProperty letterSpacing;
     // private ToBeImplementedProperty textShadow;
     // Unused but valid items, commented out for performance:
-    // private CommonRelativePosition commonRelativePosition;
-    // private Length textDepth;
-    // private Length textAltitude;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private Length textDepth;
+    //     private Length textAltitude;
     // End of property values
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public Leader(final FONode parent) {
+    public Leader(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
-        this.leaderAlignment = pList.get(PR_LEADER_ALIGNMENT).getEnum();
-        this.leaderLength = pList.get(PR_LEADER_LENGTH).getLengthRange();
-        this.leaderPattern = pList.get(PR_LEADER_PATTERN).getEnum();
-        this.leaderPatternWidth = pList.get(PR_LEADER_PATTERN_WIDTH)
-                .getLength();
-        this.ruleThickness = pList.get(PR_RULE_THICKNESS).getLength();
-        switch (this.leaderPattern) {
+        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        leaderAlignment = pList.get(PR_LEADER_ALIGNMENT).getEnum();
+        leaderLength = pList.get(PR_LEADER_LENGTH).getLengthRange();
+        leaderPattern = pList.get(PR_LEADER_PATTERN).getEnum();
+        leaderPatternWidth = pList.get(PR_LEADER_PATTERN_WIDTH).getLength();
+        // use default rule thickness as a default
+        ruleThickness = getPropertyMakerFor(PR_RULE_THICKNESS).make(pList).getLength();
+        switch(leaderPattern) {
         case EN_SPACE:
             // use Space
             break;
         case EN_RULE:
             // the following properties only apply
             // for leader-pattern = "rule"
-            this.ruleStyle = pList.get(PR_RULE_STYLE).getEnum();
+            ruleStyle = pList.get(PR_RULE_STYLE).getEnum();
+            // use specified rule thickness to override default (established above)
+            ruleThickness = pList.get(PR_RULE_THICKNESS).getLength();
             break;
         case EN_DOTS:
             break;
@@ -95,76 +99,119 @@ public class Leader extends InlineLevel {
             // add the inline parent multiple times until leader full
             break;
         default:
-            throw new RuntimeException("Invalid leader pattern: "
-                    + this.leaderPattern);
+            throw new RuntimeException("Invalid leader pattern: " + leaderPattern);
         }
         // letterSpacing = pList.get(PR_LETTER_SPACING);
         // textShadow = pList.get(PR_TEXT_SHADOW);
     }
 
+    /**
+     * {@inheritDoc}
+     * <br>XSL Content Model: (#PCDATA|%inline;)*
+     * <br><i>Additionally: "The content must not contain an
+     * fo:leader, fo:inline-container, fo:block-container, fo:float,
+     * fo:footnote, or fo:marker either as a direct child or as a
+     * descendant."</i>
+     */
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+        throws ValidationException {
+        if (FO_URI.equals(nsURI)) {
+            if ( localName.equals("leader")
+                 || localName.equals("inline-container")
+                 || localName.equals("block-container")
+                 || localName.equals("float")
+                 || localName.equals("marker")
+                 || !isInlineItem(nsURI, localName) ) {
+                invalidChildError(loc, nsURI, localName);
+            }
+        }
+    }
+
     /** @return the "rule-style" property */
     public int getRuleStyle() {
-        return this.ruleStyle;
+        return ruleStyle;
     }
 
     /** @return the "rule-thickness" property */
     public Length getRuleThickness() {
-        return this.ruleThickness;
+        return ruleThickness;
     }
 
     /** @return the "leader-alignment" property */
     public int getLeaderAlignment() {
-        return this.leaderAlignment;
+        return leaderAlignment;
     }
 
     /** @return the "leader-length" property */
     public LengthRangeProperty getLeaderLength() {
-        return this.leaderLength;
+        return leaderLength;
     }
 
     /** @return the "leader-pattern" property */
     public int getLeaderPattern() {
-        return this.leaderPattern;
+        return leaderPattern;
     }
 
     /** @return the "leader-pattern-width" property */
     public Length getLeaderPatternWidth() {
-        return this.leaderPatternWidth;
+        return leaderPatternWidth;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        return this.alignmentAdjust;
+        return alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return this.alignmentBaseline;
+        return alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return this.baselineShift;
+        return baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return this.dominantBaseline;
+        return dominantBaseline;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "leader";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_LEADER}
      */
-    @Override
     public int getNameId() {
         return FO_LEADER;
     }
+
+    @Override
+    protected void startOfNode() throws FOPException {
+        super.startOfNode();
+        getFOEventHandler().startLeader(this);
+    }
+
+    @Override
+    protected void endOfNode() throws FOPException {
+        super.endOfNode();
+        getFOEventHandler().endLeader(this);
+    }
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        if ( currentRange != null ) {
+            if ( leaderPattern == EN_USECONTENT ) {
+                ranges = super.collectDelimitedTextRanges ( ranges, currentRange );
+            } else {
+                currentRange.append ( CharUtilities.OBJECT_REPLACEMENT_CHARACTER, this );
+            }
+        }
+        return ranges;
+    }
+
 }

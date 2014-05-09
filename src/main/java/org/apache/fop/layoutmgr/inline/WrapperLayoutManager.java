@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: WrapperLayoutManager.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: WrapperLayoutManager.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
@@ -35,50 +35,44 @@ public class WrapperLayoutManager extends LeafNodeLayoutManager {
 
     /**
      * Creates a new LM for fo:wrapper.
-     *
-     * @param node
-     *            the fo:wrapper
+     * @param node the fo:wrapper
      */
-    public WrapperLayoutManager(final Wrapper node) {
+    public WrapperLayoutManager(Wrapper node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public InlineArea get(final LayoutContext context) {
+    public InlineArea get(LayoutContext context) {
         // Create a zero-width, zero-height dummy area so this node can
         // participate in the ID handling. Otherwise, addId() wouldn't
         // be called. The area must also be added to the tree, because
         // determination of the X,Y position is done in the renderer.
-        final InlineArea area = new InlineArea();
-        if (this.fobj.hasId()) {
-            TraitSetter.setProducerID(area, this.fobj.getId());
+        InlineArea area = new InlineArea();
+        if (fobj.hasId()) {
+            TraitSetter.setProducerID(area, fobj.getId());
         }
         return area;
     }
 
     /**
-     * Add the area for this layout manager. This adds the dummy area to the
-     * parent, *if* it has an id - otherwise it serves no purpose.
+     * Add the area for this layout manager.
+     * This adds the dummy area to the parent, *if* it has an id
+     * - otherwise it serves no purpose.
      *
-     * @param posIter
-     *            the position iterator
-     * @param context
-     *            the layout context for adding the area
+     * @param posIter the position iterator
+     * @param context the layout context for adding the area
      */
-    @Override
-    public void addAreas(final PositionIterator posIter,
-            final LayoutContext context) {
-        if (this.fobj.hasId()) {
+    public void addAreas(PositionIterator posIter, LayoutContext context) {
+        if (fobj.hasId()) {
             addId();
-            if (this.parentLayoutManager instanceof BlockStackingLayoutManager
-                    && !(this.parentLayoutManager instanceof BlockLayoutManager)) {
-                final Block helperBlock = new Block();
-                TraitSetter.setProducerID(helperBlock, this.fobj.getId());
-                this.parentLayoutManager.addChildArea(helperBlock);
+            if (parentLayoutManager instanceof BlockStackingLayoutManager
+                    && !(parentLayoutManager instanceof BlockLayoutManager)) {
+                Block helperBlock = new Block();
+                TraitSetter.setProducerID(helperBlock, fobj.getId());
+                parentLayoutManager.addChildArea(helperBlock);
             } else {
-                final InlineArea area = getEffectiveArea();
-                this.parentLayoutManager.addChildArea(area);
+                InlineArea area = getEffectiveArea();
+                parentLayoutManager.addChildArea(area);
             }
         }
         while (posIter.hasNext()) {
@@ -87,9 +81,8 @@ public class WrapperLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void addId() {
-        getPSLM().addIDToPage(this.fobj.getId());
+        getPSLM().addIDToPage(fobj.getId());
     }
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfException.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfException.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.exceptions;
 
@@ -27,21 +27,15 @@ package org.apache.fop.render.rtf.rtflib.exceptions;
  */
 
 /**
- * Base class for rtflib exceptions.
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Base class for rtflib exceptions.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 public class RtfException extends java.io.IOException {
     /**
-     *
+     * @param reason Description of reason for Exception.
      */
-    private static final long serialVersionUID = 4141515853229058765L;
-
-    /**
-     * @param reason
-     *            Description of reason for Exception.
-     */
-    public RtfException(final String reason) {
+    public RtfException(String reason) {
         super(reason);
     }
 }

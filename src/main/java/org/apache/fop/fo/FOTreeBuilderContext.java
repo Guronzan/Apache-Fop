@@ -28,10 +28,10 @@ import java.util.Set;
 public class FOTreeBuilderContext {
 
     /**
-     * The current set of id's in the FO tree. This is used so we know if the FO
-     * tree contains duplicates.
+     * The current set of id's in the FO tree.
+     * This is used so we know if the FO tree contains duplicates.
      */
-    private final Set<String> idReferences = new HashSet<>();
+    private Set idReferences = new HashSet();
 
     /**
      * The property list maker.
@@ -50,11 +50,10 @@ public class FOTreeBuilderContext {
 
     /**
      * Returns the set of ID references.
-     *
      * @return the ID references
      */
-    public Set<String> getIDReferences() {
-        return this.idReferences;
+    public Set getIDReferences() {
+        return idReferences;
     }
 
     /**
@@ -63,37 +62,36 @@ public class FOTreeBuilderContext {
      * @return the currently active {@link PropertyListMaker}
      */
     public PropertyListMaker getPropertyListMaker() {
-        return this.propertyListMaker;
+        return propertyListMaker;
     }
 
     /**
      * Set a new propertyListMaker.
      *
-     * @param propertyListMaker
-     *            the new {@link PropertyListMaker} to use
+     * @param propertyListMaker the new {@link PropertyListMaker} to use
      */
-    public void setPropertyListMaker(final PropertyListMaker propertyListMaker) {
+    public void setPropertyListMaker(PropertyListMaker propertyListMaker) {
         this.propertyListMaker = propertyListMaker;
     }
 
     /**
      * Return the XMLWhiteSpaceHandler
-     *
      * @return the whiteSpaceHandler
      */
     public XMLWhiteSpaceHandler getXMLWhiteSpaceHandler() {
-        return this.whiteSpaceHandler;
+        return whiteSpaceHandler;
     }
 
     /**
-     * Switch to or from marker context (used by FOTreeBuilder when processing a
-     * marker)
+     * Switch to or from marker context
+     * (used by FOTreeBuilder when processing
+     *  a marker)
      *
-     * @param inMarker
-     *            true if a marker is being processed; false otherwise
+     * @param inMarker  true if a marker is being processed;
+     *                  false otherwise
      *
      */
-    protected void switchMarkerContext(final boolean inMarker) {
+    protected void switchMarkerContext(boolean inMarker) {
         this.inMarker = inMarker;
     }
 

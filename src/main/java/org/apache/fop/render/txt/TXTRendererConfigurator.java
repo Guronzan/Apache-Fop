@@ -15,11 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: TXTRendererConfigurator.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TXTRendererConfigurator.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.txt;
 
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.PrintRendererConfigurator;
@@ -32,29 +33,22 @@ public class TXTRendererConfigurator extends PrintRendererConfigurator {
 
     /**
      * Default constructor
-     *
-     * @param userAgent
-     *            user agent
+     * @param userAgent user agent
      */
-    public TXTRendererConfigurator(final FOUserAgent userAgent) {
+    public TXTRendererConfigurator(FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
      * Configure the PS renderer.
-     *
-     * @param renderer
-     *            TXT renderer
-     * @throws FOPException
-     *             fop exception
+     * @param renderer TXT renderer
+     * @throws FOPException fop exception
      */
-    @Override
-    public void configure(final Renderer renderer) throws FOPException {
-        final Configuration cfg = super.getRendererConfig(renderer);
+    public void configure(Renderer renderer) throws FOPException {
+        Configuration cfg = super.getRendererConfig(renderer);
         if (cfg != null) {
-            final TXTRenderer txtRenderer = (TXTRenderer) renderer;
-            txtRenderer.setEncoding(cfg.getChild("encoding", true).getValue(
-                    null));
+            TXTRenderer txtRenderer = (TXTRenderer)renderer;
+            txtRenderer.setEncoding(cfg.getChild("encoding", true).getValue(null));
         }
     }
 }

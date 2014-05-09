@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-/* $Id: EventExceptionManager.java 819205 2009-09-26 20:38:23Z jeremias $ */
+/* $Id: EventExceptionManager.java 1058988 2011-01-14 12:58:53Z spepping $ */
 
 package org.apache.fop.events;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -28,36 +27,33 @@ import org.apache.xmlgraphics.util.Service;
 /**
  * This class is responsible for converting events into exceptions.
  */
-public class EventExceptionManager {
+public final class EventExceptionManager {
 
-    private static final Map<String, ExceptionFactory> EXCEPTION_FACTORIES = new HashMap<>();
+    private EventExceptionManager() {
+    }
+
+    private static final Map<String, ExceptionFactory> EXCEPTION_FACTORIES
+        = new java.util.HashMap<String, ExceptionFactory>();
 
     static {
-        final Iterator<ExceptionFactory> iter = Service
-                .providers(ExceptionFactory.class);
+        Iterator<Object> iter;
+        iter = Service.providers(ExceptionFactory.class);
         while (iter.hasNext()) {
-            final ExceptionFactory factory = iter.next();
-            EXCEPTION_FACTORIES.put(factory.getExceptionClass().getName(),
-                    factory);
+            ExceptionFactory factory = (ExceptionFactory)iter.next();
+            EXCEPTION_FACTORIES.put(factory.getExceptionClass().getName(), factory);
         }
     }
 
     /**
-     * Converts an event into an exception and throws that. If the exception
-     * class is null, a {@link RuntimeException} will be thrown.
-     *
-     * @param event
-     *            the event to be converted
-     * @param exceptionClass
-     *            the exception class to be thrown
-     * @throws Throwable
-     *             this happens always
+     * Converts an event into an exception and throws that. If the exception class is null,
+     * a {@link RuntimeException} will be thrown.
+     * @param event the event to be converted
+     * @param exceptionClass the exception class to be thrown
+     * @throws Throwable this happens always
      */
-    public static void throwException(final Event event,
-            final String exceptionClass) throws Throwable {
+    public static void throwException(Event event, String exceptionClass) throws Throwable {
         if (exceptionClass != null) {
-            final ExceptionFactory factory = EXCEPTION_FACTORIES
-                    .get(exceptionClass);
+            ExceptionFactory factory = (ExceptionFactory)EXCEPTION_FACTORIES.get(exceptionClass);
             if (factory != null) {
                 throw factory.createException(event);
             } else {
@@ -65,13 +61,14 @@ public class EventExceptionManager {
                         "No such ExceptionFactory available: " + exceptionClass);
             }
         } else {
-            final String msg = EventFormatter.format(event);
-            // Get original exception as cause if it is given as one of the
-            // parameters
+            String msg = EventFormatter.format(event);
+            //Get original exception as cause if it is given as one of the parameters
             Throwable t = null;
-            for (final Object o : event.getParams().values()) {
+            Iterator<Object> iter = event.getParams().values().iterator();
+            while (iter.hasNext()) {
+                Object o = iter.next();
                 if (o instanceof Throwable) {
-                    t = (Throwable) o;
+                    t = (Throwable)o;
                     break;
                 }
             }
@@ -84,25 +81,22 @@ public class EventExceptionManager {
     }
 
     /**
-     * This interface is implementation by exception factories that can create
-     * exceptions from events.
+     * This interface is implementation by exception factories that can create exceptions from
+     * events.
      */
     public interface ExceptionFactory {
 
         /**
          * Creates an exception from an event.
-         *
-         * @param event
-         *            the event
+         * @param event the event
          * @return the newly created exception
          */
-        Throwable createException(final Event event);
+        Throwable createException(Event event);
 
         /**
          * Returns the {@link Exception} class created by this factory.
-         *
          * @return the exception class
          */
-        Class getExceptionClass();
+        Class<? extends Exception> getExceptionClass();
     }
 }

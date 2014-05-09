@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractPSExtensionObject.java 704909 2008-10-15 13:28:25Z acumiskey $ */
+/* $Id: AbstractPSExtensionObject.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.ps.extensions;
 
-// FOP
+import org.xml.sax.Attributes;
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.extensions.ExtensionAttachment;
-import org.xml.sax.Attributes;
-import org.xml.sax.Locator;
 
 /**
  * Base class for the PostScript-specific extension elements.
@@ -37,74 +37,67 @@ public abstract class AbstractPSExtensionObject extends FONode {
 
     /**
      * Main constructor.
-     *
-     * @param parent
-     *            the parent node
+     * @param parent the parent node
      * @see org.apache.fop.fo.FONode#FONode(FONode)
      */
-    public AbstractPSExtensionObject(final FONode parent) {
+    public AbstractPSExtensionObject(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void characters(final char[] data, final int start,
-            final int length, final PropertyList pList, final Locator locator) {
-        final String content = this.setupCode.getContent();
+    protected void characters(char[] data, int start, int length,
+                                 PropertyList pList, Locator locator) {
+        String content = setupCode.getContent();
         if (content != null) {
-            final StringBuilder sb = new StringBuilder(content);
+            StringBuffer sb = new StringBuffer(content);
             sb.append(data, start, length);
-            this.setupCode.setContent(sb.toString());
+            setupCode.setContent(sb.toString());
         } else {
-            this.setupCode.setContent(new String(data, start, length));
+            setupCode.setContent(new String(data, start, length));
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNamespaceURI() {
         return PSExtensionElementMapping.NAMESPACE;
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**{@inheritDoc} */
     public String getNormalNamespacePrefix() {
         return "ps";
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void processNode(final String elementName, final Locator locator,
-            final Attributes attlist, final PropertyList propertyList) {
-        final String name = attlist.getValue("name");
+    public void processNode(String elementName, Locator locator,
+                            Attributes attlist, PropertyList propertyList)
+                                throws FOPException {
+        String name = attlist.getValue("name");
         if (name != null && name.length() > 0) {
-            this.setupCode.setName(name);
+            setupCode.setName(name);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
-        final String s = this.setupCode.getContent();
+        String s = setupCode.getContent();
         if (s == null || s.length() == 0) {
             missingChildElementError("#PCDATA");
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public ExtensionAttachment getExtensionAttachment() {
         return this.setupCode;
     }
 
 }
+

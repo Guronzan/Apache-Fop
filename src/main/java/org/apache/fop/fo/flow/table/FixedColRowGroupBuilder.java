@@ -20,20 +20,22 @@
 package org.apache.fop.fo.flow.table;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.ValidationException;
 
+
 /**
- * A row group builder optimised for a fixed number of columns, known before the
- * parsing of cells starts (that is, if the fo:table has explicit
- * fo:table-column children).
+ * A row group builder optimised for a fixed number of columns, known before the parsing
+ * of cells starts (that is, if the fo:table has explicit fo:table-column children).
  */
 class FixedColRowGroupBuilder extends RowGroupBuilder {
 
     /** Number of columns in the corresponding table. */
-    private final int numberOfColumns;
+    private int numberOfColumns;
 
     private TableRow currentTableRow = null;
 
@@ -41,25 +43,22 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     private int currentRowIndex;
 
     /** The rows belonging to this row group. List of List of {@link GridUnit}s. */
-    private List<List<GridUnit>> rows;
+    private List/*<List<GridUnit>>*/ rows;
 
     private boolean firstInPart = true;
 
-    /**
-     * The last encountered row. This is the last row of the table if it has no
-     * footer.
-     */
-    private List<GridUnit> lastRow;
+    /** The last encountered row. This is the last row of the table if it has no footer. */
+    private List lastRow;
 
     private BorderResolver borderResolver;
 
-    FixedColRowGroupBuilder(final Table t) {
+    FixedColRowGroupBuilder(Table t) {
         super(t);
-        this.numberOfColumns = t.getNumberOfColumns();
+        numberOfColumns = t.getNumberOfColumns();
         if (t.isSeparateBorderModel()) {
-            this.borderResolver = new SeparateBorderResolver();
+            borderResolver = new SeparateBorderResolver();
         } else {
-            this.borderResolver = new CollapsingBorderResolver(t);
+            borderResolver = new CollapsingBorderResolver(t);
         }
         initialize();
     }
@@ -68,39 +67,37 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
      * Prepares this builder for creating a new row group.
      */
     private void initialize() {
-        this.rows = new ArrayList<>();
-        this.currentRowIndex = 0;
+        rows = new ArrayList();
+        currentRowIndex = 0;
     }
 
     /** {@inheritDoc} */
-    @Override
-    void addTableCell(final TableCell cell) {
-        for (int i = this.rows.size(); i < this.currentRowIndex
-                + cell.getNumberRowsSpanned(); ++i) {
-            final List<GridUnit> effRow = new ArrayList<>(this.numberOfColumns);
-            for (int j = 0; j < this.numberOfColumns; ++j) {
+    void addTableCell(TableCell cell) {
+        for (int i = rows.size(); i < currentRowIndex + cell.getNumberRowsSpanned(); i++) {
+            List effRow = new ArrayList(numberOfColumns);
+            for (int j = 0; j < numberOfColumns; j++) {
                 effRow.add(null);
             }
-            this.rows.add(effRow);
+            rows.add(effRow);
         }
-        final int columnIndex = cell.getColumnNumber() - 1;
-        final PrimaryGridUnit pgu = new PrimaryGridUnit(cell, columnIndex);
-        List<GridUnit> row = this.rows.get(this.currentRowIndex);
+        int columnIndex = cell.getColumnNumber() - 1;
+        PrimaryGridUnit pgu = new PrimaryGridUnit(cell, columnIndex);
+        List row = (List) rows.get(currentRowIndex);
         row.set(columnIndex, pgu);
         // TODO
         GridUnit[] cellRow = new GridUnit[cell.getNumberColumnsSpanned()];
         cellRow[0] = pgu;
         for (int j = 1; j < cell.getNumberColumnsSpanned(); j++) {
-            final GridUnit gu = new GridUnit(pgu, j, 0);
+            GridUnit gu = new GridUnit(pgu, j, 0);
             row.set(columnIndex + j, gu);
             cellRow[j] = gu;
         }
         pgu.addRow(cellRow);
-        for (int i = 1; i < cell.getNumberRowsSpanned(); ++i) {
-            row = this.rows.get(this.currentRowIndex + i);
+        for (int i = 1; i < cell.getNumberRowsSpanned(); i++) {
+            row = (List) rows.get(currentRowIndex + i);
             cellRow = new GridUnit[cell.getNumberColumnsSpanned()];
             for (int j = 0; j < cell.getNumberColumnsSpanned(); j++) {
-                final GridUnit gu = new GridUnit(pgu, j, i);
+                GridUnit gu = new GridUnit(pgu, j, i);
                 row.set(columnIndex + j, gu);
                 cellRow[j] = gu;
             }
@@ -108,102 +105,90 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
         }
     }
 
-    private static void setFlagForCols(final int flag, final List<GridUnit> row) {
-        for (final GridUnit gridUnit : row) {
-            gridUnit.setFlag(flag);
+    private static void setFlagForCols(int flag, List row) {
+        for (ListIterator iter = row.listIterator(); iter.hasNext();) {
+            ((GridUnit) iter.next()).setFlag(flag);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    void startTableRow(final TableRow tableRow) {
-        this.currentTableRow = tableRow;
+    void startTableRow(TableRow tableRow) {
+        currentTableRow = tableRow;
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTableRow() {
-        assert this.currentTableRow != null;
-        if (this.currentRowIndex > 0
-                && this.currentTableRow.getBreakBefore() != Constants.EN_AUTO) {
-            final TableEventProducer eventProducer = TableEventProducer.Provider
-                    .get(this.currentTableRow.getUserAgent()
-                            .getEventBroadcaster());
-            eventProducer.breakIgnoredDueToRowSpanning(this,
-                    this.currentTableRow.getName(), true,
-                    this.currentTableRow.getLocator());
+        assert currentTableRow != null;
+        if (currentRowIndex > 0 && currentTableRow.getBreakBefore() != Constants.EN_AUTO) {
+            TableEventProducer eventProducer = TableEventProducer.Provider.get(
+                    currentTableRow.getUserAgent().getEventBroadcaster());
+            eventProducer.breakIgnoredDueToRowSpanning(this, currentTableRow.getName(), true,
+                    currentTableRow.getLocator());
         }
-        if (this.currentRowIndex < this.rows.size() - 1
-                && this.currentTableRow.getBreakAfter() != Constants.EN_AUTO) {
-            final TableEventProducer eventProducer = TableEventProducer.Provider
-                    .get(this.currentTableRow.getUserAgent()
-                            .getEventBroadcaster());
-            eventProducer.breakIgnoredDueToRowSpanning(this,
-                    this.currentTableRow.getName(), false,
-                    this.currentTableRow.getLocator());
+        if (currentRowIndex < rows.size() - 1
+                && currentTableRow.getBreakAfter() != Constants.EN_AUTO) {
+            TableEventProducer eventProducer = TableEventProducer.Provider.get(
+                    currentTableRow.getUserAgent().getEventBroadcaster());
+            eventProducer.breakIgnoredDueToRowSpanning(this, currentTableRow.getName(), false,
+                    currentTableRow.getLocator());
         }
-        for (final GridUnit gu : this.rows.get(this.currentRowIndex)) {
+        for (Iterator iter = ((List) rows.get(currentRowIndex)).iterator(); iter.hasNext();) {
+            GridUnit gu = (GridUnit) iter.next();
             // The row hasn't been filled with empty grid units yet
             if (gu != null) {
-                gu.setRow(this.currentTableRow);
+                gu.setRow(currentTableRow);
             }
         }
-        handleRowEnd(this.currentTableRow);
+        handleRowEnd(currentTableRow);
     }
 
     /** {@inheritDoc} */
-    @Override
-    void endRow(final TablePart part) {
+    void endRow(TablePart part) {
         handleRowEnd(part);
     }
 
-    private void handleRowEnd(final TableCellContainer container) {
-        final List<GridUnit> currentRow = this.rows.get(this.currentRowIndex);
-        this.lastRow = currentRow;
+    private void handleRowEnd(TableCellContainer container) {
+        List currentRow = (List) rows.get(currentRowIndex);
+        lastRow = currentRow;
         // Fill gaps with empty grid units
-        for (int i = 0; i < this.numberOfColumns; ++i) {
+        for (int i = 0; i < numberOfColumns; i++) {
             if (currentRow.get(i) == null) {
-                currentRow.set(i, new EmptyGridUnit(this.table,
-                        this.currentTableRow, i));
+                currentRow.set(i, new EmptyGridUnit(table, currentTableRow, i));
             }
         }
-        this.borderResolver.endRow(currentRow, container);
-        if (this.firstInPart) {
+        borderResolver.endRow(currentRow, container);
+        if (firstInPart) {
             setFlagForCols(GridUnit.FIRST_IN_PART, currentRow);
-            this.firstInPart = false;
+            firstInPart = false;
         }
-        if (this.currentRowIndex == this.rows.size() - 1) {
-            // Means that the current row has no cell spanning over following
-            // rows
-            container.getTablePart().addRowGroup(this.rows);
+        if (currentRowIndex == rows.size() - 1) {
+            // Means that the current row has no cell spanning over following rows
+            container.getTablePart().addRowGroup(rows);
             initialize();
         } else {
-            this.currentRowIndex++;
+            currentRowIndex++;
         }
-        this.currentTableRow = null;
+        currentTableRow = null;
     }
 
     /** {@inheritDoc} */
-    @Override
-    void startTablePart(final TablePart part) {
-        this.firstInPart = true;
-        this.borderResolver.startPart(part);
+    void startTablePart(TablePart part) {
+        firstInPart = true;
+        borderResolver.startPart(part);
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTablePart() throws ValidationException {
-        if (this.rows.size() > 0) {
+        if (rows.size() > 0) {
             throw new ValidationException(
                     "A table-cell is spanning more rows than available in its parent element.");
         }
-        setFlagForCols(GridUnit.LAST_IN_PART, this.lastRow);
-        this.borderResolver.endPart();
+        setFlagForCols(GridUnit.LAST_IN_PART, lastRow);
+        borderResolver.endPart();
     }
 
     /** {@inheritDoc} */
-    @Override
     void endTable() {
-        this.borderResolver.endTable();
+        borderResolver.endTable();
     }
 }

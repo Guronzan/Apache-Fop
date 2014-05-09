@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PageGroup.java 768321 2009-04-24 14:39:32Z vhennebert $ */
+/* $Id: PageGroup.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -43,15 +43,11 @@ public class PageGroup extends AbstractResourceEnvironmentGroupContainer {
     /**
      * Constructor for the PageGroup.
      *
-     * @param factory
-     *            the resource manager
-     * @param name
-     *            the name of the page group
-     * @param tleSequence
-     *            current start tle sequence number within stream
+     * @param factory the resource manager
+     * @param name the name of the page group
+     * @param tleSequence current start tle sequence number within stream
      */
-    public PageGroup(final Factory factory, final String name,
-            final int tleSequence) {
+    public PageGroup(Factory factory, String name, int tleSequence) {
         super(factory, name);
         this.tleSequence = tleSequence;
     }
@@ -64,12 +60,11 @@ public class PageGroup extends AbstractResourceEnvironmentGroupContainer {
      * @param value
      *            the value of the tag
      */
-    public void createTagLogicalElement(final String name, final String value) {
-        final TagLogicalElement tle = this.factory.createTagLogicalElement(
-                name, value, this.tleSequence);
+    public void createTagLogicalElement(String name, String value) {
+        TagLogicalElement tle = factory.createTagLogicalElement(name, value, tleSequence);
         if (!getTagLogicalElements().contains(tle)) {
             getTagLogicalElements().add(tle);
-            this.tleSequence++;
+            tleSequence++;
         }
     }
 
@@ -77,39 +72,30 @@ public class PageGroup extends AbstractResourceEnvironmentGroupContainer {
      * Method to mark the end of the page group.
      */
     public void endPageGroup() {
-        this.complete = true;
+        complete = true;
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
-        writeObjects(this.tagLogicalElements, os, true);
-        super.writeContent(os);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.PAGE_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.PAGE_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return getName();
+        return this.getName();
     }
 
+    /** @return the TLE sequence number */
     public int getTleSequence() {
-        return this.tleSequence;
+        return tleSequence;
     }
 }

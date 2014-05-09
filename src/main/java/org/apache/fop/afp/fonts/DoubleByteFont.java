@@ -15,61 +15,49 @@
  * limitations under the License.
  */
 
-/* $Id: DoubleByteFont.java 946585 2010-05-20 09:52:27Z jeremias $ */
+/* $Id: DoubleByteFont.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.afp.fonts;
 
 import java.util.Set;
 
 /**
- * Implementation of AbstractOutlineFont that supports double-byte fonts (CID
- * Keyed font (Type 0)). The width of characters that are not prescribed a width
- * metrics in the font resource use a fallback width. The default width is 1 em.
- * A character can be supplied and queried for the fallback width of all
- * non-ideograph characters.
- * <p />
+ * Implementation of AbstractOutlineFont that supports double-byte fonts (CID Keyed font (Type 0)).
+ * The width of characters that are not prescribed a width metrics in the font resource use
+ * a fallback width.  The default width is 1 em.  A character can be supplied and queried for the
+ *  fallback width of all non-ideograph characters.<p />
  */
 public class DoubleByteFont extends AbstractOutlineFont {
 
-    // private static final Log LOG = LogFactory.getLog(DoubleByteFont.class);
+    //private static final Log LOG = LogFactory.getLog(DoubleByteFont.class);
 
-    // See also http://unicode.org/reports/tr11/ which we've not closely looked
-    // at, yet
-    // TODO the Unicode block listed here is probably not complete (ex.
-    // Hiragana, Katakana etc.)
+    //See also http://unicode.org/reports/tr11/ which we've not closely looked at, yet
+    //TODO the Unicode block listed here is probably not complete (ex. Hiragana, Katakana etc.)
     private static final Set IDEOGRAPHIC = new java.util.HashSet();
     static {
         IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS);
-        // IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT);
-        // //Java 1.5
+        //IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT);//Java 1.5
         IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS);
-        IDEOGRAPHIC
-                .add(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A);
-        // IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B);
-        // //Java 1.1
+        IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A);
+        //IDEOGRAPHIC.add(Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B); //Java 1.1
     }
 
     /**
      * Constructor for an double-byte outline font.
-     * 
-     * @param name
-     *            the name of the font
-     * @param charSet
-     *            the character set
+     * @param name the name of the font
+     * @param charSet the character set
      */
-    public DoubleByteFont(final String name, final CharacterSet charSet) {
+    public DoubleByteFont(String name, CharacterSet charSet) {
         super(name, charSet);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public int getWidth(final int character, final int size) {
+    public int getWidth(int character, int size) {
         int charWidth;
         try {
-            charWidth = this.charSet.getWidth(toUnicodeCodepoint(character));
-        } catch (final IllegalArgumentException e) {
-            // We shall try and handle characters that have no mapped width
-            // metric in font resource
+            charWidth = charSet.getWidth(toUnicodeCodepoint(character));
+        } catch (IllegalArgumentException e) {
+            //  We shall try and handle characters that have no mapped width metric in font resource
             charWidth = -1;
         }
 
@@ -79,24 +67,23 @@ public class DoubleByteFont extends AbstractOutlineFont {
         return charWidth * size;
     }
 
-    private int inferCharWidth(final int character) {
+    private int inferCharWidth(int character) {
 
-        // Is this character an ideograph?
+        //Is this character an ideograph?
         boolean isIdeographic = false;
-        final Character.UnicodeBlock charBlock = Character.UnicodeBlock
-                .of((char) character);
+        Character.UnicodeBlock charBlock = Character.UnicodeBlock.of((char)character);
         if (charBlock == null) {
             isIdeographic = false;
         } else if (IDEOGRAPHIC.contains(charBlock)) {
             isIdeographic = true;
-        } else { // default
+        } else { //default
             isIdeographic = false;
         }
 
         if (isIdeographic) {
-            return this.charSet.getEmSpaceIncrement();
+            return charSet.getEmSpaceIncrement();
         } else {
-            return this.charSet.getSpaceIncrement();
+            return charSet.getSpaceIncrement();
         }
     }
 

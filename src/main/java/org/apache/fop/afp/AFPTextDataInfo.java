@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPTextDataInfo.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPTextDataInfo.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp;
 
@@ -59,16 +59,15 @@ public class AFPTextDataInfo {
      * @return the font reference
      */
     public int getFontReference() {
-        return this.fontReference;
+        return fontReference;
     }
 
     /**
      * Sets the font reference
      *
-     * @param fontReference
-     *            the font reference
+     * @param fontReference the font reference
      */
-    public void setFontReference(final int fontReference) {
+    public void setFontReference(int fontReference) {
         this.fontReference = fontReference;
     }
 
@@ -78,16 +77,15 @@ public class AFPTextDataInfo {
      * @return the x coordinate
      */
     public int getX() {
-        return this.x;
+        return x;
     }
 
     /**
      * Sets the X coordinate
      *
-     * @param x
-     *            the X coordinate
+     * @param x the X coordinate
      */
-    public void setX(final int x) {
+    public void setX(int x) {
         this.x = x;
     }
 
@@ -97,16 +95,15 @@ public class AFPTextDataInfo {
      * @return the y coordinate
      */
     public int getY() {
-        return this.y;
+        return y;
     }
 
     /**
      * Sets the Y coordinate
      *
-     * @param y
-     *            the Y coordinate
+     * @param y the Y coordinate
      */
-    public void setY(final int y) {
+    public void setY(int y) {
         this.y = y;
     }
 
@@ -116,16 +113,15 @@ public class AFPTextDataInfo {
      * @return the color
      */
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
     /**
      * Sets the color
      *
-     * @param color
-     *            the color
+     * @param color the color
      */
-    public void setColor(final Color color) {
+    public void setColor(Color color) {
         this.color = color;
     }
 
@@ -135,17 +131,16 @@ public class AFPTextDataInfo {
      * @return the variable space character increment
      */
     public int getVariableSpaceCharacterIncrement() {
-        return this.variableSpaceCharacterIncrement;
+        return variableSpaceCharacterIncrement;
     }
 
     /**
      * Sets the variable space character increment
      *
-     * @param variableSpaceCharacterIncrement
-     *            the variable space character increment
+     * @param variableSpaceCharacterIncrement the variable space character increment
      */
     public void setVariableSpaceCharacterIncrement(
-            final int variableSpaceCharacterIncrement) {
+            int variableSpaceCharacterIncrement) {
         this.variableSpaceCharacterIncrement = variableSpaceCharacterIncrement;
     }
 
@@ -155,26 +150,24 @@ public class AFPTextDataInfo {
      * @return the inter character adjustment
      */
     public int getInterCharacterAdjustment() {
-        return this.interCharacterAdjustment;
+        return interCharacterAdjustment;
     }
 
     /**
      * Sets the inter character adjustment
      *
-     * @param interCharacterAdjustment
-     *            the inter character adjustment
+     * @param interCharacterAdjustment the inter character adjustment
      */
-    public void setInterCharacterAdjustment(final int interCharacterAdjustment) {
+    public void setInterCharacterAdjustment(int interCharacterAdjustment) {
         this.interCharacterAdjustment = interCharacterAdjustment;
     }
 
     /**
      * Sets the text orientation
      *
-     * @param rotation
-     *            the text rotation
+     * @param rotation the text rotation
      */
-    public void setRotation(final int rotation) {
+    public void setRotation(int rotation) {
         this.rotation = rotation;
     }
 
@@ -190,10 +183,9 @@ public class AFPTextDataInfo {
     /**
      * Sets the text encoding
      *
-     * @param textEncoding
-     *            the text encoding
+     * @param textEncoding the text encoding
      */
-    public void setEncoding(final String textEncoding) {
+    public void setEncoding(String textEncoding) {
         this.textEncoding = textEncoding;
     }
 
@@ -209,10 +201,9 @@ public class AFPTextDataInfo {
     /**
      * Sets the text string
      *
-     * @param textString
-     *            the text string
+     * @param textString the text string
      */
-    public void setString(final String textString) {
+    public void setString(String textString) {
         this.textString = textString;
     }
 
@@ -226,13 +217,16 @@ public class AFPTextDataInfo {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "TextDataInfo{fontReference=" + this.fontReference + ", x="
-                + this.x + ", y=" + this.y + ", color=" + this.color
-                + ", vsci=" + this.variableSpaceCharacterIncrement + ", ica="
-                + this.interCharacterAdjustment + ", orientation="
-                + this.rotation + ", textString=" + this.textString
-                + ", textEncoding=" + this.textEncoding + "}";
+        return "TextDataInfo{fontReference=" + fontReference
+        + ", x=" + x
+        + ", y=" + y
+        + ", color=" + color
+        + ", vsci=" + variableSpaceCharacterIncrement
+        + ", ica=" + interCharacterAdjustment
+        + ", orientation=" + rotation
+        + ", textString=" + textString
+        + ", textEncoding=" + textEncoding
+        + "}";
     }
 }

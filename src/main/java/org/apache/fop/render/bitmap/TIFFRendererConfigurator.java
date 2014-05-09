@@ -21,9 +21,8 @@ package org.apache.fop.render.bitmap;
 
 import java.awt.image.BufferedImage;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.avalon.framework.configuration.Configuration;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.Renderer;
@@ -32,37 +31,30 @@ import org.apache.fop.render.intermediate.IFDocumentHandler;
 /**
  * TIFF Renderer configurator
  */
-@Slf4j
 public class TIFFRendererConfigurator extends BitmapRendererConfigurator {
 
     /**
      * Default constructor
-     *
-     * @param userAgent
-     *            user agent
+     * @param userAgent user agent
      */
-    public TIFFRendererConfigurator(final FOUserAgent userAgent) {
+    public TIFFRendererConfigurator(FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
      * Configure the TIFF renderer. Get the configuration to be used for
      * compression
-     *
-     * @param renderer
-     *            tiff renderer
-     * @throws FOPException
-     *             fop exception {@inheritDoc}
+     * @param renderer tiff renderer
+     * @throws FOPException fop exception
+     * {@inheritDoc}
      */
-    @Override
-    public void configure(final Renderer renderer) throws FOPException {
-        final Configuration cfg = super.getRendererConfig(renderer);
+    public void configure(Renderer renderer) throws FOPException {
+        Configuration cfg = super.getRendererConfig(renderer);
         if (cfg != null) {
-            final TIFFRenderer tiffRenderer = (TIFFRenderer) renderer;
-            // set compression
-            final String name = cfg.getChild("compression").getValue(
-                    TIFFConstants.COMPRESSION_PACKBITS);
-            // Some compression formats need a special image format:
+            TIFFRenderer tiffRenderer = (TIFFRenderer)renderer;
+            //set compression
+            String name = cfg.getChild("compression").getValue(TIFFConstants.COMPRESSION_PACKBITS);
+            //Some compression formats need a special image format:
             tiffRenderer.setBufferedImageType(getBufferedImageTypeFor(name));
             if (!"NONE".equalsIgnoreCase(name)) {
                 tiffRenderer.getWriterParams().setCompressionMethod(name);
@@ -75,19 +67,15 @@ public class TIFFRendererConfigurator extends BitmapRendererConfigurator {
     }
 
     /**
-     * Determines the type value for the BufferedImage to be produced for
-     * rendering the bitmap image.
-     *
-     * @param compressionName
-     *            the compression name
+     * Determines the type value for the BufferedImage to be produced for rendering
+     * the bitmap image.
+     * @param compressionName the compression name
      * @return a value from the {@link BufferedImage}.TYPE_* constants
      */
-    private int getBufferedImageTypeFor(final String compressionName) {
-        if (compressionName
-                .equalsIgnoreCase(TIFFConstants.COMPRESSION_CCITT_T6)) {
+    private int getBufferedImageTypeFor(String compressionName) {
+        if (compressionName.equalsIgnoreCase(TIFFConstants.COMPRESSION_CCITT_T6)) {
             return BufferedImage.TYPE_BYTE_BINARY;
-        } else if (compressionName
-                .equalsIgnoreCase(TIFFConstants.COMPRESSION_CCITT_T4)) {
+        } else if (compressionName.equalsIgnoreCase(TIFFConstants.COMPRESSION_CCITT_T4)) {
             return BufferedImage.TYPE_BYTE_BINARY;
         } else {
             return BufferedImage.TYPE_INT_ARGB;
@@ -97,19 +85,15 @@ public class TIFFRendererConfigurator extends BitmapRendererConfigurator {
     // ---=== IFDocumentHandler configuration ===---
 
     /** {@inheritDoc} */
-    @Override
-    public void configure(final IFDocumentHandler documentHandler)
-            throws FOPException {
+    public void configure(IFDocumentHandler documentHandler) throws FOPException {
         super.configure(documentHandler);
-        final Configuration cfg = super.getRendererConfig(documentHandler
-                .getMimeType());
+        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {
-            final TIFFDocumentHandler tiffHandler = (TIFFDocumentHandler) documentHandler;
-            final BitmapRenderingSettings settings = tiffHandler.getSettings();
-            // set compression
-            final String name = cfg.getChild("compression").getValue(
-                    TIFFConstants.COMPRESSION_PACKBITS);
-            // Some compression formats need a special image format:
+            TIFFDocumentHandler tiffHandler = (TIFFDocumentHandler)documentHandler;
+            BitmapRenderingSettings settings = tiffHandler.getSettings();
+            //set compression
+            String name = cfg.getChild("compression").getValue(TIFFConstants.COMPRESSION_PACKBITS);
+            //Some compression formats need a special image format:
             settings.setBufferedImageType(getBufferedImageTypeFor(name));
             if (!"NONE".equalsIgnoreCase(name)) {
                 settings.getWriterParams().setCompressionMethod(name);

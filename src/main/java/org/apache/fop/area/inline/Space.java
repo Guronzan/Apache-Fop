@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-/* $Id: Space.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Space.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.area.inline;
 
 /**
- * Inline space area. This is used for adding a inline space to the output.
+ * Inline space area.
+ * This is used for adding a inline space to the output.
  */
 public class Space extends InlineArea {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = -8748265505356839796L;
+
+    /**
+     * Default constructor.
+     */
+    public Space() {
+    }
 
 }

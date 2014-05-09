@@ -15,34 +15,35 @@
  * limitations under the License.
  */
 
-/* $Id: PDFImageElementBridge.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PDFImageElementBridge.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.svg;
 
-import org.apache.fop.image.loader.batik.BatikImageFlavors;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 
+import org.apache.fop.image.loader.batik.BatikImageFlavors;
+
 /**
- * PDF Image Element Bridge class for the &lt;image> element when jpeg images.
+ * <p>PDF Image Element Bridge class for the &lt;image> element when jpeg images.</p>
  *
- * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
+ * <p>This work was authored by Keiron Liddle (keiron@aftexsw.com).</p>
  */
 public class PDFImageElementBridge extends AbstractFOPImageElementBridge {
 
     /**
      * Constructs a new bridge for the &lt;image> element.
      */
-    public PDFImageElementBridge() {
-    }
+    public PDFImageElementBridge() { }
 
-    private final ImageFlavor[] supportedFlavors = new ImageFlavor[] {
-            ImageFlavor.RAW_JPEG, ImageFlavor.RAW_CCITTFAX,
-            ImageFlavor.GRAPHICS2D, BatikImageFlavors.SVG_DOM };
+    private final ImageFlavor[] supportedFlavors = new ImageFlavor[]
+                                               {ImageFlavor.RAW_JPEG,
+                                                ImageFlavor.RAW_CCITTFAX,
+                                                ImageFlavor.GRAPHICS2D,
+                                                BatikImageFlavors.SVG_DOM};
 
     /** {@inheritDoc} */
-    @Override
     protected ImageFlavor[] getSupportedFlavours() {
-        return this.supportedFlavors;
+        return supportedFlavors;
     }
 
 }

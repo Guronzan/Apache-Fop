@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ListUtil.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ListUtil.java 1066626 2011-02-02 20:57:06Z adelmelle $ */
 
 package org.apache.fop.util;
 
@@ -34,24 +34,22 @@ public final class ListUtil {
     /**
      * Retrieve the last element from a list.
      *
-     * @param <T>
-     *
-     * @param list
-     *            The list to work on
+     * @param <T> the type of objects stored in the list
+     * @param list  the list to work on
      * @return last element
      */
-    public static <T> T getLast(final List<T> list) {
+    public static <T> T getLast(List<T> list) {
         return list.get(list.size() - 1);
     }
 
     /**
      * Retrieve and remove the last element from a list.
      *
-     * @param list
-     *            The list to work on
+     * @param <T> the type of objects stored in the list
+     * @param list  the list to work on
      * @return previous last element
      */
-    public static <T> T removeLast(final List<T> list) {
+    public static <T> T removeLast(List<T> list) {
         return list.remove(list.size() - 1);
     }
 }

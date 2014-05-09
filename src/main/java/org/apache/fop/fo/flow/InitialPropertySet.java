@@ -15,69 +15,69 @@
  * limitations under the License.
  */
 
-/* $Id: InitialPropertySet.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: InitialPropertySet.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.flow;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
+import org.apache.fop.fo.properties.CommonAccessibility;
+import org.apache.fop.fo.properties.CommonAccessibilityHolder;
 import org.apache.fop.fo.properties.SpaceProperty;
-import org.xml.sax.Locator;
 
 /**
- * Class modelling the <a
- * href="http://www.w3.org/TR/xsl/#fo_initial-property-set">
+ * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_initial-property-set">
  * <code>fo:initial-property-set</code></a> object.
  */
-public class InitialPropertySet extends FObj {
-    // The value of properties relevant for fo:initial-property-set.
+public class InitialPropertySet extends FObj implements CommonAccessibilityHolder {
+
+    private CommonAccessibility commonAccessibility;
+
     // private ToBeImplementedProperty letterSpacing;
     private SpaceProperty lineHeight;
-
     // private ToBeImplementedProperty textShadow;
     // Unused but valid items, commented out for performance:
-    // private CommonAccessibility commonAccessibility;
-    // private CommonAural commonAural;
-    // private CommonBorderPaddingBackground commonBorderPaddingBackground;
-    // private CommonFont commonFont;
-    // private CommonRelativePosition commonRelativePosition;
-    // private Color color;
-    // private int scoreSpaces;
-    // private int textDecoration;
-    // private int textTransform;
-    // private SpaceProperty wordSpacing;
+    //     private CommonAural commonAural;
+    //     private CommonBorderPaddingBackground commonBorderPaddingBackground;
+    //     private CommonFont commonFont;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private Color color;
+    //     private int scoreSpaces;
+    //     private int textDecoration;
+    //     private int textTransform;
+    //     private SpaceProperty wordSpacing;
     // End of property values
 
     /**
      * Base constructor
      *
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public InitialPropertySet(final FONode parent) {
+    public InitialPropertySet(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
+        commonAccessibility = CommonAccessibility.getInstance(pList);
         // letterSpacing = pList.get(PR_LETTER_SPACING);
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
         // textShadow = pList.get(PR_TEXT_SHADOW);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: empty
+     * {@inheritDoc}
+     * <br>XSL Content Model: empty
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
@@ -85,22 +85,25 @@ public class InitialPropertySet extends FObj {
 
     /** @return the "line-height" property */
     public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+        return lineHeight;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "initial-property-set";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_INITIAL_PROPERTY_SET}
      */
-    @Override
     public int getNameId() {
         return FO_INITIAL_PROPERTY_SET;
     }
+
+    /** {@inheritDoc} */
+    public CommonAccessibility getCommonAccessibility() {
+        return commonAccessibility;
+    }
+
 }

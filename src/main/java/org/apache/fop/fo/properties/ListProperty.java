@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: ListProperty.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ListProperty.java 1303891 2012-03-22 17:04:12Z vhennebert $ */
 
 package org.apache.fop.fo.properties;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
+import org.apache.fop.fo.expr.PropertyException;
+import org.apache.fop.util.CompareUtil;
 
 /**
  * Superclass for properties that are lists of other properties
@@ -31,24 +32,23 @@ import org.apache.fop.fo.PropertyList;
 public class ListProperty extends Property {
 
     /**
-     * Inner class for creating instances of ListProperty
+     * Inner class for creating instances of {@code ListProperty}
      */
     public static class Maker extends PropertyMaker {
 
         /**
-         * @param propId
-         *            ID of the property for which Maker should be created
+         * Create a maker for the given property id.
+         * @param propId ID of the property for which Maker should be created
          */
-        public Maker(final int propId) {
+        public Maker(int propId) {
             super(propId);
         }
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         @Override
-        public Property convertProperty(final Property p,
-                final PropertyList propertyList, final FObj fo) {
+        public Property convertProperty(Property p,
+                                        PropertyList propertyList, FObj fo)
+                        throws PropertyException {
             if (p instanceof ListProperty) {
                 return p;
             } else {
@@ -58,49 +58,68 @@ public class ListProperty extends Property {
 
     }
 
-    /** List containing the list of sub-properties */
-    protected List<Property> list = new ArrayList<>();
+    /** Vector containing the list of sub-properties */
+    protected final List<Property> list = new java.util.Vector<Property>();
 
     /**
      * Simple constructor used by subclasses to do some special processing.
      */
     protected ListProperty() {
-        // nop
+        //nop
     }
 
     /**
-     * @param prop
-     *            the first Property to be added to the list
+     * Create a new instance, using the given {@link Property} as the first
+     * element in the list.
+     * @param prop the first property to be added to the list
      */
-    public ListProperty(final Property prop) {
+    public ListProperty(Property prop) {
         this();
         addProperty(prop);
     }
 
     /**
      * Add a new property to the list
-     *
-     * @param prop
-     *            Property to be added to the list
+     * @param prop Property to be added to the list
      */
-    public void addProperty(final Property prop) {
-        this.list.add(prop);
+    public void addProperty(Property prop) {
+        list.add(prop);
     }
 
     /**
-     * @return this.list
+     * Return the {@code java.util.List} of {@link Property} instances
+     * contained in this property.
+     * @return the list of properties contained in this instance
      */
     @Override
     public List<Property> getList() {
-        return this.list;
+        return list;
     }
 
     /**
+     * Return the {@code java.util.List} of {@link Property} instances,
+     * cast as a {@code java.lang.Object}.
      * @return this.list cast as an Object
      */
     @Override
     public Object getObject() {
-        return this.list;
+        return list;
     }
 
+    @Override
+    public int hashCode() {
+        return list.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof ListProperty)) {
+            return false;
+        }
+        ListProperty other = (ListProperty) obj;
+        return CompareUtil.equal(list, other.list);
+    }
 }

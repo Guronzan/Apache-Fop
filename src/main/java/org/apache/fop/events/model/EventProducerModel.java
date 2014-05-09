@@ -23,10 +23,11 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.xmlgraphics.util.XMLizable;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
+
+import org.apache.xmlgraphics.util.XMLizable;
 
 /**
  * Represents the model of an event producer with multiple event methods.
@@ -36,21 +37,18 @@ public class EventProducerModel implements Serializable, XMLizable {
     private static final long serialVersionUID = 122267104123721902L;
 
     private String interfaceName;
-    private final Map methods = new java.util.LinkedHashMap();
+    private Map methods = new java.util.LinkedHashMap();
 
     /**
      * Creates a new instance.
-     * 
-     * @param interfaceName
-     *            the fully qualified interface name of the event producer
+     * @param interfaceName the fully qualified interface name of the event producer
      */
-    public EventProducerModel(final String interfaceName) {
+    public EventProducerModel(String interfaceName) {
         this.interfaceName = interfaceName;
     }
 
     /**
      * Returns the fully qualified interface name of the event producer.
-     * 
      * @return the fully qualified interface name
      */
     public String getInterfaceName() {
@@ -59,39 +57,31 @@ public class EventProducerModel implements Serializable, XMLizable {
 
     /**
      * Sets the fully qualified interface name of the event producer.
-     * 
-     * @param name
-     *            the fully qualified interface name
+     * @param name the fully qualified interface name
      */
-    public void setInterfaceName(final String name) {
+    public void setInterfaceName(String name) {
         this.interfaceName = name;
     }
 
     /**
      * Adds a model instance of an event method.
-     * 
-     * @param method
-     *            the event method model
+     * @param method the event method model
      */
-    public void addMethod(final EventMethodModel method) {
+    public void addMethod(EventMethodModel method) {
         this.methods.put(method.getMethodName(), method);
     }
 
     /**
      * Returns the model instance of an event method for the given method name.
-     * 
-     * @param methodName
-     *            the method name
-     * @return the model instance (or null if no method with the given name
-     *         exists)
+     * @param methodName the method name
+     * @return the model instance (or null if no method with the given name exists)
      */
-    public EventMethodModel getMethod(final String methodName) {
-        return (EventMethodModel) this.methods.get(methodName);
+    public EventMethodModel getMethod(String methodName) {
+        return (EventMethodModel)this.methods.get(methodName);
     }
 
     /**
      * Returns an iterator over the contained event producer methods.
-     * 
      * @return an iterator (Iterator&lt;EventMethodModel&gt;)
      */
     public Iterator getMethods() {
@@ -99,17 +89,17 @@ public class EventProducerModel implements Serializable, XMLizable {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
+    public void toSAX(ContentHandler handler) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
         atts.addAttribute("", "name", "name", "CDATA", getInterfaceName());
-        final String elName = "producer";
+        String elName = "producer";
         handler.startElement("", elName, elName, atts);
-        final Iterator iter = getMethods();
+        Iterator iter = getMethods();
         while (iter.hasNext()) {
-            ((XMLizable) iter.next()).toSAX(handler);
+            ((XMLizable)iter.next()).toSAX(handler);
         }
         handler.endElement("", elName, elName);
     }
+
 
 }

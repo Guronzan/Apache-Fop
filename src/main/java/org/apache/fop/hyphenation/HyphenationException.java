@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-/* $Id: HyphenationException.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: HyphenationException.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
 /**
- * @author Carlos Villegas <cav@uniscope.co.jp> (todo) Derive from FOPException
+ * <p>An hyphenation exception.</p>
+ *
+ * <p>This work was authored by Carlos Villegas (cav@uniscope.co.jp).</p>
+ *
+ * TODO Derive from FOPException
  */
 public class HyphenationException extends Exception {
 
     /**
-     *
-     */
-    private static final long serialVersionUID = -4563527283721381009L;
-
-    /**
+     * Construct a hyphenation exception.
+     * @param msg a message string
      * @see java.lang.Throwable#Throwable(String)
      */
-    public HyphenationException(final String msg) {
+    public HyphenationException(String msg) {
         super(msg);
     }
 

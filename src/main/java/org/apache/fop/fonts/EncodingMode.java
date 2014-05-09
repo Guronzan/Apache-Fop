@@ -15,39 +15,32 @@
  * limitations under the License.
  */
 
-/* $Id: EncodingMode.java 731248 2009-01-04 12:59:29Z jeremias $ */
+/* $Id: EncodingMode.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.fonts;
 
-import java.io.Serializable;
-
 /**
- * This class enumerates all supported encoding modes for fonts: auto,
- * single-byte and CID.
+ * This class enumerates all supported encoding modes for fonts: auto, single-byte and CID.
  */
-public final class EncodingMode implements Serializable {
-
-    private static final long serialVersionUID = 8311486102457779529L;
+public enum EncodingMode {
 
     /** Automatic selection of encoding mode. */
-    public static final EncodingMode AUTO = new EncodingMode("auto");
+    AUTO("auto"),
 
     /** Single-byte encoding */
-    public static final EncodingMode SINGLE_BYTE = new EncodingMode(
-            "single-byte");
+    SINGLE_BYTE("single-byte"),
 
     /** CID encoding */
-    public static final EncodingMode CID = new EncodingMode("cid");
+    CID("cid");
 
-    private final String name;
+    private String name;
 
-    private EncodingMode(final String name) {
+    private EncodingMode(String name) {
         this.name = name;
     }
 
     /**
      * Returns the encoding mode name.
-     *
      * @return the encoding mode name
      */
     public String getName() {
@@ -56,31 +49,21 @@ public final class EncodingMode implements Serializable {
 
     /**
      * Returns the {@link EncodingMode} by name.
-     *
-     * @param name
-     *            the name of the encoding mode to look up
+     * @param name the name of the encoding mode to look up
      * @return the encoding mode constant
      */
-    public static EncodingMode valueOf(final String name) {
-        if (name.equalsIgnoreCase(EncodingMode.AUTO.getName())) {
-            return EncodingMode.AUTO;
-        } else if (name.equalsIgnoreCase(EncodingMode.SINGLE_BYTE.getName())) {
-            return EncodingMode.SINGLE_BYTE;
-        } else if (name.equalsIgnoreCase(EncodingMode.CID.getName())) {
-            return EncodingMode.CID;
-        } else {
-            throw new IllegalArgumentException("Invalid encoding mode: " + name);
+    public static EncodingMode getValue(String name) {
+        for (EncodingMode em : EncodingMode.values()) {
+            if (name.equalsIgnoreCase(em.getName())) {
+                return em;
+            }
         }
-    }
-
-    private Object readResolve() {
-        return valueOf(getName());
+        throw new IllegalArgumentException("Invalid encoding mode: " + name);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "EncodingMode:" + getName();
+        return "EncodingMode: " + getName();
     }
 
 }

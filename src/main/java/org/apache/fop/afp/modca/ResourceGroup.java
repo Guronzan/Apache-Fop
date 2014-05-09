@@ -21,6 +21,7 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.fop.afp.Streamable;
@@ -31,30 +32,26 @@ import org.apache.fop.afp.Streamable;
 public class ResourceGroup extends AbstractNamedAFPObject {
 
     /** Set of resource uri */
-    private final Set<AbstractNamedAFPObject> resourceSet = new java.util.HashSet<>();
+    private final Set/*<String>*/ resourceSet = new java.util.HashSet/*<String>*/();
 
     /**
-     * Constructor for the ResourceGroup, this takes a name parameter which must
-     * be 8 characters long.
+     * Constructor for the ResourceGroup, this takes a
+     * name parameter which must be 8 characters long.
      *
-     * @param name
-     *            the resource group name
+     * @param name the resource group name
      */
-    public ResourceGroup(final String name) {
+    public ResourceGroup(String name) {
         super(name);
     }
 
     /**
      * Add this named object to this resource group
      *
-     * @param namedObject
-     *            a named object
-     * @throws IOException
-     *             thrown if an I/O exception of some sort has occurred.
+     * @param namedObject a named object
+     * @throws IOException thrown if an I/O exception of some sort has occurred.
      */
-    public void addObject(final AbstractNamedAFPObject namedObject)
-            throws IOException {
-        this.resourceSet.add(namedObject);
+    public void addObject(AbstractNamedAFPObject namedObject) throws IOException {
+        resourceSet.add(namedObject);
     }
 
     /**
@@ -63,50 +60,48 @@ public class ResourceGroup extends AbstractNamedAFPObject {
      * @return the number of resources contained in this resource group
      */
     public int getResourceCount() {
-        return this.resourceSet.size();
+        return resourceSet.size();
     }
 
     /**
-     * Returns true if the resource exists within this resource group, false
-     * otherwise.
+     * Returns true if the resource exists within this resource group,
+     * false otherwise.
      *
-     * @param uri
-     *            the uri of the resource
+     * @param uri the uri of the resource
      * @return true if the resource exists within this resource group
      */
-    public boolean resourceExists(final String uri) {
-        return this.resourceSet.contains(uri);
+    public boolean resourceExists(String uri) {
+        return resourceSet.contains(uri);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    public void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.RESOURCE_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeContent(final OutputStream os) throws IOException {
-        for (final Streamable streamableObject : this.resourceSet) {
-            if (streamableObject != null) {
+    public void writeContent(OutputStream os) throws IOException {
+        Iterator it = resourceSet.iterator();
+        while (it.hasNext()) {
+            Object object = it.next();
+            if (object instanceof Streamable) {
+                Streamable streamableObject = (Streamable)object;
                 streamableObject.writeToStream(os);
             }
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    public void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.RESOURCE_GROUP);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return this.name + " " + this.resourceSet.toString();
+        return this.name + " " + resourceSet/*getResourceMap()*/;
     }
 }

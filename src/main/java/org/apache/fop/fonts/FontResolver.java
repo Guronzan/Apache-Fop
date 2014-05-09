@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FontResolver.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FontResolver.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fonts;
 
@@ -27,16 +27,19 @@ import javax.xml.transform.Source;
 public interface FontResolver {
 
     /**
-     * Called to resolve an URI to a Source instance. The base URI needed by the
-     * URIResolver's resolve() method is defined to be implicitly available in
-     * this case. If the URI cannot be resolved, null is returned and it is
-     * assumed that the FontResolver implementation already warned the user
-     * about the problem.
-     * 
-     * @param href
-     *            An href attribute, which may be relative or absolute.
+     * Called to resolve an URI to a Source instance. The base URI needed by the URIResolver's
+     * resolve() method is defined to be implicitly available in this case. If the URI cannot
+     * be resolved, null is returned and it is assumed that the FontResolver implementation
+     * already warned the user about the problem.
+     * @param href An href attribute, which may be relative or absolute.
      * @return A Source object, or null if the href could not resolved.
      */
-    Source resolve(final String href);
+    Source resolve(String href);
+
+    /**
+     * Check whether complex script features are enabled.
+     * @return true if FOP is to use complex script features
+     */
+    boolean isComplexScriptFeaturesEnabled();
 
 }

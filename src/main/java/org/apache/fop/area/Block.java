@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-/* $Id: Block.java 707631 2008-10-24 13:42:59Z jeremias $ */
+/* $Id: Block.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.area;
+
 
 // block areas hold either more block areas or line
 // areas can also be used as a block spacer
@@ -27,14 +28,12 @@ package org.apache.fop.area;
 // has id information
 
 /**
- * This is the block area class. It holds child block areas such as other blocks
- * or lines.
+ * This is the block area class.
+ * It holds child block areas such as other blocks or lines.
  */
 public class Block extends BlockParent {
-    /**
-     *
-     */
-    private static final long serialVersionUID = -3072155350110395420L;
+
+    private static final long serialVersionUID = 6843727817993665788L;
 
     /**
      * Normally stacked with other blocks.
@@ -42,26 +41,26 @@ public class Block extends BlockParent {
     public static final int STACK = 0;
 
     /**
-     * Placed relative to the flow position. This effects the flow placement of
-     * stacking normally.
+     * Placed relative to the flow position.
+     * This effects the flow placement of stacking normally.
      */
     public static final int RELATIVE = 1;
 
     /**
-     * Relative to the block parent but not effecting the stacking Used for
-     * block-container, tables and lists.
+     * Relative to the block parent but not effecting the stacking
+     * Used for block-container, tables and lists.
      */
     public static final int ABSOLUTE = 2;
 
     /**
-     * Relative to a viewport/page but not effecting the stacking Used for
-     * block-container.
+     * Relative to a viewport/page but not effecting the stacking
+     * Used for block-container.
      */
     public static final int FIXED = 3;
 
-    private final int stacking = TB;
     private int positioning = STACK;
 
+    /** if true, allow BPD update */
     protected transient boolean allowBPDUpdate = true;
 
     // a block with may contain the dominant styling info in
@@ -70,25 +69,21 @@ public class Block extends BlockParent {
     /**
      * Add the block to this block area.
      *
-     * @param block
-     *            the block area to add
+     * @param block the block area to add
      */
-    @Override
-    public void addBlock(final Block block) {
+    public void addBlock(Block block) {
         addBlock(block, true);
     }
 
     /**
      * Add the block to this block area.
      *
-     * @param block
-     *            the block area to add
-     * @param autoHeight
-     *            increase the height of the block.
+     * @param block the block area to add
+     * @param autoHeight increase the height of the block.
      */
-    public void addBlock(final Block block, final boolean autoHeight) {
-        if (autoHeight && this.allowBPDUpdate && block.isStacked()) {
-            this.bpd += block.getAllocBPD();
+    public void addBlock(Block block, boolean autoHeight) {
+        if (autoHeight && allowBPDUpdate && block.isStacked()) {
+            bpd += block.getAllocBPD();
         }
         addChildArea(block);
     }
@@ -96,22 +91,20 @@ public class Block extends BlockParent {
     /**
      * Add the line area to this block area.
      *
-     * @param line
-     *            the line area to add
+     * @param line the line area to add
      */
-    public void addLineArea(final LineArea line) {
-        this.bpd += line.getAllocBPD();
+    public void addLineArea(LineArea line) {
+        bpd += line.getAllocBPD();
         addChildArea(line);
     }
 
     /**
      * Set the positioning of this area.
      *
-     * @param pos
-     *            the positioning to use when rendering this area
+     * @param pos the positioning to use when rendering this area
      */
-    public void setPositioning(final int pos) {
-        this.positioning = pos;
+    public void setPositioning(int pos) {
+        positioning = pos;
     }
 
     /**
@@ -120,26 +113,32 @@ public class Block extends BlockParent {
      * @return the positioning to use when rendering this area
      */
     public int getPositioning() {
-        return this.positioning;
+        return positioning;
     }
 
     /**
-     * Indicates whether this block is stacked, rather than absolutely
-     * positioned.
-     *
+     * Indicates whether this block is stacked, rather than absolutely positioned.
      * @return true if it is stacked
      */
     public boolean isStacked() {
-        return getPositioning() == Block.STACK
-                || getPositioning() == Block.RELATIVE;
+        return (getPositioning() == Block.STACK || getPositioning() == Block.RELATIVE);
     }
 
     /**
      * @return the start-indent trait
      */
     public int getStartIndent() {
-        final Integer startIndent = (Integer) getTrait(Trait.START_INDENT);
-        return startIndent != null ? startIndent.intValue() : 0;
+        Integer startIndent = (Integer)getTrait(Trait.START_INDENT);
+        return (startIndent != null ? startIndent : 0);
+    }
+
+    /**
+     * @return the end-indent trait
+     */
+    public int getEndIndent() {
+        Integer endIndent = (Integer)getTrait(Trait.END_INDENT);
+        return (endIndent != null ? endIndent : 0);
     }
 
 }
+

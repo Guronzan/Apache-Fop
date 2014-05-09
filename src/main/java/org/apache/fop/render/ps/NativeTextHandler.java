@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: NativeTextHandler.java 719629 2008-11-21 16:33:33Z jeremias $ */
+/* $Id: NativeTextHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.ps;
 
@@ -24,21 +24,21 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
-import org.apache.fop.fonts.Font;
-import org.apache.fop.fonts.FontInfo;
-import org.apache.fop.fonts.FontSetup;
-import org.apache.fop.fonts.FontTriplet;
 import org.apache.xmlgraphics.java2d.ps.PSGraphics2D;
 import org.apache.xmlgraphics.java2d.ps.PSTextHandler;
 import org.apache.xmlgraphics.ps.PSGenerator;
 
+import org.apache.fop.fonts.Font;
+import org.apache.fop.fonts.FontInfo;
+import org.apache.fop.fonts.FontSetup;
+
 /**
- * Specialized TextHandler implementation that the PSGraphics2D class delegates
- * to to paint text using PostScript text operations.
+ * Specialized TextHandler implementation that the PSGraphics2D class delegates to to paint text
+ * using PostScript text operations.
  */
 public class NativeTextHandler implements PSTextHandler {
 
-    private final PSGraphics2D rootG2D;
+    private PSGraphics2D rootG2D;
 
     /** FontInfo containing all available fonts */
     protected FontInfo fontInfo;
@@ -57,13 +57,10 @@ public class NativeTextHandler implements PSTextHandler {
 
     /**
      * Main constructor.
-     *
-     * @param g2d
-     *            the PSGraphics2D instance this instances is used by
-     * @param fontInfo
-     *            the FontInfo object with all available fonts
+     * @param g2d the PSGraphics2D instance this instances is used by
+     * @param fontInfo the FontInfo object with all available fonts
      */
-    public NativeTextHandler(final PSGraphics2D g2d, final FontInfo fontInfo) {
+    public NativeTextHandler(PSGraphics2D g2d, FontInfo fontInfo) {
         this.rootG2D = g2d;
         if (fontInfo != null) {
             this.fontInfo = fontInfo;
@@ -73,18 +70,18 @@ public class NativeTextHandler implements PSTextHandler {
     }
 
     private void setupFontInfo() {
-        // Sets up a FontInfo with default fonts
-        this.fontInfo = new FontInfo();
-        FontSetup.setup(this.fontInfo);
+        //Sets up a FontInfo with default fonts
+        fontInfo = new FontInfo();
+        boolean base14Kerning = false;
+        FontSetup.setup(fontInfo, base14Kerning);
     }
 
     /**
      * Return the font information associated with this object
-     *
      * @return the FontInfo object
      */
     public FontInfo getFontInfo() {
-        return this.fontInfo;
+        return fontInfo;
     }
 
     private PSGenerator getPSGenerator() {
@@ -92,55 +89,52 @@ public class NativeTextHandler implements PSTextHandler {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void writeSetup() throws IOException {
-        if (this.fontInfo != null) {
-            PSFontUtils.writeFontDict(getPSGenerator(), this.fontInfo);
+        if (fontInfo != null) {
+            PSFontUtils.writeFontDict(getPSGenerator(), fontInfo);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void writePageSetup() throws IOException {
-        // nop
+        //nop
     }
 
     /**
-     * Draw a string to the PostScript document. The text is painted using text
-     * operations. {@inheritDoc}
+     * Draw a string to the PostScript document. The text is painted using
+     * text operations.
+     * {@inheritDoc}
      */
-    @Override
-    public void drawString(final Graphics2D g, final String s, final float x,
-            final float y) throws IOException {
-        final PSGraphics2D g2d = (PSGraphics2D) g;
+    public void drawString(Graphics2D g, String s, float x, float y) throws IOException {
+        PSGraphics2D g2d = (PSGraphics2D)g;
         g2d.preparePainting();
         if (this.overrideFont == null) {
-            final java.awt.Font awtFont = g2d.getFont();
+            java.awt.Font awtFont = g2d.getFont();
             this.font = createFont(awtFont);
         } else {
             this.font = this.overrideFont;
             this.overrideFont = null;
         }
 
-        // Color and Font state
+        //Color and Font state
         g2d.establishColor(g2d.getColor());
         establishCurrentFont();
 
-        final PSGenerator gen = getPSGenerator();
+        PSGenerator gen = getPSGenerator();
         gen.saveGraphicsState();
 
-        // Clip
-        final Shape imclip = g2d.getClip();
+        //Clip
+        Shape imclip = g2d.getClip();
         g2d.writeClip(imclip);
 
-        // Prepare correct transformation
-        final AffineTransform trans = g2d.getTransform();
+        //Prepare correct transformation
+        AffineTransform trans = g2d.getTransform();
         gen.concatMatrix(trans);
-        gen.writeln(gen.formatDouble(x) + " " + gen.formatDouble(y)
-                + " moveto ");
+        gen.writeln(gen.formatDouble(x) + " "
+                  + gen.formatDouble(y) + " moveto ");
         gen.writeln("1 -1 scale");
 
-        final StringBuilder sb = new StringBuilder("(");
+        StringBuffer sb = new StringBuffer("(");
         escapeText(s, sb);
         sb.append(") t ");
 
@@ -149,52 +143,37 @@ public class NativeTextHandler implements PSTextHandler {
         gen.restoreGraphicsState();
     }
 
-    private void escapeText(final String text, final StringBuilder target) {
+    private void escapeText(final String text, StringBuffer target) {
         final int l = text.length();
-        for (int i = 0; i < l; ++i) {
+        for (int i = 0; i < l; i++) {
             final char ch = text.charAt(i);
             final char mch = this.font.mapChar(ch);
             PSGenerator.escapeChar(mch, target);
         }
     }
 
-    private Font createFont(final java.awt.Font f) {
-        String fontFamily = f.getFamily();
-        if (fontFamily.equals("sanserif")) {
-            fontFamily = "sans-serif";
-        }
-        final int fontSize = 1000 * f.getSize();
-        final String style = f.isItalic() ? "italic" : "normal";
-        final int weight = f.isBold() ? Font.WEIGHT_BOLD : Font.WEIGHT_NORMAL;
-
-        FontTriplet triplet = this.fontInfo.findAdjustWeight(fontFamily, style,
-                weight);
-        if (triplet == null) {
-            triplet = this.fontInfo.findAdjustWeight("sans-serif", style,
-                    weight);
-        }
-        return this.fontInfo.getFontInstance(triplet, fontSize);
+    private Font createFont(java.awt.Font f) {
+        return fontInfo.getFontInstanceForAWTFont(f);
     }
 
     private void establishCurrentFont() throws IOException {
-        if (this.currentFontName != this.font.getFontName()
-                || this.currentFontSize != this.font.getFontSize()) {
-            final PSGenerator gen = getPSGenerator();
-            gen.writeln(this.font.getFontName() + " "
-                    + gen.formatDouble(this.font.getFontSize() / 1000f) + " F");
-            this.currentFontName = this.font.getFontName();
-            this.currentFontSize = this.font.getFontSize();
+        if ((currentFontName != this.font.getFontName())
+                || (currentFontSize != this.font.getFontSize())) {
+            PSGenerator gen = getPSGenerator();
+            gen.writeln("/" + this.font.getFontTriplet().getName() + " "
+                    + gen.formatDouble(font.getFontSize() / 1000f) + " F");
+            currentFontName = this.font.getFontName();
+            currentFontSize = this.font.getFontSize();
         }
     }
 
     /**
      * Sets the overriding font.
-     *
-     * @param override
-     *            Overriding Font to set
+     * @param override Overriding Font to set
      */
-    public void setOverrideFont(final Font override) {
+    public void setOverrideFont(Font override) {
         this.overrideFont = override;
     }
+
 
 }

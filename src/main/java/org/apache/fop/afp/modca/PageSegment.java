@@ -15,31 +15,30 @@
  * limitations under the License.
  */
 
-/* $Id: PageSegment.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: PageSegment.java 1039179 2010-11-25 21:04:09Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A page segment is a MO:DCA-P resource object. It may be stored in an external
- * resource library or it may be carried in a resource group. Page segments
- * contain any combination of IOCA image objects and GOCA graphics objects.
+ * A page segment is a MO:DCA-P resource object.  It may be stored in an
+ * external resource library or it may be carried in a resource group.
+ * Page segments contain any combination of IOCA image objects and
+ * GOCA graphics objects.
  */
 public class PageSegment extends AbstractNamedAFPObject {
 
-    private List<AbstractAFPObject> objects = null;
+    private List/*<AbstractAFPObject>*/ objects = null;
 
     /**
      * Main constructor
      *
-     * @param name
-     *            the name of this object
+     * @param name the name of this object
      */
-    public PageSegment(final String name) {
+    public PageSegment(String name) {
         super(name);
     }
 
@@ -48,48 +47,43 @@ public class PageSegment extends AbstractNamedAFPObject {
      *
      * @return a list of objects contained within this page segment
      */
-    public List<AbstractAFPObject> getObjects() {
-        if (this.objects == null) {
-            this.objects = new ArrayList<>();
+    public List/*<AbstractAFPObject>*/ getObjects() {
+        if (objects == null) {
+            objects = new java.util.ArrayList();
         }
-        return this.objects;
+        return objects;
     }
 
     /**
      * Adds a resource object (image/graphic) to this page segment
      *
-     * @param object
-     *            the resource objec to add to this page segment
+     * @param object the resource objec to add to this page segment
      */
-    public void addObject(final AbstractAFPObject object) {
+    public void addObject(AbstractAFPObject object) {
         getObjects().add(object);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeStart(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeStart(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.PAGE_SEGMENT);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeContent(final OutputStream os) throws IOException {
+    protected void writeContent(OutputStream os) throws IOException {
         super.writeContent(os);
-        writeObjects(this.objects, os);
+        writeObjects(objects, os);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void writeEnd(final OutputStream os) throws IOException {
-        final byte[] data = new byte[17];
+    protected void writeEnd(OutputStream os) throws IOException {
+        byte[] data = new byte[17];
         copySF(data, Type.END, Category.PAGE_SEGMENT);
         os.write(data);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
         return this.name;
     }

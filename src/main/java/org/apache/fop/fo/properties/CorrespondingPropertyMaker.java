@@ -15,79 +15,105 @@
  * limitations under the License.
  */
 
-/* $Id: CorrespondingPropertyMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CorrespondingPropertyMaker.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.properties;
 
-import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
+ * Maker class for handling corresponding properties.
  */
 public class CorrespondingPropertyMaker {
+    /** base property maker */
     protected PropertyMaker baseMaker;
-    protected int lr_tb;
-    protected int rl_tb;
-    protected int tb_rl;
+    /** corresponding property for lr-tb writing mode */
+    protected int lrtb;
+    /** corresponding property for rl-tb writing mode */
+    protected int rltb;
+    /** corresponding property for tb-rl writing mode */
+    protected int tbrl;
+    /** corresponding property for tb-lr writing mode */
+    protected int tblr;
+    /** user parent property list */
     protected boolean useParent;
     private boolean relative;
 
-    public CorrespondingPropertyMaker(final PropertyMaker baseMaker) {
+    /**
+     * Construct a corresponding property maker.
+     * @param baseMaker the base property maker
+     */
+    public CorrespondingPropertyMaker(PropertyMaker baseMaker) {
         this.baseMaker = baseMaker;
         baseMaker.setCorresponding(this);
     }
 
-    public void setCorresponding(final int lr_tb, final int rl_tb,
-            final int tb_rl) {
-        this.lr_tb = lr_tb;
-        this.rl_tb = rl_tb;
-        this.tb_rl = tb_rl;
+    /**
+     * Set corresponding property values.
+     * @param lrtb a corresponding value
+     * @param rltb a corresponding value
+     * @param tbrl a corresponding value
+     * @param tblr a corresponding value
+     */
+
+    /**
+     * Set corresponding property identifiers.
+     * @param lrtb the property that corresponds with lr-tb writing mode
+     * @param rltb the property that corresponds with rl-tb writing mode
+     * @param tbrl the property that corresponds with tb-lr writing mode
+     * @param tblr the property that corresponds with tb-lr writing mode
+     */
+    public void setCorresponding(int lrtb, int rltb, int tbrl, int tblr) {
+        this.lrtb = lrtb;
+        this.rltb = rltb;
+        this.tbrl = tbrl;
+        this.tblr = tblr;
     }
 
     /**
-     * Controls whether the PropertyMaker accesses the parent property list or
-     * the current property list for determining the writing mode.
-     * 
-     * @param useParent
-     *            true if the parent property list should be used.
+     * Controls whether the PropertyMaker accesses the parent property list or the current
+     * property list for determining the writing mode.
+     * @param useParent true if the parent property list should be used.
      */
-    public void setUseParent(final boolean useParent) {
+    public void setUseParent(boolean useParent) {
         this.useParent = useParent;
     }
 
-    public void setRelative(final boolean relative) {
+    /**
+     * Set relative flag.
+     * @param relative true if properties operate on a relative direction
+     */
+    public void setRelative(boolean relative) {
         this.relative = relative;
     }
 
     /**
      * For properties that operate on a relative direction (before, after,
-     * start, end) instead of an absolute direction (top, bottom, left, right),
-     * this method determines whether a corresponding property is specified on
-     * the corresponding absolute direction. For example, the border-start-color
-     * property in a lr-tb writing-mode specifies the same thing that the
-     * border-left-color property specifies. In this example, if the Maker for
-     * the border-start-color property is testing, and if the border-left-color
-     * is specified in the properties, this method should return true.
-     * 
-     * @param propertyList
-     *            collection of properties to be tested
-     * @return true iff 1) the property operates on a relative direction, AND 2)
-     *         the property has a corresponding property on an absolute
-     *         direction, AND 3) the corresponding property on that absolute
-     *         direction has been specified in the input properties
+     * start, end) instead of an absolute direction (top, bottom, left,
+     * right), this method determines whether a corresponding property
+     * is specified on the corresponding absolute direction. For example,
+     * the border-start-color property in a lr-tb writing-mode specifies
+     * the same thing that the border-left-color property specifies. In this
+     * example, if the Maker for the border-start-color property is testing,
+     * and if the border-left-color is specified in the properties,
+     * this method should return true.
+     * @param propertyList collection of properties to be tested
+     * @return true iff 1) the property operates on a relative direction,
+     * AND 2) the property has a corresponding property on an absolute
+     * direction, AND 3) the corresponding property on that absolute
+     * direction has been specified in the input properties
      */
-    public boolean isCorrespondingForced(final PropertyList propertyList) {
+    public boolean isCorrespondingForced(PropertyList propertyList) {
 
-        if (!this.relative) {
+        if (!relative) {
             return false;
         }
 
-        final PropertyList pList = getWMPropertyList(propertyList);
+        PropertyList pList = getWMPropertyList(propertyList);
         if (pList != null) {
-            final int correspondingId = pList.getWritingMode(this.lr_tb,
-                    this.rl_tb, this.tb_rl);
+            int correspondingId = pList.selectFromWritingMode(lrtb, rltb, tbrl, tblr);
 
             if (pList.getExplicit(correspondingId) != null) {
                 return true;
@@ -97,43 +123,42 @@ public class CorrespondingPropertyMaker {
     }
 
     /**
-     * Return a Property object representing the value of this property, based
-     * on other property values for this FO. A special case is properties which
-     * inherit the specified value, rather than the computed value.
-     * 
-     * @param propertyList
-     *            The PropertyList for the FO.
-     * @return Property A computed Property value or null if no rules are
-     *         specified (in foproperties.xml) to compute the value.
-     * @throws FOPException
-     *             for invalid or inconsistent FO input
+     * Return a Property object representing the value of this property,
+     * based on other property values for this FO.
+     * A special case is properties which inherit the specified value,
+     * rather than the computed value.
+     * @param propertyList The PropertyList for the FO.
+     * @return Property A computed Property value or null if no rules
+     * are specified (in foproperties.xml) to compute the value.
+     * @throws PropertyException if a property exception occurs
      */
-    public Property compute(final PropertyList propertyList)
-            throws PropertyException {
-        final PropertyList pList = getWMPropertyList(propertyList);
+    public Property compute(PropertyList propertyList) throws PropertyException {
+        PropertyList pList = getWMPropertyList(propertyList);
         if (pList == null) {
             return null;
         }
-        final int correspondingId = pList.getWritingMode(this.lr_tb,
-                this.rl_tb, this.tb_rl);
+        int correspondingId = pList.selectFromWritingMode(lrtb, rltb, tbrl, tblr);
 
         Property p = propertyList.getExplicitOrShorthand(correspondingId);
         if (p != null) {
-            final FObj parentFO = propertyList.getParentFObj();
-            p = this.baseMaker.convertProperty(p, propertyList, parentFO);
+            FObj parentFO = propertyList.getParentFObj();
+            p = baseMaker.convertProperty(p, propertyList, parentFO);
         }
         return p;
     }
 
     /**
-     * Return the property list to use for fetching writing mode depending
-     * property ids.
+     * Return the property list to use for fetching writing mode depending property
+     * ids.
+     * @param pList a property list
+     * @return the property list to use
      */
-    protected PropertyList getWMPropertyList(final PropertyList pList) {
-        if (this.useParent) {
+    protected PropertyList getWMPropertyList(PropertyList pList) {
+        if (useParent) {
             return pList.getParentPropertyList();
         } else {
             return pList;
         }
     }
 }
+

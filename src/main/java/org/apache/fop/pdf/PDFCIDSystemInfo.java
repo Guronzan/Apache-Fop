@@ -27,45 +27,42 @@ package org.apache.fop.pdf;
  * this small object is used in the CID fonts and in the CMaps.
  */
 public class PDFCIDSystemInfo extends PDFObject {
-    private final String registry;
-    private final String ordering;
-    private final int supplement;
+    private String registry;
+    private String ordering;
+    private int supplement;
 
     /**
      * Create a CID system info.
      *
-     * @param registry
-     *            the registry value
-     * @param ordering
-     *            the ordering value
-     * @param supplement
-     *            the supplement value
+     * @param registry the registry value
+     * @param ordering the ordering value
+     * @param supplement the supplement value
      */
-    public PDFCIDSystemInfo(final String registry, final String ordering,
-            final int supplement) {
+    public PDFCIDSystemInfo(String registry, String ordering,
+                            int supplement) {
         this.registry = registry;
         this.ordering = ordering;
         this.supplement = supplement;
     }
 
     /**
-     * Create a string for the CIDSystemInfo dictionary. The entries are placed
-     * as an inline dictionary.
+     * Create a string for the CIDSystemInfo dictionary.
+     * The entries are placed as an inline dictionary.
      *
      * @return the string for the CIDSystemInfo entry with the inline dictionary
      */
-    @Override
     public String toPDFString() {
-        final StringBuffer p = new StringBuffer(64);
+        StringBuffer p = new StringBuffer(64);
         p.setLength(0);
         p.append("/CIDSystemInfo << /Registry (");
-        p.append(this.registry);
+        p.append(registry);
         p.append(") /Ordering (");
-        p.append(this.ordering);
+        p.append(ordering);
         p.append(") /Supplement ");
-        p.append(this.supplement);
+        p.append(supplement);
         p.append(" >>");
         return p.toString();
     }
 
 }
+

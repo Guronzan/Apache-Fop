@@ -15,78 +15,76 @@
  * limitations under the License.
  */
 
-/* $Id: PSRendererConfigurator.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PSRendererConfigurator.java 1135995 2011-06-15 11:04:33Z spepping $ */
 
 package org.apache.fop.render.ps;
 
+import java.util.Locale;
+
 import org.apache.avalon.framework.configuration.Configuration;
+
+import org.apache.xmlgraphics.ps.PSGenerator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.PrintRendererConfigurator;
 import org.apache.fop.render.Renderer;
 import org.apache.fop.render.intermediate.IFDocumentHandler;
-import org.apache.xmlgraphics.ps.PSGenerator;
+import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 
 /**
  * Postscript renderer config
  */
-public class PSRendererConfigurator extends PrintRendererConfigurator {
+public class PSRendererConfigurator extends PrintRendererConfigurator
+            implements IFDocumentHandlerConfigurator {
 
     /**
      * Default constructor
-     *
-     * @param userAgent
-     *            user agent
+     * @param userAgent user agent
      */
-    public PSRendererConfigurator(final FOUserAgent userAgent) {
+    public PSRendererConfigurator(FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
-     * Configure the PS renderer.
+     * Throws an UnsupportedOperationException.
      *
-     * @param renderer
-     *            postscript renderer
-     * @throws FOPException
-     *             fop exception
+     * @param renderer not used
      */
-    @Override
-    public void configure(final Renderer renderer) throws FOPException {
-        final Configuration cfg = super.getRendererConfig(renderer);
-        if (cfg != null) {
-            super.configure(renderer);
-
-            final PSRenderer psRenderer = (PSRenderer) renderer;
-            configure(psRenderer.getPSUtil(), cfg);
-        }
+    public void configure(Renderer renderer) {
+        throw new UnsupportedOperationException();
     }
 
-    private void configure(final PSRenderingUtil psUtil, final Configuration cfg) {
-        psUtil.setAutoRotateLandscape(cfg.getChild("auto-rotate-landscape")
-                .getValueAsBoolean(false));
+    private void configure(PSRenderingUtil psUtil, Configuration cfg) {
+        psUtil.setAutoRotateLandscape(
+            cfg.getChild("auto-rotate-landscape").getValueAsBoolean(false));
         Configuration child;
         child = cfg.getChild("language-level");
         if (child != null) {
-            psUtil.setLanguageLevel(child
-                    .getValueAsInteger(PSGenerator.DEFAULT_LANGUAGE_LEVEL));
+            psUtil.setLanguageLevel(child.getValueAsInteger(
+                    PSGenerator.DEFAULT_LANGUAGE_LEVEL));
         }
         child = cfg.getChild("optimize-resources");
         if (child != null) {
             psUtil.setOptimizeResources(child.getValueAsBoolean(false));
         }
-        psUtil.setSafeSetPageDevice(cfg.getChild("safe-set-page-device")
-                .getValueAsBoolean(false));
-        psUtil.setDSCComplianceEnabled(cfg.getChild("dsc-compliant")
-                .getValueAsBoolean(true));
+        child = cfg.getChild("rendering");
+        if (child != null) {
+            psUtil.setRenderingMode(PSRenderingMode.valueOf(
+                    child.getValue(psUtil.getRenderingMode().toString())
+                    .toUpperCase(Locale.ENGLISH)));
+        }
+        psUtil.setSafeSetPageDevice(
+            cfg.getChild("safe-set-page-device").getValueAsBoolean(false));
+        psUtil.setDSCComplianceEnabled(
+            cfg.getChild("dsc-compliant").getValueAsBoolean(true));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void configure(final IFDocumentHandler documentHandler) {
-        final Configuration cfg = super.getRendererConfig(documentHandler
-                .getMimeType());
+    public void configure(IFDocumentHandler documentHandler) throws FOPException {
+        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {
-            final PSDocumentHandler psDocumentHandler = (PSDocumentHandler) documentHandler;
+            PSDocumentHandler psDocumentHandler = (PSDocumentHandler)documentHandler;
             configure(psDocumentHandler.getPSUtil(), cfg);
         }
 

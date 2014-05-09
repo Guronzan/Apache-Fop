@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IFGraphicContext.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: IFGraphicContext.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.render.intermediate;
 
@@ -23,7 +23,6 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.xmlgraphics.java2d.GraphicContext;
 
@@ -34,7 +33,7 @@ public class IFGraphicContext extends GraphicContext {
 
     private static final AffineTransform[] EMPTY_TRANSFORM_ARRAY = new AffineTransform[0];
 
-    private final List<Group> groupList = new ArrayList<>();
+    private ArrayList groupList = new ArrayList();
 
     /**
      * Default constructor.
@@ -45,120 +44,154 @@ public class IFGraphicContext extends GraphicContext {
 
     /**
      * Copy constructor.
-     *
-     * @param graphicContext
-     *            the graphic context to make a copy of
+     * @param graphicContext the graphic context to make a copy of
      */
-    protected IFGraphicContext(final IFGraphicContext graphicContext) {
+    protected IFGraphicContext(IFGraphicContext graphicContext) {
         super(graphicContext);
-        // We don't clone groupDepth!
+        // N.B. do not perform deep copy on groupList; doing so causes
+        // a junit regression... have not investigated cause... [GA]
+        // groupList = (ArrayList) graphicContext.groupList.clone();
     }
 
-    /** {@inheritDoc} */
-    @Override
+    /**
+     * {@inheritDoc}
+     */
     public Object clone() {
-        return new IFGraphicContext(this);
+        return new IFGraphicContext ( this );
     }
 
-    public void pushGroup(final Group group) {
-        // this.groupDepth++;
+    /** @param group a group */
+    public void pushGroup(Group group) {
         this.groupList.add(group);
-        for (final AffineTransform transform : group.getTransforms()) {
-            transform(transform);
+        for (int i = 0, c = group.getTransforms().length; i < c; i++) {
+            transform(group.getTransforms()[i]);
         }
     }
 
+    /** @return array of groups */
     public Group[] getGroups() {
-        return this.groupList.toArray(new Group[getGroupStackSize()]);
+        return (Group[])this.groupList.toArray(new Group[getGroupStackSize()]);
     }
 
+    /** @return array of groups after clearing group list */
     public Group[] dropGroups() {
-        final Group[] groups = getGroups();
+        Group[] groups = getGroups();
         this.groupList.clear();
         return groups;
     }
 
+    /** @return size of group list */
     public int getGroupStackSize() {
         return this.groupList.size();
     }
 
+    /** a group */
     public static class Group {
 
-        private final AffineTransform[] transforms;
+        private AffineTransform[] transforms;
 
-        public Group(final AffineTransform[] transforms) {
+        /**
+         * Construct a Group.
+         * @param transforms an array of transforms
+         */
+        public Group(AffineTransform[] transforms) {
             this.transforms = transforms;
         }
 
-        public Group(final AffineTransform transform) {
-            this(new AffineTransform[] { transform });
+        /**
+         * Construct a Group.
+         * @param transform a transform
+         */
+        public Group(AffineTransform transform) {
+            this(new AffineTransform[] {transform});
         }
 
+        /** Default constructor. */
         public Group() {
             this(EMPTY_TRANSFORM_ARRAY);
         }
 
+        /** @return array of transforms */
         public AffineTransform[] getTransforms() {
             return this.transforms;
         }
 
-        public void start(final IFPainter painter) throws IFException {
-            painter.startGroup(this.transforms);
+        /**
+         * @param painter a painter
+         * @throws IFException in not caught
+         */
+        public void start(IFPainter painter) throws IFException {
+            painter.startGroup(transforms);
         }
 
-        public void end(final IFPainter painter) throws IFException {
+        /**
+         * @param painter a painter
+         * @throws IFException in not caught
+         */
+        public void end(IFPainter painter) throws IFException {
             painter.endGroup();
         }
 
         /** {@inheritDoc} */
-        @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("group: ");
+            StringBuffer sb = new StringBuffer("group: ");
             IFUtil.toString(getTransforms(), sb);
             return sb.toString();
         }
 
     }
 
+    /** a viewport */
     public static class Viewport extends Group {
 
-        private final Dimension size;
-        private final Rectangle clipRect;
+        private Dimension size;
+        private Rectangle clipRect;
 
-        public Viewport(final AffineTransform[] transforms,
-                final Dimension size, final Rectangle clipRect) {
+        /**
+         * Construct a viewport.
+         * @param transforms an array of transforms
+         * @param size a dimension
+         * @param clipRect a clip rectangle
+         */
+        public Viewport(AffineTransform[] transforms, Dimension size, Rectangle clipRect) {
             super(transforms);
             this.size = size;
             this.clipRect = clipRect;
         }
 
-        public Viewport(final AffineTransform transform, final Dimension size,
-                final Rectangle clipRect) {
-            this(new AffineTransform[] { transform }, size, clipRect);
+        /**
+         * Construct a viewport.
+         * @param transform a transform
+         * @param size a dimension
+         * @param clipRect a clip rectangle
+         */
+        public Viewport(AffineTransform transform, Dimension size, Rectangle clipRect) {
+            this(new AffineTransform[] {transform}, size, clipRect);
         }
 
+        /** @return the viewport's size */
         public Dimension getSize() {
             return this.size;
         }
 
+        /** @return the clip rectangle */
         public Rectangle getClipRect() {
             return this.clipRect;
         }
 
-        @Override
-        public void start(final IFPainter painter) throws IFException {
-            painter.startViewport(getTransforms(), this.size, this.clipRect);
+        /** {@inheritDoc} */
+        public void start(IFPainter painter) throws IFException {
+            painter.startViewport(getTransforms(), size, clipRect);
         }
 
-        @Override
-        public void end(final IFPainter painter) throws IFException {
+        /** {@inheritDoc} */
+        public void end(IFPainter painter) throws IFException {
             painter.endViewport();
         }
 
         /** {@inheritDoc} */
-        @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder("viewport: ");
+            StringBuffer sb = new StringBuffer("viewport: ");
             IFUtil.toString(getTransforms(), sb);
             sb.append(", ").append(getSize());
             if (getClipRect() != null) {

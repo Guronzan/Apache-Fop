@@ -23,6 +23,7 @@ import org.apache.fop.area.Area;
 import org.apache.fop.area.inline.Image;
 import org.apache.fop.fo.flow.ExternalGraphic;
 
+
 /**
  * LayoutManager for the fo:external-graphic formatting object
  */
@@ -35,14 +36,14 @@ public class ExternalGraphicLayoutManager extends AbstractGraphicsLayoutManager 
      *            the fo:external-graphic formatting object that creates the
      *            area
      */
-    public ExternalGraphicLayoutManager(final ExternalGraphic node) {
+    public ExternalGraphicLayoutManager(ExternalGraphic node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected Area getChildArea() {
-        return new Image(((ExternalGraphic) this.fobj).getSrc());
+        return new Image(((ExternalGraphic) fobj).getSrc());
     }
 
 }
+

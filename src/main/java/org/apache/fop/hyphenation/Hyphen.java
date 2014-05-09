@@ -15,58 +15,77 @@
  * limitations under the License.
  */
 
-/* $Id: Hyphen.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Hyphen.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
 import java.io.Serializable;
 
 /**
- * This class represents a hyphen. A 'full' hyphen is made of 3 parts: the
- * pre-break text, post-break text and no-break. If no line-break is generated
- * at this position, the no-break text is used, otherwise, pre-break and
- * post-break are used. Typically, pre-break is equal to the hyphen character
- * and the others are empty. However, this general scheme allows support for
- * cases in some languages where words change spelling if they're split across
- * lines, like german's 'backen' which hyphenates 'bak-ken'. BTW, this comes
- * from TeX.
+ * <p>This class represents a hyphen. A 'full' hyphen is made of 3 parts:
+ * the pre-break text, post-break text and no-break. If no line-break
+ * is generated at this position, the no-break text is used, otherwise,
+ * pre-break and post-break are used. Typically, pre-break is equal to
+ * the hyphen character and the others are empty. However, this general
+ * scheme allows support for cases in some languages where words change
+ * spelling if they're split across lines, like german's 'backen' which
+ * hyphenates 'bak-ken'. BTW, this comes from TeX.</p>
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * <p>This work was authored by Carlos Villegas (cav@uniscope.co.jp).</p>
  */
 
+/**
+ * Represents a hyphen.
+ */
 public class Hyphen implements Serializable {
+
+    private static final long serialVersionUID = 8989909741110279085L;
+
+    /** pre break string */
+    public String preBreak;                                     // CSOK: VisibilityModifier
+
+    /** no break string */
+    public String noBreak;                                      // CSOK: VisibilityModifier
+
+    /** post break string */
+    public String postBreak;                                    // CSOK: VisibilityModifier
+
     /**
-     *
+     * Construct a hyphen.
+     * @param pre break string
+     * @param no break string
+     * @param post break string
      */
-    private static final long serialVersionUID = 8028626241673257599L;
-    public String preBreak;
-    public String noBreak;
-    public String postBreak;
-
-    Hyphen(final String pre, final String no, final String post) {
-        this.preBreak = pre;
-        this.noBreak = no;
-        this.postBreak = post;
+    Hyphen(String pre, String no, String post) {
+        preBreak = pre;
+        noBreak = no;
+        postBreak = post;
     }
 
-    Hyphen(final String pre) {
-        this.preBreak = pre;
-        this.noBreak = null;
-        this.postBreak = null;
+    /**
+     * Construct a hyphen.
+     * @param pre break string
+     */
+    Hyphen(String pre) {
+        preBreak = pre;
+        noBreak = null;
+        postBreak = null;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public String toString() {
-        if (this.noBreak == null && this.postBreak == null
-                && this.preBreak != null && this.preBreak.equals("-")) {
+        if (noBreak == null
+                && postBreak == null
+                && preBreak != null
+                && preBreak.equals("-")) {
             return "-";
-        }
-        final StringBuilder res = new StringBuilder("{");
-        res.append(this.preBreak);
+                }
+        StringBuffer res = new StringBuffer("{");
+        res.append(preBreak);
         res.append("}{");
-        res.append(this.postBreak);
+        res.append(postBreak);
         res.append("}{");
-        res.append(this.noBreak);
+        res.append(noBreak);
         res.append('}');
         return res.toString();
     }

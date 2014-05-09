@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractPageSequenceLayoutManager.java 808157 2009-08-26 18:50:10Z vhennebert $ */
+/* $Id: AbstractPageSequenceLayoutManager.java 1229622 2012-01-10 16:14:05Z cbowditch $ */
 
 package org.apache.fop.layoutmgr;
 
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.apache.fop.area.AreaTreeHandler;
 import org.apache.fop.area.AreaTreeModel;
@@ -37,13 +38,14 @@ import org.apache.fop.fo.pagination.AbstractPageSequence;
 /**
  * Abstract base class for a page sequence layout manager.
  */
-@Slf4j
-public abstract class AbstractPageSequenceLayoutManager extends
-        AbstractLayoutManager implements TopLevelLayoutManager {
+public abstract class AbstractPageSequenceLayoutManager extends AbstractLayoutManager
+            implements TopLevelLayoutManager {
+
+    private static Log log = LogFactory.getLog(AbstractPageSequenceLayoutManager.class);
 
     /**
-     * AreaTreeHandler which activates the PSLM and controls the rendering of
-     * its pages.
+     * AreaTreeHandler which activates the PSLM and controls
+     * the rendering of its pages.
      */
     protected AreaTreeHandler areaTreeHandler;
 
@@ -64,13 +66,10 @@ public abstract class AbstractPageSequenceLayoutManager extends
     /**
      * Constructor
      *
-     * @param ath
-     *            the area tree handler object
-     * @param pseq
-     *            fo:page-sequence to process
+     * @param ath the area tree handler object
+     * @param pseq fo:page-sequence to process
      */
-    public AbstractPageSequenceLayoutManager(final AreaTreeHandler ath,
-            final AbstractPageSequence pseq) {
+    public AbstractPageSequenceLayoutManager(AreaTreeHandler ath, AbstractPageSequence pseq) {
         super(pseq);
         this.areaTreeHandler = ath;
         this.idTracker = ath.getIDTracker();
@@ -81,109 +80,96 @@ public abstract class AbstractPageSequenceLayoutManager extends
      * @return the LayoutManagerMaker object associated to the areaTreeHandler
      */
     public LayoutManagerMaker getLayoutManagerMaker() {
-        return this.areaTreeHandler.getLayoutManagerMaker();
+        return areaTreeHandler.getLayoutManagerMaker();
     }
 
     /**
      * Provides access to the current page.
-     *
      * @return the current Page
      */
-    @Override
     public Page getCurrentPage() {
-        return this.curPage;
+        return curPage;
     }
 
     /**
      * Provides access for setting the current page.
-     *
-     * @param currentPage
-     *            the new current Page
+     * @param currentPage the new current Page
      */
-    protected void setCurrentPage(final Page currentPage) {
+    protected void setCurrentPage(Page currentPage) {
         this.curPage = currentPage;
     }
 
     /**
      * Provides access to the current page number
-     *
      * @return the current page number
      */
     protected int getCurrentPageNum() {
-        return this.currentPageNum;
+        return currentPageNum;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void initialize() {
-        this.startPageNum = this.pageSeq.getStartingPageNumber();
-        this.currentPageNum = this.startPageNum - 1;
+        startPageNum = pageSeq.getStartingPageNumber();
+        currentPageNum = startPageNum - 1;
     }
 
     /**
-     * This returns the first PageViewport that contains an id trait matching
-     * the idref argument, or null if no such PV exists.
+     * This returns the first PageViewport that contains an id trait
+     * matching the idref argument, or null if no such PV exists.
      *
-     * @param idref
-     *            the idref trait needing to be resolved
+     * @param idref the idref trait needing to be resolved
      * @return the first PageViewport that contains the ID trait
      */
-    public PageViewport getFirstPVWithID(final String idref) {
-        final List<PageViewport> list = this.idTracker
-                .getPageViewportsContainingID(idref);
+    public PageViewport getFirstPVWithID(String idref) {
+        List list = idTracker.getPageViewportsContainingID(idref);
         if (list != null && list.size() > 0) {
-            return list.get(0);
+            return (PageViewport) list.get(0);
         }
         return null;
     }
 
     /**
-     * This returns the last PageViewport that contains an id trait matching the
-     * idref argument, or null if no such PV exists.
+     * This returns the last PageViewport that contains an id trait
+     * matching the idref argument, or null if no such PV exists.
      *
-     * @param idref
-     *            the idref trait needing to be resolved
+     * @param idref the idref trait needing to be resolved
      * @return the last PageViewport that contains the ID trait
      */
-    public PageViewport getLastPVWithID(final String idref) {
-        final List<PageViewport> list = this.idTracker
-                .getPageViewportsContainingID(idref);
+    public PageViewport getLastPVWithID(String idref) {
+        List list = idTracker.getPageViewportsContainingID(idref);
         if (list != null && list.size() > 0) {
-            return list.get(list.size() - 1);
+            return (PageViewport) list.get(list.size() - 1);
         }
         return null;
     }
 
     /**
-     * Add an ID reference to the current page. When adding areas the area adds
-     * its ID reference. For the page layout manager it adds the id reference
+     * Add an ID reference to the current page.
+     * When adding areas the area adds its ID reference.
+     * For the page layout manager it adds the id reference
      * with the current page to the area tree.
      *
-     * @param id
-     *            the ID reference to add
+     * @param id the ID reference to add
      */
-    public void addIDToPage(final String id) {
+    public void addIDToPage(String id) {
         if (id != null && id.length() > 0) {
-            this.idTracker.associateIDWithPageViewport(id,
-                    this.curPage.getPageViewport());
+            idTracker.associateIDWithPageViewport(id, curPage.getPageViewport());
         }
     }
 
     /**
-     * Add an id reference of the layout manager in the AreaTreeHandler, if the
-     * id hasn't been resolved yet
-     *
-     * @param id
-     *            the id to track
-     * @return a boolean indicating if the id has already been resolved TODO
-     *         Maybe give this a better name
+     * Add an id reference of the layout manager in the AreaTreeHandler,
+     * if the id hasn't been resolved yet
+     * @param id the id to track
+     * @return a boolean indicating if the id has already been resolved
+     * TODO Maybe give this a better name
      */
-    public boolean associateLayoutManagerID(final String id) {
+    public boolean associateLayoutManagerID(String id) {
         if (log.isDebugEnabled()) {
             log.debug("associateLayoutManagerID(" + id + ")");
         }
-        if (!this.idTracker.alreadyResolvedID(id)) {
-            this.idTracker.signalPendingID(id);
+        if (!idTracker.alreadyResolvedID(id)) {
+            idTracker.signalPendingID(id);
             return false;
         } else {
             return true;
@@ -191,67 +177,64 @@ public abstract class AbstractPageSequenceLayoutManager extends
     }
 
     /**
-     * Notify the areaTreeHandler that the LayoutManagers containing idrefs have
-     * finished creating areas
-     *
-     * @param id
-     *            the id for which layout has finished
+     * Notify the areaTreeHandler that the LayoutManagers containing
+     * idrefs have finished creating areas
+     * @param id the id for which layout has finished
      */
-    public void notifyEndOfLayout(final String id) {
-        this.idTracker.signalIDProcessed(id);
+    public void notifyEndOfLayout(String id) {
+        idTracker.signalIDProcessed(id);
     }
 
     /**
-     * Identify an unresolved area (one needing an idref to be resolved, e.g.
-     * the internal-destination of an fo:basic-link) for both the
-     * AreaTreeHandler and PageViewport object.
+     * Identify an unresolved area (one needing an idref to be
+     * resolved, e.g. the internal-destination of an fo:basic-link)
+     * for both the AreaTreeHandler and PageViewport object.
      *
-     * The IDTracker keeps a document-wide list of idref's and the PV's needing
-     * them to be resolved. It uses this to send notifications to the PV's when
-     * an id has been resolved.
+     * The IDTracker keeps a document-wide list of idref's
+     * and the PV's needing them to be resolved.  It uses this to
+     * send notifications to the PV's when an id has been resolved.
      *
-     * The PageViewport keeps lists of id's needing resolving, along with the
-     * child areas (page-number-citation, basic-link, etc.) of the PV needing
-     * their resolution.
+     * The PageViewport keeps lists of id's needing resolving, along
+     * with the child areas (page-number-citation, basic-link, etc.)
+     * of the PV needing their resolution.
      *
-     * @param id
-     *            the ID reference to add
-     * @param res
-     *            the resolvable object that needs resolving
+     * @param id the ID reference to add
+     * @param res the resolvable object that needs resolving
      */
-    public void addUnresolvedArea(final String id, final Resolvable res) {
-        this.curPage.getPageViewport().addUnresolvedIDRef(id, res);
-        this.idTracker.addUnresolvedIDRef(id, this.curPage.getPageViewport());
+    public void addUnresolvedArea(String id, Resolvable res) {
+        curPage.getPageViewport().addUnresolvedIDRef(id, res);
+        idTracker.addUnresolvedIDRef(id, curPage.getPageViewport());
     }
 
     /**
-     * Bind the RetrieveMarker to the corresponding Marker subtree. If the
-     * boundary is page then it will only check the current page. For
-     * page-sequence and document it will lookup preceding pages from the area
-     * tree and try to find a marker. If we retrieve a marker from a preceding
-     * page, then the containing page does not have a qualifying area, and all
-     * qualifying areas have ended. Therefore we use last-ending-within-page
-     * (Constants.EN_LEWP) as the position.
+     * Bind the RetrieveMarker to the corresponding Marker subtree.
+     * If the boundary is page then it will only check the
+     * current page. For page-sequence and document it will
+     * lookup preceding pages from the area tree and try to find
+     * a marker.
+     * If we retrieve a marker from a preceding page,
+     * then the containing page does not have a qualifying area,
+     * and all qualifying areas have ended.
+     * Therefore we use last-ending-within-page (Constants.EN_LEWP)
+     * as the position.
      *
-     * @param rm
-     *            the RetrieveMarker instance whose properties are to used to
-     *            find the matching Marker.
-     * @return a bound RetrieveMarker instance, or null if no Marker could be
-     *         found.
+     * @param rm the RetrieveMarker instance whose properties are to
+     * used to find the matching Marker.
+     * @return a bound RetrieveMarker instance, or null if no Marker
+     * could be found.
      */
-    public RetrieveMarker resolveRetrieveMarker(final RetrieveMarker rm) {
-        final AreaTreeModel areaTreeModel = this.areaTreeHandler
-                .getAreaTreeModel();
-        final String name = rm.getRetrieveClassName();
-        final int pos = rm.getRetrievePosition();
-        final int boundary = rm.getRetrieveBoundary();
+    public RetrieveMarker resolveRetrieveMarker(RetrieveMarker rm) {
+        AreaTreeModel areaTreeModel = areaTreeHandler.getAreaTreeModel();
+        String name = rm.getRetrieveClassName();
+        int pos = rm.getRetrievePosition();
+        int boundary = rm.getRetrieveBoundary();
 
         // get marker from the current markers on area tree
-        Marker mark = getCurrentPV().getMarker(name, pos);
+        Marker mark = (Marker)getCurrentPV().getMarker(name, pos);
         if (mark == null && boundary != EN_PAGE) {
             // go back over pages until mark found
             // if document boundary then keep going
-            final boolean doc = boundary == EN_DOCUMENT;
+            boolean doc = boundary == EN_DOCUMENT;
             int seq = areaTreeModel.getPageSequenceCount();
             int page = areaTreeModel.getPageCount(seq) - 1;
             while (page < 0 && doc && seq > 1) {
@@ -259,8 +242,8 @@ public abstract class AbstractPageSequenceLayoutManager extends
                 page = areaTreeModel.getPageCount(seq) - 1;
             }
             while (page >= 0) {
-                final PageViewport pv = areaTreeModel.getPage(seq, page);
-                mark = pv.getMarker(name, Constants.EN_LEWP);
+                PageViewport pv = areaTreeModel.getPage(seq, page);
+                mark = (Marker)pv.getMarker(name, Constants.EN_LEWP);
                 if (mark != null) {
                     break;
                 }
@@ -283,42 +266,35 @@ public abstract class AbstractPageSequenceLayoutManager extends
 
     /**
      * Creates and returns a new page.
-     *
-     * @param pageNumber
-     *            the page number
-     * @param isBlank
-     *            true if it's a blank page
+     * @param pageNumber the page number
+     * @param isBlank true if it's a blank page
      * @return the newly created page
      */
-    protected abstract Page createPage(final int pageNumber,
-            final boolean isBlank);
+    protected abstract Page createPage(int pageNumber, boolean isBlank);
 
     /**
      * Makes a new page
      *
-     * @param bIsBlank
-     *            whether this page is blank or not
-     * @param bIsLast
-     *            whether this page is the last page or not
+     * @param isBlank whether this page is blank or not
      * @return a new page
      */
-    protected Page makeNewPage(final boolean isBlank, final boolean isLast) {
-        if (this.curPage != null) {
+    protected Page makeNewPage(boolean isBlank) {
+        if (curPage != null) {
             finishPage();
         }
 
-        ++this.currentPageNum;
+        currentPageNum++;
 
-        this.curPage = createPage(this.currentPageNum, isBlank);
+        curPage = createPage(currentPageNum, isBlank);
 
         if (log.isDebugEnabled()) {
-            log.debug("["
-                    + this.curPage.getPageViewport().getPageNumberString()
+            log.debug("[" + curPage.getPageViewport().getPageNumberString()
                     + (isBlank ? "*" : "") + "]");
         }
 
-        addIDToPage(this.pageSeq.getId());
-        return this.curPage;
+        addIDToPage(pageSeq.getRoot().getId());
+        addIDToPage(pageSeq.getId());
+        return curPage;
     }
 
     /**
@@ -326,30 +302,27 @@ public abstract class AbstractPageSequenceLayoutManager extends
      */
     protected void finishPage() {
         if (log.isTraceEnabled()) {
-            this.curPage.getPageViewport().dumpMarkers();
+            curPage.getPageViewport().dumpMarkers();
         }
 
         // Try to resolve any unresolved IDs for the current page.
         //
-        this.idTracker.tryIDResolution(this.curPage.getPageViewport());
+        idTracker.tryIDResolution(curPage.getPageViewport());
         // Queue for ID resolution and rendering
-        this.areaTreeHandler.getAreaTreeModel().addPage(
-                this.curPage.getPageViewport());
+        areaTreeHandler.getAreaTreeModel().addPage(curPage.getPageViewport());
         if (log.isDebugEnabled()) {
-            log.debug("page finished: "
-                    + this.curPage.getPageViewport().getPageNumberString()
-                    + ", current num: " + this.currentPageNum);
+            log.debug("page finished: " + curPage.getPageViewport().getPageNumberString()
+                    + ", current num: " + currentPageNum);
         }
-        this.curPage = null;
+        curPage = null;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void doForcePageCount(final Numeric nextPageSeqInitialPageNumber) {
+    public void doForcePageCount(Numeric nextPageSeqInitialPageNumber) {
 
-        int forcePageCount = this.pageSeq.getForcePageCount();
+        int forcePageCount = pageSeq.getForcePageCount();
 
-        // xsl-spec version 1.0 (15.oct 2001)
+        // xsl-spec version 1.0   (15.oct 2001)
         // auto | even | odd | end-on-even | end-on-odd | no-force | inherit
         // auto:
         // Force the last page in this page-sequence to be an odd-page
@@ -357,78 +330,59 @@ public abstract class AbstractPageSequenceLayoutManager extends
         // Force it to be an even-page
         // if the initial-page-number of the next page-sequence is odd.
         // If there is no next page-sequence
-        // or if the value of its initial-page-number is "auto" do not force any
-        // page.
+        // or if the value of its initial-page-number is "auto" do not force any page.
 
         // if force-page-count is auto then set the value of forcePageCount
         // depending on the initial-page-number of the next page-sequence
-        if (nextPageSeqInitialPageNumber != null
-                && forcePageCount == Constants.EN_AUTO) {
+        if (nextPageSeqInitialPageNumber != null && forcePageCount == Constants.EN_AUTO) {
             if (nextPageSeqInitialPageNumber.getEnum() != 0) {
                 // auto | auto-odd | auto-even
-                final int nextPageSeqPageNumberType = nextPageSeqInitialPageNumber
-                        .getEnum();
+                int nextPageSeqPageNumberType = nextPageSeqInitialPageNumber.getEnum();
                 if (nextPageSeqPageNumberType == Constants.EN_AUTO_ODD) {
                     forcePageCount = Constants.EN_END_ON_EVEN;
                 } else if (nextPageSeqPageNumberType == Constants.EN_AUTO_EVEN) {
                     forcePageCount = Constants.EN_END_ON_ODD;
-                } else { // auto
+                } else {   // auto
                     forcePageCount = Constants.EN_NO_FORCE;
                 }
             } else { // <integer> for explicit page number
-                int nextPageSeqPageStart = nextPageSeqInitialPageNumber
-                        .getValue();
+                int nextPageSeqPageStart = nextPageSeqInitialPageNumber.getValue();
                 // spec rule
-                nextPageSeqPageStart = nextPageSeqPageStart > 0 ? nextPageSeqPageStart
-                        : 1;
-                if (nextPageSeqPageStart % 2 == 0) { // explicit even
-                    // startnumber
+                nextPageSeqPageStart = (nextPageSeqPageStart > 0) ? nextPageSeqPageStart : 1;
+                if (nextPageSeqPageStart % 2 == 0) {   // explicit even startnumber
                     forcePageCount = Constants.EN_END_ON_ODD;
-                } else { // explicit odd startnumber
+                } else {    // explicit odd startnumber
                     forcePageCount = Constants.EN_END_ON_EVEN;
                 }
             }
         }
 
         if (forcePageCount == Constants.EN_EVEN) {
-            if ((this.currentPageNum - this.startPageNum + 1) % 2 != 0) { // we
-                // have
-                // an
-                // odd
-                // number
-                // of
-                // pages
-                this.curPage = makeNewPage(true, false);
+            if ((currentPageNum - startPageNum + 1) % 2 != 0) { // we have an odd number of pages
+                curPage = makeNewPage(true);
             }
         } else if (forcePageCount == Constants.EN_ODD) {
-            if ((this.currentPageNum - this.startPageNum + 1) % 2 == 0) { // we
-                // have
-                // an
-                // even
-                // number
-                // of
-                // pages
-                this.curPage = makeNewPage(true, false);
+            if ((currentPageNum - startPageNum + 1) % 2 == 0) { // we have an even number of pages
+                curPage = makeNewPage(true);
             }
         } else if (forcePageCount == Constants.EN_END_ON_EVEN) {
-            if (this.currentPageNum % 2 != 0) { // we are now on an odd page
-                this.curPage = makeNewPage(true, false);
+            if (currentPageNum % 2 != 0) { // we are now on an odd page
+                curPage = makeNewPage(true);
             }
         } else if (forcePageCount == Constants.EN_END_ON_ODD) {
-            if (this.currentPageNum % 2 == 0) { // we are now on an even page
-                this.curPage = makeNewPage(true, false);
+            if (currentPageNum % 2 == 0) { // we are now on an even page
+                curPage = makeNewPage(true);
             }
         } else if (forcePageCount == Constants.EN_NO_FORCE) {
             // i hope: nothing special at all
         }
 
-        if (this.curPage != null) {
+        if (curPage != null) {
             finishPage();
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void reset() {
         throw new IllegalStateException();
     }

@@ -19,13 +19,12 @@
 
 package org.apache.fop.render.pdf;
 
-import static org.apache.fop.render.PrintRendererConfigurator.log;
-
 import java.util.List;
 import java.util.Map;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.pdf.PDFAMode;
@@ -45,159 +44,147 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
     /**
      * Default constructor
      *
-     * @param userAgent
-     *            user agent
+     * @param userAgent user agent
      */
-    public PDFRendererConfigurator(final FOUserAgent userAgent) {
+    public PDFRendererConfigurator(FOUserAgent userAgent) {
         super(userAgent);
     }
 
     /**
      * Throws an UnsupportedOperationException.
      *
-     * @param renderer
-     *            not used
+     * @param renderer not used
      */
-    @Override
-    public void configure(final Renderer renderer) {
+    public void configure(Renderer renderer) {
         throw new UnsupportedOperationException();
     }
 
-    private void configure(final Configuration cfg,
-            final PDFRenderingUtil pdfUtil) throws FOPException {
-        // PDF filters
+    private void configure(Configuration cfg, PDFRenderingUtil pdfUtil) throws FOPException {
+        //PDF filters
         try {
-            final Map filterMap = buildFilterMapFromConfiguration(cfg);
+            Map filterMap = buildFilterMapFromConfiguration(cfg);
             if (filterMap != null) {
                 pdfUtil.setFilterMap(filterMap);
             }
-        } catch (final ConfigurationException e) {
+        } catch (ConfigurationException e) {
             LogUtil.handleException(log, e, false);
         }
 
-        String s = cfg.getChild(PDFConfigurationConstants.PDF_A_MODE, true)
-                .getValue(null);
+        String s = cfg.getChild(PDFConfigurationConstants.PDF_A_MODE, true).getValue(null);
         if (s != null) {
             pdfUtil.setAMode(PDFAMode.valueOf(s));
         }
-        s = cfg.getChild(PDFConfigurationConstants.PDF_X_MODE, true).getValue(
-                null);
+        s = cfg.getChild(PDFConfigurationConstants.PDF_X_MODE, true).getValue(null);
         if (s != null) {
             pdfUtil.setXMode(PDFXMode.valueOf(s));
         }
-        final Configuration encryptionParamsConfig = cfg.getChild(
-                PDFConfigurationConstants.ENCRYPTION_PARAMS, false);
+            Configuration encryptionParamsConfig
+                = cfg.getChild(PDFConfigurationConstants.ENCRYPTION_PARAMS, false);
         if (encryptionParamsConfig != null) {
-            final PDFEncryptionParams encryptionParams = pdfUtil
-                    .getEncryptionParams();
-            final Configuration ownerPasswordConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.OWNER_PASSWORD, false);
+            PDFEncryptionParams encryptionParams = pdfUtil.getEncryptionParams();
+            Configuration ownerPasswordConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.OWNER_PASSWORD, false);
             if (ownerPasswordConfig != null) {
-                final String ownerPassword = ownerPasswordConfig.getValue(null);
+                String ownerPassword = ownerPasswordConfig.getValue(null);
                 if (ownerPassword != null) {
                     encryptionParams.setOwnerPassword(ownerPassword);
                 }
             }
-            final Configuration userPasswordConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.USER_PASSWORD, false);
+            Configuration userPasswordConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.USER_PASSWORD, false);
             if (userPasswordConfig != null) {
-                final String userPassword = userPasswordConfig.getValue(null);
+                String userPassword = userPasswordConfig.getValue(null);
                 if (userPassword != null) {
                     encryptionParams.setUserPassword(userPassword);
                 }
             }
-            final Configuration noPrintConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_PRINT, false);
+            Configuration noPrintConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_PRINT, false);
             if (noPrintConfig != null) {
                 encryptionParams.setAllowPrint(false);
             }
-            final Configuration noCopyContentConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_COPY_CONTENT, false);
+            Configuration noCopyContentConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_COPY_CONTENT, false);
             if (noCopyContentConfig != null) {
                 encryptionParams.setAllowCopyContent(false);
             }
-            final Configuration noEditContentConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_EDIT_CONTENT, false);
+            Configuration noEditContentConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_EDIT_CONTENT, false);
             if (noEditContentConfig != null) {
                 encryptionParams.setAllowEditContent(false);
             }
-            final Configuration noAnnotationsConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_ANNOTATIONS, false);
+            Configuration noAnnotationsConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_ANNOTATIONS, false);
             if (noAnnotationsConfig != null) {
                 encryptionParams.setAllowEditAnnotations(false);
             }
-            final Configuration noFillInForms = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_FILLINFORMS, false);
+            Configuration noFillInForms = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_FILLINFORMS, false);
             if (noFillInForms != null) {
                 encryptionParams.setAllowFillInForms(false);
             }
-            final Configuration noAccessContentConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_ACCESSCONTENT, false);
+            Configuration noAccessContentConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_ACCESSCONTENT, false);
             if (noAccessContentConfig != null) {
                 encryptionParams.setAllowAccessContent(false);
             }
-            final Configuration noAssembleDocConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_ASSEMBLEDOC, false);
+            Configuration noAssembleDocConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_ASSEMBLEDOC, false);
             if (noAssembleDocConfig != null) {
                 encryptionParams.setAllowAssembleDocument(false);
             }
-            final Configuration noPrintHqConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.NO_PRINTHQ, false);
+            Configuration noPrintHqConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.NO_PRINTHQ, false);
             if (noPrintHqConfig != null) {
                 encryptionParams.setAllowPrintHq(false);
             }
-            final Configuration encryptionLengthConfig = encryptionParamsConfig
-                    .getChild(PDFConfigurationConstants.ENCRYPTION_LENGTH,
-                            false);
+            Configuration encryptionLengthConfig = encryptionParamsConfig.getChild(
+                    PDFConfigurationConstants.ENCRYPTION_LENGTH, false);
             if (encryptionLengthConfig != null) {
-                final int encryptionLength = checkEncryptionLength(Integer
-                        .parseInt(encryptionLengthConfig.getValue(null)));
+                int encryptionLength = checkEncryptionLength(
+                        Integer.parseInt(encryptionLengthConfig.getValue(null)));
                 encryptionParams.setEncryptionLengthInBits(encryptionLength);
             }
         }
 
-        s = cfg.getChild(PDFConfigurationConstants.KEY_OUTPUT_PROFILE, true)
-                .getValue(null);
+        s = cfg.getChild(PDFConfigurationConstants.KEY_OUTPUT_PROFILE, true).getValue(null);
         if (s != null) {
             pdfUtil.setOutputProfileURI(s);
         }
-        final Configuration disableColorSpaceConfig = cfg.getChild(
-                PDFConfigurationConstants.KEY_DISABLE_SRGB_COLORSPACE, false);
+            Configuration disableColorSpaceConfig = cfg.getChild(
+                    PDFConfigurationConstants.KEY_DISABLE_SRGB_COLORSPACE, false);
         if (disableColorSpaceConfig != null) {
-            pdfUtil.setDisableSRGBColorSpace(disableColorSpaceConfig
-                    .getValueAsBoolean(false));
+            pdfUtil.setDisableSRGBColorSpace(
+                    disableColorSpaceConfig.getValueAsBoolean(false));
         }
 
         setPDFDocVersion(cfg, pdfUtil);
     }
 
-    private int checkEncryptionLength(final int encryptionLength) {
+    private int checkEncryptionLength(int encryptionLength) {
         int correctEncryptionLength = encryptionLength;
         if (encryptionLength < 40) {
             correctEncryptionLength = 40;
         } else if (encryptionLength > 128) {
             correctEncryptionLength = 128;
         } else if (encryptionLength % 8 != 0) {
-            correctEncryptionLength = Math.round(encryptionLength / 8.0f) * 8;
+            correctEncryptionLength = ((int) Math.round(encryptionLength / 8.0f)) * 8;
         }
         if (correctEncryptionLength != encryptionLength) {
-            PDFEventProducer.Provider.get(this.userAgent.getEventBroadcaster())
-            .incorrectEncryptionLength(this, encryptionLength,
-                            correctEncryptionLength);
+            PDFEventProducer.Provider.get(userAgent.getEventBroadcaster())
+                    .incorrectEncryptionLength(this, encryptionLength, correctEncryptionLength);
         }
         return correctEncryptionLength;
     }
 
-    private void setPDFDocVersion(final Configuration cfg,
-            final PDFRenderingUtil pdfUtil) throws FOPException {
-        final Configuration pdfVersion = cfg.getChild(
-                PDFConfigurationConstants.PDF_VERSION, false);
+    private void setPDFDocVersion(Configuration cfg, PDFRenderingUtil pdfUtil) throws FOPException {
+        Configuration pdfVersion = cfg.getChild(PDFConfigurationConstants.PDF_VERSION, false);
         if (pdfVersion != null) {
-            final String version = pdfVersion.getValue(null);
+            String version = pdfVersion.getValue(null);
             if (version != null && version.length() != 0) {
                 try {
                     pdfUtil.setPDFVersion(version);
-                } catch (final IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     throw new FOPException(e.getMessage());
                 }
             } else {
@@ -209,23 +196,21 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
     /**
      * Builds a filter map from an Avalon Configuration object.
      *
-     * @param cfg
-     *            the Configuration object
+     * @param cfg the Configuration object
      * @return Map the newly built filter map
-     * @throws ConfigurationException
-     *             if a filter list is defined twice
+     * @throws ConfigurationException if a filter list is defined twice
      */
-    public static Map buildFilterMapFromConfiguration(final Configuration cfg)
-            throws ConfigurationException {
-        final Map filterMap = new java.util.HashMap();
-        final Configuration[] filterLists = cfg.getChildren("filterList");
+    public static Map buildFilterMapFromConfiguration(Configuration cfg)
+                throws ConfigurationException {
+        Map filterMap = new java.util.HashMap();
+        Configuration[] filterLists = cfg.getChildren("filterList");
         for (int i = 0; i < filterLists.length; i++) {
-            final Configuration filters = filterLists[i];
+            Configuration filters = filterLists[i];
             String type = filters.getAttribute("type", null);
-            final Configuration[] filt = filters.getChildren("value");
-            final List filterList = new java.util.ArrayList();
-            for (final Configuration element : filt) {
-                final String name = element.getValue();
+            Configuration[] filt = filters.getChildren("value");
+            List filterList = new java.util.ArrayList();
+            for (int j = 0; j < filt.length; j++) {
+                String name = filt[j].getValue();
                 filterList.add(name);
             }
 
@@ -234,7 +219,7 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
             }
 
             if (!filterList.isEmpty() && log.isDebugEnabled()) {
-                final StringBuffer debug = new StringBuffer("Adding PDF filter");
+                StringBuffer debug = new StringBuffer("Adding PDF filter");
                 if (filterList.size() != 1) {
                     debug.append("s");
                 }
@@ -250,7 +235,7 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
 
             if (filterMap.get(type) != null) {
                 throw new ConfigurationException("A filterList of type '"
-                        + type + "' has already been defined");
+                    + type + "' has already been defined");
             }
             filterMap.put(type, filterList);
         }
@@ -260,14 +245,11 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
     // ---=== IFDocumentHandler configuration ===---
 
     /** {@inheritDoc} */
-    @Override
-    public void configure(final IFDocumentHandler documentHandler)
-            throws FOPException {
-        final Configuration cfg = super.getRendererConfig(documentHandler
-                .getMimeType());
+    public void configure(IFDocumentHandler documentHandler) throws FOPException {
+        Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {
-            final PDFDocumentHandler pdfDocumentHandler = (PDFDocumentHandler) documentHandler;
-            final PDFRenderingUtil pdfUtil = pdfDocumentHandler.getPDFUtil();
+            PDFDocumentHandler pdfDocumentHandler = (PDFDocumentHandler)documentHandler;
+            PDFRenderingUtil pdfUtil = pdfDocumentHandler.getPDFUtil();
             configure(cfg, pdfUtil);
         }
     }

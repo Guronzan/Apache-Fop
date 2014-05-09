@@ -15,33 +15,38 @@
  * limitations under the License.
  */
 
-/* $Id: NonLeafPosition.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: NonLeafPosition.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.layoutmgr;
 
+/** A non-leaf position. */
 public class NonLeafPosition extends Position {
 
-    private final Position subPos;
+    private Position subPos;
 
-    public NonLeafPosition(final LayoutManager lm, final Position sub) {
+    /**
+     * Construct a leaf position.
+     * @param lm the associated layout manager
+     * @param sub the position
+     */
+    public NonLeafPosition(LayoutManager lm, Position sub) {
         super(lm);
-        this.subPos = sub;
+        subPos = sub;
     }
 
-    @Override
+    /** @return the sub position */
     public Position getPosition() {
-        return this.subPos;
-    }
-
-    @Override
-    public boolean generatesAreas() {
-        return this.subPos != null ? this.subPos.generatesAreas() : false;
+        return subPos;
     }
 
     /** {@inheritDoc} */
-    @Override
+    public boolean generatesAreas() {
+        return (subPos != null ? subPos.generatesAreas() : false);
+    }
+
+    /** {@inheritDoc} */
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("NonLeafPos:").append(getIndex()).append("(");
         sb.append(getShortLMName());
         sb.append(", ");
@@ -54,3 +59,4 @@ public class NonLeafPosition extends Position {
         return sb.toString();
     }
 }
+

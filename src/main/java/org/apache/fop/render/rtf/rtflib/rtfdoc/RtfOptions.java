@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfOptions.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfOptions.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -27,15 +27,14 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
  */
 
 /**
- * Simplistic options definitions for RTF generation
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Simplistic options definitions for RTF generation.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 public class RtfOptions {
     /**
      * If this returns true, RtfParagraphs that have no children will not
      * generate any RTF code
-     * 
      * @return true
      */
     public boolean ignoreEmptyParagraphs() {
@@ -44,12 +43,10 @@ public class RtfOptions {
 
     /**
      * If this returns false, RtfContainer will not generate any RTF
-     * 
-     * @param c
-     *            RtfContainer to be tested
+     * @param c RtfContainer to be tested
      * @return true
      */
-    public boolean renderContainer(final RtfContainer c) {
+    public boolean renderContainer(RtfContainer c) {
         return true;
     }
 }

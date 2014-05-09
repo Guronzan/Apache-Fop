@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: Page.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: Page.java 1311120 2012-04-08 23:48:11Z gadams $ */
 
 package org.apache.fop.area;
 
@@ -28,26 +28,36 @@ import java.util.Map;
 import org.apache.fop.datatypes.FODimension;
 import org.apache.fop.datatypes.LengthBase;
 import org.apache.fop.datatypes.SimplePercentBaseContext;
-import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.pagination.Region;
 import org.apache.fop.fo.pagination.RegionBody;
 import org.apache.fop.fo.pagination.SimplePageMaster;
 import org.apache.fop.fo.properties.CommonMarginBlock;
 import org.apache.fop.layoutmgr.TraitSetter;
+import org.apache.fop.traits.WritingModeTraitsGetter;
+
+import static org.apache.fop.fo.Constants.EN_ERROR_IF_OVERFLOW;
+import static org.apache.fop.fo.Constants.EN_HIDDEN;
+import static org.apache.fop.fo.Constants.FO_REGION_AFTER;
+import static org.apache.fop.fo.Constants.FO_REGION_BEFORE;
+import static org.apache.fop.fo.Constants.FO_REGION_BODY;
+import static org.apache.fop.fo.Constants.FO_REGION_END;
+import static org.apache.fop.fo.Constants.FO_REGION_START;
 
 /**
- * The page. This holds the contents of the page. Each region is added. The
- * unresolved references area added so that if the page is serialized then it
- * will handle the resolving properly after being reloaded. This is serializable
- * so it can be saved to cache to save memory if there are forward references.
- * The page is cloneable so the page master can make copies of the top level
- * page and regions.
+ * The page.
+ * This holds the contents of the page. Each region is added.
+ * The unresolved references area added so that if the page is
+ * serialized then it will handle the resolving properly after
+ * being reloaded.
+ * This is serializable so it can be saved to cache to save
+ * memory if there are forward references.
+ * The page is cloneable so the page master can make copies of
+ * the top level page and regions.
  */
-public class Page extends AreaTreeObject implements Serializable, Cloneable {
-    /**
-     *
-     */
+public class Page extends AreaTreeObject implements Serializable {
+
     private static final long serialVersionUID = 6272157047421543866L;
+
     // contains before, start, body, end and after regions
     private RegionViewport regionBefore = null;
     private RegionViewport regionStart = null;
@@ -62,66 +72,64 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
     private boolean fakeNonEmpty = false;
 
     /**
-     * Empty constructor, for cloning
+     *  Empty constructor
      */
-    public Page() {
-    }
+    public Page() { }
 
     /**
      * Constructor
-     *
-     * @param spm
-     *            SimplePageMaster containing the dimensions for this
+     * @param spm SimplePageMaster containing the dimensions for this
      *            page-reference-area
      */
-    public Page(final SimplePageMaster spm) {
+    public Page(SimplePageMaster spm) {
         // Width and Height of the page view port
-        final FODimension pageViewPortDims = new FODimension(spm.getPageWidth()
-                .getValue(), spm.getPageHeight().getValue());
+        FODimension pageViewPortDims = new FODimension(spm.getPageWidth().getValue()
+                            ,  spm.getPageHeight().getValue());
 
         // Get absolute margin properties (top, left, bottom, right)
-        final CommonMarginBlock mProps = spm.getCommonMarginBlock();
+        CommonMarginBlock mProps = spm.getCommonMarginBlock();
 
         /*
-         * Create the page reference area rectangle (0,0 is at top left of the
-         * "page media" and y increases when moving towards the bottom of the
-         * page. The media rectangle itself is (0,0,pageWidth,pageHeight).
+         * Create the page reference area rectangle (0,0 is at top left
+         * of the "page media" and y increases
+         * when moving towards the bottom of the page.
+         * The media rectangle itself is (0,0,pageWidth,pageHeight).
          */
-        /*
-         * Special rules apply to resolving margins in the page context.
-         * Contrary to normal margins in this case top and bottom margin are
-         * resolved relative to the height. In the property subsystem all margin
-         * properties are configured to using BLOCK_WIDTH. That's why we 'cheat'
-         * here and setup a context for the height but use the
-         * LengthBase.BLOCK_WIDTH.
+        /* Special rules apply to resolving margins in the page context.
+         * Contrary to normal margins in this case top and bottom margin
+         * are resolved relative to the height. In the property subsystem
+         * all margin properties are configured to using BLOCK_WIDTH.
+         * That's why we 'cheat' here and setup a context for the height but
+         * use the LengthBase.BLOCK_WIDTH.
          */
-        final SimplePercentBaseContext pageWidthContext = new SimplePercentBaseContext(
-                null, LengthBase.CONTAINING_BLOCK_WIDTH, pageViewPortDims.ipd);
-        final SimplePercentBaseContext pageHeightContext = new SimplePercentBaseContext(
-                null, LengthBase.CONTAINING_BLOCK_WIDTH, pageViewPortDims.bpd);
+        SimplePercentBaseContext pageWidthContext
+            = new SimplePercentBaseContext(null, LengthBase.CONTAINING_BLOCK_WIDTH
+                                            , pageViewPortDims.ipd);
+        SimplePercentBaseContext pageHeightContext
+            = new SimplePercentBaseContext(null, LengthBase.CONTAINING_BLOCK_WIDTH
+                                            , pageViewPortDims.bpd);
 
-        final Rectangle pageRefRect = new Rectangle(
-                mProps.marginLeft.getValue(pageWidthContext),
-                mProps.marginTop.getValue(pageHeightContext),
-                pageViewPortDims.ipd
-                - mProps.marginLeft.getValue(pageWidthContext)
-                - mProps.marginRight.getValue(pageWidthContext),
-                pageViewPortDims.bpd
-                - mProps.marginTop.getValue(pageHeightContext)
-                - mProps.marginBottom.getValue(pageHeightContext));
+        Rectangle pageRefRect
+            =  new Rectangle(mProps.marginLeft.getValue(pageWidthContext)
+                            , mProps.marginTop.getValue(pageHeightContext)
+                            , pageViewPortDims.ipd
+                                - mProps.marginLeft.getValue(pageWidthContext)
+                                - mProps.marginRight.getValue(pageWidthContext)
+                            , pageViewPortDims.bpd
+                                - mProps.marginTop.getValue(pageHeightContext)
+                                - mProps.marginBottom.getValue(pageHeightContext));
 
         // Set up the CTM on the page reference area based on writing-mode
         // and reference-orientation
-        final FODimension reldims = new FODimension(0, 0);
-        final CTM pageCTM = CTM.getCTMandRelDims(spm.getReferenceOrientation(),
-                spm.getWritingMode(), pageRefRect, reldims);
+        FODimension reldims = new FODimension(0, 0);
+        CTM pageCTM = CTM.getCTMandRelDims(spm.getReferenceOrientation(),
+            spm.getWritingMode(), pageRefRect, reldims);
 
         // Create a RegionViewport/ reference area pair for each page region
-        RegionReference rr = null;
-        for (final Region r : spm.getRegions().values()) {
-            final RegionViewport rvp = makeRegionViewport(r, reldims, pageCTM,
-                    spm);
-            if (r.getNameId() == Constants.FO_REGION_BODY) {
+        RegionReference rr;
+        for (Region r : spm.getRegions().values()) {
+            RegionViewport rvp = makeRegionViewport(r, reldims, pageCTM);
+            if (r.getNameId() == FO_REGION_BODY) {
                 rr = new BodyRegion((RegionBody) r, rvp);
             } else {
                 rr = new RegionReference(r, rvp);
@@ -147,102 +155,89 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
 
     /**
      * Creates a RegionViewport Area object for this pagination Region.
-     *
-     * @param r
-     *            the region the viewport is to be created for
-     * @param reldims
-     *            relative dimensions
-     * @param pageCTM
-     *            page coordinate transformation matrix
-     * @param spm
-     *            the simple-page-master for this page
+     * @param r the region the viewport is to be created for
+     * @param reldims relative dimensions
+     * @param pageCTM page coordinate transformation matrix
      * @return the new region viewport
      */
-    private RegionViewport makeRegionViewport(final Region r,
-            final FODimension reldims, final CTM pageCTM,
-            final SimplePageMaster spm) {
-        final Rectangle2D relRegionRect = r.getViewportRectangle(reldims, spm);
-        final Rectangle2D absRegionRect = pageCTM.transform(relRegionRect);
+    private static RegionViewport makeRegionViewport(Region r, FODimension reldims, CTM pageCTM) {
+        Rectangle2D relRegionRect = r.getViewportRectangle(reldims);
+        Rectangle2D absRegionRect = pageCTM.transform(relRegionRect);
         // Get the region viewport rectangle in absolute coords by
         // transforming it using the page CTM
-        final RegionViewport rv = new RegionViewport(absRegionRect);
-        rv.setBPD((int) relRegionRect.getHeight());
-        rv.setIPD((int) relRegionRect.getWidth());
-        TraitSetter.addBackground(rv, r.getCommonBorderPaddingBackground(),
-                null);
-        rv.setClip(r.getOverflow() == Constants.EN_HIDDEN
-                || r.getOverflow() == Constants.EN_ERROR_IF_OVERFLOW);
+        RegionViewport rv = new RegionViewport(absRegionRect);
+        rv.setBPD((int)relRegionRect.getHeight());
+        rv.setIPD((int)relRegionRect.getWidth());
+        TraitSetter.addBackground(rv, r.getCommonBorderPaddingBackground(), null);
+        rv.setClip(r.getOverflow() == EN_HIDDEN
+                || r.getOverflow() == EN_ERROR_IF_OVERFLOW);
         return rv;
     }
 
     /**
-     * Set the region reference position within the region viewport. This sets
-     * the transform that is used to place the contents of the region reference.
+     * Set the region reference position within the region viewport.
+     * This sets the transform that is used to place the contents of
+     * the region reference.
      *
-     * @param rr
-     *            the region reference area
-     * @param r
-     *            the region-xxx formatting object
-     * @param absRegVPRect
-     *            The region viewport rectangle in "absolute" coordinates where
-     *            x=distance from left, y=distance from bottom, width=right-left
-     *            height=top-bottom
+     * @param rr the region reference area
+     * @param r the region-xxx formatting object
+     * @param absRegVPRect The region viewport rectangle in "absolute" coordinates
+     * where x=distance from left, y=distance from bottom, width=right-left
+     * height=top-bottom
      */
-    private void setRegionReferencePosition(final RegionReference rr,
-            final Region r, final Rectangle2D absRegVPRect) {
-        final FODimension reldims = new FODimension(0, 0);
+    private static void setRegionReferencePosition(RegionReference rr, Region r,
+                                  Rectangle2D absRegVPRect) {
+        FODimension reldims = new FODimension(0, 0);
         rr.setCTM(CTM.getCTMandRelDims(r.getReferenceOrientation(),
                 r.getWritingMode(), absRegVPRect, reldims));
-        rr.setIPD(reldims.ipd - rr.getBorderAndPaddingWidthStart()
+        rr.setIPD(reldims.ipd
+                - rr.getBorderAndPaddingWidthStart()
                 - rr.getBorderAndPaddingWidthEnd());
-        rr.setBPD(reldims.bpd - rr.getBorderAndPaddingWidthBefore()
+        rr.setBPD(reldims.bpd
+                - rr.getBorderAndPaddingWidthBefore()
                 - rr.getBorderAndPaddingWidthAfter());
     }
 
     /**
      * Set the region on this page.
      *
-     * @param areaclass
-     *            the area class of the region to set
-     * @param port
-     *            the region viewport to set
+     * @param areaclass the area class of the region to set
+     * @param port the region viewport to set
      */
-    public void setRegionViewport(final int areaclass, final RegionViewport port) {
-        if (areaclass == Constants.FO_REGION_BEFORE) {
-            this.regionBefore = port;
-        } else if (areaclass == Constants.FO_REGION_START) {
-            this.regionStart = port;
-        } else if (areaclass == Constants.FO_REGION_BODY) {
-            this.regionBody = port;
-        } else if (areaclass == Constants.FO_REGION_END) {
-            this.regionEnd = port;
-        } else if (areaclass == Constants.FO_REGION_AFTER) {
-            this.regionAfter = port;
+    public void setRegionViewport(int areaclass, RegionViewport port) {
+        if (areaclass == FO_REGION_BEFORE) {
+            regionBefore = port;
+        } else if (areaclass == FO_REGION_START) {
+            regionStart = port;
+        } else if (areaclass == FO_REGION_BODY) {
+            regionBody = port;
+        } else if (areaclass == FO_REGION_END) {
+            regionEnd = port;
+        } else if (areaclass == FO_REGION_AFTER) {
+            regionAfter = port;
         }
     }
 
     /**
      * Get the region from this page.
      *
-     * @param areaClass
-     *            the region area class
+     * @param areaClass the region area class
      * @return the region viewport or null if none
      */
-    public RegionViewport getRegionViewport(final int areaClass) {
+    public RegionViewport getRegionViewport(int areaClass) {
         switch (areaClass) {
-        case Constants.FO_REGION_BEFORE:
-            return this.regionBefore;
-        case Constants.FO_REGION_START:
-            return this.regionStart;
-        case Constants.FO_REGION_BODY:
-            return this.regionBody;
-        case Constants.FO_REGION_END:
-            return this.regionEnd;
-        case Constants.FO_REGION_AFTER:
-            return this.regionAfter;
+        case FO_REGION_BEFORE:
+            return regionBefore;
+        case FO_REGION_START:
+            return regionStart;
+        case FO_REGION_BODY:
+            return regionBody;
+        case FO_REGION_END:
+            return regionEnd;
+        case FO_REGION_AFTER:
+            return regionAfter;
         default:
-            throw new IllegalArgumentException("No such area class with ID = "
-                    + areaClass);
+            throw new IllegalArgumentException("No such area class with ID = " + areaClass);
         }
     }
 
@@ -252,39 +247,33 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
      * @return whether any FOs have been added to the body region
      */
     public boolean isEmpty() {
-        if (this.fakeNonEmpty) {
+        if (fakeNonEmpty) {
             return false;
-        } else if (this.regionBody == null) {
+        } else if (regionBody == null) {
             return true;
         } else {
-            final BodyRegion body = (BodyRegion) this.regionBody
-                    .getRegionReference();
+            BodyRegion body = (BodyRegion)regionBody.getRegionReference();
             return body.isEmpty();
         }
     }
 
-    /**
-     * Clone this page. This returns a new page with a clone of all the regions.
-     *
-     * @return a new clone of this page
-     */
-    @Override
-    public Object clone() {
-        final Page p = new Page();
-        if (this.regionBefore != null) {
-            p.regionBefore = (RegionViewport) this.regionBefore.clone();
+    /** {@inheritDoc} */
+    public Object clone() throws CloneNotSupportedException {
+        Page p = (Page) super.clone();
+        if (regionBefore != null) {
+            p.regionBefore = (RegionViewport)regionBefore.clone();
         }
-        if (this.regionStart != null) {
-            p.regionStart = (RegionViewport) this.regionStart.clone();
+        if (regionStart != null) {
+            p.regionStart = (RegionViewport)regionStart.clone();
         }
-        if (this.regionBody != null) {
-            p.regionBody = (RegionViewport) this.regionBody.clone();
+        if (regionBody != null) {
+            p.regionBody = (RegionViewport)regionBody.clone();
         }
-        if (this.regionEnd != null) {
-            p.regionEnd = (RegionViewport) this.regionEnd.clone();
+        if (regionEnd != null) {
+            p.regionEnd = (RegionViewport)regionEnd.clone();
         }
-        if (this.regionAfter != null) {
-            p.regionAfter = (RegionViewport) this.regionAfter.clone();
+        if (regionAfter != null) {
+            p.regionAfter = (RegionViewport)regionAfter.clone();
         }
 
         return p;
@@ -293,23 +282,46 @@ public class Page extends AreaTreeObject implements Serializable, Cloneable {
     /**
      * Set the unresolved references on this page for serializing.
      *
-     * @param unres
-     *            the Map of unresolved objects
+     * @param unres the Map of unresolved objects
      */
-    public void setUnresolvedReferences(
-            final Map<String, List<Resolvable>> unres) {
-        this.unresolved = unres;
+    public void setUnresolvedReferences(Map<String, List<Resolvable>> unres) {
+        unresolved = unres;
     }
 
     /**
-     * Get the map unresolved references from this page. This should be called
-     * after deserializing to retrieve the map of unresolved references that
-     * were serialized.
+     * Get the map unresolved references from this page.
+     * This should be called after deserializing to retrieve
+     * the map of unresolved references that were serialized.
      *
      * @return the de-serialized HashMap of unresolved objects
      */
     public Map<String, List<Resolvable>> getUnresolvedReferences() {
-        return this.unresolved;
+        return unresolved;
+    }
+
+    /**
+     * Sets the writing mode traits for the region viewports of
+     * this page.
+     * @param wmtg a WM traits getter
+     */
+    public void setWritingModeTraits(WritingModeTraitsGetter wmtg) {
+        if (regionBefore != null) {
+            regionBefore.setWritingModeTraits(wmtg);
+        }
+        if (regionStart != null) {
+            regionStart.setWritingModeTraits(wmtg);
+        }
+        if (regionBody != null) {
+            regionBody.setWritingModeTraits(wmtg);
+        }
+        if (regionEnd != null) {
+            regionEnd.setWritingModeTraits(wmtg);
+        }
+        if (regionAfter != null) {
+            regionAfter.setWritingModeTraits(wmtg);
+        }
     }
 
 }
+
+

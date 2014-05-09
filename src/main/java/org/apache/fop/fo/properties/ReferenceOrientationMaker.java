@@ -30,11 +30,9 @@ public class ReferenceOrientationMaker extends Maker {
 
     /**
      * Constructor
-     * 
-     * @param propId
-     *            the Constant Id for the property to be made
+     * @param propId the Constant Id for the property to be made
      */
-    public ReferenceOrientationMaker(final int propId) {
+    public ReferenceOrientationMaker(int propId) {
         super(propId);
     }
 
@@ -43,22 +41,21 @@ public class ReferenceOrientationMaker extends Maker {
      *
      * {@inheritDoc}
      */
-    @Override
-    public Property get(final int subpropId, final PropertyList propertyList,
-            final boolean tryInherit, final boolean tryDefault)
-                    throws PropertyException {
+    public Property get(int subpropId, PropertyList propertyList,
+                        boolean tryInherit, boolean tryDefault)
+            throws PropertyException {
 
-        final Property p = super.get(0, propertyList, tryInherit, tryDefault);
+        Property p = super.get(0, propertyList, tryInherit, tryDefault);
         int ro = 0;
         if (p != null) {
             ro = p.getNumeric().getValue();
         }
-        if (Math.abs(ro) % 90 == 0 && Math.abs(ro) / 90 <= 3) {
+        if ((Math.abs(ro) % 90) == 0 && (Math.abs(ro) / 90) <= 3) {
             return p;
         } else {
             throw new PropertyException("Illegal property value: "
-                    + "reference-orientation=\"" + ro + "\" " + "on "
-                    + propertyList.getFObj().getName());
+                    + "reference-orientation=\"" + ro + "\" "
+                    + "on " + propertyList.getFObj().getName());
         }
     }
 

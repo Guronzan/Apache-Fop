@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPPageSetup.java 748981 2009-03-01 08:55:35Z jeremias $ */
+/* $Id: AFPPageSetup.java 1095882 2011-04-22 07:44:46Z jeremias $ */
 
 package org.apache.fop.render.afp.extensions;
 
@@ -31,6 +31,9 @@ public class AFPPageSetup extends AFPExtensionAttachment {
     /** value attribute */
     protected static final String ATT_VALUE = "value";
 
+    /** placement attribute */
+    protected static final String ATT_PLACEMENT = "placement";
+
     /**
      * the extension content
      */
@@ -41,13 +44,15 @@ public class AFPPageSetup extends AFPExtensionAttachment {
      */
     protected String value;
 
+    /** defines where to place the extension in the generated file */
+    protected ExtensionPlacement placement = ExtensionPlacement.DEFAULT;
+
     /**
      * Default constructor.
      *
-     * @param elementName
-     *            the name of the setup code object, may be null
+     * @param elementName the name of the setup code object, may be null
      */
-    public AFPPageSetup(final String elementName) {
+    public AFPPageSetup(String elementName) {
         super(elementName);
     }
 
@@ -55,64 +60,87 @@ public class AFPPageSetup extends AFPExtensionAttachment {
 
     /**
      * Returns the value of the extension.
-     * 
      * @return the value
      */
     public String getValue() {
-        return this.value;
+        return value;
     }
 
     /**
      * Sets the value
-     * 
-     * @param source
-     *            The value name to set.
+     * @param source The value name to set.
      */
-    public void setValue(final String source) {
+    public void setValue(String source) {
         this.value = source;
     }
 
     /**
      * Returns the content of the extension.
-     * 
      * @return the data
      */
     public String getContent() {
-        return this.content;
+        return content;
     }
 
     /**
      * Sets the data
-     * 
-     * @param content
-     *            The byte data to set.
+     * @param content The byte data to set.
      */
-    public void setContent(final String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * Returns the intended placement of the extension inside the generated file.
+     * @return the intended placement
+     */
+    public ExtensionPlacement getPlacement() {
+        return this.placement;
+    }
+
+    /**
+     * Sets the intended placement of the extension inside the generated file.
+     * @param placement the intended placement
+     */
+    public void setPlacement(ExtensionPlacement placement) {
+        if (!AFPElementMapping.NO_OPERATION.equals(getElementName())) {
+            throw new UnsupportedOperationException(
+                    "The attribute 'placement' can currently only be set for NOPs!");
+        }
+        this.placement = placement;
+    }
+
     /** {@inheritDoc} */
-    @Override
-    public void toSAX(final ContentHandler handler) throws SAXException {
-        final AttributesImpl atts = new AttributesImpl();
-        if (this.name != null && this.name.length() > 0) {
-            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", this.name);
+    public void toSAX(ContentHandler handler) throws SAXException {
+        AttributesImpl atts = new AttributesImpl();
+        if (name != null && name.length() > 0) {
+            atts.addAttribute(null, ATT_NAME, ATT_NAME, "CDATA", name);
         }
-        if (this.value != null && this.value.length() > 0) {
-            atts.addAttribute(null, ATT_VALUE, ATT_VALUE, "CDATA", this.value);
+        if (value != null && value.length() > 0) {
+            atts.addAttribute(null, ATT_VALUE, ATT_VALUE, "CDATA", value);
         }
-        handler.startElement(CATEGORY, this.elementName, this.elementName, atts);
-        if (this.content != null && this.content.length() > 0) {
-            final char[] chars = this.content.toCharArray();
+        if (this.placement != ExtensionPlacement.DEFAULT) {
+            atts.addAttribute(null, ATT_PLACEMENT, ATT_PLACEMENT, "CDATA", placement.getXMLValue());
+        }
+        handler.startElement(CATEGORY, elementName, elementName, atts);
+        if (content != null && content.length() > 0) {
+            char[] chars = content.toCharArray();
             handler.characters(chars, 0, chars.length);
         }
-        handler.endElement(CATEGORY, this.elementName, this.elementName);
+        handler.endElement(CATEGORY, elementName, elementName);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "AFPPageSetup(element-name=" + getElementName() + " name="
-                + getName() + " value=" + getValue() + ")";
+        StringBuilder sb = new StringBuilder("AFPPageSetup(");
+        sb.append("element-name=").append(getElementName());
+        sb.append(" name=").append(getName());
+        sb.append(" value=").append(getValue());
+        if (getPlacement() != ExtensionPlacement.DEFAULT) {
+            sb.append(" placement=").append(getPlacement());
+        }
+        sb.append(")");
+        return sb.toString();
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: StreamedResourceGroup.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: StreamedResourceGroup.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.modca;
 
@@ -38,12 +38,10 @@ public class StreamedResourceGroup extends ResourceGroup implements Completable 
     /**
      * Main constructor
      *
-     * @param name
-     *            the resource group name
-     * @param os
-     *            the outputstream
+     * @param name the resource group name
+     * @param os the outputstream
      */
-    public StreamedResourceGroup(final String name, final OutputStream os) {
+    public StreamedResourceGroup(String name, OutputStream os) {
         super(name);
         this.os = os;
     }
@@ -51,34 +49,29 @@ public class StreamedResourceGroup extends ResourceGroup implements Completable 
     /**
      * Adds a resource to the external resource group
      *
-     * @param namedObject
-     *            a named object
-     * @throws IOException
-     *             thrown if an I/O exception of some sort has occurred.
+     * @param namedObject a named object
+     * @throws IOException thrown if an I/O exception of some sort has occurred.
      */
-    @Override
-    public void addObject(final AbstractNamedAFPObject namedObject)
-            throws IOException {
-        if (!this.started) {
-            writeStart(this.os);
-            this.started = true;
+    public void addObject(AbstractNamedAFPObject namedObject) throws IOException {
+        if (!started) {
+            writeStart(os);
+            started = true;
         }
         try {
-            namedObject.writeToStream(this.os);
+            namedObject.writeToStream(os);
         } finally {
-            this.os.flush();
+            os.flush();
         }
     }
 
     /**
      * Closes this external resource group file
      *
-     * @throws IOException
-     *             thrown if an I/O exception of some sort has occurred.
+     * @throws IOException thrown if an I/O exception of some sort has occurred.
      */
     public void close() throws IOException {
-        writeEnd(this.os);
-        this.complete = true;
+        writeEnd(os);
+        complete = true;
     }
 
     /**
@@ -91,13 +84,11 @@ public class StreamedResourceGroup extends ResourceGroup implements Completable 
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setComplete(final boolean complete) {
+    public void setComplete(boolean complete) {
         this.complete = complete;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isComplete() {
         return this.complete;
     }

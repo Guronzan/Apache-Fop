@@ -15,14 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: Character.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: Character.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.fo.flow;
 
 import java.awt.Color;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
+import org.xml.sax.Locator;
+
+import org.apache.fop.accessibility.StructureTreeElement;
 import org.apache.fop.apps.FOPException;
+import org.apache.fop.complexscripts.bidi.DelimitedTextRange;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.fo.CharIterator;
 import org.apache.fop.fo.FONode;
@@ -36,14 +41,13 @@ import org.apache.fop.fo.properties.CommonTextDecoration;
 import org.apache.fop.fo.properties.KeepProperty;
 import org.apache.fop.fo.properties.Property;
 import org.apache.fop.fo.properties.SpaceProperty;
-import org.apache.fop.fo.properties.StructurePointerPropertySet;
-import org.xml.sax.Locator;
+import org.apache.fop.fo.properties.StructureTreeElementHolder;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_character">
  * <code>fo:character</code></a> object.
  */
-public class Character extends FObj implements StructurePointerPropertySet {
+public class Character extends FObj implements StructureTreeElementHolder {
     // The value of properties relevant for fo:character.
     private CommonBorderPaddingBackground commonBorderPaddingBackground;
     private CommonFont commonFont;
@@ -62,20 +66,20 @@ public class Character extends FObj implements StructurePointerPropertySet {
     private CommonTextDecoration textDecoration;
     // private ToBeImplementedProperty textShadow;
     private Property wordSpacing;
-    private String ptr; // used for accessibility
+    private StructureTreeElement structureTreeElement;
     // Unused but valid items, commented out for performance:
-    // private CommonAural commonAural;
-    // private CommonMarginInline commonMarginInline;
-    // private CommonRelativePosition commonRelativePosition;
-    // private ToBeImplementedProperty glyphOrientationHorizontal;
-    // private ToBeImplementedProperty glyphOrientationVertical;
-    // private int treatAsWordSpace;
-    // private Length textDepth;
-    // private Length textAltitude;
-    // private int scoreSpaces;
-    // private int suppressAtLineBreak;
-    // private int textTransform;
-    // private int visibility;
+    //     private CommonAural commonAural;
+    //     private CommonMarginInline commonMarginInline;
+    //     private CommonRelativePosition commonRelativePosition;
+    //     private ToBeImplementedProperty glyphOrientationHorizontal;
+    //     private ToBeImplementedProperty glyphOrientationVertical;
+    //     private int treatAsWordSpace;
+    //     private Length textDepth;
+    //     private Length textAltitude;
+    //     private int scoreSpaces;
+    //     private int suppressAtLineBreak;
+    //     private int textTransform;
+    //     private int visibility;
     // End of property values
 
     /** constant indicating that the character is OK */
@@ -84,191 +88,194 @@ public class Character extends FObj implements StructurePointerPropertySet {
     public static final int DOESNOT_FIT = 1;
 
     /**
-     * @param parent
-     *            {@link FONode} that is the parent of this object
+     * @param parent {@link FONode} that is the parent of this object
      */
-    public Character(final FONode parent) {
+    public Character(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void bind(final PropertyList pList) throws FOPException {
+    public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
-        this.commonBorderPaddingBackground = pList
-                .getBorderPaddingBackgroundProps();
-        this.commonFont = pList.getFontProps();
-        this.commonHyphenation = pList.getHyphenationProps();
+        commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
+        commonFont = pList.getFontProps();
+        commonHyphenation = pList.getHyphenationProps();
 
-        this.alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
-        this.alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
-        this.baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
-        this.character = pList.get(PR_CHARACTER).getCharacter();
-        this.color = pList.get(PR_COLOR).getColor(getUserAgent());
-        this.dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
-        this.keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
-        this.keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
-        this.letterSpacing = pList.get(PR_LETTER_SPACING);
-        this.lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
-        this.textDecoration = pList.getTextDecorationProps();
-        this.wordSpacing = pList.get(PR_WORD_SPACING);
-        this.ptr = pList.get(PR_X_PTR).getString(); // used for accessibility
+        alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
+        alignmentBaseline = pList.get(PR_ALIGNMENT_BASELINE).getEnum();
+        baselineShift = pList.get(PR_BASELINE_SHIFT).getLength();
+        character = pList.get(PR_CHARACTER).getCharacter();
+        color = pList.get(PR_COLOR).getColor(getUserAgent());
+        dominantBaseline = pList.get(PR_DOMINANT_BASELINE).getEnum();
+        keepWithNext = pList.get(PR_KEEP_WITH_NEXT).getKeep();
+        keepWithPrevious = pList.get(PR_KEEP_WITH_PREVIOUS).getKeep();
+        letterSpacing = pList.get(PR_LETTER_SPACING);
+        lineHeight = pList.get(PR_LINE_HEIGHT).getSpace();
+        textDecoration = pList.getTextDecorationProps();
+        wordSpacing = pList.get(PR_WORD_SPACING);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().character(this);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: empty
+     * {@inheritDoc}
+     * <br>XSL Content Model: empty
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             invalidChildError(loc, nsURI, localName);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public CharIterator charIterator() {
         return new FOCharIterator(this);
     }
 
     /** @return the Common Border, Padding, and Background Properties */
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
-        return this.commonBorderPaddingBackground;
+        return commonBorderPaddingBackground;
     }
 
     /** @return the Common Font Properties */
     public CommonFont getCommonFont() {
-        return this.commonFont;
+        return commonFont;
     }
 
     /** @return the Common Hyphenation Properties */
     public CommonHyphenation getCommonHyphenation() {
-        return this.commonHyphenation;
+        return commonHyphenation;
     }
 
     /** @return the "character" property */
     public char getCharacter() {
-        return this.character;
+        return character;
     }
 
     /** @return the "color" property */
     public Color getColor() {
-        return this.color;
+        return color;
     }
 
     /** @return the "alignment-adjust" property */
     public Length getAlignmentAdjust() {
-        return this.alignmentAdjust;
+        return alignmentAdjust;
     }
 
     /** @return the "alignment-baseline" property */
     public int getAlignmentBaseline() {
-        return this.alignmentBaseline;
+        return alignmentBaseline;
     }
 
     /** @return the "baseline-shift" property */
     public Length getBaselineShift() {
-        return this.baselineShift;
+        return baselineShift;
     }
 
     /** @return the "dominant-baseline" property */
     public int getDominantBaseline() {
-        return this.dominantBaseline;
+        return dominantBaseline;
     }
 
     /** @return the "letter-spacing" property */
     public Property getLetterSpacing() {
-        return this.letterSpacing;
+        return letterSpacing;
     }
 
     /** @return the "line-height" property */
     public SpaceProperty getLineHeight() {
-        return this.lineHeight;
+        return lineHeight;
     }
 
     /** @return the "text-decoration" property. */
     public CommonTextDecoration getTextDecoration() {
-        return this.textDecoration;
+        return textDecoration;
     }
 
     /** @return the "word-spacing" property */
     public Property getWordSpacing() {
-        return this.wordSpacing;
+        return wordSpacing;
     }
 
     /** @return the "keep-with-next" property */
     public KeepProperty getKeepWithNext() {
-        return this.keepWithNext;
+        return keepWithNext;
     }
 
     /** @return the "keep-with-previous" property */
     public KeepProperty getKeepWithPrevious() {
-        return this.keepWithPrevious;
+        return keepWithPrevious;
+    }
+
+    @Override
+    public void setStructureTreeElement(StructureTreeElement structureTreeElement) {
+        this.structureTreeElement = structureTreeElement;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public String getPtr() {
-        return this.ptr;
+    public StructureTreeElement getStructureTreeElement() {
+        return structureTreeElement;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "character";
     }
 
     /**
      * {@inheritDoc}
-     *
      * @return {@link org.apache.fop.fo.Constants#FO_CHARACTER}
      */
-    @Override
     public int getNameId() {
         return FO_CHARACTER;
+    }
+
+    @Override
+    public boolean isDelimitedTextRangeBoundary ( int boundary ) {
+        return false;
+    }
+
+    @Override
+    protected Stack collectDelimitedTextRanges ( Stack ranges, DelimitedTextRange currentRange ) {
+        if ( currentRange != null ) {
+            currentRange.append ( charIterator(), this );
+        }
+        return ranges;
     }
 
     private class FOCharIterator extends CharIterator {
 
         private boolean bFirst = true;
-        private final Character foChar;
+        private Character foChar;
 
-        FOCharIterator(final Character foChar) {
+        FOCharIterator(Character foChar) {
             this.foChar = foChar;
         }
 
-        @Override
         public boolean hasNext() {
-            return this.bFirst;
+            return bFirst;
         }
 
-        @Override
         public char nextChar() {
-            if (this.bFirst) {
-                this.bFirst = false;
-                return this.foChar.character;
+            if (bFirst) {
+                bFirst = false;
+                return foChar.character;
             } else {
                 throw new NoSuchElementException();
             }
         }
 
-        @Override
         public void remove() {
-            this.foChar.parent.removeChild(this.foChar);
+            foChar.parent.removeChild(foChar);
         }
 
-        @Override
-        public void replaceChar(final char c) {
-            this.foChar.character = c;
+        public void replaceChar(char c) {
+            foChar.character = c;
         }
 
     }

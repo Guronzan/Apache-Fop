@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FontEventListener.java 721430 2008-11-28 11:13:12Z acumiskey $ */
+/* $Id: FontEventListener.java 1301445 2012-03-16 11:44:09Z mehdi $ */
 
 package org.apache.fop.fonts;
 
@@ -25,43 +25,40 @@ package org.apache.fop.fonts;
 public interface FontEventListener {
 
     /**
-     * Notifies about a font being substituted as the requested one isn't
-     * available.
-     * 
-     * @param source
-     *            the event source
-     * @param requested
-     *            the requested font triplet
-     * @param effective
-     *            the effective font triplet
+     * Notifies about a font being substituted as the requested one isn't available.
+     * @param source the event source
+     * @param requested the requested font triplet
+     * @param effective the effective font triplet
      */
-    void fontSubstituted(final Object source, final FontTriplet requested,
-            final FontTriplet effective);
+    void fontSubstituted(Object source, FontTriplet requested, FontTriplet effective);
 
     /**
      * An error occurred while loading a font for auto-detection.
-     * 
-     * @param source
-     *            the event source
-     * @param fontURL
-     *            the font URL
-     * @param e
-     *            the original exception
+     * @param source the event source
+     * @param fontURL the font URL
+     * @param e the original exception
      */
-    void fontLoadingErrorAtAutoDetection(final Object source,
-            final String fontURL, final Exception e);
+    void fontLoadingErrorAtAutoDetection(Object source, String fontURL, Exception e);
 
     /**
      * A glyph has been requested that is not available in the font.
-     * 
-     * @param source
-     *            the event source
-     * @param ch
-     *            the character for which the glyph isn't available
-     * @param fontName
-     *            the name of the font
+     * @param source the event source
+     * @param ch the character for which the glyph isn't available
+     * @param fontName the name of the font
      */
-    void glyphNotAvailable(final Object source, final char ch,
-            final String fontName);
+    void glyphNotAvailable(Object source, char ch, String fontName);
 
+    /**
+     * An error occurred trying to find the font directory specified in the config file.
+     * @param source the event source
+     * @param dir the directory in the config file
+     */
+    void fontDirectoryNotFound(Object source, String dir);
+
+    /**
+     * The SVG text will be stroked as shapes.
+     * @param source the event source
+     * @param fontFamily the family name of the font that is being stroked
+     */
+    void svgTextStrokedAsShapes(Object source, String fontFamily);
 }

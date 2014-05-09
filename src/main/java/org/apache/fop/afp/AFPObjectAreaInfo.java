@@ -15,81 +15,69 @@
  * limitations under the License.
  */
 
-/* $Id: AFPObjectAreaInfo.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPObjectAreaInfo.java 1195952 2011-11-01 12:20:21Z phancock $ */
 
 package org.apache.fop.afp;
 
 /**
- * A common class used to convey locations, dimensions and resolutions of data
- * objects.
+ * A common class used to convey locations,
+ * dimensions and resolutions of data objects.
  */
 public class AFPObjectAreaInfo {
-    private int x;
-    private int y;
-    private int width;
-    private int height;
+    private final int x;
+    private final int y;
+    private final int width;
+    private final int height;
     private int widthRes;
     private int heightRes;
-    private int rotation = 0;
+    private final int rotation;
 
     /**
-     * Sets the x position of the data object
+     * Constructor
      *
-     * @param x
-     *            the x position of the data object
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @param width the width
+     * @param height the height
+     * @param resolution the resolution (sets both width and height resolutions)
+     * @param rotation the rotation angle
      */
-    public void setX(final int x) {
+    public AFPObjectAreaInfo(int x, int y, int width, int height, int resolution, int rotation) {
         this.x = x;
-    }
-
-    /**
-     * Sets the y position of the data object
-     *
-     * @param y
-     *            the y position of the data object
-     */
-    public void setY(final int y) {
         this.y = y;
-    }
-
-    /**
-     * Sets the data object width
-     *
-     * @param width
-     *            the width of the data object
-     */
-    public void setWidth(final int width) {
         this.width = width;
-    }
-
-    /**
-     * Sets the data object height
-     *
-     * @param height
-     *            the height of the data object
-     */
-    public void setHeight(final int height) {
         this.height = height;
+        this.rotation = rotation;
+        this.widthRes = resolution;
+        this.heightRes = resolution;
     }
 
     /**
-     * Sets the width resolution
+     * Sets both the width and the height resolutions.
      *
-     * @param widthRes
-     *            the width resolution
+     * @param resolution the resolution
      */
-    public void setWidthRes(final int widthRes) {
-        this.widthRes = widthRes;
+    public void setResolution(int resolution) {
+        this.widthRes = resolution;
+        this.heightRes = resolution;
     }
 
     /**
-     * Sets the height resolution
+     * Sets the width resolution.
      *
-     * @param heightRes
-     *            the height resolution
+     * @param resolution the resolution
      */
-    public void setHeightRes(final int heightRes) {
-        this.heightRes = heightRes;
+    public void setWidthRes(int resolution) {
+        this.widthRes = resolution;
+    }
+
+    /**
+     * Sets the height resolution.
+     *
+     * @param resolution the resolution
+     */
+    public void setHeightRes(int resolution) {
+        this.heightRes = resolution;
     }
 
     /**
@@ -98,7 +86,7 @@ public class AFPObjectAreaInfo {
      * @return the x coordinate of this data object
      */
     public int getX() {
-        return this.x;
+        return x;
     }
 
     /**
@@ -107,7 +95,7 @@ public class AFPObjectAreaInfo {
      * @return the y coordinate of this data object
      */
     public int getY() {
-        return this.y;
+        return y;
     }
 
     /**
@@ -116,7 +104,7 @@ public class AFPObjectAreaInfo {
      * @return the width of this data object
      */
     public int getWidth() {
-        return this.width;
+        return width;
     }
 
     /**
@@ -125,25 +113,25 @@ public class AFPObjectAreaInfo {
      * @return the height of this data object
      */
     public int getHeight() {
-        return this.height;
+        return height;
     }
 
     /**
      * Returns the width resolution of this data object
      *
-     * @return the width resolution of this data object
+     * @return the resolution of this data object
      */
     public int getWidthRes() {
-        return this.widthRes;
+        return widthRes;
     }
 
     /**
      * Returns the height resolution of this data object
      *
-     * @return the height resolution of this data object
+     * @return the resolution of this data object
      */
     public int getHeightRes() {
-        return this.heightRes;
+        return heightRes;
     }
 
     /**
@@ -152,26 +140,18 @@ public class AFPObjectAreaInfo {
      * @return the rotation of this data object
      */
     public int getRotation() {
-        return this.rotation;
-    }
-
-    /**
-     * Sets the data object rotation
-     *
-     * @param rotation
-     *            the data object rotation
-     */
-    public void setRotation(final int rotation) {
-        this.rotation = rotation;
+        return rotation;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "x=" + this.x + ", y=" + this.y + ", width=" + this.width
-                + ", height=" + this.height + ", widthRes=" + this.widthRes
-                + ", heightRes=" + this.heightRes + ", rotation="
-                + this.rotation;
+        return "x=" + x
+                + ", y=" + y
+                + ", width=" + width
+                + ", height=" + height
+                + ", widthRes=" + widthRes
+                + ", heigtRes=" + heightRes
+                + ", rotation=" + rotation;
     }
 
 }

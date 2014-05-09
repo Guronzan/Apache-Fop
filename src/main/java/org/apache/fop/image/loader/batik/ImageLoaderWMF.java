@@ -30,48 +30,40 @@ import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 import org.apache.xmlgraphics.image.loader.impl.AbstractImageLoader;
 
 /**
- * ImageLoader for WMF (Windows Metafile). Depends on the WMF preloader based on
- * Apache Batik.
+ * ImageLoader for WMF (Windows Metafile). Depends on the WMF preloader based on Apache Batik.
  */
 public class ImageLoaderWMF extends AbstractImageLoader {
 
-    private final ImageFlavor targetFlavor;
+    private ImageFlavor targetFlavor;
 
     /**
      * Main constructor.
-     * 
-     * @param targetFlavor
-     *            the target flavor
+     * @param targetFlavor the target flavor
      */
-    public ImageLoaderWMF(final ImageFlavor targetFlavor) {
-        if (!ImageWMF.WMF_IMAGE.equals(targetFlavor)) {
-            throw new IllegalArgumentException(
-                    "Unsupported target ImageFlavor: " + targetFlavor);
+    public ImageLoaderWMF(ImageFlavor targetFlavor) {
+        if (!(ImageWMF.WMF_IMAGE.equals(targetFlavor))) {
+            throw new IllegalArgumentException("Unsupported target ImageFlavor: " + targetFlavor);
         }
         this.targetFlavor = targetFlavor;
     }
 
     /** {@inheritDoc} */
-    @Override
     public ImageFlavor getTargetFlavor() {
         return this.targetFlavor;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public Image loadImage(final ImageInfo info, final Map hints,
-            final ImageSessionContext session) throws ImageException,
-            IOException {
+    public Image loadImage(ImageInfo info, Map hints, ImageSessionContext session)
+                throws ImageException, IOException {
         if (!ImageWMF.MIME_WMF.equals(info.getMimeType())) {
-            throw new IllegalArgumentException(
-                    "ImageInfo must be from a WMF image");
+            throw new IllegalArgumentException("ImageInfo must be from a WMF image");
         }
-        final Image img = info.getOriginalImage();
+        Image img = info.getOriginalImage();
         if (!(img instanceof ImageWMF)) {
             throw new IllegalArgumentException(
                     "ImageInfo was expected to contain the Windows Metafile (WMF)");
         }
-        final ImageWMF wmfImage = (ImageWMF) img;
+        ImageWMF wmfImage = (ImageWMF)img;
         return wmfImage;
     }
 

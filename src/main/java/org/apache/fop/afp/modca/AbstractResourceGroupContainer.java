@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractResourceGroupContainer.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: AbstractResourceGroupContainer.java 1296418 2012-03-02 19:56:33Z gadams $ */
 
 package org.apache.fop.afp.modca;
 
@@ -26,11 +26,14 @@ import java.util.Iterator;
 
 import org.apache.fop.afp.Completable;
 import org.apache.fop.afp.Factory;
+import org.apache.fop.afp.Streamable;
+
 
 /**
  * An abstract container of resource objects
  */
-public abstract class AbstractResourceGroupContainer extends AbstractPageObject {
+public abstract class AbstractResourceGroupContainer extends AbstractPageObject
+implements Streamable {
 
     /** The container started state */
     protected boolean started = false;
@@ -41,23 +44,19 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
     /**
      * Default constructor
      *
-     * @param factory
-     *            the object factory
+     * @param factory the object factory
      */
-    public AbstractResourceGroupContainer(final Factory factory) {
+    public AbstractResourceGroupContainer(Factory factory) {
         super(factory);
     }
 
     /**
      * Named constructor
      *
-     * @param factory
-     *            the object factory
-     * @param name
-     *            the name of this resource container
+     * @param factory the object factory
+     * @param name the name of this resource container
      */
-    public AbstractResourceGroupContainer(final Factory factory,
-            final String name) {
+    public AbstractResourceGroupContainer(Factory factory, String name) {
         super(factory, name);
     }
 
@@ -80,9 +79,8 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
      * @param heightRes
      *            the height resolution of the page.
      */
-    public AbstractResourceGroupContainer(final Factory factory,
-            final String name, final int width, final int height,
-            final int rotation, final int widthRes, final int heightRes) {
+    public AbstractResourceGroupContainer(Factory factory,
+            String name, int width, int height, int rotation, int widthRes, int heightRes) {
         super(factory, name, width, height, rotation, widthRes, heightRes);
     }
 
@@ -92,8 +90,8 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
      * @return the number of resources in this container
      */
     protected int getResourceCount() {
-        if (this.resourceGroup != null) {
-            return this.resourceGroup.getResourceCount();
+        if (resourceGroup != null) {
+            return resourceGroup.getResourceCount();
         }
         return 0;
     }
@@ -104,8 +102,7 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
      * @return true if this resource group container contains resources
      */
     protected boolean hasResources() {
-        return this.resourceGroup != null
-                && this.resourceGroup.getResourceCount() > 0;
+        return resourceGroup != null && resourceGroup.getResourceCount() > 0;
     }
 
     /**
@@ -114,62 +111,56 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
      * @return the resource group in this resource group container
      */
     public ResourceGroup getResourceGroup() {
-        if (this.resourceGroup == null) {
-            this.resourceGroup = this.factory.createResourceGroup();
+        if (resourceGroup == null) {
+            resourceGroup = factory.createResourceGroup();
         }
-        return this.resourceGroup;
+        return resourceGroup;
     }
 
-    // /** {@inheritDoc} */
-    // protected void writeContent(OutputStream os) throws IOException {
-    // if (resourceGroup != null) {
-    // resourceGroup.writeToStream(os);
-    // }
-    // super.writeContent(os);
-    // }
+//    /** {@inheritDoc} */
+//    protected void writeContent(OutputStream os) throws IOException {
+//        if (resourceGroup != null) {
+//            resourceGroup.writeToStream(os);
+//        }
+//        super.writeContent(os);
+//    }
 
     /** {@inheritDoc} */
     @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        if (!this.started) {
+    public void writeToStream(OutputStream os) throws IOException {
+        if (!started) {
             writeStart(os);
-            this.started = true;
+            started = true;
         }
 
         writeContent(os);
 
-        if (this.complete) {
+        if (complete) {
             writeEnd(os);
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    protected void writeObjects(
-            final Collection/* <AbstractAFPObject> */objects,
-            final OutputStream os) throws IOException {
+    protected void writeObjects(Collection/*<AbstractAFPObject>*/ objects, OutputStream os)
+            throws IOException {
         writeObjects(objects, os, false);
     }
 
     /**
      * Writes a collection of {@link AbstractAFPObject}s to the AFP Datastream.
      *
-     * @param objects
-     *            a list of AFPObjects
-     * @param os
-     *            The stream to write to
-     * @param forceWrite
-     *            true if writing should happen in any case
-     * @throws java.io.IOException
-     *             an I/O exception of some sort has occurred.
+     * @param objects a list of AFPObjects
+     * @param os The stream to write to
+     * @param forceWrite true if writing should happen in any case
+     * @throws java.io.IOException an I/O exception of some sort has occurred.
      */
-    protected void writeObjects(
-            final Collection/* <AbstractAFPObject> */objects,
-            final OutputStream os, final boolean forceWrite) throws IOException {
+    protected void writeObjects(Collection/*<AbstractAFPObject>*/ objects, OutputStream os,
+            boolean forceWrite) throws IOException {
         if (objects != null && objects.size() > 0) {
-            final Iterator it = objects.iterator();
+            Iterator it = objects.iterator();
             while (it.hasNext()) {
-                final AbstractAFPObject ao = (AbstractAFPObject) it.next();
+                AbstractAFPObject ao = (AbstractAFPObject)it.next();
                 if (forceWrite || canWrite(ao)) {
                     ao.writeToStream(os);
                     it.remove();
@@ -183,15 +174,14 @@ public abstract class AbstractResourceGroupContainer extends AbstractPageObject 
     /**
      * Returns true if this object can be written
      *
-     * @param obj
-     *            an AFP object
+     * @param obj an AFP object
      * @return true if this object can be written
      */
-    protected boolean canWrite(final AbstractAFPObject obj) {
-        if (obj instanceof AbstractPageObject) {
-            return ((Completable) obj).isComplete();
+    protected boolean canWrite(AbstractAFPObject obj) {
+        if (obj instanceof Completable) {
+            return ((Completable)obj).isComplete();
         } else {
-            return isComplete();
+            return this.isComplete();
         }
     }
 }

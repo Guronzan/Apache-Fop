@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: FOEventHandler.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: FOEventHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.fo;
 
+import org.xml.sax.SAXException;
+
 import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.apps.FormattingResults;
 import org.apache.fop.fo.extensions.ExternalDocument;
 import org.apache.fop.fo.flow.BasicLink;
 import org.apache.fop.fo.flow.Block;
@@ -33,9 +36,12 @@ import org.apache.fop.fo.flow.InstreamForeignObject;
 import org.apache.fop.fo.flow.Leader;
 import org.apache.fop.fo.flow.ListBlock;
 import org.apache.fop.fo.flow.ListItem;
+import org.apache.fop.fo.flow.ListItemBody;
+import org.apache.fop.fo.flow.ListItemLabel;
 import org.apache.fop.fo.flow.PageNumber;
 import org.apache.fop.fo.flow.PageNumberCitation;
 import org.apache.fop.fo.flow.PageNumberCitationLast;
+import org.apache.fop.fo.flow.Wrapper;
 import org.apache.fop.fo.flow.table.Table;
 import org.apache.fop.fo.flow.table.TableBody;
 import org.apache.fop.fo.flow.table.TableCell;
@@ -45,20 +51,21 @@ import org.apache.fop.fo.flow.table.TableHeader;
 import org.apache.fop.fo.flow.table.TableRow;
 import org.apache.fop.fo.pagination.Flow;
 import org.apache.fop.fo.pagination.PageSequence;
+import org.apache.fop.fo.pagination.Root;
+import org.apache.fop.fo.pagination.StaticContent;
 import org.apache.fop.fonts.FontEventAdapter;
 import org.apache.fop.fonts.FontInfo;
-import org.xml.sax.SAXException;
 
 /**
  * Abstract class defining what should be done with SAX events that map to
- * XSL-FO input. The events are actually captured by fo/FOTreeBuilder, passed to
- * the various fo Objects, which in turn, if needed, pass them to an instance of
- * FOEventHandler.
+ * XSL-FO input. The events are actually captured by fo/FOTreeBuilder, passed
+ * to the various fo Objects, which in turn, if needed, pass them to an instance
+ * of FOEventHandler.
  *
- * Sub-classes will generally fall into one of two categories: 1) a handler that
- * actually builds an FO Tree from the events, or 2) a handler that builds a
- * structured (as opposed to formatted) document, such as our MIF and RTF output
- * targets.
+ * Sub-classes will generally fall into one of two categories:
+ * 1) a handler that actually builds an FO Tree from the events, or 2) a
+ * handler that builds a structured (as opposed to formatted) document, such
+ * as our MIF and RTF output targets.
  */
 public abstract class FOEventHandler {
 
@@ -74,29 +81,28 @@ public abstract class FOEventHandler {
 
     /**
      * Main constructor
-     *
-     * @param foUserAgent
-     *            the apps.FOUserAgent instance for this process
+     * @param foUserAgent the apps.FOUserAgent instance for this process
      */
-    public FOEventHandler(final FOUserAgent foUserAgent) {
+    public FOEventHandler(FOUserAgent foUserAgent) {
         this.foUserAgent = foUserAgent;
         this.fontInfo = new FontInfo();
-        this.fontInfo.setEventListener(new FontEventAdapter(foUserAgent
-                .getEventBroadcaster()));
+        this.fontInfo.setEventListener(new FontEventAdapter(foUserAgent.getEventBroadcaster()));
+    }
+
+    /** Constructor for sub-classes that do not need an {@link FOUserAgent} instance. */
+    protected FOEventHandler() {
     }
 
     /**
      * Returns the User Agent object associated with this FOEventHandler.
-     *
      * @return the User Agent object
      */
     public FOUserAgent getUserAgent() {
-        return this.foUserAgent;
+        return foUserAgent;
     }
 
     /**
      * Retrieve the font information for this document
-     *
      * @return the FontInfo instance for this document
      */
     public FontInfo getFontInfo() {
@@ -105,333 +111,319 @@ public abstract class FOEventHandler {
 
     /**
      * This method is called to indicate the start of a new document run.
-     * 
-     * @throws SAXException
+     * @throws SAXException In case of a problem
      */
     public void startDocument() throws SAXException {
     }
 
     /**
      * This method is called to indicate the end of a document run.
-     *
-     * @throws SAXException
+     * @throws SAXException In case of a problem
      */
     public void endDocument() throws SAXException {
     }
 
     /**
-     *
-     * @param pageSeq
-     *            PageSequence that is starting.
+     * Called upon start of root element.
+     * @param root element
      */
-    public void startPageSequence(final PageSequence pageSeq) {
+    public void startRoot(Root root) {
     }
 
     /**
-     * @param pageSeq
-     *            PageSequence that is ending.
+     * Called upon end of root element.
+     * @param root element
      */
-    public void endPageSequence(final PageSequence pageSeq) {
-    }
-
-    /**
-     *
-     * @param pagenum
-     *            PageNumber that is starting.
-     */
-    public void startPageNumber(final PageNumber pagenum) {
+    public void endRoot(Root root) {
     }
 
     /**
      *
-     * @param pagenum
-     *            PageNumber that is ending.
+     * @param pageSeq PageSequence that is starting.
      */
-    public void endPageNumber(final PageNumber pagenum) {
+    public void startPageSequence(PageSequence pageSeq) {
+    }
+
+    /**
+     * @param pageSeq PageSequence that is ending.
+     */
+    public void endPageSequence(PageSequence pageSeq) {
     }
 
     /**
      *
-     * @param pageCite
-     *            PageNumberCitation that is starting.
+     * @param pagenum PageNumber that is starting.
      */
-    public void startPageNumberCitation(final PageNumberCitation pageCite) {
+    public void startPageNumber(PageNumber pagenum) {
     }
 
     /**
      *
-     * @param pageCite
-     *            PageNumberCitation that is ending.
+     * @param pagenum PageNumber that is ending.
      */
-    public void endPageNumberCitation(final PageNumberCitation pageCite) {
+    public void endPageNumber(PageNumber pagenum) {
     }
 
     /**
      *
-     * @param pageLast
-     *            PageNumberCitationLast that is starting.
+     * @param pageCite PageNumberCitation that is starting.
      */
-    public void startPageNumberCitationLast(
-            final PageNumberCitationLast pageLast) {
+    public void startPageNumberCitation(PageNumberCitation pageCite) {
     }
 
     /**
      *
-     * @param pageLast
-     *            PageNumberCitationLast that is ending.
+     * @param pageCite PageNumberCitation that is ending.
      */
-    public void endPageNumberCitationLast(final PageNumberCitationLast pageLast) {
-    }
-
-    /**
-     * This method is called to indicate the start of a new fo:flow or
-     * fo:static-content. This method also handles fo:static-content tags,
-     * because the StaticContent class is derived from the Flow class.
-     *
-     * @param fl
-     *            Flow that is starting.
-     */
-    public void startFlow(final Flow fl) {
+    public void endPageNumberCitation(PageNumberCitation pageCite) {
     }
 
     /**
      *
-     * @param fl
-     *            Flow that is ending.
+     * @param pageLast PageNumberCitationLast that is starting.
      */
-    public void endFlow(final Flow fl) {
+    public void startPageNumberCitationLast(PageNumberCitationLast pageLast) {
     }
 
     /**
      *
-     * @param bl
-     *            Block that is starting.
+     * @param pageLast PageNumberCitationLast that is ending.
      */
-    public void startBlock(final Block bl) {
+    public void endPageNumberCitationLast(PageNumberCitationLast pageLast) {
+    }
+
+    /**
+     * This method is called to indicate the start of a new fo:flow
+     * or fo:static-content.
+     * This method also handles fo:static-content tags, because the
+     * StaticContent class is derived from the Flow class.
+     *
+     * @param fl Flow that is starting.
+     */
+    public void startFlow(Flow fl) {
     }
 
     /**
      *
-     * @param bl
-     *            Block that is ending.
+     * @param fl Flow that is ending.
      */
-    public void endBlock(final Block bl) {
+    public void endFlow(Flow fl) {
     }
 
     /**
      *
-     * @param blc
-     *            BlockContainer that is starting.
+     * @param bl Block that is starting.
      */
-    public void startBlockContainer(final BlockContainer blc) {
+    public void startBlock(Block bl) {
     }
 
     /**
      *
-     * @param blc
-     *            BlockContainer that is ending.
+     * @param bl Block that is ending.
      */
-    public void endBlockContainer(final BlockContainer blc) {
+    public void endBlock(Block bl) {
+    }
+
+    /**
+    *
+    * @param blc BlockContainer that is starting.
+    */
+    public void startBlockContainer(BlockContainer blc) {
+    }
+
+    /**
+    *
+    * @param blc BlockContainer that is ending.
+    */
+    public void endBlockContainer(BlockContainer blc) {
     }
 
     /**
      *
-     * @param inl
-     *            Inline that is starting.
+     * @param inl Inline that is starting.
      */
-    public void startInline(final Inline inl) {
+    public void startInline(Inline inl) {
     }
 
     /**
      *
-     * @param inl
-     *            Inline that is ending.
+     * @param inl Inline that is ending.
      */
-    public void endInline(final Inline inl) {
+    public void endInline(Inline inl) {
     }
 
     // Tables
     /**
      *
-     * @param tbl
-     *            Table that is starting.
+     * @param tbl Table that is starting.
      */
-    public void startTable(final Table tbl) {
+    public void startTable(Table tbl) {
     }
 
     /**
      *
-     * @param tbl
-     *            Table that is ending.
+     * @param tbl Table that is ending.
      */
-    public void endTable(final Table tbl) {
+    public void endTable(Table tbl) {
     }
 
     /**
      *
-     * @param tc
-     *            TableColumn that is starting;
+     * @param tc TableColumn that is starting;
      */
-    public void startColumn(final TableColumn tc) {
+    public void startColumn(TableColumn tc) {
     }
 
     /**
      *
-     * @param tc
-     *            TableColumn that is ending;
+     * @param tc TableColumn that is ending;
      */
-    public void endColumn(final TableColumn tc) {
+    public void endColumn(TableColumn tc) {
     }
 
     /**
      *
-     * @param header
-     *            TableHeader that is starting;
+     * @param header TableHeader that is starting;
      */
-    public void startHeader(final TableHeader header) {
+    public void startHeader(TableHeader header) {
     }
 
     /**
      *
-     * @param header
-     *            TableHeader that is ending.
+     * @param header TableHeader that is ending.
      */
-    public void endHeader(final TableHeader header) {
+    public void endHeader(TableHeader header) {
     }
 
     /**
      *
-     * @param footer
-     *            TableFooter that is starting.
+     * @param footer TableFooter that is starting.
      */
-    public void startFooter(final TableFooter footer) {
+    public void startFooter(TableFooter footer) {
     }
 
     /**
      *
-     * @param footer
-     *            TableFooter that is ending.
+     * @param footer TableFooter that is ending.
      */
-    public void endFooter(final TableFooter footer) {
+    public void endFooter(TableFooter footer) {
     }
 
     /**
      *
-     * @param body
-     *            TableBody that is starting.
+     * @param body TableBody that is starting.
      */
-    public void startBody(final TableBody body) {
+    public void startBody(TableBody body) {
     }
 
     /**
      *
-     * @param body
-     *            TableBody that is ending.
+     * @param body TableBody that is ending.
      */
-    public void endBody(final TableBody body) {
+    public void endBody(TableBody body) {
     }
 
     /**
      *
-     * @param tr
-     *            TableRow that is starting.
+     * @param tr TableRow that is starting.
      */
-    public void startRow(final TableRow tr) {
+    public void startRow(TableRow tr) {
     }
 
     /**
      *
-     * @param tr
-     *            TableRow that is ending.
+     * @param tr TableRow that is ending.
      */
-    public void endRow(final TableRow tr) {
+    public void endRow(TableRow tr) {
     }
 
     /**
      *
-     * @param tc
-     *            TableCell that is starting.
+     * @param tc TableCell that is starting.
      */
-    public void startCell(final TableCell tc) {
+    public void startCell(TableCell tc) {
     }
 
     /**
      *
-     * @param tc
-     *            TableCell that is ending.
+     * @param tc TableCell that is ending.
      */
-    public void endCell(final TableCell tc) {
+    public void endCell(TableCell tc) {
     }
+
 
     // Lists
     /**
      *
-     * @param lb
-     *            ListBlock that is starting.
+     * @param lb ListBlock that is starting.
      */
-    public void startList(final ListBlock lb) {
+    public void startList(ListBlock lb) {
     }
 
     /**
      *
-     * @param lb
-     *            ListBlock that is ending.
+     * @param lb ListBlock that is ending.
      */
-    public void endList(final ListBlock lb) {
+    public void endList(ListBlock lb) {
     }
 
     /**
      *
-     * @param li
-     *            ListItem that is starting.
+     * @param li ListItem that is starting.
      */
-    public void startListItem(final ListItem li) {
+    public void startListItem(ListItem li) {
     }
 
     /**
      *
-     * @param li
-     *            ListItem that is ending.
+     * @param li ListItem that is ending.
      */
-    public void endListItem(final ListItem li) {
+    public void endListItem(ListItem li) {
     }
 
     /**
      * Process start of a ListLabel.
+     * @param listItemLabel ListItemLabel that is starting
      */
-    public void startListLabel() {
+    public void startListLabel(ListItemLabel listItemLabel) {
     }
 
     /**
      * Process end of a ListLabel.
+     * @param listItemLabel ListItemLabel that is ending
      */
-    public void endListLabel() {
+    public void endListLabel(ListItemLabel listItemLabel) {
     }
 
     /**
      * Process start of a ListBody.
+     * @param listItemBody ListItemBody that is starting
      */
-    public void startListBody() {
+    public void startListBody(ListItemBody listItemBody) {
     }
 
     /**
      * Process end of a ListBody.
+     * @param listItemBody ListItemBody that is ending
      */
-    public void endListBody() {
+    public void endListBody(ListItemBody listItemBody) {
     }
 
     // Static Regions
     /**
      * Process start of a Static.
+     * @param staticContent StaticContent that is starting
      */
-    public void startStatic() {
+    public void startStatic(StaticContent staticContent) {
     }
 
     /**
      * Process end of a Static.
+     * @param staticContent StaticContent that is ending
      */
-    public void endStatic() {
+    public void endStatic(StaticContent staticContent) {
     }
+
 
     /**
      * Process start of a Markup.
@@ -447,26 +439,23 @@ public abstract class FOEventHandler {
 
     /**
      * Process start of a Link.
-     *
-     * @param basicLink
-     *            BasicLink that is ending
+     * @param basicLink BasicLink that is starting
      */
-    public void startLink(final BasicLink basicLink) {
+    public void startLink(BasicLink basicLink) {
     }
 
     /**
      * Process end of a Link.
+     * @param basicLink BasicLink that is ending
      */
-    public void endLink() {
+    public void endLink(BasicLink basicLink) {
     }
 
     /**
      * Process an ExternalGraphic.
-     *
-     * @param eg
-     *            ExternalGraphic to process.
+     * @param eg ExternalGraphic to process.
      */
-    public void image(final ExternalGraphic eg) {
+    public void image(ExternalGraphic eg) {
     }
 
     /**
@@ -476,97 +465,112 @@ public abstract class FOEventHandler {
     }
 
     /**
-     * Process an InstreamForeignObject.
-     *
-     * @param ifo
-     *            InstreamForeignObject to process.
+     * Process the start of an InstreamForeignObject.
+     * @param ifo InstreamForeignObject that is starting
      */
-    public void foreignObject(final InstreamForeignObject ifo) {
+    public void startInstreamForeignObject(InstreamForeignObject ifo) {
+    }
+
+    /**
+     * Process the end of an InstreamForeignObject.
+     * @param ifo InstreamForeignObject that is ending
+     */
+    public void endInstreamForeignObject(InstreamForeignObject ifo) {
     }
 
     /**
      * Process the start of a footnote.
-     *
-     * @param footnote
-     *            Footnote that is starting
+     * @param footnote Footnote that is starting
      */
-    public void startFootnote(final Footnote footnote) {
+    public void startFootnote(Footnote footnote) {
     }
 
     /**
      * Process the ending of a footnote.
-     *
-     * @param footnote
-     *            Footnote that is ending
+     * @param footnote Footnote that is ending
      */
-    public void endFootnote(final Footnote footnote) {
+    public void endFootnote(Footnote footnote) {
     }
 
     /**
      * Process the start of a footnote body.
-     *
-     * @param body
-     *            FootnoteBody that is starting
+     * @param body FootnoteBody that is starting
      */
-    public void startFootnoteBody(final FootnoteBody body) {
+    public void startFootnoteBody(FootnoteBody body) {
     }
 
     /**
      * Process the ending of a footnote body.
-     *
-     * @param body
-     *            FootnoteBody that is ending
+     * @param body FootnoteBody that is ending
      */
-    public void endFootnoteBody(final FootnoteBody body) {
+    public void endFootnoteBody(FootnoteBody body) {
     }
 
     /**
-     * Process a Leader.
-     *
-     * @param l
-     *            Leader to process.
+     * Process the start of a Leader.
+     * @param l Leader that is starting
      */
-    public void leader(final Leader l) {
+    public void startLeader(Leader l) {
+    }
+
+    /**
+     * Process the end of a Leader.
+     * @param l Leader that is ending
+     */
+    public void endLeader(Leader l) {
+    }
+
+    /**
+     * Process the start of a wrapper.
+     *
+     * @param wrapper wrapper that is starting
+     */
+    public void startWrapper(Wrapper wrapper) {
+    }
+
+    /**
+     * Process the ending of a wrapper.
+     *
+     * @param wrapper wrapper that is ending
+     */
+    public void endWrapper(Wrapper wrapper) {
     }
 
     /**
      * Process a Character.
-     *
-     * @param c
-     *            Character to process.
+     * @param c Character to process.
      */
-    public void character(final Character c) {
+    public void character(Character c) {
     }
 
     /**
      * Process character data.
-     *
-     * @param data
-     *            Array of characters to process.
-     * @param start
-     *            Offset for characters to process.
-     * @param length
-     *            Portion of array to process.
+     * @param foText text to process
      */
-    public void characters(final char[] data, final int start, final int length) {
+    public void characters(FOText foText) {
     }
 
     /**
      * Process the start of the external-document extension.
-     *
-     * @param document
-     *            the external-document node
+     * @param document the external-document node
      */
-    public void startExternalDocument(final ExternalDocument document) {
+    public void startExternalDocument(ExternalDocument document) {
     }
 
     /**
      * Process the end of the external-document extension.
-     *
-     * @param document
-     *            the external-document node
+     * @param document the external-document node
      */
-    public void endExternalDocument(final ExternalDocument document) {
+    public void endExternalDocument(ExternalDocument document) {
+    }
+
+    /**
+     * Get formatting results.
+     * @return the FormattingResults instance for this document
+     */
+    public FormattingResults getResults() {
+        return null;
     }
 
 }
+

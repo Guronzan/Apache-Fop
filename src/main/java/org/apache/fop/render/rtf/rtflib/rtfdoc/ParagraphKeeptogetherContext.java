@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ParagraphKeeptogetherContext.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ParagraphKeeptogetherContext.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -28,34 +28,21 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
 /**
  *
- * This context is used to manage the "keepn" RTF attribute Used by
- * ParagraphBuilder and JforCmd
+ *     This context is used to manage the "keepn" RTF attribute
+ *  Used by ParagraphBuilder and JforCmd
  *
  */
 
-public class ParagraphKeeptogetherContext {
+public final class ParagraphKeeptogetherContext {
 
     private static int paraKeepTogetherOpen = 0;
     private static boolean paraResetProperties = false;
-    private static ParagraphKeeptogetherContext instance = null;
 
-    ParagraphKeeptogetherContext() {
+    private ParagraphKeeptogetherContext() {
     }
 
     /**
-     * Singelton.
-     *
-     * @return The instance of ParagraphKeeptogetherContext
-     */
-    public static ParagraphKeeptogetherContext getInstance() {
-        if (instance == null) {
-            instance = new ParagraphKeeptogetherContext();
-        }
-        return instance;
-    }
-
-    /**
-     * @return the level of current "keep whith next" paragraph
+     *  @return the level of current "keep whith next" paragraph
      */
     public static int getKeepTogetherOpenValue() {
         return paraKeepTogetherOpen;
@@ -71,11 +58,10 @@ public class ParagraphKeeptogetherContext {
         if (paraKeepTogetherOpen > 0) {
             paraKeepTogetherOpen--;
 
-            // If the \pard control word is not present, the current paragraph
-            // inherits all paragraph properties.
-            // Also the next paragraph must reset the properties otherwise the
-            // \keepn don't stop.
-            paraResetProperties = paraKeepTogetherOpen == 0;
+            //If the \pard control word is not present, the current paragraph
+            //inherits all paragraph properties.
+            //Also the next paragraph must reset the properties otherwise the \keepn don't stop.
+            paraResetProperties = (paraKeepTogetherOpen == 0);
         }
     }
 

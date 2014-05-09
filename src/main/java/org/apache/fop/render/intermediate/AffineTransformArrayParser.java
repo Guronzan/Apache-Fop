@@ -21,7 +21,6 @@ package org.apache.fop.render.intermediate;
 
 import java.awt.geom.AffineTransform;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.batik.parser.ParseException;
@@ -29,28 +28,25 @@ import org.apache.batik.parser.TransformListHandler;
 import org.apache.batik.parser.TransformListParser;
 
 /**
- * This class parses a sequence of transformations into an array of
- * {@link AffineTransform} instances.
+ * This class parses a sequence of transformations into an array of {@link AffineTransform}
+ * instances.
  */
 public class AffineTransformArrayParser implements TransformListHandler {
 
     private static final AffineTransform[] EMPTY_ARRAY = new AffineTransform[0];
 
-    private List<AffineTransform> transforms;
+    private List transforms;
 
     /**
      * Utility method for creating an AffineTransform array.
-     *
-     * @param r
-     *            The reader used to read the transform specification.
+     * @param r The reader used to read the transform specification.
      * @return the AffineTransform array
-     * @throws ParseException
-     *             if there's a parse error
+     * @throws ParseException if there's a parse error
      */
-    public static AffineTransform[] createAffineTransform(final Reader r)
-            throws ParseException {
-        final TransformListParser p = new TransformListParser();
-        final AffineTransformArrayParser th = new AffineTransformArrayParser();
+    public static AffineTransform[] createAffineTransform(Reader r)
+                throws ParseException {
+        TransformListParser p = new TransformListParser();
+        AffineTransformArrayParser th = new AffineTransformArrayParser();
 
         p.setTransformListHandler(th);
         p.parse(r);
@@ -60,20 +56,17 @@ public class AffineTransformArrayParser implements TransformListHandler {
 
     /**
      * Utility method for creating an AffineTransform.
-     *
-     * @param s
-     *            The transform specification.
+     * @param s The transform specification.
      * @return the AffineTransform array
-     * @throws ParseException
-     *             if there's a parse error
+     * @throws ParseException if there's a parse error
      */
-    public static AffineTransform[] createAffineTransform(final String s)
-            throws ParseException {
+    public static AffineTransform[] createAffineTransform(String s)
+                throws ParseException {
         if (s == null) {
             return EMPTY_ARRAY;
         }
-        final TransformListParser p = new TransformListParser();
-        final AffineTransformArrayParser th = new AffineTransformArrayParser();
+        TransformListParser p = new TransformListParser();
+        AffineTransformArrayParser th = new AffineTransformArrayParser();
 
         p.setTransformListHandler(th);
         p.parse(s);
@@ -83,89 +76,76 @@ public class AffineTransformArrayParser implements TransformListHandler {
 
     /**
      * Returns the AffineTransform array initialized during the last parsing.
-     *
-     * @return the array or null if this handler has not been used by a parser.
+     * @return the array or null if this handler has not been used by
+     *         a parser.
      */
     public AffineTransform[] getAffineTransforms() {
         if (this.transforms == null) {
             return null;
         } else {
-            final int count = this.transforms.size();
-            return this.transforms.toArray(new AffineTransform[count]);
+            int count = this.transforms.size();
+            return (AffineTransform[])this.transforms.toArray(new AffineTransform[count]);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     public void startTransformList() throws ParseException {
-        this.transforms = new ArrayList<>();
+        this.transforms = new java.util.ArrayList();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void matrix(final float a, final float b, final float c,
-            final float d, final float e, final float f) throws ParseException {
+    public void matrix(float a, float b, float c, float d, float e, float f)
+                throws ParseException {
         this.transforms.add(new AffineTransform(a, b, c, d, e, f));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void rotate(final float theta) throws ParseException {
-        this.transforms.add(AffineTransform.getRotateInstance(Math
-                .toRadians(theta)));
+    public void rotate(float theta) throws ParseException {
+        this.transforms.add(AffineTransform.getRotateInstance(Math.toRadians(theta)));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void rotate(final float theta, final float cx, final float cy)
-            throws ParseException {
-        final AffineTransform at = AffineTransform.getRotateInstance(
-                Math.toRadians(theta), cx, cy);
+    public void rotate(float theta, float cx, float cy) throws ParseException {
+        AffineTransform at
+            = AffineTransform.getRotateInstance(Math.toRadians(theta), cx, cy);
         this.transforms.add(at);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void translate(final float tx) throws ParseException {
-        final AffineTransform at = AffineTransform.getTranslateInstance(tx, 0);
+    public void translate(float tx) throws ParseException {
+        AffineTransform at = AffineTransform.getTranslateInstance(tx, 0);
         this.transforms.add(at);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void translate(final float tx, final float ty) throws ParseException {
-        final AffineTransform at = AffineTransform.getTranslateInstance(tx, ty);
+    public void translate(float tx, float ty) throws ParseException {
+        AffineTransform at = AffineTransform.getTranslateInstance(tx, ty);
         this.transforms.add(at);
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void scale(final float sx) throws ParseException {
+    public void scale(float sx) throws ParseException {
         this.transforms.add(AffineTransform.getScaleInstance(sx, sx));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void scale(final float sx, final float sy) throws ParseException {
+    public void scale(float sx, float sy) throws ParseException {
         this.transforms.add(AffineTransform.getScaleInstance(sx, sy));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void skewX(final float skx) throws ParseException {
-        this.transforms.add(AffineTransform.getShearInstance(
-                Math.tan(Math.toRadians(skx)), 0));
+    public void skewX(float skx) throws ParseException {
+        this.transforms.add
+            (AffineTransform.getShearInstance(Math.tan(Math.toRadians(skx)), 0));
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void skewY(final float sky) throws ParseException {
-        this.transforms.add(AffineTransform.getShearInstance(0,
-                Math.tan(Math.toRadians(sky))));
+    public void skewY(float sky) throws ParseException {
+        this.transforms.add
+            (AffineTransform.getShearInstance(0, Math.tan(Math.toRadians(sky))));
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endTransformList() throws ParseException {
     }
 }

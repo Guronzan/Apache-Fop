@@ -15,53 +15,47 @@
  * limitations under the License.
  */
 
-/* $Id: BatikUtil.java 724310 2008-12-08 11:30:11Z jeremias $ */
+/* $Id: BatikUtil.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.image.loader.batik;
 
-import lombok.extern.slf4j.Slf4j;
+import org.w3c.dom.Document;
 
 import org.apache.batik.dom.AbstractDocument;
 import org.apache.batik.dom.util.DOMUtilities;
-import org.w3c.dom.Document;
 
 /**
  * Helper utilities for Apache Batik.
  */
-@Slf4j
-public class BatikUtil {
+public final class BatikUtil {
+
+    private BatikUtil() {
+    }
 
     /**
      * Checks whether Apache Batik is available in the classpath.
-     *
      * @return true if Apache Batik is available
      */
     public static boolean isBatikAvailable() {
         try {
             Class.forName("org.apache.batik.dom.svg.SVGDOMImplementation");
             return true;
-        } catch (final Exception e) {
-            log.error("Exception", e);
+        } catch (Exception e) {
+            //ignore
         }
         return false;
     }
 
     /**
-     * Clones an SVG DOM document. This is used for making SVG production
-     * thread-safe when the SVG document is cached and re-used.
-     *
-     * @param doc
-     *            the SVG DOM to be cloned
+     * Clones an SVG DOM document. This is used for making SVG production thread-safe when the
+     * SVG document is cached and re-used.
+     * @param doc the SVG DOM to be cloned
      * @return the cloned SVG DOM
      */
-    public static Document cloneSVGDocument(final Document doc) {
-        final Document clonedDoc = DOMUtilities.deepCloneDocument(doc,
-                doc.getImplementation());
+    public static Document cloneSVGDocument(Document doc) {
+        Document clonedDoc = DOMUtilities.deepCloneDocument(doc, doc.getImplementation());
         if (clonedDoc instanceof AbstractDocument) {
-            // TODO a retablir
-            // ((AbstractDocument) clonedDoc)
-            // .setDocumentURI(((AbstractDocument) doc)
-            // .getDocumentElement());
+            ((AbstractDocument)clonedDoc).setDocumentURI(((AbstractDocument)doc).getDocumentURI());
         }
         return clonedDoc;
     }

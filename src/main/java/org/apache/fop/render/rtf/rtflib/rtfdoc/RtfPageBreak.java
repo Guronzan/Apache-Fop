@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: RtfPageBreak.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: RtfPageBreak.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -30,28 +30,21 @@ import java.io.IOException;
 import java.io.Writer;
 
 /**
- * "Model" of an RTF page break
- * 
- * @author Bertrand Delacretaz bdelacretaz@codeconsult.ch
+ * <p>Model of an RTF page break.</p>
+ *
+ * <p>This work was authored by Bertrand Delacretaz (bdelacretaz@codeconsult.ch).</p>
  */
 
 public class RtfPageBreak extends RtfElement {
-    /**
-     * Create an RTF paragraph as a child of given container with default
-     * attributes
-     */
-    RtfPageBreak(final IRtfPageBreakContainer parent, final Writer w)
-            throws IOException {
-        super((RtfContainer) parent, w);
+    /** Create an RTF paragraph as a child of given container with default attributes */
+    RtfPageBreak(IRtfPageBreakContainer parent, Writer w) throws IOException {
+        super((RtfContainer)parent, w);
     }
 
     /**
      * Overridden to write our attributes before our content
-     * 
-     * @throws IOException
-     *             for I/O problems
+     * @throws IOException for I/O problems
      */
-    @Override
     protected void writeRtfContent() throws IOException {
         writeControlWord("page");
     }
@@ -59,7 +52,6 @@ public class RtfPageBreak extends RtfElement {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
-    @Override
     public boolean isEmpty() {
         return false;
     }

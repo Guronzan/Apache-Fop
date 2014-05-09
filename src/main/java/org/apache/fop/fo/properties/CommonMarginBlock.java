@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: CommonMarginBlock.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CommonMarginBlock.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.fo.properties;
 
@@ -25,78 +25,79 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.expr.PropertyException;
 
 /**
- * Store all common margin properties for blocks. See Sec. 7.10 of the XSL-FO
- * Standard. Public "structure" allows direct member access.
+ * Store all common margin properties for blocks.
+ * See Sec. 7.10 of the XSL-FO Standard.
+ * Public "structure" allows direct member access.
  */
 public class CommonMarginBlock {
     /**
      * The "margin-top" property.
      */
-    public Length marginTop;
+    public Length marginTop;                                    // CSOK: VisibilityModifier
 
     /**
      * The "margin-bottom" property.
      */
-    public Length marginBottom;
+    public Length marginBottom;                                 // CSOK: VisibilityModifier
 
     /**
      * The "margin-left" property.
      */
-    public Length marginLeft;
+    public Length marginLeft;                                   // CSOK: VisibilityModifier
 
     /**
      * The "margin-right" property.
      */
-    public Length marginRight;
+    public Length marginRight;                                  // CSOK: VisibilityModifier
 
     /**
      * The "space-before" property.
      */
-    public SpaceProperty spaceBefore;
+    public SpaceProperty spaceBefore;                           // CSOK: VisibilityModifier
 
     /**
      * The "space-after" property.
      */
-    public SpaceProperty spaceAfter;
+    public SpaceProperty spaceAfter;                            // CSOK: VisibilityModifier
 
     /**
      * The "start-indent" property.
      */
-    public Length startIndent;
+    public Length startIndent;                                  // CSOK: VisibilityModifier
 
     /**
      * The "end-indent" property.
      */
-    public Length endIndent;
+    public Length endIndent;                                    // CSOK: VisibilityModifier
 
     /**
      * Create a CommonMarginBlock object.
-     * 
-     * @param pList
-     *            The PropertyList with propery values.
+     * @param pList The PropertyList with propery values.
+     * @throws PropertyException if a property exception occurs
      */
-    public CommonMarginBlock(final PropertyList pList) throws PropertyException {
-        this.marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
-        this.marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
-        this.marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
-        this.marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
+    public CommonMarginBlock(PropertyList pList) throws PropertyException {
+        marginTop = pList.get(Constants.PR_MARGIN_TOP).getLength();
+        marginBottom = pList.get(Constants.PR_MARGIN_BOTTOM).getLength();
+        marginLeft = pList.get(Constants.PR_MARGIN_LEFT).getLength();
+        marginRight = pList.get(Constants.PR_MARGIN_RIGHT).getLength();
 
-        this.spaceBefore = pList.get(Constants.PR_SPACE_BEFORE).getSpace();
-        this.spaceAfter = pList.get(Constants.PR_SPACE_AFTER).getSpace();
+        spaceBefore = pList.get(Constants.PR_SPACE_BEFORE).getSpace();
+        spaceAfter = pList.get(Constants.PR_SPACE_AFTER).getSpace();
 
-        this.startIndent = pList.get(Constants.PR_START_INDENT).getLength();
-        this.endIndent = pList.get(Constants.PR_END_INDENT).getLength();
+        startIndent = pList.get(Constants.PR_START_INDENT).getLength();
+        endIndent = pList.get(Constants.PR_END_INDENT).getLength();
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return "CommonMarginBlock:\n" + "Margins (top, bottom, left, right): ("
-                + this.marginTop + ", " + this.marginBottom + ", "
-                + this.marginLeft + ", " + this.marginRight + ")\n"
-                + "Space (before, after): (" + this.spaceBefore + ", "
-                + this.spaceAfter + ")\n" + "Indents (start, end): ("
-                + this.startIndent + ", " + this.endIndent + ")\n";
+        return "CommonMarginBlock:\n"
+            + "Margins (top, bottom, left, right): ("
+            + marginTop + ", " + marginBottom + ", "
+            + marginLeft + ", " + marginRight + ")\n"
+            + "Space (before, after): ("
+            + spaceBefore + ", " + spaceAfter + ")\n"
+            + "Indents (start, end): ("
+            + startIndent + ", " + endIndent + ")\n";
     }
 
 }

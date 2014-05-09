@@ -15,53 +15,49 @@
  * limitations under the License.
  */
 
-/* $Id: DefaultErrorListener.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: DefaultErrorListener.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.util;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.TransformerException;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
 
 /**
- * Standard ErrorListener implementation for in-FOP use. Some Xalan-J versions
- * don't properly re-throw exceptions.
+ * Standard ErrorListener implementation for in-FOP use. Some Xalan-J versions don't properly
+ * re-throw exceptions.
  */
-@Slf4j
 public class DefaultErrorListener implements ErrorListener {
+
+    private Log log;
 
     /**
      * Main constructor
-     *
-     * @param log
-     *            the log instance to send log events to
+     * @param log the log instance to send log events to
      */
-    public DefaultErrorListener() {
+    public DefaultErrorListener(Log log) {
+        this.log = log;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void warning(final TransformerException exc) {
+    public void warning(TransformerException exc) {
         log.warn(exc.toString());
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void error(final TransformerException exc)
-            throws TransformerException {
+    public void error(TransformerException exc) throws TransformerException {
         throw exc;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void fatalError(final TransformerException exc)
+    public void fatalError(TransformerException exc)
             throws TransformerException {
         throw exc;
     }

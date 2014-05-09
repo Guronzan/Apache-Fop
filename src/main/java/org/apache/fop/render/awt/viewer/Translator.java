@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-/* $Id: Translator.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: Translator.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.render.awt.viewer;
 
-//Java
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * AWT Viewer's localization class, backed up by
- * <code>java.util.ResourceBundle</code>. Originally contributed by:
+ * AWT Viewer's localization class, backed up by <code>java.util.ResourceBundle</code>.
+ * Originally contributed by:
  * Stanislav.Gorkhover@jCatalog.com
  */
 public class Translator {
 
-    private final ResourceBundle bundle;
+    private ResourceBundle bundle;
     private static String bundleBaseName = "org/apache/fop/render/awt/viewer/resources/Viewer";
 
     /**
@@ -42,22 +41,19 @@ public class Translator {
 
     /**
      * Constructor for a given <code>Locale</code>.
-     * 
-     * @param locale
-     *            Locale to use
+     * @param locale Locale to use
      */
-    public Translator(final Locale locale) {
-        this.bundle = ResourceBundle.getBundle(bundleBaseName, locale);
+    public Translator(Locale locale) {
+        bundle = ResourceBundle.getBundle(bundleBaseName, locale);
     }
 
     /**
      * Returns localized <code>String</code> for a given key.
-     * 
-     * @param key
-     *            the key
+     * @param key the key
      * @return the localized String
      */
-    public String getString(final String key) {
-        return this.bundle.getString(key);
+    public String getString(String key) {
+        return bundle.getString(key);
     }
 }
+

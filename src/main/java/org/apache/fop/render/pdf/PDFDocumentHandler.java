@@ -29,8 +29,13 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import org.apache.xmlgraphics.xmp.Metadata;
+
+import org.apache.fop.accessibility.StructureTreeEventHandler;
+import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.fo.extensions.xmp.XMPMetadata;
 import org.apache.fop.pdf.PDFAnnotList;
 import org.apache.fop.pdf.PDFDocument;
@@ -46,14 +51,14 @@ import org.apache.fop.render.intermediate.IFDocumentNavigationHandler;
 import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFPainter;
 import org.apache.fop.render.pdf.extensions.PDFEmbeddedFileExtensionAttachment;
-import org.apache.xmlgraphics.xmp.Metadata;
 
 /**
- * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation
- * that produces PDF.
+ * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation that produces PDF.
  */
-@Slf4j
 public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
+
+    /** logging instance */
+    private static Log log = LogFactory.getLog(PDFDocumentHandler.class);
 
     private boolean accessEnabled;
 
@@ -65,8 +70,8 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     protected PDFDocument pdfDoc;
 
     /**
-     * Utility class which enables all sorts of features that are not directly
-     * connected to the normal rendering process.
+     * Utility class which enables all sorts of features that are not directly connected to the
+     * normal rendering process.
      */
     protected PDFRenderingUtil pdfUtil;
 
@@ -86,10 +91,10 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     protected PageReference currentPageRef;
 
     /** Used for bookmarks/outlines. */
-    protected Map<Integer, PageReference> pageReferences = new HashMap<>();
+    protected Map<Integer, PageReference> pageReferences = new HashMap<Integer, PageReference>();
 
-    private final PDFDocumentNavigationHandler documentNavigationHandler = new PDFDocumentNavigationHandler(
-            this);
+    private final PDFDocumentNavigationHandler documentNavigationHandler
+            = new PDFDocumentNavigationHandler(this);
 
     /**
      * Default constructor.
@@ -98,32 +103,27 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean supportsPagesOutOfOrder() {
-        return !this.accessEnabled;
+        return !accessEnabled;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getMimeType() {
-        return org.apache.xmlgraphics.util.MimeConstants.MIME_PDF;
+        return MimeConstants.MIME_PDF;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void setContext(final IFContext context) {
+    public void setContext(IFContext context) {
         super.setContext(context);
         this.pdfUtil = new PDFRenderingUtil(context.getUserAgent());
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return new PDFRendererConfigurator(getUserAgent());
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFDocumentNavigationHandler getDocumentNavigationHandler() {
         return this.documentNavigationHandler;
     }
@@ -133,185 +133,168 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     }
 
     PDFLogicalStructureHandler getLogicalStructureHandler() {
-        return this.logicalStructureHandler;
+        return logicalStructureHandler;
     }
 
     /** {@inheritDoc} */
-    @Override
     public void startDocument() throws IFException {
         super.startDocument();
         try {
-            this.pdfDoc = this.pdfUtil.setupPDFDocument(this.outputStream);
+            this.pdfDoc = pdfUtil.setupPDFDocument(this.outputStream);
             this.accessEnabled = getUserAgent().isAccessibilityEnabled();
-            if (this.accessEnabled) {
+            if (accessEnabled) {
                 setupAccessibility();
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IFException("I/O error in startDocument()", e);
         }
     }
 
     private void setupAccessibility() {
-        this.pdfDoc.getRoot().makeTagged();
-        this.logicalStructureHandler = new PDFLogicalStructureHandler(
-                this.pdfDoc);
+        pdfDoc.getRoot().makeTagged();
+        logicalStructureHandler = new PDFLogicalStructureHandler(pdfDoc);
         // TODO this is ugly. All the necessary information should be available
         // at creation time in order to enforce immutability
-        this.structureTreeBuilder.setPdfFactory(this.pdfDoc.getFactory());
-        this.structureTreeBuilder
-        .setLogicalStructureHandler(this.logicalStructureHandler);
-        this.structureTreeBuilder.setEventBroadcaster(getUserAgent()
-                .getEventBroadcaster());
+        structureTreeBuilder.setPdfFactory(pdfDoc.getFactory());
+        structureTreeBuilder.setLogicalStructureHandler(logicalStructureHandler);
+        structureTreeBuilder.setEventBroadcaster(getUserAgent().getEventBroadcaster());
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endDocumentHeader() throws IFException {
-        this.pdfUtil.generateDefaultXMPMetadata();
+        pdfUtil.generateDefaultXMPMetadata();
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endDocument() throws IFException {
         try {
-            this.pdfDoc.getResources().addFonts(this.pdfDoc, this.fontInfo);
-            this.pdfDoc.outputTrailer(this.outputStream);
+            pdfDoc.getResources().addFonts(pdfDoc, fontInfo);
+            pdfDoc.outputTrailer(this.outputStream);
             this.pdfDoc = null;
 
-            this.pdfResources = null;
+            pdfResources = null;
             this.generator = null;
-            this.currentContext = null;
-            this.currentPage = null;
-        } catch (final IOException ioe) {
+            currentContext = null;
+            currentPage = null;
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endDocument()", ioe);
         }
         super.endDocument();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPageSequence(final String id) throws IFException {
-        // nop
+    public void startPageSequence(String id) throws IFException {
+        //nop
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endPageSequence() throws IFException {
-        // nop
+        //nop
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startPage(final int index, final String name,
-            final String pageMasterName, final Dimension size)
-                    throws IFException {
+    public void startPage(int index, String name, String pageMasterName, Dimension size)
+                throws IFException {
         this.pdfResources = this.pdfDoc.getResources();
 
-        final PageBoundaries boundaries = new PageBoundaries(size, getContext()
-                .getForeignAttributes());
+        PageBoundaries boundaries = new PageBoundaries(size, getContext().getForeignAttributes());
 
-        final Rectangle trimBox = boundaries.getTrimBox();
-        final Rectangle bleedBox = boundaries.getBleedBox();
-        final Rectangle mediaBox = boundaries.getMediaBox();
-        final Rectangle cropBox = boundaries.getCropBox();
+        Rectangle trimBox = boundaries.getTrimBox();
+        Rectangle bleedBox = boundaries.getBleedBox();
+        Rectangle mediaBox = boundaries.getMediaBox();
+        Rectangle cropBox = boundaries.getCropBox();
 
         // set scale attributes
         double scaleX = 1;
         double scaleY = 1;
-        final String scale = getContext().getForeignAttribute(
+        String scale = (String) getContext().getForeignAttribute(
                 PageScale.EXT_PAGE_SCALE);
-        final Point2D scales = PageScale.getScale(scale);
+        Point2D scales = PageScale.getScale(scale);
         if (scales != null) {
             scaleX = scales.getX();
             scaleY = scales.getY();
         }
 
-        // PDF uses the lower left as origin, need to transform from FOP's
-        // internal coord system
-        final AffineTransform boxTransform = new AffineTransform(scaleX / 1000,
-                0, 0, -scaleY / 1000, 0, scaleY * size.getHeight() / 1000);
+        //PDF uses the lower left as origin, need to transform from FOP's internal coord system
+        AffineTransform boxTransform = new AffineTransform(
+                scaleX / 1000, 0, 0, -scaleY / 1000, 0, scaleY * size.getHeight() / 1000);
 
-        this.currentPage = this.pdfDoc.getFactory().makePage(this.pdfResources,
-                index, toPDFCoordSystem(mediaBox, boxTransform),
+        this.currentPage = this.pdfDoc.getFactory().makePage(
+                this.pdfResources,
+                index,
+                toPDFCoordSystem(mediaBox, boxTransform),
                 toPDFCoordSystem(cropBox, boxTransform),
                 toPDFCoordSystem(bleedBox, boxTransform),
                 toPDFCoordSystem(trimBox, boxTransform));
-        if (this.accessEnabled) {
-            this.logicalStructureHandler.startPage(this.currentPage);
+        if (accessEnabled) {
+            logicalStructureHandler.startPage(currentPage);
         }
 
-        this.pdfUtil.generatePageLabel(index, name);
+        pdfUtil.generatePageLabel(index, name);
 
-        this.currentPageRef = new PageReference(this.currentPage, size);
-        this.pageReferences.put(Integer.valueOf(index), this.currentPageRef);
+        currentPageRef = new PageReference(currentPage, size);
+        this.pageReferences.put(Integer.valueOf(index), currentPageRef);
 
-        this.generator = new PDFContentGenerator(this.pdfDoc,
-                this.outputStream, this.currentPage);
-        // Transform the PDF's default coordinate system (0,0 at lower left) to
-        // the PDFPainter's
-        final AffineTransform basicPageTransform = new AffineTransform(1, 0, 0,
-                -1, 0, scaleY * size.height / 1000f);
+        this.generator = new PDFContentGenerator(this.pdfDoc, this.outputStream,
+                this.currentPage);
+        // Transform the PDF's default coordinate system (0,0 at lower left) to the PDFPainter's
+        AffineTransform basicPageTransform = new AffineTransform(1, 0, 0, -1, 0,
+                (scaleY * size.height) / 1000f);
         basicPageTransform.scale(scaleX, scaleY);
-        this.generator.saveGraphicsState();
-        this.generator.concatenate(basicPageTransform);
+        generator.saveGraphicsState();
+        generator.concatenate(basicPageTransform);
     }
 
-    private Rectangle2D toPDFCoordSystem(final Rectangle box,
-            final AffineTransform transform) {
+    private Rectangle2D toPDFCoordSystem(Rectangle box, AffineTransform transform) {
         return transform.createTransformedShape(box).getBounds2D();
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFPainter startPageContent() throws IFException {
-        return new PDFPainter(this, this.logicalStructureHandler);
+        return new PDFPainter(this, logicalStructureHandler);
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endPageContent() throws IFException {
-        this.generator.restoreGraphicsState();
-        // for top-level transform to change the default coordinate system
+        generator.restoreGraphicsState();
+        //for top-level transform to change the default coordinate system
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endPage() throws IFException {
-        if (this.accessEnabled) {
-            this.logicalStructureHandler.endPage();
+        if (accessEnabled) {
+            logicalStructureHandler.endPage();
         }
         try {
             this.documentNavigationHandler.commit();
-            this.pdfDoc.registerObject(this.generator.getStream());
-            this.currentPage.setContents(this.generator.getStream());
-            final PDFAnnotList annots = this.currentPage.getAnnotations();
+            this.pdfDoc.registerObject(generator.getStream());
+            currentPage.setContents(generator.getStream());
+            PDFAnnotList annots = currentPage.getAnnotations();
             if (annots != null) {
                 this.pdfDoc.addObject(annots);
             }
-            this.pdfDoc.addObject(this.currentPage);
+            this.pdfDoc.addObject(currentPage);
             this.generator.flushPDFDoc();
             this.generator = null;
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IFException("I/O error in endPage()", ioe);
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void handleExtensionObject(final Object extension)
-            throws IFException {
+    public void handleExtensionObject(Object extension) throws IFException {
         if (extension instanceof XMPMetadata) {
-            this.pdfUtil.renderXMPMetadata((XMPMetadata) extension);
+            pdfUtil.renderXMPMetadata((XMPMetadata) extension);
         } else if (extension instanceof Metadata) {
-            final XMPMetadata wrapper = new XMPMetadata((Metadata) extension);
-            this.pdfUtil.renderXMPMetadata(wrapper);
+            XMPMetadata wrapper = new XMPMetadata(((Metadata) extension));
+            pdfUtil.renderXMPMetadata(wrapper);
         } else if (extension instanceof PDFEmbeddedFileExtensionAttachment) {
-            final PDFEmbeddedFileExtensionAttachment embeddedFile = (PDFEmbeddedFileExtensionAttachment) extension;
+            PDFEmbeddedFileExtensionAttachment embeddedFile
+                = (PDFEmbeddedFileExtensionAttachment)extension;
             try {
-                this.pdfUtil.addEmbeddedFile(embeddedFile);
-            } catch (final IOException ioe) {
-                throw new IFException("Error adding embedded file: "
-                        + embeddedFile.getSrc(), ioe);
+                pdfUtil.addEmbeddedFile(embeddedFile);
+            } catch (IOException ioe) {
+                throw new IFException("Error adding embedded file: " + embeddedFile.getSrc(), ioe);
             }
         } else {
             log.debug("Don't know how to handle extension object. Ignoring: "
@@ -320,11 +303,11 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
     }
 
     /** {@inheritDoc} */
-    public void setDocumentLocale(final Locale locale) {
-        this.pdfDoc.getRoot().setLanguage(locale);
+    public void setDocumentLocale(Locale locale) {
+        pdfDoc.getRoot().setLanguage(locale);
     }
 
-    PageReference getPageReference(final int pageIndex) {
+    PageReference getPageReference(int pageIndex) {
         return this.pageReferences.get(Integer.valueOf(pageIndex));
     }
 
@@ -333,7 +316,7 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
         private final String pageRef;
         private final Dimension pageDimension;
 
-        private PageReference(final PDFPage page, final Dimension dim) {
+        private PageReference(PDFPage page, Dimension dim) {
             // Avoid keeping references to PDFPage as memory usage is
             // considerably increased when handling thousands of pages.
             this.pageRef = page.makeReference().toString();
@@ -351,9 +334,9 @@ public class PDFDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
 
     @Override
     public StructureTreeEventHandler getStructureTreeEventHandler() {
-        if (this.structureTreeBuilder == null) {
-            this.structureTreeBuilder = new PDFStructureTreeBuilder();
+        if (structureTreeBuilder == null) {
+            structureTreeBuilder = new PDFStructureTreeBuilder();
         }
-        return this.structureTreeBuilder;
+        return structureTreeBuilder;
     }
 }

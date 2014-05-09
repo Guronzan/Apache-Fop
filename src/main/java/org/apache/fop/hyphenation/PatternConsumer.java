@@ -15,46 +15,46 @@
  * limitations under the License.
  */
 
-/* $Id: PatternConsumer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PatternConsumer.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.hyphenation;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * This interface is used to connect the XML pattern file parser to the
- * hyphenation tree.
+ * <p>This interface is used to connect the XML pattern file parser to
+ * the hyphenation tree.</p>
  *
- * @author Carlos Villegas <cav@uniscope.co.jp>
+ * <p>This work was authored by Carlos Villegas (cav@uniscope.co.jp).</p>
  */
 public interface PatternConsumer {
 
     /**
-     * Add a character class. A character class defines characters that are
-     * considered equivalent for the purpose of hyphenation (e.g. "aA"). It
+     * Add a character class.
+     * A character class defines characters that are considered
+     * equivalent for the purpose of hyphenation (e.g. "aA"). It
      * usually means to ignore case.
-     *
-     * @param chargroup
-     *            character group
+     * @param chargroup character group
      */
-    void addClass(final String chargroup);
+    void addClass(String chargroup);
 
     /**
-     * Add a hyphenation exception. An exception replaces the result obtained by
-     * the algorithm for cases for which this fails or the user wants to provide
-     * his own hyphenation. A hyphenatedword is a vector of alternating String's
-     * and {@link Hyphen Hyphen} instances
+     * Add a hyphenation exception. An exception replaces the
+     * result obtained by the algorithm for cases for which this
+     * fails or the user wants to provide his own hyphenation.
+     * A hyphenatedword is a vector of alternating String's and
+     * {@link Hyphen Hyphen} instances
+     * @param word word to add as an exception
+     * @param hyphenatedword pre-hyphenated word
      */
-    void addException(final String word, final List<Object> hyphenatedword);
+    void addException(String word, ArrayList hyphenatedword);
 
     /**
      * Add hyphenation patterns.
-     *
-     * @param pattern
-     *            the pattern
-     * @param values
-     *            interletter values expressed as a string of digit characters.
+     * @param pattern the pattern
+     * @param values interletter values expressed as a string of
+     * digit characters.
      */
-    void addPattern(final String pattern, final String values);
+    void addPattern(String pattern, String values);
 
 }

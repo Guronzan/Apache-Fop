@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-/* $Id: BasicLinkLayoutManager.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: BasicLinkLayoutManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.layoutmgr.inline;
 
 import org.apache.fop.area.LinkResolver;
 import org.apache.fop.area.Trait;
+import org.apache.fop.area.inline.BasicLinkArea;
 import org.apache.fop.area.inline.InlineArea;
+import org.apache.fop.area.inline.InlineParent;
 import org.apache.fop.datatypes.URISpecification;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.flow.BasicLink;
@@ -36,48 +38,57 @@ public class BasicLinkLayoutManager extends InlineLayoutManager {
     /**
      * Create an fo:basic-link layout manager.
      *
-     * @param node
-     *            the formatting object that creates the area
+     * @param node the formatting object that creates the area
      */
-    public BasicLinkLayoutManager(final BasicLink node) {
+    public BasicLinkLayoutManager(BasicLink node) {
         super(node);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected InlineArea createArea(final boolean bInlineParent) {
-        final InlineArea area = super.createArea(bInlineParent);
+    protected InlineArea createArea(boolean bInlineParent) {
+        InlineArea area = super.createArea(bInlineParent);
         setupBasicLinkArea(area);
         return area;
     }
 
     /*
      * Detect internal or external link and add it as an area trait
-     * 
+     *
      * @param area the basic-link's area
      */
-    private void setupBasicLinkArea(final InlineArea area) {
-        final BasicLink fobj = (BasicLink) this.fobj;
+    private void setupBasicLinkArea(InlineArea area) {
+        BasicLink fobj = (BasicLink) this.fobj;
         // internal destinations take precedence:
-        TraitSetter.addPtr(area, fobj.getPtr()); // used for accessibility
+        TraitSetter.addStructureTreeElement(area, fobj.getStructureTreeElement());
         if (fobj.hasInternalDestination()) {
-            final String idref = fobj.getInternalDestination();
-            final PageSequenceLayoutManager pslm = getPSLM();
+            String idref = fobj.getInternalDestination();
+            PageSequenceLayoutManager pslm = getPSLM();
             // the INTERNAL_LINK trait is added by the LinkResolver
             // if and when the link is resolved:
-            final LinkResolver res = new LinkResolver(idref, area);
+            LinkResolver res = new LinkResolver(idref, area);
             res.resolveIDRef(idref, pslm.getFirstPVWithID(idref));
             if (!res.isResolved()) {
                 pslm.addUnresolvedArea(idref, res);
+                if ( area instanceof BasicLinkArea ) {
+                    // establish back-pointer from BasicLinkArea to LinkResolver to
+                    // handle inline area unflattening during line bidi reordering;
+                    // needed to create internal link trait on synthesized basic link area
+                    ((BasicLinkArea)area).setResolver(res);
+                }
             }
         } else if (fobj.hasExternalDestination()) {
-            final String url = URISpecification.getURL(fobj
-                    .getExternalDestination());
-            final boolean newWindow = fobj.getShowDestination() == Constants.EN_NEW;
+            String url = URISpecification.getURL(fobj.getExternalDestination());
+            boolean newWindow = (fobj.getShowDestination() == Constants.EN_NEW);
             if (url.length() > 0) {
-                area.addTrait(Trait.EXTERNAL_LINK, new Trait.ExternalLink(url,
-                        newWindow));
+                area.addTrait(Trait.EXTERNAL_LINK,
+                        new Trait.ExternalLink(url, newWindow));
             }
         }
     }
+
+    @Override
+    protected InlineParent createInlineParent() {
+        return new BasicLinkArea();
+    }
+
 }

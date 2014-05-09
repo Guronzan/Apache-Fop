@@ -20,7 +20,8 @@
 package org.apache.fop.datatypes;
 
 /**
- * Keep Value Stores the different types of keeps in a single convenient format.
+ * Keep Value
+ * Stores the different types of keeps in a single convenient format.
  */
 public class KeepValue {
     /** constant for keep-with-always */
@@ -34,14 +35,11 @@ public class KeepValue {
 
     /**
      * Constructor
-     * 
-     * @param type
-     *            one of "KEEP_WITH_ALWAYS", "KEEP_WITH_AUTO", or
-     *            "KEEP_WITH_VALUE"
-     * @param val
-     *            keep-with value to use (used only by KEEP_WITH_VALUE ??).
+     * @param type one of "KEEP_WITH_ALWAYS", "KEEP_WITH_AUTO", or
+     * "KEEP_WITH_VALUE"
+     * @param val keep-with value to use (used only by KEEP_WITH_VALUE ??).
      */
-    public KeepValue(final String type, final int val) {
+    public KeepValue(String type, int val) {
         this.type = type;
         this.value = val;
     }
@@ -50,22 +48,21 @@ public class KeepValue {
      * @return the keep-with value
      */
     public int getValue() {
-        return this.value;
+        return value;
     }
 
     /**
      * @return the descriptive type
      */
     public String getType() {
-        return this.type;
+        return type;
     }
 
     /**
      * @return string representation of this
      */
-    @Override
     public String toString() {
-        return this.type;
+        return type;
     }
 
 }

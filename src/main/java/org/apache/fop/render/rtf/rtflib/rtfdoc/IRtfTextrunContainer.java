@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IRtfTextrunContainer.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: IRtfTextrunContainer.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.render.rtf.rtflib.rtfdoc;
 
@@ -26,19 +26,18 @@ package org.apache.fop.render.rtf.rtflib.rtfdoc;
 import java.io.IOException;
 
 /**
- * Interface which enables an implementing class to contain linear text runs.
- * 
- * @author Peter Herweg, pherweg@web.de
+ * <p>Interface which enables an implementing class to contain linear text runs.</p>
+ *
+ * <p>This work was authored by Peter Herweg (pherweg@web.de).</p>
  */
 
 public interface IRtfTextrunContainer {
 
     /**
-     * Returns the current RtfTextrun object. Opens a new one if necessary.
-     * 
+     * Returns the current RtfTextrun object.
+     * Opens a new one if necessary.
      * @return The RtfTextrun object
-     * @throws IOException
-     *             Thrown when an IO-problem occurs
+     * @throws IOException Thrown when an IO-problem occurs
      */
     RtfTextrun getTextrun() throws IOException;
 }

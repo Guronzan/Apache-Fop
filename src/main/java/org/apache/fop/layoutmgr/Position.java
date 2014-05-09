@@ -15,35 +15,73 @@
  * limitations under the License.
  */
 
-/* $Id: Position.java 808157 2009-08-26 18:50:10Z vhennebert $ */
+/* $Id: Position.java 1052561 2010-12-24 19:28:11Z spepping $ */
 
 package org.apache.fop.layoutmgr;
 
+/** A position. */
 public class Position {
 
-    private final LayoutManager layoutManager;
+    private LayoutManager layoutManager;
     private int index = -1;
 
-    public Position(final LayoutManager lm) {
-        this.layoutManager = lm;
+    /**
+     * Construct a position.
+     * @param lm the associated layout manager
+     */
+    public Position(LayoutManager lm) {
+        layoutManager = lm;
     }
 
-    public Position(final LayoutManager lm, final int index) {
+    /**
+     * Construct a position.
+     * @param lm the associated layout manager
+     * @param index the index
+     */
+   public Position(LayoutManager lm, int index) {
         this(lm);
         setIndex(index);
     }
-
+    /** @return associated layout manager */
     public LayoutManager getLM() {
-        return this.layoutManager;
+        return layoutManager;
+    }
+
+    /**
+     * @param depth the depth at which the LM in this position is found
+     * @return associated layout manager
+     */
+    public LayoutManager getLM(int depth) {
+        Position subPos = getPosition(depth);
+        if (subPos == null) {
+            return null;
+        } else {
+            return subPos.getLM();
+        }
     }
 
     /**
      * Overridden by NonLeafPosition to return the Position of its child LM.
+     * @return a position or null
      */
     public Position getPosition() {
         return null;
     }
 
+    /**
+     * Overridden by NonLeafPosition to return the Position of its child LM.
+     * @param depth the depth at which the position in this position is found
+     * @return a position or null
+     */
+    public Position getPosition(int depth) {
+        Position subPos = this;
+        for (int i = 0; i < depth && subPos != null; ++i, subPos = subPos.getPosition()) {
+            // no-op
+        }
+        return subPos;
+    }
+
+    /** @return true if generates areas */
     public boolean generatesAreas() {
         return false;
     }
@@ -51,10 +89,9 @@ public class Position {
     /**
      * Sets the index of this position in the sequence of Position elements.
      *
-     * @param value
-     *            this position's index
+     * @param value this position's index
      */
-    public void setIndex(final int value) {
+    public void setIndex(int value) {
         this.index = value;
     }
 
@@ -67,10 +104,11 @@ public class Position {
         return this.index;
     }
 
-    public String getShortLMName() {
+    /** @return short name of associated layout manager */
+    protected String getShortLMName() {
         if (getLM() != null) {
-            final String lm = getLM().toString();
-            final int idx = lm.lastIndexOf('.');
+            String lm = getLM().toString();
+            int idx = lm.lastIndexOf('.');
             if (idx >= 0 && lm.indexOf('@') > 0) {
                 return lm.substring(idx + 1);
             } else {
@@ -82,12 +120,12 @@ public class Position {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
+        StringBuffer sb = new StringBuffer();
         sb.append("Position:").append(getIndex()).append("(");
         sb.append(getShortLMName());
         sb.append(")");
         return sb.toString();
     }
 }
+

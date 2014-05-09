@@ -15,15 +15,16 @@
  * limitations under the License.
  */
 
-/* $Id: StaticContent.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: StaticContent.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.fo.pagination;
 
 // XML
+import org.xml.sax.Locator;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.ValidationException;
-import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_static-content">
@@ -32,41 +33,38 @@ import org.xml.sax.Locator;
 public class StaticContent extends Flow {
 
     /**
-     * @param parent
-     *            FONode that is the parent of this object
+     * @param parent FONode that is the parent of this object
      */
-    public StaticContent(final FONode parent) {
+    public StaticContent(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void startOfNode() throws FOPException {
         if (getFlowName() == null || getFlowName().equals("")) {
             missingPropertyError("flow-name");
         }
-        getFOEventHandler().startFlow(this);
+        getFOEventHandler().startStatic(this);
     }
 
     /**
-     * Make sure content model satisfied, if so then tell the FOEventHandler
-     * that we are at the end of the flow. {@inheritDoc}
+     * Make sure content model satisfied, if so then tell the
+     * FOEventHandler that we are at the end of the flow.
+     * {@inheritDoc}
      */
-    @Override
     protected void endOfNode() throws FOPException {
-        if (this.firstChild == null && getUserAgent().validateStrictly()) {
+        if (firstChild == null && getUserAgent().validateStrictly()) {
             missingChildElementError("(%block;)+");
         }
-        getFOEventHandler().endFlow(this);
+        getFOEventHandler().endStatic(this);
     }
 
     /**
-     * {@inheritDoc} <br>
-     * XSL Content Model: (%block;)+
+     * {@inheritDoc}
+     * <br>XSL Content Model: (%block;)+
      */
-    @Override
-    protected void validateChildNode(final Locator loc, final String nsURI,
-            final String localName) throws ValidationException {
+    protected void validateChildNode(Locator loc, String nsURI, String localName)
+                throws ValidationException {
         if (FO_URI.equals(nsURI)) {
             if (!isBlockItem(nsURI, localName)) {
                 invalidChildError(loc, nsURI, localName);
@@ -75,17 +73,14 @@ public class StaticContent extends Flow {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "static-content";
     }
 
     /**
      * {@inheritDoc}
-     * 
      * @return {@link org.apache.fop.fo.Constants#FO_STATIC_CONTENT}
      */
-    @Override
     public int getNameId() {
         return FO_STATIC_CONTENT;
     }

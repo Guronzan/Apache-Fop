@@ -15,32 +15,30 @@
  * limitations under the License.
  */
 
-/* $Id: PNGDocumentHandler.java 820672 2009-10-01 14:48:27Z jeremias $ */
+/* $Id: PNGDocumentHandler.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.bitmap;
 
-import org.apache.fop.render.intermediate.IFDocumentHandler;
+import org.apache.fop.apps.MimeConstants;
 import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 
 /**
- * {@link IFDocumentHandler} implementation that produces PNG files.
+ * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation
+ * that produces PNG files.
  */
 public class PNGDocumentHandler extends AbstractBitmapDocumentHandler {
 
     /** {@inheritDoc} */
-    @Override
     public String getMimeType() {
-        return org.apache.xmlgraphics.util.MimeConstants.MIME_PNG;
+        return MimeConstants.MIME_PNG;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getDefaultExtension() {
         return "png";
     }
 
     /** {@inheritDoc} */
-    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return new BitmapRendererConfigurator(getUserAgent());
     }

@@ -15,51 +15,48 @@
  * limitations under the License.
  */
 
-/* $Id: TextDataInfoProducer.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: TextDataInfoProducer.java 1338605 2012-05-15 09:07:02Z mehdi $ */
 
 package org.apache.fop.afp.ptoca;
 
 import java.io.IOException;
 
 import org.apache.fop.afp.AFPTextDataInfo;
+import org.apache.fop.afp.fonts.CharactersetEncoder;
 
 /**
- * {@link PtocaProducer} implementation that interprets {@link AFPTextDataInfo}
- * objects.
+ * {@link PtocaProducer} implementation that interprets {@link AFPTextDataInfo} objects.
  */
 public class TextDataInfoProducer implements PtocaProducer, PtocaConstants {
 
-    private final AFPTextDataInfo textDataInfo;
+    private AFPTextDataInfo textDataInfo;
 
     /**
      * Main constructor.
-     * 
-     * @param textDataInfo
-     *            the info object
+     * @param textDataInfo the info object
      */
-    public TextDataInfoProducer(final AFPTextDataInfo textDataInfo) {
+    public TextDataInfoProducer(AFPTextDataInfo textDataInfo) {
         this.textDataInfo = textDataInfo;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void produce(final PtocaBuilder builder) throws IOException {
-        builder.setTextOrientation(this.textDataInfo.getRotation());
-        builder.absoluteMoveBaseline(this.textDataInfo.getY());
-        builder.absoluteMoveInline(this.textDataInfo.getX());
+    public void produce(PtocaBuilder builder) throws IOException {
+        builder.setTextOrientation(textDataInfo.getRotation());
+        builder.absoluteMoveBaseline(textDataInfo.getY());
+        builder.absoluteMoveInline(textDataInfo.getX());
 
-        builder.setVariableSpaceCharacterIncrement(this.textDataInfo
-                .getVariableSpaceCharacterIncrement());
-        builder.setInterCharacterAdjustment(this.textDataInfo
-                .getInterCharacterAdjustment());
-        builder.setExtendedTextColor(this.textDataInfo.getColor());
-        builder.setCodedFont((byte) this.textDataInfo.getFontReference());
+        builder.setVariableSpaceCharacterIncrement(
+                textDataInfo.getVariableSpaceCharacterIncrement());
+        builder.setInterCharacterAdjustment(
+                textDataInfo.getInterCharacterAdjustment());
+        builder.setExtendedTextColor(textDataInfo.getColor());
+        builder.setCodedFont((byte)textDataInfo.getFontReference());
+
 
         // Add transparent data
-        final String textString = this.textDataInfo.getString();
-        final String encoding = this.textDataInfo.getEncoding();
-        final byte[] data = textString.getBytes(encoding);
-        builder.addTransparentData(data);
+        String textString = textDataInfo.getString();
+        String encoding = textDataInfo.getEncoding();
+        builder.addTransparentData(CharactersetEncoder.encodeSBCS(textString, encoding));
     }
 
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ExternalDocumentLayoutManager.java 932497 2010-04-09 16:34:29Z vhennebert $ */
+/* $Id: ExternalDocumentLayoutManager.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.layoutmgr;
 
@@ -26,7 +26,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.xmlgraphics.image.loader.ImageException;
+import org.apache.xmlgraphics.image.loader.ImageInfo;
+import org.apache.xmlgraphics.image.loader.ImageManager;
+import org.apache.xmlgraphics.image.loader.util.ImageUtil;
 
 import org.apache.fop.ResourceEventProducer;
 import org.apache.fop.apps.FOUserAgent;
@@ -39,38 +45,32 @@ import org.apache.fop.area.PageSequence;
 import org.apache.fop.area.PageViewport;
 import org.apache.fop.area.RegionViewport;
 import org.apache.fop.area.inline.Image;
-import org.apache.fop.area.inline.Viewport;
+import org.apache.fop.area.inline.InlineViewport;
 import org.apache.fop.datatypes.FODimension;
 import org.apache.fop.datatypes.URISpecification;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.extensions.ExternalDocument;
 import org.apache.fop.layoutmgr.inline.ImageLayout;
-import org.apache.xmlgraphics.image.loader.ImageException;
-import org.apache.xmlgraphics.image.loader.ImageInfo;
-import org.apache.xmlgraphics.image.loader.ImageManager;
-import org.apache.xmlgraphics.image.loader.util.ImageUtil;
+import org.apache.fop.traits.WritingMode;
 
 /**
- * LayoutManager for an external-document extension element. This class is
- * instantiated by area.AreaTreeHandler for each fo:external-document found in
- * the input document.
+ * LayoutManager for an external-document extension element.  This class is instantiated by
+ * area.AreaTreeHandler for each fo:external-document found in the
+ * input document.
  */
-@Slf4j
-public class ExternalDocumentLayoutManager extends
-AbstractPageSequenceLayoutManager {
+public class ExternalDocumentLayoutManager extends AbstractPageSequenceLayoutManager {
+
+    private static Log log = LogFactory.getLog(ExternalDocumentLayoutManager.class);
 
     private ImageLayout imageLayout;
 
     /**
      * Constructor
      *
-     * @param ath
-     *            the area tree handler object
-     * @param document
-     *            fox:external-document to process
+     * @param ath the area tree handler object
+     * @param document fox:external-document to process
      */
-    public ExternalDocumentLayoutManager(final AreaTreeHandler ath,
-            final ExternalDocument document) {
+    public ExternalDocumentLayoutManager(AreaTreeHandler ath, ExternalDocument document) {
         super(ath, document);
     }
 
@@ -78,46 +78,37 @@ AbstractPageSequenceLayoutManager {
      * @return the ExternalDocument being managed by this layout manager
      */
     protected ExternalDocument getExternalDocument() {
-        return (ExternalDocument) this.pageSeq;
+        return (ExternalDocument)pageSeq;
     }
 
     /** {@inheritDoc} */
-    @Override
     public PageSequenceLayoutManager getPSLM() {
-        throw new IllegalStateException("getPSLM() is illegal for "
-                + getClass().getName());
+        throw new IllegalStateException("getPSLM() is illegal for " + getClass().getName());
     }
 
     /** {@inheritDoc} */
-    @Override
     public void activateLayout() {
         initialize();
 
-        final FOUserAgent userAgent = this.pageSeq.getUserAgent();
-        final ImageManager imageManager = userAgent.getFactory()
-                .getImageManager();
+        FOUserAgent userAgent = pageSeq.getUserAgent();
+        ImageManager imageManager = userAgent.getFactory().getImageManager();
 
-        final String uri = getExternalDocument().getSrc();
-        final Integer firstPageIndex = ImageUtil.getPageIndexFromURI(uri);
-        final boolean hasPageIndex = firstPageIndex != null;
+        String uri = URISpecification.getURL(getExternalDocument().getSrc());
+        Integer firstPageIndex = ImageUtil.getPageIndexFromURI(uri);
+        boolean hasPageIndex = (firstPageIndex != null);
 
         try {
-            final ImageInfo info = imageManager.getImageInfo(uri,
-                    userAgent.getImageSessionContext());
+            ImageInfo info = imageManager.getImageInfo(uri, userAgent.getImageSessionContext());
 
-            Object moreImages = info.getCustomObjects().get(
-                    ImageInfo.HAS_MORE_IMAGES);
-            boolean hasMoreImages = moreImages != null
-                    && !Boolean.FALSE.equals(moreImages);
+            Object moreImages = info.getCustomObjects().get(ImageInfo.HAS_MORE_IMAGES);
+            boolean hasMoreImages = moreImages != null && !Boolean.FALSE.equals(moreImages);
 
             Dimension intrinsicSize = info.getSize().getDimensionMpt();
-            ImageLayout layout = new ImageLayout(getExternalDocument(), this,
-                    intrinsicSize);
+            ImageLayout layout = new ImageLayout(getExternalDocument(), this, intrinsicSize);
 
-            final PageSequence pageSequence = new PageSequence(null);
+            PageSequence pageSequence = new PageSequence(null);
             transferExtensions(pageSequence);
-            this.areaTreeHandler.getAreaTreeModel().startPageSequence(
-                    pageSequence);
+            areaTreeHandler.getAreaTreeModel().startPageSequence(pageSequence);
             if (log.isDebugEnabled()) {
                 log.debug("Starting layout");
             }
@@ -133,97 +124,92 @@ AbstractPageSequenceLayoutManager {
                     originalURI = new URI(URISpecification.escapeURI(uri));
                     int pageIndex = 1;
                     while (hasMoreImages) {
-                        final URI tempURI = new URI(originalURI.getScheme(),
-                                originalURI.getSchemeSpecificPart(), "page="
-                                        + Integer.toString(pageIndex + 1));
+                        URI tempURI = new URI(originalURI.getScheme(),
+                                originalURI.getSchemeSpecificPart(),
+                                "page=" + Integer.toString(pageIndex + 1));
                         if (log.isTraceEnabled()) {
                             log.trace("Subimage: " + tempURI.toASCIIString());
                         }
-                        final ImageInfo subinfo = imageManager.getImageInfo(
-                                tempURI.toASCIIString(),
-                                userAgent.getImageSessionContext());
+                        ImageInfo subinfo = imageManager.getImageInfo(
+                                tempURI.toASCIIString(), userAgent.getImageSessionContext());
 
-                        moreImages = subinfo.getCustomObjects().get(
-                                ImageInfo.HAS_MORE_IMAGES);
-                        hasMoreImages = moreImages != null
-                                && !Boolean.FALSE.equals(moreImages);
+                        moreImages = subinfo.getCustomObjects().get(ImageInfo.HAS_MORE_IMAGES);
+                        hasMoreImages = moreImages != null && !Boolean.FALSE.equals(moreImages);
 
                         intrinsicSize = subinfo.getSize().getDimensionMpt();
-                        layout = new ImageLayout(getExternalDocument(), this,
-                                intrinsicSize);
+                        layout = new ImageLayout(
+                                getExternalDocument(), this, intrinsicSize);
 
                         makePageForImage(subinfo, layout);
 
                         pageIndex++;
                     }
-                } catch (final URISyntaxException e) {
+                } catch (URISyntaxException e) {
                     getResourceEventProducer().uriError(this, uri, e,
                             getExternalDocument().getLocator());
-                    return;
                 }
             }
-        } catch (final FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             getResourceEventProducer().imageNotFound(this, uri, fnfe,
                     getExternalDocument().getLocator());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getResourceEventProducer().imageIOError(this, uri, ioe,
                     getExternalDocument().getLocator());
-        } catch (final ImageException ie) {
+        } catch (ImageException ie) {
             getResourceEventProducer().imageError(this, uri, ie,
                     getExternalDocument().getLocator());
         }
     }
 
     private ResourceEventProducer getResourceEventProducer() {
-        return ResourceEventProducer.Provider.get(getExternalDocument()
-                .getUserAgent().getEventBroadcaster());
+        return ResourceEventProducer.Provider.get(
+                getExternalDocument().getUserAgent().getEventBroadcaster());
     }
 
-    private void makePageForImage(final ImageInfo info, final ImageLayout layout) {
+    private void makePageForImage(ImageInfo info, ImageLayout layout) {
         this.imageLayout = layout;
-        this.curPage = makeNewPage(false, false);
+        curPage = makeNewPage(false);
         fillPage(info.getOriginalURI());
         finishPage();
     }
 
-    private void fillPage(final String uri) {
+    private void fillPage(String uri) {
 
-        final Dimension imageSize = this.imageLayout.getViewportSize();
+        Dimension imageSize = this.imageLayout.getViewportSize();
 
-        final Block blockArea = new Block();
+        Block blockArea = new Block();
         blockArea.setIPD(imageSize.width);
-        final LineArea lineArea = new LineArea();
+        LineArea lineArea = new LineArea();
 
-        final Image imageArea = new Image(uri);
-        TraitSetter.setProducerID(imageArea, this.fobj.getId());
+        Image imageArea = new Image(uri);
+        TraitSetter.setProducerID(imageArea, fobj.getId());
         transferForeignAttributes(imageArea);
 
-        final Viewport vp = new Viewport(imageArea);
-        TraitSetter.setProducerID(vp, this.fobj.getId());
+        InlineViewport vp = new InlineViewport(imageArea, fobj.getBidiLevel());
+        TraitSetter.setProducerID(vp, fobj.getId());
         vp.setIPD(imageSize.width);
         vp.setBPD(imageSize.height);
-        vp.setContentPosition(this.imageLayout.getPlacement());
-        vp.setOffset(0);
+        vp.setContentPosition(imageLayout.getPlacement());
+        vp.setBlockProgressionOffset(0);
 
-        // Link them all together...
+        //Link them all together...
         lineArea.addInlineArea(vp);
         lineArea.updateExtentsFromChildren();
         blockArea.addLineArea(lineArea);
-        this.curPage.getPageViewport().getCurrentFlow().addBlock(blockArea);
-        this.curPage.getPageViewport().getCurrentSpan().notifyFlowsFinished();
+        curPage.getPageViewport().getCurrentFlow().addBlock(blockArea);
+        curPage.getPageViewport().getCurrentSpan().notifyFlowsFinished();
     }
 
     /** {@inheritDoc} */
-    @Override
     public void finishPageSequence() {
-        if (this.pageSeq.hasId()) {
-            this.idTracker.signalIDProcessed(this.pageSeq.getId());
+        if (pageSeq.hasId()) {
+            idTracker.signalIDProcessed(pageSeq.getId());
         }
 
-        this.pageSeq.getRoot().notifyPageSequenceFinished(this.currentPageNum,
-                this.currentPageNum - this.startPageNum + 1);
-        this.areaTreeHandler.notifyPageSequenceFinished(this.pageSeq,
-                this.currentPageNum - this.startPageNum + 1);
+        pageSeq.getRoot().notifyPageSequenceFinished(currentPageNum,
+                (currentPageNum - startPageNum) + 1);
+        areaTreeHandler.notifyPageSequenceFinished(pageSeq,
+                (currentPageNum - startPageNum) + 1);
 
         if (log.isDebugEnabled()) {
             log.debug("Ending layout");
@@ -231,51 +217,47 @@ AbstractPageSequenceLayoutManager {
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected Page createPage(final int pageNumber, final boolean isBlank) {
-        final String pageNumberString = this.pageSeq
-                .makeFormattedPageNumber(pageNumber);
+    protected Page createPage(int pageNumber, boolean isBlank) {
+        String pageNumberString = pageSeq.makeFormattedPageNumber(pageNumber);
 
-        final Dimension imageSize = this.imageLayout.getViewportSize();
+        Dimension imageSize = this.imageLayout.getViewportSize();
 
         // Set up the CTM on the page reference area based on writing-mode
         // and reference-orientation
         Rectangle referenceRect;
-        if (this.pageSeq.getReferenceOrientation() % 180 == 0) {
-            referenceRect = new Rectangle(0, 0, imageSize.width,
-                    imageSize.height);
+        if (pageSeq.getReferenceOrientation() % 180 == 0) {
+            referenceRect = new Rectangle(0, 0, imageSize.width, imageSize.height);
         } else {
-            referenceRect = new Rectangle(0, 0, imageSize.height,
-                    imageSize.width);
+            referenceRect = new Rectangle(0, 0, imageSize.height, imageSize.width);
         }
-        final FODimension reldims = new FODimension(0, 0);
-        final CTM pageCTM = CTM.getCTMandRelDims(
-                this.pageSeq.getReferenceOrientation(), Constants.EN_LR_TB,
-                referenceRect, reldims);
+        FODimension reldims = new FODimension(0, 0);
+        // [TBD] BIDI ALERT
+        CTM pageCTM = CTM.getCTMandRelDims(pageSeq.getReferenceOrientation(),
+                                           WritingMode.LR_TB, referenceRect, reldims);
 
-        final Page page = new Page(referenceRect, pageNumber, pageNumberString,
-                isBlank);
+        Page page = new Page(referenceRect, pageNumber, pageNumberString, isBlank);
 
-        final PageViewport pv = page.getPageViewport();
-        final org.apache.fop.area.Page pageArea = new org.apache.fop.area.Page();
+        PageViewport pv = page.getPageViewport();
+        org.apache.fop.area.Page pageArea = new org.apache.fop.area.Page();
         pv.setPage(pageArea);
 
-        final RegionViewport rv = new RegionViewport(referenceRect);
+        RegionViewport rv = new RegionViewport(referenceRect);
         rv.setIPD(referenceRect.width);
         rv.setBPD(referenceRect.height);
         rv.setClip(true);
 
-        final BodyRegion body = new BodyRegion(Constants.FO_REGION_BODY,
+        BodyRegion body = new BodyRegion(Constants.FO_REGION_BODY,
                 "fop-image-region", rv, 1, 0);
         body.setIPD(imageSize.width);
         body.setBPD(imageSize.height);
         body.setCTM(pageCTM);
         rv.setRegionReference(body);
-        pageArea.setRegionViewport(Constants.FO_REGION_BODY, rv);
-        // Set unique key obtained from the AreaTreeHandler
-        pv.setKey(this.areaTreeHandler.generatePageViewportKey());
+        pageArea.setRegionViewport(
+                Constants.FO_REGION_BODY, rv);
+        //Set unique key obtained from the AreaTreeHandler
+        pv.setKey(areaTreeHandler.generatePageViewportKey());
 
-        // Also creates first normal flow region
+        //Also creates first normal flow region
         pv.createSpan(false);
 
         return page;

@@ -15,13 +15,11 @@
  * limitations under the License.
  */
 
-/* $Id: ListItemContentLayoutManager.java 893238 2009-12-22 17:20:51Z vhennebert $ */
+/* $Id: ListItemContentLayoutManager.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.layoutmgr.list;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.fop.area.Area;
 import org.apache.fop.area.Block;
@@ -33,7 +31,6 @@ import org.apache.fop.layoutmgr.BlockStackingLayoutManager;
 import org.apache.fop.layoutmgr.Keep;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
-import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.NonLeafPosition;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
@@ -47,91 +44,61 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
     private Block curBlockArea;
 
-    private int xoffset;
+    private int xOffset;
     private int itemIPD;
-
-    private static class StackingIter extends PositionIterator<Position> {
-        StackingIter(final Iterator<Position> parentIter) {
-            super(parentIter);
-        }
-
-        @Override
-        protected LayoutManager getLM(final Position nextObj) {
-            return nextObj.getLM();
-        }
-
-        @Override
-        protected Position getPos(final Position nextObj) {
-            return nextObj;
-        }
-    }
 
     /**
      * Create a new Cell layout manager.
-     *
-     * @param node
-     *            list-item-label node
+     * @param node list-item-label node
      */
-    public ListItemContentLayoutManager(final ListItemLabel node) {
+    public ListItemContentLayoutManager(ListItemLabel node) {
         super(node);
     }
 
     /**
      * Create a new Cell layout manager.
-     *
-     * @param node
-     *            list-item-body node
+     * @param node list-item-body node
      */
-    public ListItemContentLayoutManager(final ListItemBody node) {
+    public ListItemContentLayoutManager(ListItemBody node) {
         super(node);
     }
 
     /**
      * Convenience method.
-     *
      * @return the ListBlock node
      */
     protected AbstractListItemPart getPartFO() {
-        return (AbstractListItemPart) this.fobj;
+        return (AbstractListItemPart)fobj;
     }
 
     /**
-     * Set the x offset of this list item. This offset is used to set the
-     * absolute position of the list item within the parent block area.
+     * Set the x offset of this list item.
+     * This offset is used to set the absolute position
+     * of the list item within the parent block area.
      *
-     * @param off
-     *            the x offset
+     * @param off the x offset
      */
-    public void setXOffset(final int off) {
-        this.xoffset = off;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public List<ListElement> getChangedKnuthElements(
-            final List<ListElement> oldList, final int alignment) {
-        // log.debug("  ListItemContentLayoutManager.getChanged>");
-        return super.getChangedKnuthElements(oldList, alignment);
+    public void setXOffset(int off) {
+        xOffset = off;
     }
 
     /**
-     * Add the areas for the break points. The list item contains block stacking
-     * layout managers that add block areas.
+     * Add the areas for the break points.
+     * The list item contains block stacking layout managers
+     * that add block areas.
      *
-     * @param parentIter
-     *            the iterator of the break positions
-     * @param layoutContext
-     *            the layout context for adding the areas
+     * @param parentIter the iterator of the break positions
+     * @param layoutContext the layout context for adding the areas
      */
     @Override
-    public void addAreas(final PositionIterator parentIter,
-            final LayoutContext layoutContext) {
+    public void addAreas(PositionIterator parentIter,
+                         LayoutContext layoutContext) {
         getParentArea(null);
 
         addId();
 
         LayoutManager childLM;
-        final LayoutContext lc = new LayoutContext(0);
+        LayoutContext lc = new LayoutContext(0);
         LayoutManager firstLM = null;
         LayoutManager lastLM = null;
         Position firstPos = null;
@@ -139,7 +106,7 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList<Position> positionList = new LinkedList<>();
+        LinkedList<Position> positionList = new LinkedList<Position>();
         Position pos;
         while (parentIter.hasNext()) {
             pos = parentIter.next();
@@ -168,8 +135,7 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
         addMarkersToPage(true, isFirst(firstPos), isLast(lastPos));
 
-        final StackingIter childPosIter = new StackingIter(
-                positionList.listIterator());
+        PositionIterator childPosIter = new PositionIterator(positionList.listIterator());
         while ((childLM = childPosIter.getNextChildLM()) != null) {
             // Add the block areas to Area
             lc.setFlags(LayoutContext.FIRST_AREA, childLM == firstLM);
@@ -184,57 +150,56 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
 
         flush();
 
-        this.curBlockArea = null;
+        curBlockArea = null;
 
         checkEndOfLayout(lastPos);
     }
 
     /**
-     * Return an Area which can contain the passed childArea. The childArea may
-     * not yet have any content, but it has essential traits set. In general, if
-     * the LayoutManager already has an Area it simply returns it. Otherwise, it
-     * makes a new Area of the appropriate class. It gets a parent area for its
-     * area by calling its parent LM. Finally, based on the dimensions of the
-     * parent area, it initializes its own area. This includes setting the
-     * content IPD and the maximum BPD.
+     * Return an Area which can contain the passed childArea. The childArea
+     * may not yet have any content, but it has essential traits set.
+     * In general, if the LayoutManager already has an Area it simply returns
+     * it. Otherwise, it makes a new Area of the appropriate class.
+     * It gets a parent area for its area by calling its parent LM.
+     * Finally, based on the dimensions of the parent area, it initializes
+     * its own area. This includes setting the content IPD and the maximum
+     * BPD.
      *
-     * @param childArea
-     *            the child area to get the parent for
+     * @param childArea the child area to get the parent for
      * @return the parent area
      */
     @Override
-    public Area getParentArea(final Area childArea) {
-        if (this.curBlockArea == null) {
-            this.curBlockArea = new Block();
-            this.curBlockArea.setPositioning(Block.ABSOLUTE);
+    public Area getParentArea(Area childArea) {
+        if (curBlockArea == null) {
+            curBlockArea = new Block();
+            curBlockArea.setPositioning(Block.ABSOLUTE);
             // set position
-            this.curBlockArea.setXOffset(this.xoffset);
-            this.curBlockArea.setIPD(this.itemIPD);
-            // curBlockArea.setHeight();
+            curBlockArea.setXOffset(xOffset);
+            //TODO: Check - itemIPD never set?
+            curBlockArea.setIPD(itemIPD);
+            //curBlockArea.setHeight();
 
-            TraitSetter.setProducerID(this.curBlockArea, getPartFO().getId());
+            TraitSetter.setProducerID(curBlockArea, getPartFO().getId());
 
             // Set up dimensions
-            final Area parentArea = this.parentLayoutManager
-                    .getParentArea(this.curBlockArea);
-            final int referenceIPD = parentArea.getIPD();
-            this.curBlockArea.setIPD(referenceIPD);
+            Area parentArea = parentLayoutManager.getParentArea(curBlockArea);
+            int referenceIPD = parentArea.getIPD();
+            curBlockArea.setIPD(referenceIPD);
             // Get reference IPD from parentArea
-            setCurrentArea(this.curBlockArea); // ??? for generic operations
+            setCurrentArea(curBlockArea); // ??? for generic operations
         }
-        return this.curBlockArea;
+        return curBlockArea;
     }
 
     /**
      * Add the child to the list item area.
      *
-     * @param childArea
-     *            the child to add to the cell
+     * @param childArea the child to add to the cell
      */
     @Override
-    public void addChildArea(final Area childArea) {
-        if (this.curBlockArea != null) {
-            this.curBlockArea.addBlock((Block) childArea);
+    public void addChildArea(Area childArea) {
+        if (curBlockArea != null) {
+            curBlockArea.addBlock((Block) childArea);
         }
     }
 
@@ -255,5 +220,5 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
     public Keep getKeepWithPrevious() {
         return Keep.KEEP_AUTO;
     }
-
 }
+

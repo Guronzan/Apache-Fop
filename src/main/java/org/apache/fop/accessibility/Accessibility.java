@@ -15,87 +15,25 @@
  * limitations under the License.
  */
 
-/* $Id: Accessibility.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: Accessibility.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.accessibility;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.sax.SAXTransformerFactory;
-import javax.xml.transform.sax.TransformerHandler;
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.fop.apps.FOPException;
-import org.apache.fop.apps.FOUserAgent;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Helper class for FOP's accessibility features.
  */
 public final class Accessibility {
 
-    /**
-     * Constant string for the rendering options key to enable accessibility
-     * features.
-     */
+    /** Constant string for the rendering options key to enable accessibility features. */
     public static final String ACCESSIBILITY = "accessibility";
 
-    // TODO what if the default factory is not a SAXTransformerFactory?
-    private static SAXTransformerFactory tfactory = (SAXTransformerFactory) SAXTransformerFactory
-            .newInstance();
-
-    private static Templates addPtrTemplates;
-
-    private static Templates reduceFOTreeTemplates;
-
-    private Accessibility() {
-    }
-
     /**
-     * Decorates the given handler so the structure tree used for accessibility
-     * features can be branched off the main content stream.
-     * 
-     * @param handler
-     *            the handler to decorate
-     * @param userAgent
-     *            the user agent
-     * @return the decorated handler
-     * @throws FOPException
-     *             if an error occurs setting up the decoration
+     * The value to be set on the 'role' property for the element and its descendants to
+     * be considered as artifacts.
      */
-    public static DefaultHandler decorateDefaultHandler(
-            final DefaultHandler handler, final FOUserAgent userAgent)
-            throws FOPException {
-        try {
-            setupTemplates();
-            final TransformerHandler addPtr = tfactory
-                    .newTransformerHandler(addPtrTemplates);
-            final Transformer reduceFOTree = reduceFOTreeTemplates
-                    .newTransformer();
-            return new AccessibilityPreprocessor(addPtr, reduceFOTree,
-                    userAgent, handler);
-        } catch (final TransformerConfigurationException e) {
-            throw new FOPException(e);
-        }
-    }
+    public static final String ROLE_ARTIFACT = "artifact";
 
-    private static synchronized void setupTemplates()
-            throws TransformerConfigurationException {
-        if (addPtrTemplates == null) {
-            addPtrTemplates = loadTemplates("addPtr.xsl");
-        }
-        if (reduceFOTreeTemplates == null) {
-            reduceFOTreeTemplates = loadTemplates("reduceFOTree.xsl");
-        }
-    }
-
-    private static Templates loadTemplates(final String source)
-            throws TransformerConfigurationException {
-        final Source src = new StreamSource(Accessibility.class.getResource(
-                source).toExternalForm());
-        return tfactory.newTemplates(src);
-    }
+    private Accessibility() { }
 
 }

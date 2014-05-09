@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AFPCustomizable.java 953952 2010-06-12 08:19:48Z jeremias $ */
+/* $Id: AFPCustomizable.java 1339442 2012-05-17 01:42:56Z gadams $ */
 
 package org.apache.fop.render.afp;
 
@@ -32,7 +32,7 @@ public interface AFPCustomizable {
      * @param bitsPerPixel
      *            number of bits per pixel
      */
-    void setBitsPerPixel(final int bitsPerPixel);
+    void setBitsPerPixel(int bitsPerPixel);
 
     /**
      * Sets whether images are color or not
@@ -40,7 +40,7 @@ public interface AFPCustomizable {
      * @param colorImages
      *            color image output
      */
-    void setColorImages(final boolean colorImages);
+    void setColorImages(boolean colorImages);
 
     /**
      * Sets whether images are supported natively or not
@@ -48,35 +48,38 @@ public interface AFPCustomizable {
      * @param nativeImages
      *            native image support
      */
-    void setNativeImagesSupported(final boolean nativeImages);
+    void setNativeImagesSupported(boolean nativeImages);
 
     /**
-     * Controls whether CMYK images (IOCA FS45) are enabled. By default, support
-     * is disabled for wider compatibility. When disabled, any CMYK image is
-     * converted to the selected color format.
-     * 
-     * @param value
-     *            true to enabled CMYK images
+     * Controls whether CMYK images (IOCA FS45) are enabled. By default, support is disabled
+     * for wider compatibility. When disabled, any CMYK image is converted to the selected
+     * color format.
+     * @param value true to enabled CMYK images
      */
-    void setCMYKImagesSupported(final boolean value);
+    void setCMYKImagesSupported(boolean value);
 
     /**
      * Sets the shading mode for painting filled rectangles.
-     * 
-     * @param shadingMode
-     *            the shading mode
+     * @param shadingMode the shading mode
      */
-    void setShadingMode(final AFPShadingMode shadingMode);
+    void setShadingMode(AFPShadingMode shadingMode);
 
     /**
-     * Sets the dithering quality setting to use when converting images to
-     * monochrome images.
-     * 
-     * @param quality
-     *            Defines the desired quality level for the conversion. Valid
-     *            values: a value between 0.0f (fastest) and 1.0f (best)
+     * Sets the dithering quality setting to use when converting images to monochrome images.
+     * @param quality Defines the desired quality level for the conversion.
+     *                  Valid values: a value between 0.0f (fastest) and 1.0f (best)
      */
-    void setDitheringQuality(final float quality);
+    void setDitheringQuality(float quality);
+
+    /**
+     * Sets the image encoding quality setting to use when encoding bitmap images.
+     * The default setting is 1.0 which means loss-less encoding. Settings of less than 1.0
+     * allow loss-less encoding schemes like JPEG. The value serves as quality setting for
+     * the encoders in that case.
+     * @param quality Defines the desired quality level.
+     *                  Valid values: a value between 0.0f (lowest) and 1.0f (best, loss-less)
+     */
+    void setBitmapEncodingQuality(float quality);
 
     /**
      * Sets the output/device resolution
@@ -84,7 +87,38 @@ public interface AFPCustomizable {
      * @param resolution
      *            the output resolution (dpi)
      */
-    void setResolution(final int resolution);
+    void setResolution(int resolution);
+
+    /**
+     * Sets the line width correction
+     *
+     * @param correction the line width multiplying factor correction
+     */
+    void setLineWidthCorrection(float correction);
+
+    /**
+     * Sets whether FS11 and FS45 non-inline images should be wrapped in a page segment
+     * @param pSeg true iff images should be wrapped
+     */
+    void setWrapPSeg(boolean pSeg);
+
+    /**
+     * set true if images should be FS45
+     * @param fs45 true iff images should be FS45
+     */
+    void setFS45(boolean fs45);
+
+    /**
+     * gets whether FS11 and FS45 non-inline images should be wrapped in a page segment
+     * @return true iff images should be wrapped
+     */
+    boolean getWrapPSeg();
+
+    /**
+     * gets whether images should be FS45
+     * @return true iff images should be FS45
+     */
+    boolean getFS45();
 
     /**
      * Returns the output/device resolution.
@@ -94,21 +128,47 @@ public interface AFPCustomizable {
     int getResolution();
 
     /**
-     * Sets the default resource group file path
-     * 
-     * @param filePath
-     *            the default resource group file path
+     * Controls whether GOCA is enabled or disabled.
+     * @param enabled true if GOCA is enabled, false if it is disabled
      */
-    void setDefaultResourceGroupFilePath(final String filePath);
+     void setGOCAEnabled(boolean enabled);
 
     /**
-     * Sets the resource level defaults. The object passed in provides
-     * information which resource level shall be used by default for various
-     * kinds of resources.
-     * 
-     * @param defaults
-     *            the resource level defaults
+     * Indicates whether GOCA is enabled or disabled.
+     * @return true if GOCA is enabled, false if GOCA is disabled
      */
-    void setResourceLevelDefaults(final AFPResourceLevelDefaults defaults);
+    boolean isGOCAEnabled();
+
+    /**
+     * Controls whether to stroke text in GOCA mode or to use text operators where possible.
+     * @param stroke true to stroke, false to paint with text operators where possible
+     */
+    void setStrokeGOCAText(boolean stroke);
+
+    /**
+     * Indicates whether to stroke text in GOCA mode or to use text operators where possible.
+     * @return true to stroke, false to paint with text operators where possible
+     */
+    boolean isStrokeGOCAText();
+
+    /**
+     * Sets the default resource group file path
+     * @param filePath the default resource group file path
+     */
+    void setDefaultResourceGroupFilePath(String filePath);
+
+    /**
+     * Sets the resource level defaults. The object passed in provides information which resource
+     * level shall be used by default for various kinds of resources.
+     * @param defaults the resource level defaults
+     */
+    void setResourceLevelDefaults(AFPResourceLevelDefaults defaults);
+
+    /**
+     * Sets whether or not to JPEG images can be embedded in the AFP document.
+     *
+     * @param canEmbed whether or not to embed JPEG image
+     */
+    void canEmbedJpeg(boolean canEmbed);
 
 }

@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-/* $Id: XMPMetaElement.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: XMPMetaElement.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.fo.extensions.xmp;
 
-import org.apache.fop.fo.FONode;
 import org.apache.xmlgraphics.xmp.XMPConstants;
+
+import org.apache.fop.fo.FONode;
 
 /**
  * Represents the top-level "xmpmeta" element used by XMP metadata.
@@ -29,28 +30,23 @@ public class XMPMetaElement extends AbstractMetadataElement {
 
     /**
      * Main constructor.
-     * 
-     * @param parent
-     *            the parent formatting object
+     * @param parent the parent formatting object
      */
-    public XMPMetaElement(final FONode parent) {
+    public XMPMetaElement(FONode parent) {
         super(parent);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getLocalName() {
         return "xmpmeta";
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNormalNamespacePrefix() {
         return "x";
     }
 
     /** {@inheritDoc} */
-    @Override
     public String getNamespaceURI() {
         return XMPConstants.XMP_NAMESPACE;
     }

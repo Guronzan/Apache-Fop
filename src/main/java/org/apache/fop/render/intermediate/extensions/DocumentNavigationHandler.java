@@ -15,107 +15,110 @@
  * limitations under the License.
  */
 
-/* $Id: DocumentNavigationHandler.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: DocumentNavigationHandler.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.render.intermediate.extensions;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Map;
 import java.util.Stack;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.fop.render.intermediate.IFDocumentNavigationHandler;
-import org.apache.fop.render.intermediate.IFException;
-import org.apache.fop.util.XMLUtil;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.apache.fop.accessibility.StructureTreeElement;
+import org.apache.fop.fo.extensions.InternalElementMapping;
+import org.apache.fop.render.intermediate.IFDocumentNavigationHandler;
+import org.apache.fop.render.intermediate.IFException;
+import org.apache.fop.util.XMLUtil;
+
 /**
  * ContentHandler that handles the IF document navigation namespace.
  */
-@Slf4j
-public class DocumentNavigationHandler extends DefaultHandler implements
-DocumentNavigationExtensionConstants {
+public class DocumentNavigationHandler extends DefaultHandler
+        implements DocumentNavigationExtensionConstants {
 
-    private final StringBuilder content = new StringBuilder();
-    private final Stack objectStack = new Stack();
+    /** Logger instance */
+    protected static final Log log = LogFactory.getLog(DocumentNavigationHandler.class);
 
-    private final IFDocumentNavigationHandler navHandler;
+    private StringBuffer content = new StringBuffer();
+    private Stack objectStack = new Stack();
 
-    private String structurePointer;
+    private IFDocumentNavigationHandler navHandler;
+
+    private StructureTreeElement structureTreeElement;
+
+    private Map<String, StructureTreeElement> structureTreeElements;
 
     /**
      * Main constructor.
-     *
-     * @param navHandler
-     *            the navigation handler that will receive the events
+     * @param navHandler the navigation handler that will receive the events
+     * @param structureTreeElements the elements representing the structure of the document
      */
-    public DocumentNavigationHandler(
-            final IFDocumentNavigationHandler navHandler) {
+    public DocumentNavigationHandler(IFDocumentNavigationHandler navHandler,
+            Map<String, StructureTreeElement> structureTreeElements) {
         this.navHandler = navHandler;
+        assert structureTreeElements != null;
+        this.structureTreeElements = structureTreeElements;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void startElement(final String uri, final String localName,
-            final String qName, final Attributes attributes)
+    public void startElement(String uri, String localName, String qName, Attributes attributes)
             throws SAXException {
         boolean handled = false;
         if (NAMESPACE.equals(uri)) {
             if (BOOKMARK_TREE.getLocalName().equals(localName)) {
-                if (!this.objectStack.isEmpty()) {
-                    throw new SAXException(localName
-                            + " must be the root element!");
+                if (!objectStack.isEmpty()) {
+                    throw new SAXException(localName + " must be the root element!");
                 }
-                final BookmarkTree bookmarkTree = new BookmarkTree();
-                this.objectStack.push(bookmarkTree);
+                BookmarkTree bookmarkTree = new BookmarkTree();
+                objectStack.push(bookmarkTree);
             } else if (BOOKMARK.getLocalName().equals(localName)) {
-                final String title = attributes.getValue("title");
-                final String s = attributes.getValue("starting-state");
-                final boolean show = !"hide".equals(s);
-                final Bookmark b = new Bookmark(title, show, null);
-                Object o = this.objectStack.peek();
+                String title = attributes.getValue("title");
+                String s = attributes.getValue("starting-state");
+                boolean show = !"hide".equals(s);
+                Bookmark b = new Bookmark(title, show, null);
+                Object o = objectStack.peek();
                 if (o instanceof AbstractAction) {
-                    final AbstractAction action = (AbstractAction) this.objectStack
-                            .pop();
-                    o = this.objectStack.peek();
-                    ((Bookmark) o).setAction(action);
+                    AbstractAction action = (AbstractAction)objectStack.pop();
+                    o = objectStack.peek();
+                    ((Bookmark)o).setAction(action);
                 }
                 if (o instanceof BookmarkTree) {
-                    ((BookmarkTree) o).addBookmark(b);
+                    ((BookmarkTree)o).addBookmark(b);
                 } else {
-                    ((Bookmark) o).addChildBookmark(b);
+                    ((Bookmark)o).addChildBookmark(b);
                 }
-                this.objectStack.push(b);
+                objectStack.push(b);
             } else if (NAMED_DESTINATION.getLocalName().equals(localName)) {
-                if (!this.objectStack.isEmpty()) {
-                    throw new SAXException(localName
-                            + " must be the root element!");
+                if (!objectStack.isEmpty()) {
+                    throw new SAXException(localName + " must be the root element!");
                 }
-                final String name = attributes.getValue("name");
-                final NamedDestination dest = new NamedDestination(name, null);
-                this.objectStack.push(dest);
+                String name = attributes.getValue("name");
+                NamedDestination dest = new NamedDestination(name, null);
+                objectStack.push(dest);
             } else if (LINK.getLocalName().equals(localName)) {
-                if (!this.objectStack.isEmpty()) {
-                    throw new SAXException(localName
-                            + " must be the root element!");
+                if (!objectStack.isEmpty()) {
+                    throw new SAXException(localName + " must be the root element!");
                 }
-                final Rectangle targetRect = XMLUtil.getAttributeAsRectangle(
-                        attributes, "rect");
-                this.structurePointer = attributes.getValue("ptr");
-                final Link link = new Link(null, targetRect);
-                this.objectStack.push(link);
+                Rectangle targetRect = XMLUtil.getAttributeAsRectangle(attributes, "rect");
+                structureTreeElement = structureTreeElements.get(attributes.getValue(
+                        InternalElementMapping.URI, InternalElementMapping.STRUCT_REF));
+                Link link = new Link(null, targetRect);
+                objectStack.push(link);
             } else if (GOTO_XY.getLocalName().equals(localName)) {
-                final String idref = attributes.getValue("idref");
+                String idref = attributes.getValue("idref");
                 GoToXYAction action;
                 if (idref != null) {
                     action = new GoToXYAction(idref);
                 } else {
-                    final String id = attributes.getValue("id");
-                    final int pageIndex = XMLUtil.getAttributeAsInt(attributes,
-                            "page-index");
+                    String id = attributes.getValue("id");
+                    int pageIndex = XMLUtil.getAttributeAsInt(attributes, "page-index");
                     final Point location;
                     if (pageIndex < 0) {
                         location = null;
@@ -128,94 +131,84 @@ DocumentNavigationExtensionConstants {
                     }
                     action = new GoToXYAction(id, pageIndex, location);
                 }
-                if (this.structurePointer != null) {
-                    action.setStructurePointer(this.structurePointer);
+                if (structureTreeElement != null) {
+                    action.setStructureTreeElement(structureTreeElement);
                 }
-                this.objectStack.push(action);
+                objectStack.push(action);
             } else if (GOTO_URI.getLocalName().equals(localName)) {
-                final String id = attributes.getValue("id");
-                final String gotoURI = attributes.getValue("uri");
-                final String showDestination = attributes
-                        .getValue("show-destination");
-                final boolean newWindow = "new".equals(showDestination);
-                final URIAction action = new URIAction(gotoURI, newWindow);
+                String id = attributes.getValue("id");
+                String gotoURI = attributes.getValue("uri");
+                String showDestination = attributes.getValue("show-destination");
+                boolean newWindow = "new".equals(showDestination);
+                URIAction action = new URIAction(gotoURI, newWindow);
                 if (id != null) {
                     action.setID(id);
                 }
-                if (this.structurePointer != null) {
-                    action.setStructurePointer(this.structurePointer);
+                if (structureTreeElement != null) {
+                    action.setStructureTreeElement(structureTreeElement);
                 }
-                this.objectStack.push(action);
+                objectStack.push(action);
             } else {
-                throw new SAXException("Invalid element '" + localName
-                        + "' in namespace: " + uri);
+                throw new SAXException(
+                        "Invalid element '" + localName + "' in namespace: " + uri);
             }
             handled = true;
         }
         if (!handled) {
             if (NAMESPACE.equals(uri)) {
-                throw new SAXException("Unhandled element '" + localName
-                        + "' in namespace: " + uri);
-            } else {
-                log.warn("Unhandled element '" + localName + "' in namespace: "
+                throw new SAXException("Unhandled element '" + localName + "' in namespace: "
                         + uri);
+            } else {
+                log.warn("Unhandled element '" + localName + "' in namespace: " + uri);
             }
         }
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void endElement(final String uri, final String localName,
-            final String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) throws SAXException {
         if (NAMESPACE.equals(uri)) {
             try {
                 if (BOOKMARK_TREE.getLocalName().equals(localName)) {
-                    final BookmarkTree tree = (BookmarkTree) this.objectStack
-                            .pop();
+                    BookmarkTree tree = (BookmarkTree)objectStack.pop();
                     if (hasNavigation()) {
                         this.navHandler.renderBookmarkTree(tree);
                     }
                 } else if (BOOKMARK.getLocalName().equals(localName)) {
-                    if (this.objectStack.peek() instanceof AbstractAction) {
-                        final AbstractAction action = (AbstractAction) this.objectStack
-                                .pop();
-                        final Bookmark b = (Bookmark) this.objectStack.pop();
+                    if (objectStack.peek() instanceof AbstractAction) {
+                        AbstractAction action = (AbstractAction)objectStack.pop();
+                        Bookmark b = (Bookmark)objectStack.pop();
                         b.setAction(action);
                     } else {
-                        this.objectStack.pop();
+                        objectStack.pop();
                     }
                 } else if (NAMED_DESTINATION.getLocalName().equals(localName)) {
-                    final AbstractAction action = (AbstractAction) this.objectStack
-                            .pop();
-                    final NamedDestination dest = (NamedDestination) this.objectStack
-                            .pop();
+                    AbstractAction action = (AbstractAction)objectStack.pop();
+                    NamedDestination dest = (NamedDestination)objectStack.pop();
                     dest.setAction(action);
                     if (hasNavigation()) {
                         this.navHandler.renderNamedDestination(dest);
                     }
                 } else if (LINK.getLocalName().equals(localName)) {
-                    final AbstractAction action = (AbstractAction) this.objectStack
-                            .pop();
-                    final Link link = (Link) this.objectStack.pop();
+                    AbstractAction action = (AbstractAction)objectStack.pop();
+                    Link link = (Link)objectStack.pop();
                     link.setAction(action);
                     if (hasNavigation()) {
                         this.navHandler.renderLink(link);
                     }
                 } else if (localName.startsWith("goto-")) {
-                    if (this.objectStack.size() == 1) {
-                        // Stand-alone action
-                        final AbstractAction action = (AbstractAction) this.objectStack
-                                .pop();
+                    if (objectStack.size() == 1) {
+                        //Stand-alone action
+                        AbstractAction action = (AbstractAction)objectStack.pop();
                         if (hasNavigation()) {
                             this.navHandler.addResolvedAction(action);
                         }
                     }
                 }
-            } catch (final IFException ife) {
+            } catch (IFException ife) {
                 throw new SAXException(ife);
             }
         }
-        this.content.setLength(0); // Reset text buffer (see characters())
+        content.setLength(0); // Reset text buffer (see characters())
     }
 
     private boolean hasNavigation() {
@@ -223,16 +216,13 @@ DocumentNavigationExtensionConstants {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void characters(final char[] ch, final int start, final int length)
-            throws SAXException {
-        this.content.append(ch, start, length);
+    public void characters(char[] ch, int start, int length) throws SAXException {
+        content.append(ch, start, length);
     }
 
     /** {@inheritDoc} */
-    @Override
     public void endDocument() throws SAXException {
-        assert this.objectStack.isEmpty();
+        assert objectStack.isEmpty();
     }
 
 }

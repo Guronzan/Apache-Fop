@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IFDocumentNavigationHandler.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: IFDocumentNavigationHandler.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.intermediate;
 
@@ -24,36 +24,37 @@ import org.apache.fop.render.intermediate.extensions.BookmarkTree;
 import org.apache.fop.render.intermediate.extensions.Link;
 import org.apache.fop.render.intermediate.extensions.NamedDestination;
 
+
 /**
- * Interface to handle document navigation features. This is an optional
- * interface for document handler implementations which support document
- * navigation features.
+ * Interface to handle document navigation features. This is an optional interface for
+ * document handler implementations which support document navigation features.
  */
 public interface IFDocumentNavigationHandler {
 
     /**
      * Renders a named destination.
-     * 
-     * @param destination
-     *            the named destination
-     * @throws IFException
-     *             if an error occurs while handling this event
+     * @param destination the named destination
+     * @throws IFException if an error occurs while handling this event
      */
-    void renderNamedDestination(final NamedDestination destination)
-            throws IFException;
+    void renderNamedDestination(NamedDestination destination) throws IFException;
 
     /**
      * Render the bookmark tree.
-     * 
-     * @param tree
-     *            the bookmark tree
-     * @throws IFException
-     *             if an error occurs while handling this event
+     * @param tree the bookmark tree
+     * @throws IFException if an error occurs while handling this event
      */
-    void renderBookmarkTree(final BookmarkTree tree) throws IFException;
+    void renderBookmarkTree(BookmarkTree tree) throws IFException;
 
-    void renderLink(final Link link) throws IFException;
+    /**
+     * @param link a link
+     * @throws IFException of not caught
+     */
+    void renderLink(Link link) throws IFException;
 
-    void addResolvedAction(final AbstractAction action) throws IFException;
+    /**
+     * @param action an action
+     * @throws IFException of not caught
+     */
+    void addResolvedAction(AbstractAction action) throws IFException;
 
 }

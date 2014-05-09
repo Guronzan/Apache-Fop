@@ -23,32 +23,31 @@ import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.PropertyList;
 
 /**
- * A shorthand parser for the position shorthand. It is used to set values for
- * absolute-position and relative-position.
+ * A shorthand parser for the position shorthand. It is used to set
+ * values for absolute-position and relative-position.
  */
 public class PositionShorthandParser implements ShorthandParser {
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public Property getValueForProperty(final int propId,
-            final Property property, final PropertyMaker maker,
-            final PropertyList propertyList) {
+    public Property getValueForProperty(int propId,
+            Property property,
+            PropertyMaker maker,
+            PropertyList propertyList) {
 
-        final int propVal = property.getEnum();
+        int propVal = property.getEnum();
         if (propId == Constants.PR_ABSOLUTE_POSITION) {
             switch (propVal) {
             case Constants.EN_STATIC:
             case Constants.EN_RELATIVE:
                 return EnumProperty.getInstance(Constants.EN_AUTO, "AUTO");
             case Constants.EN_ABSOLUTE:
-                return EnumProperty.getInstance(Constants.EN_ABSOLUTE,
-                        "ABSOLUTE");
+                return EnumProperty.getInstance(Constants.EN_ABSOLUTE, "ABSOLUTE");
             case Constants.EN_FIXED:
                 return EnumProperty.getInstance(Constants.EN_FIXED, "FIXED");
             default:
-                // nop
+                //nop
             }
         }
         if (propId == Constants.PR_RELATIVE_POSITION) {
@@ -56,14 +55,13 @@ public class PositionShorthandParser implements ShorthandParser {
             case Constants.EN_STATIC:
                 return EnumProperty.getInstance(Constants.EN_STATIC, "STATIC");
             case Constants.EN_RELATIVE:
-                return EnumProperty.getInstance(Constants.EN_RELATIVE,
-                        "RELATIVE");
+                return EnumProperty.getInstance(Constants.EN_RELATIVE, "RELATIVE");
             case Constants.EN_ABSOLUTE:
                 return EnumProperty.getInstance(Constants.EN_STATIC, "STATIC");
             case Constants.EN_FIXED:
                 return EnumProperty.getInstance(Constants.EN_STATIC, "STATIC");
             default:
-                // nop
+                //nop
             }
         }
         return null;

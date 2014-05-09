@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: GraphicsChainedSegment.java 815383 2009-09-15 16:15:11Z maxberger $ */
+/* $Id: GraphicsChainedSegment.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.afp.goca;
 
@@ -27,13 +27,14 @@ import org.apache.fop.afp.util.BinaryUtils;
 /**
  * A GOCA graphics segment
  */
-public final class GraphicsChainedSegment extends
-        AbstractGraphicsDrawingOrderContainer {
+public final class GraphicsChainedSegment extends AbstractGraphicsDrawingOrderContainer {
 
     /** The maximum segment data length */
     protected static final int MAX_DATA_LEN = 8192;
 
     private byte[] predecessorNameBytes;
+    private boolean appended;
+    private boolean prologPresent;
 
     /**
      * Main constructor
@@ -41,8 +42,8 @@ public final class GraphicsChainedSegment extends
      * @param name
      *            the name of this graphics segment
      */
-    public GraphicsChainedSegment(final String name) {
-        super(name);
+    public GraphicsChainedSegment(String name) {
+        this(name, null, false, false);
     }
 
     /**
@@ -52,11 +53,19 @@ public final class GraphicsChainedSegment extends
      *            the name of this graphics segment
      * @param predecessorNameBytes
      *            the name of the predecessor in this chain
+     * @param appended true if this segment is appended to the previous one
+     * @param prologPresent true if this segment starts with a prolog
      */
-    public GraphicsChainedSegment(final String name,
-            final byte[] predecessorNameBytes) {
+    public GraphicsChainedSegment(String name, byte[] predecessorNameBytes,
+            boolean appended, boolean prologPresent) {
         super(name);
-        this.predecessorNameBytes = predecessorNameBytes;
+        if (predecessorNameBytes != null) {
+            this.predecessorNameBytes = new byte[predecessorNameBytes.length];
+            System.arraycopy(predecessorNameBytes, 0,
+                    this.predecessorNameBytes, 0, predecessorNameBytes.length);
+        }
+        this.appended = appended;
+        this.prologPresent = prologPresent;
     }
 
     /** {@inheritDoc} */
@@ -66,8 +75,8 @@ public final class GraphicsChainedSegment extends
     }
 
     private static final byte APPEND_NEW_SEGMENT = 0;
-    // private static final byte PROLOG = 4;
-    // private static final byte APPEND_TO_EXISING = 48;
+    private static final byte APPEND_TO_EXISING = 6;
+    private static final byte PROLOG = 0x10;
 
     private static final int NAME_LENGTH = 4;
 
@@ -77,43 +86,46 @@ public final class GraphicsChainedSegment extends
         return NAME_LENGTH;
     }
 
-    /** {@inheritDoc} */
     byte getOrderCode() {
         return 0x70;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void writeToStream(final OutputStream os) throws IOException {
-        final byte[] data = new byte[14];
+    public void writeToStream(OutputStream os) throws IOException {
+        byte[] data = new byte[14];
         data[0] = getOrderCode(); // BEGIN_SEGMENT
         data[1] = 0x0C; // Length of following parameters
 
         // segment name
-        final byte[] nameBytes = getNameBytes();
+        byte[] nameBytes = getNameBytes();
         System.arraycopy(nameBytes, 0, data, 2, NAME_LENGTH);
 
         data[6] = 0x00; // FLAG1 (ignored)
-        data[7] = APPEND_NEW_SEGMENT;
 
-        final int dataLength = super.getDataLength();
-        final byte[] len = BinaryUtils.convert(dataLength, 2);
+        //FLAG2
+        data[7] |= this.appended ? APPEND_TO_EXISING : APPEND_NEW_SEGMENT;
+        if (this.prologPresent) {
+            data[7] |= PROLOG;
+        }
+
+        int dataLength = super.getDataLength();
+        byte[] len = BinaryUtils.convert(dataLength, 2);
         data[8] = len[0]; // SEGL
         data[9] = len[1];
 
         // P/S NAME (predecessor name)
-        if (this.predecessorNameBytes != null) {
-            System.arraycopy(this.predecessorNameBytes, 0, data, 10,
-                    NAME_LENGTH);
+        if (predecessorNameBytes != null) {
+            System.arraycopy(predecessorNameBytes, 0, data, 10, NAME_LENGTH);
         }
         os.write(data);
 
-        writeObjects(this.objects, os);
+        writeObjects(objects, os);
     }
 
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return "GraphicsChainedSegment(name=" + super.getName() + ")";
+        return "GraphicsChainedSegment(name=" + super.getName() + ", len: " + getDataLength() + ")";
     }
 }

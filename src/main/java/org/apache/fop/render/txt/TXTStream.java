@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: TXTStream.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TXTStream.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.txt;
 
@@ -35,50 +35,42 @@ public class TXTStream {
 
     /**
      * Main constructor.
-     * 
-     * @param os
-     *            OutputStream to write to
+     * @param os OutputStream to write to
      */
-    public TXTStream(final OutputStream os) {
-        this.out = os;
+    public TXTStream(OutputStream os) {
+        out = os;
     }
 
     /**
      * Adds a String to the OutputStream
-     * 
-     * @param str
-     *            String to add
+     * @param str String to add
      */
-    public void add(final String str) {
-        if (!this.doOutput) {
+    public void add(String str) {
+        if (!doOutput) {
             return;
         }
 
         try {
-            final byte[] buff = str.getBytes(this.encoding);
-            this.out.write(buff);
-        } catch (final IOException e) {
+            byte[] buff = str.getBytes(encoding);
+            out.write(buff);
+        } catch (IOException e) {
             throw new RuntimeException(e.toString());
         }
     }
 
     /**
      * Controls whether output is actually written.
-     * 
-     * @param doout
-     *            true to enable output, false to suppress
+     * @param doout true to enable output, false to suppress
      */
-    public void setDoOutput(final boolean doout) {
-        this.doOutput = doout;
+    public void setDoOutput(boolean doout) {
+        doOutput = doout;
     }
 
     /**
      * Set the encoding for the text stream.
-     * 
-     * @param encoding
-     *            the encoding, if null, "UTF-8" is chosen as default
+     * @param encoding the encoding, if null, "UTF-8" is chosen as default
      */
-    public void setEncoding(final String encoding) {
+    public void setEncoding(String encoding) {
         if (encoding != null) {
             this.encoding = encoding;
         } else {
@@ -86,3 +78,4 @@ public class TXTStream {
         }
     }
 }
+

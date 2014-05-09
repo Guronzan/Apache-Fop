@@ -15,30 +15,35 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractAFPPainter.java 769445 2009-04-28 16:10:08Z vhennebert $ */
+/* $Id: AbstractAFPPainter.java 1036179 2010-11-17 19:45:27Z spepping $ */
 
 package org.apache.fop.afp;
 
 import java.io.IOException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * A base AFP painter
  */
 public abstract class AbstractAFPPainter {
 
+    /** Static logging instance */
+    protected static final Log log = LogFactory.getLog("org.apache.xmlgraphics.afp");
+
+    /** data stream */
     protected final DataStream dataStream;
+    /** painting state */
     protected final AFPPaintingState paintingState;
 
     /**
      * Main constructor
      *
-     * @param paintingState
-     *            the AFP painting state
-     * @param dataStream
-     *            the AFP Datastream
+     * @param paintingState the AFP painting state
+     * @param dataStream the AFP Datastream
      */
-    public AbstractAFPPainter(final AFPPaintingState paintingState,
-            final DataStream dataStream) {
+    public AbstractAFPPainter(AFPPaintingState paintingState, DataStream dataStream) {
         this.paintingState = paintingState;
         this.dataStream = dataStream;
     }
@@ -46,10 +51,8 @@ public abstract class AbstractAFPPainter {
     /**
      * Paints the painting item
      *
-     * @param paintInfo
-     *            the painting information
-     * @throws IOException
-     *             if an I/O error occurs
+     * @param paintInfo the painting information
+     * @throws IOException if an I/O error occurs
      */
-    public abstract void paint(final PaintingInfo paintInfo) throws IOException;
+    public abstract void paint(PaintingInfo paintInfo) throws IOException;
 }

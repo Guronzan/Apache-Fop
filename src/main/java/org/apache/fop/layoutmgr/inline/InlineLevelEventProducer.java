@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: InlineLevelEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: InlineLevelEventProducer.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.layoutmgr.inline;
 
+import org.xml.sax.Locator;
+
 import org.apache.fop.events.EventBroadcaster;
 import org.apache.fop.events.EventProducer;
-import org.xml.sax.Locator;
 
 /**
  * Event producer interface for inline-level layout managers.
@@ -31,48 +32,38 @@ public interface InlineLevelEventProducer extends EventProducer {
     /**
      * Provider class for the event producer.
      */
-    class Provider {
+    final class Provider {
+
+        private Provider() {
+        }
 
         /**
          * Returns an event producer.
-         * 
-         * @param broadcaster
-         *            the event broadcaster to use
+         * @param broadcaster the event broadcaster to use
          * @return the event producer
          */
-        public static InlineLevelEventProducer get(
-                final EventBroadcaster broadcaster) {
-            return (InlineLevelEventProducer) broadcaster
-                    .getEventProducerFor(InlineLevelEventProducer.class);
+        public static InlineLevelEventProducer get(EventBroadcaster broadcaster) {
+            return (InlineLevelEventProducer)broadcaster.getEventProducerFor(
+                    InlineLevelEventProducer.class);
         }
     }
 
     /**
      * fo:leader with "use-content" but without children.
-     * 
-     * @param source
-     *            the event source
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param loc the location of the error or null
      * @event.severity ERROR
      */
-    void leaderWithoutContent(final Object source, final Locator loc);
+    void leaderWithoutContent(Object source, Locator loc);
 
     /**
      * A line overflows.
-     * 
-     * @param source
-     *            the event source
-     * @param line
-     *            the number number
-     * @param overflowLength
-     *            the length by which the content overflows the available space
-     *            (in mpt)
-     * @param loc
-     *            the location of the error or null
+     * @param source the event source
+     * @param line the number number
+     * @param overflowLength the length by which the content overflows the available space (in mpt)
+     * @param loc the location of the error or null
      * @event.severity WARN
      */
-    void lineOverflows(final Object source, final int line,
-            final int overflowLength, final Locator loc);
+    void lineOverflows(Object source, int line, int overflowLength, Locator loc);
 
 }

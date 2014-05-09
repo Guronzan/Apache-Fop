@@ -15,28 +15,44 @@
  * limitations under the License.
  */
 
-/* $Id: PendingSpan.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PendingSpan.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.fo.flow.table;
 
 /**
- * Used for determining initial values for column-numbers in case of
- * row-spanning cells.
+ * Used for determining initial values for column-numbers in case of row-spanning cells.
  */
 class PendingSpan {
 
     /**
      * member variable holding the number of rows left
      */
-    int rowsLeft;
+    private int rowsLeft;
 
     /**
      * Constructor
      *
-     * @param rows
-     *            number of rows spanned
+     * @param rows  number of rows spanned
      */
-    public PendingSpan(final int rows) {
-        this.rowsLeft = rows;
+    public PendingSpan(int rows) {
+        rowsLeft = rows;
     }
+
+    /** @return number of rows spanned */
+    public int getRowsLeft() {
+        return rowsLeft;
+    }
+
+    /**
+     * Decrement rows spanned.
+     * @return number of rows spanned after decrementing
+     */
+    public int decrRowsLeft() {
+        if ( rowsLeft > 0 ) {
+            return --rowsLeft;
+        } else {
+            return 0;
+        }
+    }
+
 }

@@ -15,44 +15,42 @@
  * limitations under the License.
  */
 
-/* $Id: ElementListObserver.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ElementListObserver.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.layoutmgr;
 
-import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class is used to observe Knuth element lists generated within the layout
- * managers. This is mainly used for the purpose of automated testing. This
- * implementation here does nothing. Please see the subclass within the test
- * code.
+ * This class is used to observe Knuth element lists generated within the layout managers. This
+ * is mainly used for the purpose of automated testing. This implementation here does nothing.
+ * Please see the subclass within the test code.
  */
-public class ElementListObserver {
+public final class ElementListObserver {
 
-    private static List<Observer> activeObservers = null;
+    private ElementListObserver() {
+    }
+
+    private static List activeObservers = null;
 
     /**
      * Adds a new Observer to the list.
-     *
-     * @param observer
-     *            the observer implementation
+     * @param observer the observer implementation
      */
-    public static void addObserver(final Observer observer) {
+    public static void addObserver(Observer observer) {
         if (!isObservationActive()) {
-            activeObservers = new ArrayList<>();
+            activeObservers = new java.util.ArrayList();
         }
         activeObservers.add(observer);
     }
 
     /**
-     * Removes an Observer from the list. This call simply returns if the
-     * observer was not on the list and does nothing.
-     *
-     * @param observer
-     *            the observer to remove
+     * Removes an Observer from the list. This call simply returns if the observer was not on
+     * the list and does nothing.
+     * @param observer the observer to remove
      */
-    public static void removeObserver(final Observer observer) {
+    public static void removeObserver(Observer observer) {
         if (isObservationActive()) {
             activeObservers.remove(observer);
         }
@@ -60,23 +58,18 @@ public class ElementListObserver {
 
     /**
      * Notifies all registered observers about the element list.
-     *
-     * @param elementList
-     *            the Knuth element list
-     * @param category
-     *            the category for the element list (example: main,
-     *            static-content, table-cell)
-     * @param id
-     *            ID for the element list (may be null)
+     * @param elementList the Knuth element list
+     * @param category the category for the element list (example: main, static-content, table-cell)
+     * @param id ID for the element list (may be null)
      */
-    public static void observe(final List<ListElement> elementList,
-            final String category, final String id) {
+    public static void observe(List elementList, String category, String id) {
         if (isObservationActive()) {
             if (category == null) {
                 throw new NullPointerException("category must not be null");
             }
-            for (final Observer observer : activeObservers) {
-                observer.observe(elementList, category, id);
+            Iterator i = activeObservers.iterator();
+            while (i.hasNext()) {
+                ((Observer)i.next()).observe(elementList, category, id);
             }
         }
     }
@@ -93,17 +86,12 @@ public class ElementListObserver {
 
         /**
          * Notifies the observer about the element list.
-         *
-         * @param elementList
-         *            the Knuth element list
-         * @param category
-         *            the category for the element list (example: main,
-         *            static-content or table-cell)
-         * @param id
-         *            ID for the element list (may be null)
+         * @param elementList the Knuth element list
+         * @param category the category for the element list (example: main, static-content or
+         * table-cell)
+         * @param id ID for the element list (may be null)
          */
-        void observe(final List<ListElement> elementList,
-                final String category, final String id);
+        void observe(List elementList, String category, String id);
 
     }
 

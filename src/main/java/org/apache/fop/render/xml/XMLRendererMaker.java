@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: XMLRendererMaker.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: XMLRendererMaker.java 1237582 2012-01-30 09:49:22Z mehdi $ */
 
 package org.apache.fop.render.xml;
 
@@ -31,28 +31,24 @@ import org.apache.fop.render.RendererConfigurator;
  */
 public class XMLRendererMaker extends AbstractRendererMaker {
 
-    private static final String[] MIMES = new String[] { MimeConstants.MIME_FOP_AREA_TREE };
+    private static final String[] MIMES = new String[] {MimeConstants.MIME_FOP_AREA_TREE};
 
-    /** {@inheritDoc} */
-    @Override
-    public Renderer makeRenderer(final FOUserAgent userAgent) {
-        return new XMLRenderer();
+    /**{@inheritDoc} */
+    public Renderer makeRenderer(FOUserAgent userAgent) {
+        return new XMLRenderer(userAgent);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public RendererConfigurator getConfigurator(final FOUserAgent userAgent) {
+    /**{@inheritDoc} */
+    public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
         return new PrintRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

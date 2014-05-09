@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-/* $Id: AFPTextElementBridge.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: AFPTextElementBridge.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.afp.svg;
 
 import org.apache.batik.gvt.TextPainter;
+
 import org.apache.fop.svg.AbstractFOPTextElementBridge;
 
 /**
- * Bridge class for the &lt;text> element. This bridge will use the direct text
- * painter if the text for the element is simple.
+ * Bridge class for the &lt;text> element.
+ * This bridge will use the direct text painter if the text
+ * for the element is simple.
  */
 public class AFPTextElementBridge extends AbstractFOPTextElementBridge {
 
     /**
      * Constructs a new bridge for the &lt;text> element.
      *
-     * @param textPainter
-     *            the text painter to use
+     * @param textPainter the text painter to use
      */
-    public AFPTextElementBridge(final TextPainter textPainter) {
+    public AFPTextElementBridge(TextPainter textPainter) {
         super(textPainter);
     }
 
 }
+

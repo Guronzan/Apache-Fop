@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFTextUtil.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFTextUtil.java 1244656 2012-02-15 19:17:55Z vhennebert $ */
 
 package org.apache.fop.svg;
 
@@ -24,57 +24,50 @@ import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.Typeface;
 
 /**
- * Utility class for generating PDF text objects. It needs to be subclassed to
- * add writing functionality (see {@link #write(String)}).
+ * Utility class for generating PDF text objects. It needs to be subclassed to add writing
+ * functionality (see {@link #write(String)}).
  */
 public abstract class PDFTextUtil extends org.apache.fop.pdf.PDFTextUtil {
 
-    private final FontInfo fontInfo;
+    private FontInfo fontInfo;
     private Font[] fonts;
     private Font font;
+    private int encoding;
 
     /**
      * Main constructor.
-     * 
-     * @param fontInfo
-     *            the font catalog
+     * @param fontInfo the font catalog
      */
-    public PDFTextUtil(final FontInfo fontInfo) {
+    public PDFTextUtil(FontInfo fontInfo) {
         super();
         this.fontInfo = fontInfo;
     }
 
     /** {@inheritDoc} */
-    @Override
     protected void initValues() {
         super.initValues();
         this.font = null;
     }
 
     /**
-     * Sets the current fonts for the text object. For every character, the
-     * suitable font will be selected.
-     * 
-     * @param fonts
-     *            the new fonts
+     * Sets the current fonts for the text object. For every character, the suitable font will
+     * be selected.
+     * @param fonts the new fonts
      */
-    public void setFonts(final Font[] fonts) {
+    public void setFonts(Font[] fonts) {
         this.fonts = fonts;
     }
 
     /**
      * Sets the current font for the text object.
-     * 
-     * @param font
-     *            the new font
+     * @param font the new font
      */
-    public void setFont(final Font font) {
-        setFonts(new Font[] { font });
+    public void setFont(Font font) {
+        setFonts(new Font[] {font});
     }
 
     /**
      * Returns the current font in use.
-     * 
      * @return the current font or null if no font is currently active.
      */
     public Font getCurrentFont() {
@@ -82,64 +75,74 @@ public abstract class PDFTextUtil extends org.apache.fop.pdf.PDFTextUtil {
     }
 
     /**
-     * Sets the current font.
-     * 
-     * @param f
-     *            the new font to use
+     * Returns the current encoding.
+     * @return the current encoding
      */
-    public void setCurrentFont(final Font f) {
+    public int getCurrentEncoding() {
+        return this.encoding;
+    }
+
+    /**
+     * Sets the current font.
+     * @param f the new font to use
+     */
+    public void setCurrentFont(Font f) {
         this.font = f;
     }
 
     /**
+     * Sets the current encoding.
+     * @param encoding the new encoding
+     */
+    public void setCurrentEncoding(int encoding) {
+        this.encoding = encoding;
+    }
+
+    /**
      * Determines whether the font with the given name is a multi-byte font.
-     * 
-     * @param name
-     *            the name of the font
+     * @param name the name of the font
      * @return true if it's a multi-byte font
      */
-    protected boolean isMultiByteFont(final String name) {
-        final Typeface f = (Typeface) this.fontInfo.getFonts().get(name);
+    protected boolean isMultiByteFont(String name) {
+        Typeface f = (Typeface)fontInfo.getFonts().get(name);
         return f.isMultiByte();
     }
 
     /**
      * Writes a "Tf" command, setting a new current font.
-     * 
-     * @param f
-     *            the font to select
+     * @param f the font to select
      */
-    public void writeTf(final Font f) {
-        final String fontName = f.getFontName();
-        final float fontSize = f.getFontSize() / 1000f;
-        updateTf(fontName, fontSize, isMultiByteFont(fontName));
+    public void writeTf(Font f) {
+        String fontName = f.getFontName();
+        float fontSize = (float)f.getFontSize() / 1000f;
+        boolean isMultiByte = isMultiByteFont(fontName);
+        if (!isMultiByte && encoding != 0) {
+            updateTf(fontName + "_" + Integer.toString(encoding), fontSize, isMultiByte);
+        } else {
+            updateTf(fontName, fontSize, isMultiByte);
+        }
     }
 
     /**
-     * Selects a font from the font list suitable to display the given
-     * character.
-     * 
-     * @param ch
-     *            the character
+     * Selects a font from the font list suitable to display the given character.
+     * @param ch the character
      * @return the recommended Font to use
      */
-    public Font selectFontForChar(final char ch) {
-        for (final Font font2 : this.fonts) {
-            if (font2.hasChar(ch)) {
-                return font2;
+    public Font selectFontForChar(char ch) {
+        for (int i = 0, c = fonts.length; i < c; i++) {
+            if (fonts[i].hasChar(ch)) {
+                return fonts[i];
             }
         }
-        return this.fonts[0]; // TODO Maybe fall back to painting with shapes
+        return fonts[0]; //TODO Maybe fall back to painting with shapes
     }
 
     /**
      * Writes a char to the "TJ-Buffer".
-     * 
-     * @param ch
-     *            the unmapped character
+     * @param ch the unmapped character
      */
-    public void writeTJChar(final char ch) {
-        final char mappedChar = this.font.mapChar(ch);
+    public void writeTJChar(char ch) {
+        char mappedChar = font.mapChar(ch);
         writeTJMappedChar(mappedChar);
     }
 

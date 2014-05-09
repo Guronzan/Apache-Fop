@@ -15,31 +15,29 @@
  * limitations under the License.
  */
 
-/* $Id: NamedCharacter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: NamedCharacter.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.fonts;
 
-import org.apache.fop.util.CharUtilities;
 import org.apache.xmlgraphics.fonts.Glyphs;
 
+import org.apache.fop.util.CharUtilities;
+
 /**
- * Represents an named character with character name (from the Adobe glyph list)
- * and a Unicode sequence that this character represents.
+ * Represents an named character with character name (from the Adobe glyph list) and a Unicode
+ * sequence that this character represents.
  */
 public class NamedCharacter {
 
-    private final String charName;
+    private String charName;
     private String unicodeSequence;
 
     /**
      * Main constructor.
-     * 
-     * @param charName
-     *            the character name
-     * @param unicodeSequence
-     *            the Unicode sequence associated with this character
+     * @param charName the character name
+     * @param unicodeSequence the Unicode sequence associated with this character
      */
-    public NamedCharacter(final String charName, final String unicodeSequence) {
+    public NamedCharacter(String charName, String unicodeSequence) {
         if (charName == null) {
             throw new NullPointerException("charName must not be null");
         }
@@ -47,34 +45,28 @@ public class NamedCharacter {
         if (unicodeSequence != null) {
             this.unicodeSequence = unicodeSequence;
         } else {
-            this.unicodeSequence = Glyphs
-                    .getUnicodeSequenceForGlyphName(charName);
+            this.unicodeSequence = Glyphs.getUnicodeSequenceForGlyphName(charName);
         }
     }
 
     /**
      * Simple constructor.
-     * 
-     * @param charName
-     *            the character name
+     * @param charName the character name
      */
-    public NamedCharacter(final String charName) {
+    public NamedCharacter(String charName) {
         this(charName, null);
     }
 
     /** {@inheritDoc} */
-    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + (this.charName == null ? 0 : this.charName.hashCode());
+        result = prime * result + ((charName == null) ? 0 : charName.hashCode());
         return result;
     }
 
     /** {@inheritDoc} */
-    @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -84,13 +76,12 @@ public class NamedCharacter {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final NamedCharacter other = (NamedCharacter) obj;
-        return this.charName.equals(other.charName);
+        final NamedCharacter other = (NamedCharacter)obj;
+        return charName.equals(other.charName);
     }
 
     /**
      * Returns the character name (as defined by the Adobe glyph list).
-     * 
      * @return the character name
      */
     public String getName() {
@@ -99,36 +90,28 @@ public class NamedCharacter {
 
     /**
      * Returns the Unicode sequence associated with this character.
-     * 
-     * @return the Unicode sequence (or null if no Unicode sequence is
-     *         associated)
+     * @return the Unicode sequence (or null if no Unicode sequence is associated)
      */
     public String getUnicodeSequence() {
         return this.unicodeSequence;
     }
 
     /**
-     * Indicates whether a single Unicode value is associated with this
-     * character.
-     * 
-     * @return true if exactly one Unicode value is associated with this
-     *         character, false otherwise
+     * Indicates whether a single Unicode value is associated with this character.
+     * @return true if exactly one Unicode value is associated with this character, false otherwise
      */
     public boolean hasSingleUnicodeValue() {
-        return this.unicodeSequence != null
-                && this.unicodeSequence.length() == 1;
+        return (this.unicodeSequence != null && this.unicodeSequence.length() == 1);
     }
 
     /**
-     * Returns the single Unicode value associated with this named character.
-     * Check {@link #hasSingleUnicodeValue()} before you call this method
-     * because an IllegalStateException is thrown is a Unicode sequence with
-     * more than one character is associated with this character.
-     * 
-     * @return the single Unicode value (or FFFF ("NOT A CHARACTER") if no
-     *         Unicode value is available)
-     * @throws IllegalStateException
-     *             if a Unicode sequence with more than one value is associated
+     * Returns the single Unicode value associated with this named character. Check
+     * {@link #hasSingleUnicodeValue()} before you call this method because an
+     * IllegalStateException is thrown is a Unicode sequence with more than one character is
+     * associated with this character.
+     * @return the single Unicode value (or FFFF ("NOT A CHARACTER") if no Unicode value is
+     *             available)
+     * @throws IllegalStateException if a Unicode sequence with more than one value is associated
      *             with the named character
      */
     public char getSingleUnicodeValue() throws IllegalStateException {
@@ -136,23 +119,20 @@ public class NamedCharacter {
             return CharUtilities.NOT_A_CHARACTER;
         }
         if (this.unicodeSequence.length() > 1) {
-            throw new IllegalStateException(
-                    "getSingleUnicodeValue() may not be called for a"
-                            + " named character that has more than one Unicode value (a sequence)"
-                            + " associated with the named character!");
+            throw new IllegalStateException("getSingleUnicodeValue() may not be called for a"
+                    + " named character that has more than one Unicode value (a sequence)"
+                    + " associated with the named character!");
         }
         return this.unicodeSequence.charAt(0);
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder(this.unicodeSequence);
+        StringBuffer sb = new StringBuffer(this.unicodeSequence);
         sb.append(" (");
         if (this.unicodeSequence != null) {
-            for (int i = 0, c = this.unicodeSequence.length(); i < c; ++i) {
-                sb.append("0x").append(
-                        Integer.toHexString(this.unicodeSequence.charAt(0)));
+            for (int i = 0, c = this.unicodeSequence.length(); i < c; i++) {
+                sb.append("0x").append(Integer.toHexString(this.unicodeSequence.charAt(0)));
             }
             sb.append(", ");
         }

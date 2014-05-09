@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: IFContext.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: IFContext.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.render.intermediate;
 
@@ -23,48 +23,47 @@ import java.util.Collections;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.fop.apps.FOUserAgent;
 import org.apache.xmlgraphics.util.QName;
 
+import org.apache.fop.accessibility.StructureTreeElement;
+import org.apache.fop.apps.FOUserAgent;
+
 /**
- * This class provides a context object that is valid for a single processing
- * run to create an output file using the intermediate format. It allows access
- * to the user agent and other context information, such as foreign attributes
- * for certain elements in the intermediate format.
+ * This class provides a context object that is valid for a single processing run to create
+ * an output file using the intermediate format. It allows access to the user agent and other
+ * context information, such as foreign attributes for certain elements in the intermediate
+ * format.
  * <p>
- * Foreign attributes are usually specific to a particular output format
- * implementation. Most implementations will just ignore all foreign attributes
- * for most elements. That's why the main IF interfaces are not burdened with
- * this.
+ * Foreign attributes are usually specific to a particular output format implementation. Most
+ * implementations will just ignore all foreign attributes for most elements. That's why the
+ * main IF interfaces are not burdened with this.
  */
 public class IFContext {
 
     private FOUserAgent userAgent;
 
     /** foreign attributes: Map<QName, Object> */
-    private Map<QName, String> foreignAttributes = Collections.emptyMap();
+    private Map foreignAttributes = Collections.EMPTY_MAP;
 
     private Locale language;
 
-    private String structurePointer;
+    private StructureTreeElement structureTreeElement;
+
+    private String id = "";
 
     /**
      * Main constructor.
-     *
-     * @param ua
-     *            the user agent
+     * @param ua the user agent
      */
-    public IFContext(final FOUserAgent ua) {
+    public IFContext(FOUserAgent ua) {
         setUserAgent(ua);
     }
 
     /**
      * Set the user agent.
-     *
-     * @param ua
-     *            the user agent
+     * @param ua the user agent
      */
-    public void setUserAgent(final FOUserAgent ua) {
+    public void setUserAgent(FOUserAgent ua) {
         if (this.userAgent != null) {
             throw new IllegalStateException("The user agent was already set");
         }
@@ -73,7 +72,6 @@ public class IFContext {
 
     /**
      * Returns the associated user agent.
-     *
      * @return the user agent
      */
     public FOUserAgent getUserAgent() {
@@ -82,39 +80,32 @@ public class IFContext {
 
     /**
      * Returns the currently applicable foreign attributes.
-     *
      * @return a Map<QName, Object>
      */
-    public Map<QName, String> getForeignAttributes() {
+    public Map getForeignAttributes() {
         return this.foreignAttributes;
     }
 
     /**
      * Returns a foreign attribute.
-     *
-     * @param qName
-     *            the qualified name of the foreign attribute
-     * @return the value of the foreign attribute or null if the attribute isn't
-     *         specified
+     * @param qName the qualified name of the foreign attribute
+     * @return the value of the foreign attribute or null if the attribute isn't specified
      */
-    public String getForeignAttribute(final QName qName) {
+    public Object getForeignAttribute(QName qName) {
         return this.foreignAttributes.get(qName);
     }
 
     /**
      * Sets the currently applicable foreign attributes.
-     *
-     * @param foreignAttributes
-     *            a Map<QName, Object> or null to reset
+     * @param foreignAttributes a Map<QName, Object> or null to reset
      */
-    public void setForeignAttributes(final Map<QName, String> foreignAttributes) {
+    public void setForeignAttributes(Map foreignAttributes) {
         if (foreignAttributes != null) {
             this.foreignAttributes = foreignAttributes;
         } else {
-            // Make sure there is always at least an empty map so we don't have
-            // to check
-            // in the implementation code
-            this.foreignAttributes = Collections.emptyMap();
+            //Make sure there is always at least an empty map so we don't have to check
+            //in the implementation code
+            this.foreignAttributes = Collections.EMPTY_MAP;
         }
     }
 
@@ -127,17 +118,14 @@ public class IFContext {
 
     /**
      * Sets the currently applicable language.
-     *
-     * @param lang
-     *            the language
+     * @param lang the language
      */
-    public void setLanguage(final Locale lang) {
+    public void setLanguage(Locale lang) {
         this.language = lang;
     }
 
     /**
      * Returns the currently applicable language.
-     *
      * @return the language (or null if the language is undefined)
      */
     public Locale getLanguage() {
@@ -145,33 +133,50 @@ public class IFContext {
     }
 
     /**
-     * Sets the structure pointer for the following painted marks. This method
-     * is used when accessibility features are enabled.
+     * Sets the structure tree element to which the subsequently painted marks
+     * will correspond. This method is used when accessibility features are
+     * enabled.
      *
-     * @param ptr
-     *            the structure pointer
+     * @param structureTreeElement the structure tree element
      */
-    public void setStructurePointer(final String ptr) {
-        this.structurePointer = ptr;
+    public void setStructureTreeElement(StructureTreeElement structureTreeElement) {
+        this.structureTreeElement = structureTreeElement;
     }
 
     /**
-     * Resets the current structure pointer.
-     *
-     * @see #setStructurePointer(String)
+     * Resets the current structure tree element.
+     * @see #setStructureTreeElement(StructureTreeElement)
      */
-    public void resetStructurePointer() {
-        setStructurePointer(null);
+    public void resetStructureTreeElement() {
+        setStructureTreeElement(null);
     }
 
     /**
-     * Returns the current structure pointer.
-     *
-     * @return the structure pointer (or null if no pointer is active)
-     * @see #setStructurePointer(String)
+     * Returns the current structure tree element.
+     * @return the structure tree element (or null if no element is active)
+     * @see #setStructureTreeElement(StructureTreeElement)
      */
-    public String getStructurePointer() {
-        return this.structurePointer;
+    public StructureTreeElement getStructureTreeElement() {
+        return this.structureTreeElement;
+    }
+
+    /**
+     * Sets the ID of the object enclosing the content that will follow.
+     *
+     * @param id the ID of the nearest ancestor object for which the id property was set
+     */
+    void setID(String id) {
+        assert id != null;
+        this.id = id;
+    }
+
+    /**
+     * Returns the ID of the object enclosing the current content.
+     *
+     * @return the ID of the nearest ancestor object for which the id property was set
+     */
+    String getID() {
+        return id;
     }
 
 }
