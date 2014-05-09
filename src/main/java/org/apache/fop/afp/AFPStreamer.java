@@ -26,11 +26,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.fop.afp.modca.ResourceGroup;
 import org.apache.fop.afp.modca.StreamedResourceGroup;
 
@@ -49,13 +52,7 @@ public class AFPStreamer implements Streamable {
     private final Factory factory;
 
     /** A mapping of external resource destinations to resource groups */
-    private final Map/* <String,AFPExternalResourceGroup> */pathResourceGroupMap = new java.util.HashMap/*
-     * <
-     * String
-     * ,
-     * AFPExternalResourceGroup
-     * >
-     */();
+    private final Map<String, ResourceGroup> pathResourceGroupMap = new HashMap<>();
 
     private StreamedResourceGroup printFileResourceGroup;
 
@@ -133,21 +130,21 @@ public class AFPStreamer implements Streamable {
                 log.warn("No file path provided for external resource, using default.");
                 filePath = this.defaultResourceGroupFilePath;
             }
-            resourceGroup = (ResourceGroup) this.pathResourceGroupMap
-                    .get(filePath);
+            resourceGroup = this.pathResourceGroupMap.get(filePath);
             if (resourceGroup == null) {
                 OutputStream os = null;
                 try {
                     os = new BufferedOutputStream(
                             new FileOutputStream(filePath));
+                    resourceGroup = this.factory
+                            .createStreamedResourceGroup(os);
+                    this.pathResourceGroupMap.put(filePath, resourceGroup);
                 } catch (final FileNotFoundException fnfe) {
                     log.error("Failed to create/open external resource group file '"
                             + filePath + "'");
                 } finally {
                     if (os != null) {
-                        resourceGroup = this.factory
-                                .createStreamedResourceGroup(os);
-                        this.pathResourceGroupMap.put(filePath, resourceGroup);
+                        IOUtils.closeQuietly(os);
                     }
                 }
             }
@@ -173,10 +170,11 @@ public class AFPStreamer implements Streamable {
      */
     // write out any external resource groups
     public void close() throws IOException {
-        final Iterator it = this.pathResourceGroupMap.entrySet().iterator();
+        final Iterator<Entry<String, ResourceGroup>> it = this.pathResourceGroupMap
+                .entrySet().iterator();
         while (it.hasNext()) {
             final StreamedResourceGroup resourceGroup = (StreamedResourceGroup) it
-                    .next();
+                    .next().getValue();
             resourceGroup.close();
         }
 

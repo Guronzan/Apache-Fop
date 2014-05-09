@@ -123,7 +123,7 @@ public abstract class FObj extends FONode implements Constants {
     @Override
     public void processNode(final String elementName, final Locator locator,
             final Attributes attlist, final PropertyList pList)
-                    throws FOPException {
+            throws FOPException {
         setLocator(locator);
         pList.addAttributesToList(attlist);
         if (!inMarker() || "marker".equals(elementName)) {
@@ -152,7 +152,7 @@ public abstract class FObj extends FONode implements Constants {
      */
     @Override
     public void bind(final PropertyList pList) throws PropertyException,
-            FOPException {
+    FOPException {
         this.id = pList.get(PR_ID).getString();
     }
 
@@ -472,7 +472,7 @@ public abstract class FObj extends FONode implements Constants {
                         || "table-and-caption".equals(lName)
                         || "block-container".equals(lName)
                         || "list-block".equals(lName) || "float".equals(lName) || isNeutralItem(
-                                nsURI, lName));
+                            nsURI, lName));
     }
 
     /**
@@ -503,7 +503,7 @@ public abstract class FObj extends FONode implements Constants {
                         && (getNameId() == FO_MULTI_CASE || findAncestor(FO_MULTI_CASE) > 0)
                         || "footnote".equals(lName)
                         && !this.isOutOfLineFODescendant || isNeutralItem(
-                                nsURI, lName));
+                            nsURI, lName));
     }
 
     /**
@@ -539,7 +539,7 @@ public abstract class FObj extends FONode implements Constants {
                         || !this.isOutOfLineFODescendant
                         && "float".equals(lName)
                         || "retrieve-marker".equals(lName) || "retrieve-table-marker"
-                        .equals(lName));
+                            .equals(lName));
     }
 
     /**
@@ -616,7 +616,7 @@ public abstract class FObj extends FONode implements Constants {
     }
 
     /** @return the extension attachments of this FObj. */
-    public List/* <ExtensionAttachment> */<ExtensionAttachment> getExtensionAttachments() {
+    public List<ExtensionAttachment> getExtensionAttachments() {
         if (this.extensionAttachments == null) {
             return Collections.emptyList();
         } else {
@@ -772,7 +772,7 @@ public abstract class FObj extends FONode implements Constants {
         public boolean hasNext() {
             return this.currentNode != null
                     && (this.currentIndex == 0 || this.currentNode.siblings != null
-                    && this.currentNode.siblings[1] != null);
+                            && this.currentNode.siblings[1] != null);
         }
 
         /** {@inheritDoc} */

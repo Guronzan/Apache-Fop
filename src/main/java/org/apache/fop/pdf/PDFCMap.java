@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFCMap.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFCMap.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -26,8 +26,8 @@ import java.io.Writer;
 /**
  * Class representing the CMap encodings.
  *
- * CMaps are defined in the "Predefined CJK CMap names" table. In section 5.6.4
- * of PDF reference 1.4.
+ * CMaps are defined in the "Predefined CJK CMap names" table.
+ * In section 5.6.4 of PDF reference 1.4.
  */
 public class PDFCMap extends PDFStream {
 
@@ -36,8 +36,8 @@ public class PDFCMap extends PDFStream {
      */
 
     /**
-     * GB-EUC-H Microsoft Code Page 936 (lfCharSet 0x86), GB 2312-80 character
-     * set, EUC-CN encoding
+     * GB-EUC-H Microsoft Code Page 936 (lfCharSet 0x86), GB 2312-80
+     * character set, EUC-CN encoding
      */
     public static final String ENC_GB_EUC_H = "GB-EUC-H";
 
@@ -47,8 +47,7 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_GB_EUC_V = "GB_EUC_V";
 
     /**
-     * GBpc-EUC-H Mac OS, GB 2312-80 character set, EUC-CN encoding, Script
-     * Manager code 19
+     * GBpc-EUC-H Mac OS, GB 2312-80 character set, EUC-CN encoding, Script Manager code 19
      */
     public static final String ENC_GBPC_EUC_H = "GBpc-EUC-H";
 
@@ -58,8 +57,7 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_GBPC_EUC_V = "GBpc-EUC-V";
 
     /**
-     * GBK-EUC-H Microsoft Code Page 936 (lfCharSet 0x86), GBK character set,
-     * GBK encoding
+     * GBK-EUC-H Microsoft Code Page 936 (lfCharSet 0x86), GBK character set, GBK encoding
      */
     public static final String ENC_GBK_EUC_H = "GBK-EUC-H";
 
@@ -69,9 +67,9 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_GBK_EUC_V = "GBK-EUC-V";
 
     /**
-     * GBKp-EUC-H Same as GBK-EUC-H, but replaces half-width Latin characters
-     * with proportional forms and maps character code 0x24 to a dollar sign ($)
-     * instead of a yuan symbol
+     * GBKp-EUC-H Same as GBK-EUC-H, but replaces half-width
+     * Latin characters with proportional forms and maps character
+     * code 0x24 to a dollar sign ($) instead of a yuan symbol
      */
     public static final String ENC_GBKP_EUC_H = "GBKp-EUC-H";
 
@@ -91,8 +89,7 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_GBK2K_V = "GBK2K-V";
 
     /**
-     * UniGB-UCS2-H Unicode (UCS-2) encoding for the Adobe-GB1 character
-     * collection
+     * UniGB-UCS2-H Unicode (UCS-2) encoding for the Adobe-GB1 character collection
      */
     public static final String ENC_UNIGB_UCS2_H = "UniGB-UCS2-H";
 
@@ -101,13 +98,13 @@ public class PDFCMap extends PDFStream {
      */
     public static final String ENC_UNIGB_UCS2_V = "UniGB-UCS2-V";
 
+
     /*
      * Chinese (Traditional)
      */
 
     /**
-     * B5pc-H Mac OS, Big Five character set, Big Five encoding, Script Manager
-     * code 2
+     * B5pc-H Mac OS, Big Five character set, Big Five encoding, Script Manager code 2
      */
     public static final String ENC_B5PC_H = "B5pc-H";
 
@@ -117,8 +114,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_B5PC_V = "B5pc-V";
 
     /**
-     * HKscs-B5-H Hong Kong SCS, an extension to the Big Five character set and
-     * encoding
+     * HKscs-B5-H Hong Kong SCS, an extension to the Big Five
+     * character set and encoding
      */
     public static final String ENC_HKSCS_B5_H = "HKscs-B5-H";
 
@@ -128,8 +125,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_HKSCS_B5_V = "HKscs-B5-V";
 
     /**
-     * ETen-B5-H Microsoft Code Page 950 (lfCharSet 0x88), Big Five character
-     * set with ETen extensions
+     * ETen-B5-H Microsoft Code Page 950 (lfCharSet 0x88), Big Five
+     * character set with ETen extensions
      */
     public static final String ENC_ETEN_B5_H = "ETen-B5-H";
 
@@ -139,8 +136,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_ETEN_B5_V = "ETen-B5-V";
 
     /**
-     * ETenms-B5-H Same as ETen-B5-H, but replaces half-width Latin characters
-     * with proportional forms
+     * ETenms-B5-H Same as ETen-B5-H, but replaces half-width
+     * Latin characters with proportional forms
      */
     public static final String ENC_ETENMS_B5_H = "ETenms-B5-H";
 
@@ -160,8 +157,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_CNS_EUC_V = "CNS-EUC-V";
 
     /**
-     * UniCNS-UCS2-H Unicode (UCS-2) encoding for the Adobe-CNS1 character
-     * collection
+     * UniCNS-UCS2-H Unicode (UCS-2) encoding for the
+     * Adobe-CNS1 character collection
      */
     public static final String ENC_UNICNS_UCS2_H = "UniCNS-UCS2-H";
 
@@ -175,10 +172,10 @@ public class PDFCMap extends PDFStream {
      */
 
     /**
-     * 83pv-RKSJ-H Mac OS, JIS X 0208 character set with KanjiTalk6 extensions,
-     * Shift-JIS encoding, Script Manager code 1
+     * 83pv-RKSJ-H Mac OS, JIS X 0208 character set with KanjiTalk6
+     * extensions, Shift-JIS encoding, Script Manager code 1
      */
-    public static final String ENC_83PV_RKSJ_H = "83pv-RKSJ-H"; // no V version
+    public static final String ENC_83PV_RKSJ_H = "83pv-RKSJ-H";    // no V version
 
     /**
      * 90ms-RKSJ-H Microsoft Code Page 932 (lfCharSet 0x80), JIS X 0208
@@ -203,14 +200,14 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_90MSP_RKSJ_V = "90msp-RKSJ-V";
 
     /**
-     * 90pv-RKSJ-H Mac OS, JIS X 0208 character set with KanjiTalk7 extensions,
-     * Shift-JIS encoding, Script Manager code 1
+     * 90pv-RKSJ-H Mac OS, JIS X 0208 character set with KanjiTalk7
+     * extensions, Shift-JIS encoding, Script Manager code 1
      */
-    public static final String ENC_90PV_RKSJ_H = "90pv-RKSJ-H"; // no V version
+    public static final String ENC_90PV_RKSJ_H = "90pv-RKSJ-H";    // no V version
 
     /**
-     * Add-RKSJ-H JIS X 0208 character set with Fujitsu FMR extensions,
-     * Shift-JIS encoding
+     * Add-RKSJ-H JIS X 0208 character set with Fujitsu FMR
+     * extensions, Shift-JIS encoding
      */
     public static final String ENC_ADD_RKSJ_H = "Add-RKSJ-H";
 
@@ -230,8 +227,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_EUC_V = "EUC-V";
 
     /**
-     * Ext-RKSJ-H JIS C 6226 (JIS78) character set with NEC extensions,
-     * Shift-JIS encoding
+     * Ext-RKSJ-H JIS C 6226 (JIS78) character set with
+     * NEC extensions, Shift-JIS encoding
      */
     public static final String ENC_EXT_RKSJ_H = "Ext-RKSJ-H";
 
@@ -251,8 +248,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_V = "V";
 
     /**
-     * UniJIS-UCS2-H Unicode (UCS-2) encoding for the Adobe-Japan1 character
-     * collection
+     * UniJIS-UCS2-H Unicode (UCS-2) encoding for the
+     * Adobe-Japan1 character collection
      */
     public static final String ENC_UNIJIS_UCS2_H = "UniJIS-UCS2-H";
 
@@ -262,8 +259,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_UNIJIS_UCS2_V = "UniJIS-UCS2-V";
 
     /**
-     * UniJIS-UCS2-HW-H Same as UniJIS-UCS2-H, but replaces proportional Latin
-     * characters with half-width forms
+     * UniJIS-UCS2-HW-H Same as UniJIS-UCS2-H, but replaces proportional
+     * Latin characters with half-width forms
      */
     public static final String ENC_UNIJIS_UCS2_HW_H = "UniJIS-UCS2-HW-H";
 
@@ -288,8 +285,8 @@ public class PDFCMap extends PDFStream {
 
     /**
      * KSCms-UHC-H Microsoft Code Page 949 (lfCharSet 0x81), KS X 1001:1992
-     * character set plus 8822 additional hangul, Unified Hangul Code (UHC)
-     * encoding
+     * character set plus 8822 additional hangul,
+     * Unified Hangul Code (UHC) encoding
      */
     public static final String ENC_KSCMS_UHC_H = "KSCms-UHC-H";
 
@@ -299,8 +296,8 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_KSCMS_UHC_V = "KSCms-UHC-V";
 
     /**
-     * KSCms-UHC-HW-H Same as KSCms-UHC-H, but replaces proportional Latin
-     * characters with half-width forms
+     * KSCms-UHC-HW-H Same as KSCms-UHC-H, but replaces proportional
+     * Latin characters with half-width forms
      */
     public static final String ENC_KSCMS_UHC_HW_H = "KSCms-UHC-HW-H";
 
@@ -310,14 +307,14 @@ public class PDFCMap extends PDFStream {
     public static final String ENC_KSCMS_UHC_HW_V = "KSCms-UHC-HW-V";
 
     /**
-     * KSCpc-EUC-H Mac OS, KS X 1001:1992 character set with Mac OS KH
-     * extensions, Script Manager Code 3
+     * KSCpc-EUC-H Mac OS, KS X 1001:1992 character set with
+     * Mac OS KH extensions, Script Manager Code 3
      */
-    public static final String ENC_KSCPC_EUC_H = "KSCpc-EUC-H"; // no V version
+    public static final String ENC_KSCPC_EUC_H = "KSCpc-EUC-H";    // no V version
 
     /**
-     * UniKS-UCS2-H Unicode (UCS-2) encoding for the Adobe-Korea1 character
-     * collection
+     * UniKS-UCS2-H Unicode (UCS-2) encoding for the
+     * Adobe-Korea1 character collection
      */
     public static final String ENC_UNIKSC_UCS2_H = "UniKSC-UCS2-H";
 
@@ -331,16 +328,17 @@ public class PDFCMap extends PDFStream {
      */
 
     /**
-     * Identity-H The horizontal identity mapping for 2-byte CIDs; may be used
-     * with CIDFonts using any Registry, Ordering, and Supplement values. It
-     * maps 2-byte character codes ranging from 0 to 65,535 to the same 2-byte
-     * CID value, interpreted high-order byte first.
+     * Identity-H The horizontal identity mapping for 2-byte CIDs;
+     * may be used with CIDFonts using any Registry, Ordering, and
+     * Supplement values. It maps 2-byte character codes ranging from
+     * 0 to 65,535 to the same 2-byte CID value, interpreted
+     * high-order byte first.
      */
     public static final String ENC_IDENTITY_H = "Identity-H";
 
     /**
-     * Identity-V Vertical version of Identity-H. The mapping is the same as for
-     * Identity-H.
+     * Identity-V Vertical version of Identity-H. The mapping
+     * is the same as for Identity-H.
      */
     public static final String ENC_IDENTTITY_V = "Identity-V";
 
@@ -377,12 +375,10 @@ public class PDFCMap extends PDFStream {
     /**
      * create the /CMap object
      *
-     * @param name
-     *            one the registered names (see Table 7.20 on p 215)
-     * @param sysInfo
-     *            the attributes of the character collection of the CIDFont
+     * @param name one the registered names (see Table 7.20 on p 215)
+     * @param sysInfo the attributes of the character collection of the CIDFont
      */
-    public PDFCMap(final String name, final PDFCIDSystemInfo sysInfo) {
+    public PDFCMap(String name, PDFCIDSystemInfo sysInfo) {
         super();
         this.name = name;
         this.sysInfo = sysInfo;
@@ -392,49 +388,43 @@ public class PDFCMap extends PDFStream {
     /**
      * set the writing direction
      *
-     * @param mode
-     *            is either <code>WMODE_HORIZONTAL</code> or
-     *            <code>WMODE_VERTICAL</code>
+     * @param mode is either <code>WMODE_HORIZONTAL</code>
+     * or <code>WMODE_VERTICAL</code>
      */
-    public void setWMode(final byte mode) {
+    public void setWMode(byte mode) {
         this.wMode = mode;
     }
 
     /**
      * set the base CMap
      *
-     * @param base
-     *            the name of the base CMap
+     * @param base the name of the base CMap
      */
-    public void setUseCMap(final String base) {
+    public void setUseCMap(String base) {
         this.base = base;
     }
 
     /**
      * set the base CMap
      *
-     * @param base
-     *            the stream to be used as base CMap
+     * @param base the stream to be used as base CMap
      */
-    public void setUseCMap(final PDFStream base) {
+    public void setUseCMap(PDFStream base) {
         this.base = base;
     }
 
     /**
      * Creates the CMapBuilder that will build the CMap's content.
-     *
-     * @param writer
-     *            a Writer to write the CMap's contents to
+     * @param writer a Writer to write the CMap's contents to
      * @return the newly created CMapBuilder
      */
-    protected CMapBuilder createCMapBuilder(final Writer writer) {
+    protected CMapBuilder createCMapBuilder(Writer writer) {
         return new CMapBuilder(writer, this.name);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected int output(final OutputStream stream) throws IOException {
-        final CMapBuilder builder = createCMapBuilder(getBufferWriter());
+    public int output(OutputStream stream) throws IOException {
+        CMapBuilder builder = createCMapBuilder(getBufferWriter());
         builder.writeCMap();
         return super.output(stream);
     }

@@ -71,7 +71,7 @@ class RowPainter {
      * needed for spanned cells where you need to know the y-offset of the
      * starting row when the area is generated at the time the cell is closed.
      */
-    private final List rowOffsets = new ArrayList();
+    private final List rowOffsets = new ArrayList<>();
 
     private final int[] cellHeights;
     private final boolean[] firstCellOnPage;
@@ -106,7 +106,7 @@ class RowPainter {
         if (background.hasBackground()) {
             this.tablePartBackground = background;
             if (this.tablePartBackgroundAreas == null) {
-                this.tablePartBackgroundAreas = new ArrayList();
+                this.tablePartBackgroundAreas = new ArrayList<>();
             }
         }
         this.tablePartOffset = this.currentRowOffset;

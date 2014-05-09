@@ -62,7 +62,7 @@ import org.apache.fop.traits.SpaceVal;
  */
 @Slf4j
 public class ListItemLayoutManager extends BlockStackingLayoutManager implements
-        ConditionalElementListener {
+ConditionalElementListener {
 
     private ListItemContentLayoutManager label;
     private ListItemContentLayoutManager body;
@@ -127,9 +127,9 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
             final StringBuilder sb = new StringBuilder("ListItemPosition:");
             sb.append(getIndex()).append("(");
             sb.append("label:").append(this.iLabelFirstIndex).append("-")
-                    .append(this.iLabelLastIndex);
+            .append(this.iLabelLastIndex);
             sb.append(" body:").append(this.iBodyFirstIndex).append("-")
-                    .append(this.iBodyLastIndex);
+            .append(this.iBodyLastIndex);
             sb.append(")");
             return sb.toString();
         }
@@ -185,7 +185,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
                 .getCommonMarginBlock().spaceBefore, this).getSpace();
         this.foSpaceAfter = new SpaceVal(
                 getListItemFO().getCommonMarginBlock().spaceAfter, this)
-                .getSpace();
+        .getSpace();
         this.startIndent = getListItemFO().getCommonMarginBlock().startIndent
                 .getValue(this);
         this.endIndent = getListItemFO().getCommonMarginBlock().endIndent
@@ -435,12 +435,12 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
             // a label area and a body area
             step = Math.max(end[0] >= start[0] ? partialHeights[0]
                     : Integer.MIN_VALUE, end[1] >= start[1] ? partialHeights[1]
-                    : Integer.MIN_VALUE);
+                            : Integer.MIN_VALUE);
         } else {
             // this is not the first step: choose the minimum increase
             step = Math.min(end[0] >= start[0] ? partialHeights[0]
                     : Integer.MAX_VALUE, end[1] >= start[1] ? partialHeights[1]
-                    : Integer.MAX_VALUE);
+                            : Integer.MAX_VALUE);
         }
 
         // reset bigger-than-step sequences
@@ -539,7 +539,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             if (pos.getIndex() >= 0) {
                 if (firstPos == null) {
                     firstPos = pos;
@@ -606,11 +606,10 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
         // after adding body areas, set the maximum area bpd
         final int childCount = this.curBlockArea.getChildAreas().size();
         assert childCount >= 1 && childCount <= 2;
-        int itemBPD = ((Block) this.curBlockArea.getChildAreas().get(0))
-                .getAllocBPD();
+        int itemBPD = this.curBlockArea.getChildAreas().get(0).getAllocBPD();
         if (childCount == 2) {
-            itemBPD = Math.max(itemBPD, ((Block) this.curBlockArea
-                    .getChildAreas().get(1)).getAllocBPD());
+            itemBPD = Math.max(itemBPD, this.curBlockArea.getChildAreas()
+                    .get(1).getAllocBPD());
         }
         this.curBlockArea.setBPD(itemBPD);
 
@@ -661,7 +660,7 @@ public class ListItemLayoutManager extends BlockStackingLayoutManager implements
 
             // Set up dimensions
             /* Area parentArea = */this.parentLayoutManager
-                    .getParentArea(this.curBlockArea);
+            .getParentArea(this.curBlockArea);
 
             // set traits
             TraitSetter.setProducerID(this.curBlockArea, getListItemFO()

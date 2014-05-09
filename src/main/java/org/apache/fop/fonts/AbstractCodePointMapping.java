@@ -161,7 +161,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
         synchronized (this) {
             if (this.fallbackMap != null) {
                 final Character fallback = (Character) this.fallbackMap
-                        .get(new Character(c));
+                        .get(Character.valueOf(c));
                 if (fallback != null) {
                     return fallback.charValue();
                 }
@@ -192,7 +192,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
             if (this.fallbackMap == null) {
                 this.fallbackMap = new java.util.HashMap();
             }
-            this.fallbackMap.put(new Character(c), new Character(mapTo));
+            this.fallbackMap.put(Character.valueOf(c), Character.valueOf(mapTo));
         }
     }
 

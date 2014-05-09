@@ -42,6 +42,16 @@ public class TTFCmapEntry {
         this.glyphStartIndex = glyphStartIndex;
     }
 
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + this.glyphStartIndex;
+        result = prime * result + this.unicodeEnd;
+        result = prime * result + this.unicodeStart;
+        return result;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -60,7 +70,7 @@ public class TTFCmapEntry {
 
     /**
      * Returns the glyphStartIndex.
-     * 
+     *
      * @return int
      */
     public int getGlyphStartIndex() {
@@ -69,7 +79,7 @@ public class TTFCmapEntry {
 
     /**
      * Returns the unicodeEnd.
-     * 
+     *
      * @return int
      */
     public int getUnicodeEnd() {
@@ -78,7 +88,7 @@ public class TTFCmapEntry {
 
     /**
      * Returns the unicodeStart.
-     * 
+     *
      * @return int
      */
     public int getUnicodeStart() {
@@ -87,7 +97,7 @@ public class TTFCmapEntry {
 
     /**
      * Sets the glyphStartIndex.
-     * 
+     *
      * @param glyphStartIndex
      *            The glyphStartIndex to set
      */
@@ -97,7 +107,7 @@ public class TTFCmapEntry {
 
     /**
      * Sets the unicodeEnd.
-     * 
+     *
      * @param unicodeEnd
      *            The unicodeEnd to set
      */
@@ -107,7 +117,7 @@ public class TTFCmapEntry {
 
     /**
      * Sets the unicodeStart.
-     * 
+     *
      * @param unicodeStart
      *            The unicodeStart to set
      */

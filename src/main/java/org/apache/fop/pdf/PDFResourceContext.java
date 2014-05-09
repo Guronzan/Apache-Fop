@@ -22,25 +22,24 @@ package org.apache.fop.pdf;
 /**
  * The PDF resource context.
  *
- * There is one of these for every page in a PDF document. The object specifies
- * the dimensions of the page and references a /Resources object, a contents
- * stream and the page's parent in the page hierarchy.
+ * There is one of these for every page in a PDF document. The object
+ * specifies the dimensions of the page and references a /Resources
+ * object, a contents stream and the page's parent in the page
+ * hierarchy.
  *
- * Modified by Mark Lillywhite, mark-fop@inomial.com. The Parent object was
- * being referred to by reference, but all that we ever used from the Parent was
- * its PDF object ID, and according to the memory profile this was causing OOM
- * issues. So, we store only the object ID of the parent, rather than the parent
- * itself.
+ * Modified by Mark Lillywhite, mark-fop@inomial.com. The Parent
+ * object was being referred to by reference, but all that we
+ * ever used from the Parent was its PDF object ID, and according
+ * to the memory profile this was causing OOM issues. So, we store
+ * only the object ID of the parent, rather than the parent itself.
  */
 public class PDFResourceContext extends PDFDictionary {
 
     /**
      * Creates a new ResourceContext.
-     * 
-     * @param resources
-     *            the /Resources object
+     * @param resources the /Resources object
      */
-    public PDFResourceContext(final PDFResources resources) {
+    public PDFResourceContext(PDFResources resources) {
         /* generic creation of object */
         super();
 
@@ -54,16 +53,15 @@ public class PDFResourceContext extends PDFDictionary {
      * @return the resources in this resource context
      */
     public PDFResources getPDFResources() {
-        return (PDFResources) get("Resources");
+        return (PDFResources)get("Resources");
     }
 
     /**
      * set this page's annotation list
      *
-     * @param annot
-     *            a PDFAnnotList list of annotations
+     * @param annot a PDFAnnotList list of annotations
      */
-    public void addAnnotation(final PDFObject annot) {
+    public void addAnnotation(PDFObject annot) {
         PDFAnnotList annotList = getAnnotations();
         if (annotList == null) {
             annotList = getDocument().getFactory().makeAnnotList();
@@ -78,26 +76,24 @@ public class PDFResourceContext extends PDFDictionary {
      * @return the current annotation list
      */
     public PDFAnnotList getAnnotations() {
-        return (PDFAnnotList) get("Annots");
+        return (PDFAnnotList)get("Annots");
     }
 
     /**
      * A a GState to this resource context.
      *
-     * @param gstate
-     *            the GState to add
+     * @param gstate the GState to add
      */
-    public void addGState(final PDFGState gstate) {
+    public void addGState(PDFGState gstate) {
         getPDFResources().addGState(gstate);
     }
 
     /**
      * Add the shading to the current resource context.
      *
-     * @param shading
-     *            the shading to add
+     * @param shading the shading to add
      */
-    public void addShading(final PDFShading shading) {
+    public void addShading(PDFShading shading) {
         getPDFResources().addShading(shading);
     }
 

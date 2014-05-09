@@ -15,16 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: PDFRendererConfigurator.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PDFRendererConfigurator.java 1302518 2012-03-19 15:56:19Z vhennebert $ */
 
 package org.apache.fop.render.pdf;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import static org.apache.fop.render.PrintRendererConfigurator.log;
+
 import java.util.List;
 import java.util.Map;
-
-import lombok.extern.slf4j.Slf4j;
 
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
@@ -42,7 +40,6 @@ import org.apache.fop.util.LogUtil;
 /**
  * PDF renderer configurator.
  */
-@Slf4j
 public class PDFRendererConfigurator extends PrintRendererConfigurator {
 
     /**
@@ -56,31 +53,21 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
     }
 
     /**
-     * Configure the PDF renderer. Get the configuration to be used for pdf
-     * stream filters, fonts etc.
+     * Throws an UnsupportedOperationException.
      *
      * @param renderer
-     *            pdf renderer
-     * @throws FOPException
-     *             fop exception
+     *            not used
      */
     @Override
-    public void configure(final Renderer renderer) throws FOPException {
-        final Configuration cfg = super.getRendererConfig(renderer);
-        if (cfg != null) {
-            final PDFRenderer pdfRenderer = (PDFRenderer) renderer;
-            super.configure(renderer);
-
-            final PDFRenderingUtil pdfUtil = pdfRenderer.getPDFUtil();
-            configure(cfg, pdfUtil);
-        }
+    public void configure(final Renderer renderer) {
+        throw new UnsupportedOperationException();
     }
 
     private void configure(final Configuration cfg,
             final PDFRenderingUtil pdfUtil) throws FOPException {
         // PDF filters
         try {
-            final Map<String, List<String>> filterMap = buildFilterMapFromConfiguration(cfg);
+            final Map filterMap = buildFilterMapFromConfiguration(cfg);
             if (filterMap != null) {
                 pdfUtil.setFilterMap(filterMap);
             }
@@ -101,7 +88,8 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
         final Configuration encryptionParamsConfig = cfg.getChild(
                 PDFConfigurationConstants.ENCRYPTION_PARAMS, false);
         if (encryptionParamsConfig != null) {
-            final PDFEncryptionParams encryptionParams = new PDFEncryptionParams();
+            final PDFEncryptionParams encryptionParams = pdfUtil
+                    .getEncryptionParams();
             final Configuration ownerPasswordConfig = encryptionParamsConfig
                     .getChild(PDFConfigurationConstants.OWNER_PASSWORD, false);
             if (ownerPasswordConfig != null) {
@@ -138,8 +126,36 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
             if (noAnnotationsConfig != null) {
                 encryptionParams.setAllowEditAnnotations(false);
             }
-            pdfUtil.setEncryptionParams(encryptionParams);
+            final Configuration noFillInForms = encryptionParamsConfig
+                    .getChild(PDFConfigurationConstants.NO_FILLINFORMS, false);
+            if (noFillInForms != null) {
+                encryptionParams.setAllowFillInForms(false);
+            }
+            final Configuration noAccessContentConfig = encryptionParamsConfig
+                    .getChild(PDFConfigurationConstants.NO_ACCESSCONTENT, false);
+            if (noAccessContentConfig != null) {
+                encryptionParams.setAllowAccessContent(false);
+            }
+            final Configuration noAssembleDocConfig = encryptionParamsConfig
+                    .getChild(PDFConfigurationConstants.NO_ASSEMBLEDOC, false);
+            if (noAssembleDocConfig != null) {
+                encryptionParams.setAllowAssembleDocument(false);
+            }
+            final Configuration noPrintHqConfig = encryptionParamsConfig
+                    .getChild(PDFConfigurationConstants.NO_PRINTHQ, false);
+            if (noPrintHqConfig != null) {
+                encryptionParams.setAllowPrintHq(false);
+            }
+            final Configuration encryptionLengthConfig = encryptionParamsConfig
+                    .getChild(PDFConfigurationConstants.ENCRYPTION_LENGTH,
+                            false);
+            if (encryptionLengthConfig != null) {
+                final int encryptionLength = checkEncryptionLength(Integer
+                        .parseInt(encryptionLengthConfig.getValue(null)));
+                encryptionParams.setEncryptionLengthInBits(encryptionLength);
+            }
         }
+
         s = cfg.getChild(PDFConfigurationConstants.KEY_OUTPUT_PROFILE, true)
                 .getValue(null);
         if (s != null) {
@@ -150,6 +166,43 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
         if (disableColorSpaceConfig != null) {
             pdfUtil.setDisableSRGBColorSpace(disableColorSpaceConfig
                     .getValueAsBoolean(false));
+        }
+
+        setPDFDocVersion(cfg, pdfUtil);
+    }
+
+    private int checkEncryptionLength(final int encryptionLength) {
+        int correctEncryptionLength = encryptionLength;
+        if (encryptionLength < 40) {
+            correctEncryptionLength = 40;
+        } else if (encryptionLength > 128) {
+            correctEncryptionLength = 128;
+        } else if (encryptionLength % 8 != 0) {
+            correctEncryptionLength = Math.round(encryptionLength / 8.0f) * 8;
+        }
+        if (correctEncryptionLength != encryptionLength) {
+            PDFEventProducer.Provider.get(this.userAgent.getEventBroadcaster())
+            .incorrectEncryptionLength(this, encryptionLength,
+                            correctEncryptionLength);
+        }
+        return correctEncryptionLength;
+    }
+
+    private void setPDFDocVersion(final Configuration cfg,
+            final PDFRenderingUtil pdfUtil) throws FOPException {
+        final Configuration pdfVersion = cfg.getChild(
+                PDFConfigurationConstants.PDF_VERSION, false);
+        if (pdfVersion != null) {
+            final String version = pdfVersion.getValue(null);
+            if (version != null && version.length() != 0) {
+                try {
+                    pdfUtil.setPDFVersion(version);
+                } catch (final IllegalArgumentException e) {
+                    throw new FOPException(e.getMessage());
+                }
+            } else {
+                throw new FOPException("The PDF version has not been set.");
+            }
         }
     }
 
@@ -162,14 +215,15 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
      * @throws ConfigurationException
      *             if a filter list is defined twice
      */
-    public static Map<String, List<String>> buildFilterMapFromConfiguration(
-            final Configuration cfg) throws ConfigurationException {
-        final Map<String, List<String>> filterMap = new HashMap<>();
+    public static Map buildFilterMapFromConfiguration(final Configuration cfg)
+            throws ConfigurationException {
+        final Map filterMap = new java.util.HashMap();
         final Configuration[] filterLists = cfg.getChildren("filterList");
-        for (final Configuration filters : filterLists) {
+        for (int i = 0; i < filterLists.length; i++) {
+            final Configuration filters = filterLists[i];
             String type = filters.getAttribute("type", null);
             final Configuration[] filt = filters.getChildren("value");
-            final List<String> filterList = new ArrayList<>();
+            final List filterList = new java.util.ArrayList();
             for (final Configuration element : filt) {
                 final String name = element.getValue();
                 filterList.add(name);
@@ -180,8 +234,7 @@ public class PDFRendererConfigurator extends PrintRendererConfigurator {
             }
 
             if (!filterList.isEmpty() && log.isDebugEnabled()) {
-                final StringBuilder debug = new StringBuilder(
-                        "Adding PDF filter");
+                final StringBuffer debug = new StringBuffer("Adding PDF filter");
                 if (filterList.size() != 1) {
                     debug.append("s");
                 }

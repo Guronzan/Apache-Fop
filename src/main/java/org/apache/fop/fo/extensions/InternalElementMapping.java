@@ -53,7 +53,7 @@ public class InternalElementMapping extends ElementMapping {
     @Override
     protected void initialize() {
         if (this.foObjs == null) {
-            this.foObjs = new HashMap();
+            this.foObjs = new HashMap<>();
         }
     }
 

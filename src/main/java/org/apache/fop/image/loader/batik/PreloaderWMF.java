@@ -80,58 +80,48 @@ public class PreloaderWMF extends AbstractImagePreloader {
                 final ImageContext context) {
             // parse document and get the size attributes of the svg element
 
-            final InputStream in = new UnclosableInputStream(
-                    ImageUtil.needInputStream(src));
-            try {
+            try (final InputStream in = new UnclosableInputStream(
+                    ImageUtil.needInputStream(src))) {
                 in.mark(4 + 1);
 
-                final DataInputStream din = new DataInputStream(in);
-                final int magic = EndianUtils.swapInteger(din.readInt());
-                din.reset();
-                if (magic != WMFConstants.META_ALDUS_APM) {
-                    return null; // Not a WMF file
+                try (final DataInputStream din = new DataInputStream(in)) {
+                    final int magic = EndianUtils.swapInteger(din.readInt());
+                    din.reset();
+                    if (magic != WMFConstants.META_ALDUS_APM) {
+                        return null; // Not a WMF file
+                    }
+
+                    final WMFRecordStore wmfStore = new WMFRecordStore();
+                    wmfStore.read(din);
+                    IOUtils.closeQuietly(din);
+
+                    final int width = wmfStore.getVpW();
+                    final int height = wmfStore.getVpH();
+                    final int dpi = wmfStore.getNumRecords();
+
+                    final ImageInfo info = new ImageInfo(uri, "image/x-wmf");
+                    final ImageSize size = new ImageSize();
+                    size.setSizeInPixels(width, height);
+                    size.setResolution(dpi);
+                    size.calcSizeFromPixels();
+                    info.setSize(size);
+                    final ImageWMF img = new ImageWMF(info, wmfStore);
+                    info.getCustomObjects().put(ImageInfo.ORIGINAL_IMAGE, img);
+
+                    return info;
                 }
-
-                final WMFRecordStore wmfStore = new WMFRecordStore();
-                wmfStore.read(din);
-                IOUtils.closeQuietly(din);
-
-                final int width = wmfStore.getVpW();
-                final int height = wmfStore.getVpH();
-                final int dpi = wmfStore.getNumRecords();
-
-                final ImageInfo info = new ImageInfo(uri, "image/x-wmf");
-                final ImageSize size = new ImageSize();
-                size.setSizeInPixels(width, height);
-                size.setResolution(dpi);
-                size.calcSizeFromPixels();
-                info.setSize(size);
-                final ImageWMF img = new ImageWMF(info, wmfStore);
-                info.getCustomObjects().put(ImageInfo.ORIGINAL_IMAGE, img);
-
-                return info;
             } catch (final NoClassDefFoundError ncdfe) {
-                try {
-                    in.reset();
-                } catch (final IOException ioe) {
-                    // we're more interested in the original exception
-                }
                 PreloaderWMF.this.batikAvailable = false;
-                log.warn("Batik not in class path", ncdfe);
+                log.error("Batik not in class path", ncdfe);
                 return null;
             } catch (final IOException e) {
                 // If the svg is invalid then it throws an IOException
                 // so there is no way of knowing if it is an svg document
 
-                log.debug("Error while trying to load stream as an WMF file: "
+                log.error("Error while trying to load stream as an WMF file: "
                         + e.getMessage());
                 // assuming any exception means this document is not svg
                 // or could not be loaded for some reason
-                try {
-                    in.reset();
-                } catch (final IOException ioe) {
-                    // we're more interested in the original exception
-                }
                 return null;
             }
         }

@@ -15,53 +15,46 @@
  * limitations under the License.
  */
 
-/* $Id: PDFReference.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PDFReference.java 1228243 2012-01-06 16:03:44Z cbowditch $ */
 
 package org.apache.fop.pdf;
 
-import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 import java.lang.ref.Reference;
 import java.lang.ref.SoftReference;
 
 /**
- * Class representing a PDF object reference. The object holds a soft reference
- * to the actual PDF object so the garbage collector can free the object if it's
- * not referenced elsewhere. The important thing about the class is the
- * reference information to the actual PDF object in the PDF file.
+ * Class representing a PDF object reference. The object holds a soft reference to the actual
+ * PDF object so the garbage collector can free the object if it's not referenced elsewhere. The
+ * important thing about the class is the reference information to the actual PDF object in the
+ * PDF file.
  */
 public class PDFReference implements PDFWritable {
 
-    private final int objectNumber;
-    private final int generation;
+    private int objectNumber;
+    private int generation;
 
-    private Reference objReference;
+    private Reference<PDFObject> objReference;
 
     /**
      * Creates a new PDF reference.
-     *
-     * @param obj
-     *            the object to be referenced
+     * @param obj the object to be referenced
      */
-    public PDFReference(final PDFObject obj) {
+    public PDFReference(PDFObject obj) {
         this.objectNumber = obj.getObjectNumber();
         this.generation = obj.getGeneration();
-        this.objReference = new SoftReference(obj);
+        this.objReference = new SoftReference<PDFObject>(obj);
     }
 
     /**
-     * Creates a new PDF reference, but without a reference to the original
-     * object.
-     *
-     * @param ref
-     *            an object reference
+     * Creates a new PDF reference, but without a reference to the original object.
+     * @param ref an object reference
      */
-    public PDFReference(final String ref) {
+    public PDFReference(String ref) {
         if (ref == null) {
             throw new NullPointerException("ref must not be null");
         }
-        final String[] parts = ref.split(" ");
+        String[] parts = ref.split(" ");
         assert parts.length == 3;
         this.objectNumber = Integer.parseInt(parts[0]);
         this.generation = Integer.parseInt(parts[1]);
@@ -70,12 +63,11 @@ public class PDFReference implements PDFWritable {
 
     /**
      * Returns the PDF object
-     *
      * @return the PDF object, or null if it has been released
      */
     public PDFObject getObject() {
         if (this.objReference != null) {
-            final PDFObject obj = (PDFObject) this.objReference.get();
+            PDFObject obj = this.objReference.get();
             if (obj == null) {
                 this.objReference = null;
             }
@@ -87,7 +79,6 @@ public class PDFReference implements PDFWritable {
 
     /**
      * Returns the object number.
-     *
      * @return the object number
      */
     public int getObjectNumber() {
@@ -96,7 +87,6 @@ public class PDFReference implements PDFWritable {
 
     /**
      * Returns the generation.
-     *
      * @return the generation
      */
     public int getGeneration() {
@@ -106,14 +96,14 @@ public class PDFReference implements PDFWritable {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return getObjectNumber() + " " + getGeneration() + " R";
+        StringBuilder textBuffer = new StringBuilder();
+        outputInline(null, textBuffer);
+        return textBuffer.toString();
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void outputInline(final OutputStream out, final Writer writer)
-            throws IOException {
-        writer.write(toString());
+    public void outputInline(OutputStream out, StringBuilder textBuffer) {
+        textBuffer.append(getObjectNumber()).append(' ').append(getGeneration()).append(" R");
     }
 
 }

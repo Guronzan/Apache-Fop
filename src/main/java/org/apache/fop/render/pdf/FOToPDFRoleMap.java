@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: FOToPDFRoleMap.java 898840 2010-01-13 17:05:59Z vhennebert $ */
+/* $Id: FOToPDFRoleMap.java 1342680 2012-05-25 15:15:28Z vhennebert $ */
 
 package org.apache.fop.render.pdf;
 
@@ -26,7 +26,6 @@ import org.apache.fop.events.EventBroadcaster;
 import org.apache.fop.pdf.PDFName;
 import org.apache.fop.pdf.PDFObject;
 import org.apache.fop.pdf.PDFStructElem;
-import org.w3c.dom.Node;
 
 /**
  * This class provides the standard mappings from Formatting Objects to PDF
@@ -38,9 +37,9 @@ final class FOToPDFRoleMap {
      * Standard structure types defined by the PDF Reference, Fourth Edition
      * (PDF 1.5).
      */
-    private static final Map STANDARD_STRUCTURE_TYPES = new HashMap();
+    private static final Map<String, PDFName> STANDARD_STRUCTURE_TYPES = new HashMap<>();
 
-    private static final Map DEFAULT_MAPPINGS = new java.util.HashMap();
+    private static final Map<String, Mapper> DEFAULT_MAPPINGS = new java.util.HashMap<>();
 
     private static final PDFName THEAD;
     private static final PDFName NON_STRUCT;
@@ -104,9 +103,9 @@ final class FOToPDFRoleMap {
         addStructureType("Formula");
         addStructureType("Form");
 
-        NON_STRUCT = (PDFName) STANDARD_STRUCTURE_TYPES.get("NonStruct");
+        NON_STRUCT = STANDARD_STRUCTURE_TYPES.get("NonStruct");
         assert NON_STRUCT != null;
-        THEAD = (PDFName) STANDARD_STRUCTURE_TYPES.get("THead");
+        THEAD = STANDARD_STRUCTURE_TYPES.get("THead");
         assert THEAD != null;
 
         // Create the standard mappings
@@ -156,8 +155,7 @@ final class FOToPDFRoleMap {
     }
 
     private static void addMapping(final String fo, final String structureType) {
-        final PDFName type = (PDFName) STANDARD_STRUCTURE_TYPES
-                .get(structureType);
+        final PDFName type = STANDARD_STRUCTURE_TYPES.get(structureType);
         assert type != null;
         addMapping(fo, new SimpleMapper(type));
     }
@@ -172,34 +170,26 @@ final class FOToPDFRoleMap {
      * 
      * @param fo
      *            the formatting object's local name
+     * @param role
+     *            the value of the formatting object's role property
      * @param parent
      *            the parent of the structure element to be mapped
+     * @param eventBroadcaster
+     *            the event broadcaster
      * @return the structure type or null if no match could be found
      */
     public static PDFName mapFormattingObject(final String fo,
-            final PDFObject parent) {
-        final Mapper mapper = (Mapper) DEFAULT_MAPPINGS.get(fo);
-        if (mapper != null) {
-            return mapper.getStructureType(parent);
-        } else {
-            return NON_STRUCT;
-        }
-    }
-
-    public static PDFName mapFormattingObject(final Node fo,
-            final PDFObject parent, final EventBroadcaster eventBroadcaster) {
+            final String role, final PDFObject parent,
+            final EventBroadcaster eventBroadcaster) {
         PDFName type = null;
-        final Node role = fo.getAttributes().getNamedItemNS(null, "role");
         if (role == null) {
-            type = mapFormattingObject(fo.getLocalName(), parent);
+            type = getDefaultMappingFor(fo, parent);
         } else {
-            final String customType = role.getNodeValue();
-            type = (PDFName) STANDARD_STRUCTURE_TYPES.get(customType);
+            type = STANDARD_STRUCTURE_TYPES.get(role);
             if (type == null) {
-                final String foName = fo.getLocalName();
-                type = mapFormattingObject(foName, parent);
+                type = getDefaultMappingFor(fo, parent);
                 PDFEventProducer.Provider.get(eventBroadcaster)
-                        .nonStandardStructureType(fo, foName, customType,
+                        .nonStandardStructureType(fo, fo, role,
                                 type.toString().substring(1));
             }
         }
@@ -207,7 +197,27 @@ final class FOToPDFRoleMap {
         return type;
     }
 
-    private static interface Mapper {
+    /**
+     * Maps a Formatting Object to a PDFName representing the associated
+     * structure type.
+     * 
+     * @param fo
+     *            the formatting object's local name
+     * @param parent
+     *            the parent of the structure element to be mapped
+     * @return the structure type or NonStruct if no match could be found
+     */
+    private static PDFName getDefaultMappingFor(final String fo,
+            final PDFObject parent) {
+        final Mapper mapper = DEFAULT_MAPPINGS.get(fo);
+        if (mapper != null) {
+            return mapper.getStructureType(parent);
+        } else {
+            return NON_STRUCT;
+        }
+    }
+
+    private interface Mapper {
         PDFName getStructureType(final PDFObject parent);
     }
 
@@ -236,9 +246,9 @@ final class FOToPDFRoleMap {
             // mapped on TD.
             PDFName type;
             if (THEAD.equals(grandParent.getStructureType())) {
-                type = (PDFName) STANDARD_STRUCTURE_TYPES.get("TH");
+                type = STANDARD_STRUCTURE_TYPES.get("TH");
             } else {
-                type = (PDFName) STANDARD_STRUCTURE_TYPES.get("TD");
+                type = STANDARD_STRUCTURE_TYPES.get("TD");
             }
             assert type != null;
             return type;

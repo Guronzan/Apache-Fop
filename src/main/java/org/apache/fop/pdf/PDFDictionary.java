@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDictionary.java 833375 2009-11-06 12:25:50Z jeremias $ */
+/* $Id: PDFDictionary.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,13 +34,13 @@ public class PDFDictionary extends PDFObject {
     /**
      * the entry map
      */
-    protected Map<String, Object> entries = new HashMap<>();
+    protected Map<String, Object> entries = new java.util.HashMap<String, Object>();
 
     /**
-     * maintains the order of the entries added to the entry map. Whenever you
-     * modify "entries", always make sure you adjust this list accordingly.
+     * maintains the order of the entries added to the entry map. Whenever you modify
+     * "entries", always make sure you adjust this list accordingly.
      */
-    protected List<String> order = new ArrayList<>();
+    protected List<String> order = new java.util.ArrayList<String>();
 
     /**
      * Create a new dictionary object.
@@ -54,30 +51,25 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Create a new dictionary object.
-     *
-     * @param parent
-     *            the object's parent if any
+     * @param parent the object's parent if any
      */
-    public PDFDictionary(final PDFObject parent) {
+    public PDFDictionary(PDFObject parent) {
         super(parent);
     }
 
     /**
      * Puts a new name/value pair.
-     *
-     * @param name
-     *            the name
-     * @param value
-     *            the value
+     * @param name the name
+     * @param value the value
      */
-    public void put(final String name, final Object value) {
+    public void put(String name, Object value) {
         if (value instanceof PDFObject) {
-            final PDFObject pdfObj = (PDFObject) value;
+            PDFObject pdfObj = (PDFObject)value;
             if (!pdfObj.hasObjectNumber()) {
                 pdfObj.setParent(this);
             }
         }
-        if (!this.entries.containsKey(name)) {
+        if (!entries.containsKey(name)) {
             this.order.add(name);
         }
         this.entries.put(name, value);
@@ -85,82 +77,61 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Puts a new name/value pair.
-     *
-     * @param name
-     *            the name
-     * @param value
-     *            the value
+     * @param name the name
+     * @param value the value
      */
-    public void put(final String name, final int value) {
-        if (!this.entries.containsKey(name)) {
+    public void put(String name, int value) {
+        if (!entries.containsKey(name)) {
             this.order.add(name);
         }
-        this.entries.put(name, value);
+        this.entries.put(name, Integer.valueOf(value));
     }
 
     /**
      * Returns the value given a name.
-     *
-     * @param name
-     *            the name of the value
+     * @param name the name of the value
      * @return the value or null, if there's no value with the given name.
      */
-    public Object get(final String name) {
+    public Object get(String name) {
         return this.entries.get(name);
     }
 
     /** {@inheritDoc} */
     @Override
-    protected int output(final OutputStream stream) throws IOException {
-        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
-            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
-                if (hasObjectNumber()) {
-                    writer.write(getObjectID());
-                }
-
-                writeDictionary(cout, writer);
-
-                if (hasObjectNumber()) {
-                    writer.write("\nendobj\n");
-                }
-
-                writer.flush();
-                return cout.getCount();
-            }
-        }
+    public int output(OutputStream stream) throws IOException {
+        CountingOutputStream cout = new CountingOutputStream(stream);
+        StringBuilder textBuffer = new StringBuilder(64);
+        writeDictionary(cout, textBuffer);
+        PDFDocument.flushTextBuffer(textBuffer, cout);
+        return cout.getCount();
     }
 
     /**
-     * Writes the contents of the dictionary to a StringBuilder.
-     *
-     * @param out
-     *            the OutputStream (for binary content)
-     * @param writer
-     *            the Writer (for text content, wraps the above OutputStream)
-     * @throws IOException
-     *             if an I/O error occurs
+     * Writes the contents of the dictionary to a StringBuffer.
+     * @param out the OutputStream (for binary content)
+     * @param textBuffer the text buffer for text output
+     * @throws IOException if an I/O error occurs
      */
-    protected void writeDictionary(final OutputStream out, final Writer writer)
-            throws IOException {
-        writer.write("<<");
-        final boolean compact = this.order.size() <= 2;
-        for (final String key : this.order) {
+    protected void writeDictionary(OutputStream out, StringBuilder textBuffer) throws IOException {
+        textBuffer.append("<<");
+        boolean compact = (this.order.size() <= 2);
+        for (String key : this.order) {
             if (compact) {
-                writer.write(' ');
+                textBuffer.append(' ');
             } else {
-                writer.write("\n  ");
+                textBuffer.append("\n  ");
             }
-            writer.write(PDFName.escapeName(key));
-            writer.write(' ');
-            final Object obj = this.entries.get(key);
-            formatObject(obj, out, writer);
+            textBuffer.append(PDFName.escapeName(key));
+            textBuffer.append(' ');
+            Object obj = this.entries.get(key);
+            formatObject(obj, out, textBuffer);
         }
         if (compact) {
-            writer.write(' ');
+            textBuffer.append(' ');
         } else {
-            writer.write('\n');
+            textBuffer.append('\n');
         }
-        writer.write(">>\n");
+        textBuffer.append(">>\n");
     }
 
 }

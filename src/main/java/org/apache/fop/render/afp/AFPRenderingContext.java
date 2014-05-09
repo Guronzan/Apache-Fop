@@ -27,6 +27,7 @@ import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.render.AbstractRenderingContext;
 import org.apache.xmlgraphics.util.MimeConstants;
+import org.apache.xmlgraphics.util.QName;
 
 /**
  * Rendering context for AFP (MO:DCA) production.
@@ -36,11 +37,11 @@ public class AFPRenderingContext extends AbstractRenderingContext {
     private final AFPResourceManager resourceManager;
     private final AFPPaintingState paintingState;
     private final FontInfo fontInfo;
-    private final Map foreignAttributes;
+    private final Map<QName, String> foreignAttributes;
 
     /**
      * Main constructor.
-     * 
+     *
      * @param userAgent
      *            the user agent
      * @param resourceManager
@@ -53,7 +54,7 @@ public class AFPRenderingContext extends AbstractRenderingContext {
     public AFPRenderingContext(final FOUserAgent userAgent,
             final AFPResourceManager resourceManager,
             final AFPPaintingState paintingState, final FontInfo fontInfo,
-            final Map foreignAttributes) {
+            final Map<QName, String> foreignAttributes) {
         super(userAgent);
         this.resourceManager = resourceManager;
         this.paintingState = paintingState;
@@ -69,7 +70,7 @@ public class AFPRenderingContext extends AbstractRenderingContext {
 
     /**
      * Returns the resource manager.
-     * 
+     *
      * @return the resource manager
      */
     public AFPResourceManager getResourceManager() {
@@ -82,7 +83,7 @@ public class AFPRenderingContext extends AbstractRenderingContext {
 
     /**
      * Returns the font list.
-     * 
+     *
      * @return the font list
      */
     public FontInfo getFontInfo() {
@@ -91,10 +92,10 @@ public class AFPRenderingContext extends AbstractRenderingContext {
 
     /**
      * Returns a Map of foreign attributes.
-     * 
+     *
      * @return the foreign attributes (Map&lt;QName, Object&gt;)
      */
-    public Map getForeignAttributes() {
+    public Map<QName, String> getForeignAttributes() {
         return this.foreignAttributes;
     }
 

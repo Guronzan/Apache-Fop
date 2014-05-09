@@ -19,7 +19,6 @@
 
 package org.apache.fop.pdf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,7 +29,7 @@ public class PDFWArray {
     /**
      * The metrics
      */
-    private final List<Object> entries = new ArrayList<>();
+    private List entries = new java.util.ArrayList();
 
     /**
      * Default constructor
@@ -40,62 +39,53 @@ public class PDFWArray {
 
     /**
      * Convenience constructor
-     *
-     * @param metrics
-     *            the metrics array to initially add
+     * @param metrics the metrics array to initially add
      */
-    public PDFWArray(final int[] metrics) {
+    public PDFWArray(int[] metrics) {
         addEntry(0, metrics);
     }
 
     /**
-     * Add an entry for single starting CID. i.e. in the form "c [w ...]"
+     * Add an entry for single starting CID.
+     * i.e. in the form "c [w ...]"
      *
-     * @param start
-     *            the starting CID value.
-     * @param metrics
-     *            the metrics array.
+     * @param start the starting CID value.
+     * @param metrics the metrics array.
      */
-    public void addEntry(final int start, final int[] metrics) {
-        this.entries.add(new Entry(start, metrics));
+    public void addEntry(int start, int[] metrics) {
+        entries.add(new Entry(start, metrics));
     }
 
     /**
      * Add an entry for a range of CIDs (/W element on p 213)
      *
-     * @param first
-     *            the first CID in the range
-     * @param last
-     *            the last CID in the range
-     * @param width
-     *            the width for all CIDs in the range
+     * @param first the first CID in the range
+     * @param last the last CID in the range
+     * @param width the width for all CIDs in the range
      */
-    public void addEntry(final int first, final int last, final int width) {
-        this.entries.add(new int[] { first, last, width });
+    public void addEntry(int first, int last, int width) {
+        entries.add(new int[] {
+            first, last, width
+        });
     }
 
     /**
      * Add an entry for a range of CIDs (/W2 element on p 210)
      *
-     * @param first
-     *            the first CID in the range
-     * @param last
-     *            the last CID in the range
-     * @param width
-     *            the width for all CIDs in the range
-     * @param posX
-     *            the x component for the vertical position vector
-     * @param posY
-     *            the y component for the vertical position vector
+     * @param first the first CID in the range
+     * @param last the last CID in the range
+     * @param width the width for all CIDs in the range
+     * @param posX the x component for the vertical position vector
+     * @param posY the y component for the vertical position vector
      */
-    public void addEntry(final int first, final int last, final int width,
-            final int posX, final int posY) {
-        this.entries.add(new int[] { first, last, width, posX, posY });
+    public void addEntry(int first, int last, int width, int posX, int posY) {
+        entries.add(new int[] {
+            first, last, width, posX, posY
+        });
     }
 
     /**
      * Convert this object to PDF code.
-     *
      * @return byte[] the PDF code
      */
     public byte[] toPDF() {
@@ -104,23 +94,22 @@ public class PDFWArray {
 
     /**
      * Convert this object to PDF code.
-     *
      * @return String the PDF code
      */
     public String toPDFString() {
-        final StringBuilder p = new StringBuilder();
+        StringBuffer p = new StringBuffer();
         p.append("[ ");
-        final int len = this.entries.size();
-        for (int i = 0; i < len; ++i) {
-            final Object entry = this.entries.get(i);
+        int len = entries.size();
+        for (int i = 0; i < len; i++) {
+            Object entry = entries.get(i);
             if (entry instanceof int[]) {
-                final int[] line = (int[]) entry;
-                for (final int element : line) {
-                    p.append(element);
+                int[] line = (int[])entry;
+                for (int j = 0; j < line.length; j++) {
+                    p.append(line[j]);
                     p.append(" ");
                 }
             } else {
-                ((Entry) entry).fillInPDF(p);
+                ((Entry)entry).fillInPDF(p);
             }
         }
         p.append("]");
@@ -131,20 +120,19 @@ public class PDFWArray {
      * Inner class for entries in the form "c [w ...]"
      */
     private static class Entry {
-        private final int start;
-        private final int[] metrics;
-
-        public Entry(final int s, final int[] m) {
-            this.start = s;
-            this.metrics = m;
+        private int start;
+        private int[] metrics;
+        public Entry(int s, int[] m) {
+            start = s;
+            metrics = m;
         }
 
-        public void fillInPDF(final StringBuilder p) {
+        public void fillInPDF(StringBuffer p) {
             // p.setLength(0);
-            p.append(this.start);
+            p.append(start);
             p.append(" [");
-            for (final int metric : this.metrics) {
-                p.append(metric);
+            for (int i = 0; i < metrics.length; i++) {
+                p.append(this.metrics[i]);
                 p.append(" ");
             }
             p.append("] ");

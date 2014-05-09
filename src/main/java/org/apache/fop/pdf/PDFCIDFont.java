@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFCIDFont.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFCIDFont.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -46,7 +46,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Create the /Font object
-     *
+     * 
      * @param basefont
      *            Name of the basefont
      * @param cidtype
@@ -64,10 +64,11 @@ public class PDFCIDFont extends PDFObject {
      * @param descriptor
      *            CID font descriptor
      */
-    public PDFCIDFont(final String basefont, final CIDFontType cidtype,
-            final int dw, final int[] w, final String registry,
-            final String ordering, final int supplement,
-            final PDFCIDFontDescriptor descriptor) {
+    public PDFCIDFont(
+            // CSOK: ParameterNumber
+            final String basefont, final CIDFontType cidtype, final int dw,
+            final int[] w, final String registry, final String ordering,
+            final int supplement, final PDFCIDFontDescriptor descriptor) {
 
         this(basefont, cidtype, dw, new PDFWArray(w), new PDFCIDSystemInfo(
                 registry, ordering, supplement), descriptor);
@@ -75,7 +76,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Create the /Font object
-     *
+     * 
      * @param basefont
      *            Name of the basefont
      * @param cidtype
@@ -98,7 +99,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Create the /Font object
-     *
+     * 
      * @param basefont
      *            Name of the basefont
      * @param cidtype
@@ -120,7 +121,7 @@ public class PDFCIDFont extends PDFObject {
 
         this.basefont = basefont;
         this.cidtype = cidtype;
-        this.dw = (dw);
+        this.dw = new Integer(dw);
         this.w = w;
         this.dw2 = null;
         this.w2 = null;
@@ -132,17 +133,17 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the /DW attribute
-     *
+     * 
      * @param dw
      *            the default width
      */
     public void setDW(final int dw) {
-        this.dw = (dw);
+        this.dw = new Integer(dw);
     }
 
     /**
      * Set the /W array
-     *
+     * 
      * @param w
      *            the width array
      */
@@ -152,7 +153,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the (two elements) /DW2 array
-     *
+     * 
      * @param dw2
      *            the default metrics for vertical writing
      */
@@ -162,7 +163,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the two elements of the /DW2 array
-     *
+     * 
      * @param posY
      *            position vector
      * @param displacementY
@@ -174,7 +175,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the CMap used as /ToUnicode cmap
-     *
+     * 
      * @param cmap
      *            character map
      */
@@ -184,7 +185,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the /W2 array
-     *
+     * 
      * @param w2
      *            array of metrics for vertical writing
      */
@@ -194,7 +195,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Set the /CIDToGIDMap (to be used only for CIDFontType2)
-     *
+     * 
      * @param map
      *            mapping information
      */
@@ -211,7 +212,7 @@ public class PDFCIDFont extends PDFObject {
 
     /**
      * Returns the PDF name for a certain CID font type.
-     *
+     * 
      * @param cidFontType
      *            CID font type
      * @return corresponding PDF name
@@ -232,8 +233,7 @@ public class PDFCIDFont extends PDFObject {
      */
     @Override
     public String toPDFString() {
-        final StringBuilder p = new StringBuilder(128);
-        p.append(getObjectID());
+        final StringBuffer p = new StringBuffer(128);
         p.append("<< /Type /Font");
         p.append("\n/BaseFont /");
         p.append(this.basefont);
@@ -267,14 +267,13 @@ public class PDFCIDFont extends PDFObject {
             p.append("\n/DW2 ["); // always two values, see p 211
             p.append(this.dw2[0]);
             p.append(this.dw2[1]);
-            p.append("] \n>>\nendobj\n");
+            p.append("]");
         }
         if (this.w2 != null) {
             p.append("\n/W2 ");
             p.append(this.w2.toPDFString());
-            p.append(" \n>>\nendobj\n");
         }
-        p.append(" \n>>\nendobj\n");
+        p.append("\n>>");
         return p.toString();
     }
 

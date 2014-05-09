@@ -47,7 +47,7 @@ import org.apache.fop.util.ListUtil;
  */
 @Slf4j
 public class BlockContainerLayoutManager extends BlockStackingLayoutManager
-        implements ConditionalElementListener {
+implements ConditionalElementListener {
 
     private BlockViewport viewportBlockArea;
     private Block referenceArea;
@@ -955,7 +955,7 @@ public class BlockContainerLayoutManager extends BlockStackingLayoutManager
             return !isEmpty()
                     && (this.deferredAlg.getPageBreaks().size() > 1 || this.deferredAlg.totalWidth
                             - this.deferredAlg.totalShrink > this.deferredAlg
-                                .getLineWidth());
+                            .getLineWidth());
         }
 
         public int getOverflowAmount() {
@@ -1107,7 +1107,7 @@ public class BlockContainerLayoutManager extends BlockStackingLayoutManager
         Position firstPos = null;
         Position lastPos = null;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             if (pos.getIndex() >= 0) {
                 if (firstPos == null) {
                     firstPos = pos;
@@ -1177,7 +1177,7 @@ public class BlockContainerLayoutManager extends BlockStackingLayoutManager
                 // // the last item inside positionList is a Position;
                 // // this means that the paragraph has been split
                 // // between consecutive pages
-                final List<KnuthElement> splitList = new LinkedList<>();
+                final List<ListElement> splitList = new LinkedList<>();
                 int splitLength = 0;
                 final int iFirst = ((MappingPosition) positionList.get(0))
                         .getFirstIndex();
@@ -1212,7 +1212,7 @@ public class BlockContainerLayoutManager extends BlockStackingLayoutManager
                             this).getSpace();
                     this.foBlockSpaceAfter = new SpaceVal(getBlockContainerFO()
                             .getCommonMarginBlock().spaceAfter, this)
-                            .getSpace();
+                    .getSpace();
                     this.adjustedSpaceBefore = (neededUnits(splitLength
                             + this.foBlockSpaceBefore.getMin()
                             + this.foBlockSpaceAfter.getMin())
@@ -1342,7 +1342,7 @@ public class BlockContainerLayoutManager extends BlockStackingLayoutManager
             // Set up dimensions
             // Must get dimensions from parent area
             /* Area parentArea = */this.parentLayoutManager
-                    .getParentArea(this.referenceArea);
+            .getParentArea(this.referenceArea);
             // int referenceIPD = parentArea.getIPD();
             this.referenceArea.setIPD(this.relDims.ipd);
             // Get reference IPD from parentArea

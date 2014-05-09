@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-/* $Id: PDFNameTreeNode.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFNameTreeNode.java 986203 2010-08-17 06:56:46Z jeremias $ */
 
 package org.apache.fop.pdf;
+
 
 /**
  * Class representing a PDF name tree node.
@@ -38,86 +39,74 @@ public class PDFNameTreeNode extends PDFDictionary {
 
     /**
      * Sets the Kids array.
-     * 
-     * @param kids
-     *            the Kids array
+     * @param kids the Kids array
      */
-    public void setKids(final PDFArray kids) {
+    public void setKids(PDFArray kids) {
         put(KIDS, kids);
     }
 
     /**
      * Returns the Kids array.
-     * 
      * @return the Kids array
      */
     public PDFArray getKids() {
-        return (PDFArray) get(KIDS);
+        return (PDFArray)get(KIDS);
     }
 
     /**
      * Sets the Names array.
-     * 
-     * @param names
-     *            the Names array
+     * @param names the Names array
      */
-    public void setNames(final PDFArray names) {
+    public void setNames(PDFArray names) {
         put(NAMES, names);
     }
 
     /**
      * Returns the Names array.
-     * 
      * @return the Names array
      */
     public PDFArray getNames() {
-        return (PDFArray) get(NAMES);
+        return (PDFArray)get(NAMES);
     }
 
     /**
      * Sets the lower limit value of the Limits array.
-     * 
-     * @param key
-     *            the lower limit value
+     * @param key the lower limit value
      */
-    public void setLowerLimit(final String key) {
-        final PDFArray limits = prepareLimitsArray();
+    public void setLowerLimit(String key) {
+        PDFArray limits = prepareLimitsArray();
         limits.set(0, key);
     }
 
     /**
      * Returns the lower limit value of the Limits array.
-     * 
      * @return the lower limit value
      */
     public String getLowerLimit() {
-        final PDFArray limits = prepareLimitsArray();
-        return (String) limits.get(0);
+        PDFArray limits = prepareLimitsArray();
+        return (String)limits.get(0);
     }
 
     /**
      * Sets the upper limit value of the Limits array.
-     * 
-     * @param key
-     *            the upper limit value
+     * @param key the upper limit value
      */
-    public void setUpperLimit(final String key) {
-        final PDFArray limits = prepareLimitsArray();
+    public void setUpperLimit(String key) {
+        PDFArray limits = prepareLimitsArray();
         limits.set(1, key);
     }
 
     /**
      * Returns the upper limit value of the Limits array.
-     * 
      * @return the upper limit value
      */
     public String getUpperLimit() {
-        final PDFArray limits = prepareLimitsArray();
-        return (String) limits.get(1);
+        PDFArray limits = prepareLimitsArray();
+        return (String)limits.get(1);
     }
 
     private PDFArray prepareLimitsArray() {
-        PDFArray limits = (PDFArray) get(LIMITS);
+        PDFArray limits = (PDFArray)get(LIMITS);
         if (limits == null) {
             limits = new PDFArray(this, new Object[2]);
             put(LIMITS, limits);
@@ -129,3 +118,4 @@ public class PDFNameTreeNode extends PDFDictionary {
     }
 
 }
+

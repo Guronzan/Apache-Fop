@@ -45,6 +45,7 @@ import org.apache.fop.afp.ptoca.PtocaBuilder;
 import org.apache.fop.afp.ptoca.PtocaProducer;
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
+import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.FontTriplet;
 import org.apache.fop.render.RenderingContext;
 import org.apache.fop.render.intermediate.AbstractIFPainter;
@@ -167,7 +168,7 @@ public class AFPPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    protected Map createDefaultImageProcessingHints(
+    protected Map<Object, Object> createDefaultImageProcessingHints(
             final ImageSessionContext sessionContext) {
         final Map<Object, Object> hints = super
                 .createDefaultImageProcessingHints(sessionContext);
@@ -184,7 +185,7 @@ public class AFPPainter extends AbstractIFPainter {
         final AFPRenderingContext psContext = new AFPRenderingContext(
                 getUserAgent(), this.documentHandler.getResourceManager(),
                 getPaintingState(), getFontInfo(), getContext()
-                .getForeignAttributes());
+                        .getForeignAttributes());
         return psContext;
     }
 
@@ -318,7 +319,7 @@ public class AFPPainter extends AbstractIFPainter {
         @Override
         public void drawLine(final Point start, final Point end,
                 final int width, final Color color, final RuleStyle style)
-                        throws IOException {
+                throws IOException {
             if (start.y != end.y) {
                 // TODO Support arbitrary lines if necessary
                 throw new UnsupportedOperationException(
@@ -349,7 +350,7 @@ public class AFPPainter extends AbstractIFPainter {
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
             final int wordSpacing, final int[] dx, final String text)
-                    throws IFException {
+            throws IFException {
         final int fontSize = this.state.getFontSize();
         getPaintingState().setFontSize(fontSize);
 
@@ -364,7 +365,7 @@ public class AFPPainter extends AbstractIFPainter {
         }
 
         // register font as necessary
-        final Map/* <String,FontMetrics> */fontMetricMap = this.documentHandler
+        final Map<String, FontMetrics> fontMetricMap = this.documentHandler
                 .getFontInfo().getFonts();
         final AFPFont afpFont = (AFPFont) fontMetricMap.get(fontKey);
         final Font font = getFontInfo().getFontInstance(triplet, fontSize);
@@ -524,7 +525,7 @@ public class AFPPainter extends AbstractIFPainter {
 
                 private void flushText(final PtocaBuilder builder,
                         final StringBuilder sb, final CharacterSet charSet)
-                                throws IOException {
+                        throws IOException {
                     if (sb.length() > 0) {
                         builder.addTransparentData(charSet.encodeChars(sb));
                         sb.setLength(0);

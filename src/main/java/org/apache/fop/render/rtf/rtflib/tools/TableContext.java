@@ -42,7 +42,7 @@ import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfAttributes;
 @Slf4j
 public class TableContext implements ITableColumnsInfo {
     private final BuilderContext context;
-    private final List colWidths = new java.util.ArrayList();
+    private final List colWidths = new java.util.ArrayList<>();
     private int colIndex;
 
     /**
@@ -50,7 +50,7 @@ public class TableContext implements ITableColumnsInfo {
      * == 0 means there is no row-spanning value > 0 means there is row-spanning
      * Each value in the list is decreased by 1 after each finished table-row
      */
-    private final List colRowSpanningNumber = new java.util.ArrayList();
+    private final List colRowSpanningNumber = new java.util.ArrayList<>();
 
     /**
      * If there has a vertical merged cell to be created, its attributes are
@@ -58,14 +58,14 @@ public class TableContext implements ITableColumnsInfo {
      * attributes of a cell are stored in this array, as soon as a
      * number-rows-spanned attribute has been found.
      */
-    private final List colRowSpanningAttrs = new java.util.ArrayList();
+    private final List colRowSpanningAttrs = new java.util.ArrayList<>();
 
     /**
      * This ArrayList contains one element for each column in the table. value
      * == true means, it's the first of multiple spanned columns value == false
      * meanst, it's NOT the first of multiple spanned columns
      */
-    private final List colFirstSpanningCol = new java.util.ArrayList();
+    private final List colFirstSpanningCol = new java.util.ArrayList<>();
 
     private boolean bNextRowBelongsToHeader = false;
 

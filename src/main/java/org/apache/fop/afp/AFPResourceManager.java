@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -59,15 +60,9 @@ public class AFPResourceManager {
     private int instreamObjectCount = 0;
 
     /** a mapping of resourceInfo --> include name */
-    private final Map/* <AFPResourceInfo,String> */includeNameMap = new java.util.HashMap()/*
-     * <
-     * AFPResourceInfo
-     * ,
-     * String
-     * >
-     */;
+    private final Map<AFPResourceInfo, String> includeNameMap = new HashMap<>();
 
-    private final Map pageSegmentMap = new java.util.HashMap();
+    private final Map<AFPResourceInfo, String> pageSegmentMap = new HashMap<>();
 
     private final AFPResourceLevelDefaults resourceLevelDefaults = new AFPResourceLevelDefaults();
 
@@ -144,7 +139,7 @@ public class AFPResourceManager {
         final AFPResourceInfo resourceInfo = dataObjectInfo.getResourceInfo();
         updateResourceInfoUri(resourceInfo);
 
-        String objectName = (String) this.includeNameMap.get(resourceInfo);
+        String objectName = this.includeNameMap.get(resourceInfo);
         if (objectName != null) {
             // an existing data resource so reference it by adding an include to
             // the current page
@@ -152,7 +147,7 @@ public class AFPResourceManager {
             return;
         }
 
-        objectName = (String) this.pageSegmentMap.get(resourceInfo);
+        objectName = this.pageSegmentMap.get(resourceInfo);
         if (objectName != null) {
             // an existing data resource so reference it by adding an include to
             // the current page
@@ -331,8 +326,7 @@ public class AFPResourceManager {
         resourceInfo.setName(resourceName);
         resourceInfo.setUri(uri.toASCIIString());
 
-        final String objectName = (String) this.includeNameMap
-                .get(resourceInfo);
+        final String objectName = this.includeNameMap.get(resourceInfo);
         if (objectName == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding included resource: " + resourceName);

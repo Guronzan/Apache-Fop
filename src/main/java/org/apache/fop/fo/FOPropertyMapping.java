@@ -75,9 +75,9 @@ import org.apache.fop.fo.properties.XMLLangShorthandParser;
  * @todo Check multi-threading safety of the statics below
  */
 public final class FOPropertyMapping implements Constants {
-    private static Map s_htPropNames = new HashMap();
-    private static Map s_htSubPropNames = new HashMap();
-    private static Map s_htPropIds = new HashMap();
+    private static Map s_htPropNames = new HashMap<>();
+    private static Map s_htSubPropNames = new HashMap<>();
+    private static Map s_htPropIds = new HashMap<>();
 
     private static PropertyMaker[] s_generics = null;
 

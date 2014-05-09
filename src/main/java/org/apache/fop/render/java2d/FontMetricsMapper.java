@@ -30,7 +30,7 @@ public interface FontMetricsMapper extends FontMetrics {
     /**
      * Gets a {@link Font} instance of the font that this {@link FontMetrics}
      * describes in the desired size.
-     * 
+     *
      * @param size
      *            font size
      * @return font with the desired characteristics.

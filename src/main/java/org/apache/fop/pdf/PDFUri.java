@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFUri.java 746664 2009-02-22 12:40:44Z jeremias $ */
+/* $Id: PDFUri.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -24,15 +24,14 @@ package org.apache.fop.pdf;
  */
 public class PDFUri extends PDFAction {
 
-    private final String uri;
+    private String uri;
 
     /**
      * create a Uri instance.
      *
-     * @param uri
-     *            the uri to which the link should point
+     * @param uri the uri to which the link should point
      */
-    public PDFUri(final String uri) {
+    public PDFUri(String uri) {
         this.uri = uri;
     }
 
@@ -41,7 +40,6 @@ public class PDFUri extends PDFAction {
      *
      * @return the action to place next to /A within a Link
      */
-    @Override
     public String getAction() {
         if (hasObjectNumber()) {
             return referencePDF();
@@ -51,16 +49,13 @@ public class PDFUri extends PDFAction {
     }
 
     private String getDictString() {
-        return "<< /URI (" + this.uri + ")\n/S /URI >>";
+        return "<< /URI (" + uri + ")\n/S /URI >>";
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toPDFString() {
-        // TODO Convert this class into a dictionary
-        return getObjectID() + getDictString() + "\nendobj\n";
-        // throw new
-        // UnsupportedOperationException("This method should not be called");
+        //TODO Convert this class into a dictionary
+        return getDictString();
     }
 
 }

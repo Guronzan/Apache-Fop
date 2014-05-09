@@ -21,7 +21,6 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.apache.fop.afp.Completable;
 
@@ -35,11 +34,12 @@ public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup
     /** default name for the resource group */
     private static final String DEFAULT_NAME = "REG00001";
 
-    /**
-     * the pre-process presentation objects contained in this resource
-     * environment group
-     */
-    private List/* <PreprocessPresentationObject> */preProcessPresentationObjects = null;
+    // /**
+    // * the pre-process presentation objects contained in this resource
+    // * environment group
+    // */
+    // private List<PreprocessPresentationObject> preProcessPresentationObjects
+    // = null;
 
     /** the resource environment group state */
     private boolean complete = false;
@@ -51,21 +51,18 @@ public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup
         this(DEFAULT_NAME);
     }
 
-    private List/* <PreprocessPresentationObject> */getPreprocessPresentationObjects() {
-        if (this.preProcessPresentationObjects == null) {
-            this.preProcessPresentationObjects = new java.util.ArrayList/*
-                                                                         * <
-                                                                         * PreprocessPresentationObject
-                                                                         * >
-                                                                         */();
-        }
-        return this.preProcessPresentationObjects;
-    }
+    // private List<PreprocessPresentationObject>
+    // getPreprocessPresentationObjects() {
+    // if (this.preProcessPresentationObjects == null) {
+    // this.preProcessPresentationObjects = new java.util.ArrayList<>();
+    // }
+    // return this.preProcessPresentationObjects;
+    // }
 
     /**
      * Constructor for the ResourceEnvironmentGroup, this takes a name parameter
      * which must be 8 characters long.
-     * 
+     *
      * @param name
      *            the resource environment group name
      */
@@ -105,7 +102,8 @@ public class ResourceEnvironmentGroup extends AbstractEnvironmentGroup
     protected void writeContent(final OutputStream os) throws IOException {
         writeObjects(this.mapDataResources, os);
         writeObjects(this.mapPageOverlays, os);
-        writeObjects(this.preProcessPresentationObjects, os);
+        // writeObjects(this.preProcessPresentationObjects, os); // never used &
+        // initialized
     }
 
     /** {@inheritDoc} */

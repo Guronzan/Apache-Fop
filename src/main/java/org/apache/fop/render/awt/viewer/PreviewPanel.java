@@ -40,6 +40,8 @@ import javax.swing.JViewport;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.apps.MimeConstants;
@@ -96,6 +98,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  * previewPanel.setDisplayMode(PreviewPanel.CONTINUOUS);
  * </pre>
  */
+@Slf4j
 public class PreviewPanel extends JPanel {
 
     /**
@@ -215,8 +218,8 @@ public class PreviewPanel extends JPanel {
         if (this.displayMode == CONTINUOUS || this.displayMode == CONT_FACING) {
             this.currentPage = number;
             this.gridPanel
-            .scrollRectToVisible(this.pagePanels[this.currentPage]
-                    .getBounds());
+                    .scrollRectToVisible(this.pagePanels[this.currentPage]
+                            .getBounds());
         } else { // single page mode
             this.currentPage = number;
             this.firstPage = this.currentPage;
@@ -314,7 +317,7 @@ public class PreviewPanel extends JPanel {
      * Allows any mouse drag on the page area to scroll the display window.
      */
     private class ViewportScroller implements MouseListener,
-    MouseMotionListener {
+            MouseMotionListener {
         /** The viewport to be scrolled */
         private final JViewport viewport;
         /** Starting position of a mouse drag - X co-ordinate */
@@ -395,7 +398,7 @@ public class PreviewPanel extends JPanel {
                 JOptionPane.showMessageDialog(PreviewPanel.this.previewArea,
                         "Cannot perform the requested operation until "
                                 + "all page are rendered. Please wait",
-                        "Please wait ", 1 /* INFORMATION_MESSAGE */);
+                                "Please wait ", 1 /* INFORMATION_MESSAGE */);
                 return;
             }
 
@@ -406,34 +409,34 @@ public class PreviewPanel extends JPanel {
 
             PreviewPanel.this.gridPanel.removeAll();
             switch (PreviewPanel.this.displayMode) {
-            case CONT_FACING:
-                // This page intentionally left blank
-                // Makes 0th/1st page on rhs
-                PreviewPanel.this.gridPanel.add(new JLabel(""));
-            case CONTINUOUS:
-                PreviewPanel.this.currentPage = 0;
-                PreviewPanel.this.firstPage = 0;
-                PreviewPanel.this.pageRange = PreviewPanel.this.renderer
-                        .getNumberOfPages();
-                break;
-            case SINGLE:
-            default:
-                PreviewPanel.this.currentPage = 0;
-                PreviewPanel.this.firstPage = 0;
-                PreviewPanel.this.pageRange = 1;
-                break;
+                case CONT_FACING:
+                    // This page intentionally left blank
+                    // Makes 0th/1st page on rhs
+                    PreviewPanel.this.gridPanel.add(new JLabel(""));
+                case CONTINUOUS:
+                    PreviewPanel.this.currentPage = 0;
+                    PreviewPanel.this.firstPage = 0;
+                    PreviewPanel.this.pageRange = PreviewPanel.this.renderer
+                            .getNumberOfPages();
+                    break;
+                case SINGLE:
+                default:
+                    PreviewPanel.this.currentPage = 0;
+                    PreviewPanel.this.firstPage = 0;
+                    PreviewPanel.this.pageRange = 1;
+                    break;
             }
 
             PreviewPanel.this.pagePanels = new ImageProxyPanel[PreviewPanel.this.pageRange];
             for (int pg = 0; pg < PreviewPanel.this.pageRange; pg++) {
                 PreviewPanel.this.pagePanels[pg] = new ImageProxyPanel(
                         PreviewPanel.this.renderer, pg
-                        + PreviewPanel.this.firstPage);
+                                + PreviewPanel.this.firstPage);
                 PreviewPanel.this.pagePanels[pg].setBorder(new EmptyBorder(
                         BORDER_SPACING, BORDER_SPACING, BORDER_SPACING,
                         BORDER_SPACING));
                 PreviewPanel.this.gridPanel
-                .add(PreviewPanel.this.pagePanels[pg]);
+                        .add(PreviewPanel.this.pagePanels[pg]);
             }
 
             try {
@@ -444,7 +447,7 @@ public class PreviewPanel extends JPanel {
                             MimeConstants.MIME_FOP_AWT_PREVIEW);
                 }
             } catch (final FOPException e) {
-                e.printStackTrace();
+                log.error(e.getMessage(), e);
                 // FIXME Should show exception in gui - was reportException(e);
             }
 

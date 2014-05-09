@@ -25,6 +25,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.StringTokenizer;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.batik.gvt.CompositeGraphicsNode;
 
 /**
@@ -32,6 +34,7 @@ import org.apache.batik.gvt.CompositeGraphicsNode;
  *
  * @author <a href="mailto:keiron@aftexsw.com">Keiron Liddle</a>
  */
+@Slf4j
 public class PDFANode extends CompositeGraphicsNode {
     private String destination;
     private AffineTransform transform;
@@ -44,7 +47,7 @@ public class PDFANode extends CompositeGraphicsNode {
 
     /**
      * Set the destination String.
-     * 
+     *
      * @param dest
      *            the target destination
      */
@@ -54,7 +57,7 @@ public class PDFANode extends CompositeGraphicsNode {
 
     /**
      * Set the current transform of this node.
-     * 
+     *
      * @param tf
      *            the transform
      */
@@ -93,26 +96,26 @@ public class PDFANode extends CompositeGraphicsNode {
                             final String tok = st.nextToken();
                             count++;
                             switch (count) {
-                            case 1:
-                                x = Float.parseFloat(tok);
-                                break;
-                            case 2:
-                                y = Float.parseFloat(tok);
-                                break;
-                            case 3:
-                                width = Float.parseFloat(tok);
-                                break;
-                            case 4:
-                                height = Float.parseFloat(tok);
-                                break;
-                            default:
-                                break;
+                                case 1:
+                                    x = Float.parseFloat(tok);
+                                    break;
+                                case 2:
+                                    y = Float.parseFloat(tok);
+                                    break;
+                                case 3:
+                                    width = Float.parseFloat(tok);
+                                    break;
+                                case 4:
+                                    height = Float.parseFloat(tok);
+                                    break;
+                                default:
+                                    break;
                             }
                         }
                     } catch (final Exception e) {
                         // TODO Move this to setDestination() and throw an
                         // IllegalArgumentException
-                        e.printStackTrace();
+                        log.error("Exception", e);
                     }
                     Rectangle2D destRect = new Rectangle2D.Float(x, y, width,
                             height);

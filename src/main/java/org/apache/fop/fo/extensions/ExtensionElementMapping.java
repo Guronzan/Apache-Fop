@@ -62,7 +62,7 @@ public class ExtensionElementMapping extends ElementMapping {
     @Override
     protected void initialize() {
         if (this.foObjs == null) {
-            this.foObjs = new HashMap();
+            this.foObjs = new HashMap<>();
             this.foObjs.put("outline", new UnknownXMLObj.Maker(URI));
             this.foObjs.put("label", new UnknownXMLObj.Maker(URI));
             this.foObjs.put("destination", new DestinationMaker());

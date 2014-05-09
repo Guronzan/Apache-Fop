@@ -71,18 +71,18 @@ public class ImageRawCCITTFaxAdapter extends AbstractImageAdapter {
         dict.put("Columns", this.image.getSize().getWidthPx());
         final int compression = getImage().getCompression();
         switch (compression) {
-        case TIFFImage.COMP_FAX_G3_1D:
-            dict.put("K", 0);
-            break;
-        case TIFFImage.COMP_FAX_G3_2D:
-            dict.put("K", 1);
-            break;
-        case TIFFImage.COMP_FAX_G4_2D:
-            dict.put("K", -1);
-            break;
-        default:
-            throw new IllegalStateException("Invalid compression scheme: "
-                    + compression);
+            case TIFFImage.COMP_FAX_G3_1D:
+                dict.put("K", 0);
+                break;
+            case TIFFImage.COMP_FAX_G3_2D:
+                dict.put("K", 1);
+                break;
+            case TIFFImage.COMP_FAX_G4_2D:
+                dict.put("K", -1);
+                break;
+            default:
+                throw new IllegalStateException("Invalid compression scheme: "
+                        + compression);
         }
         ((CCFFilter) this.pdfFilter).setDecodeParms(dict);
 

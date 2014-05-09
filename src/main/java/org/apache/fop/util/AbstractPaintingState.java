@@ -534,8 +534,8 @@ public abstract class AbstractPaintingState implements Cloneable, Serializable {
             return "color=" + this.color + ", backColor=" + this.backColor
                     + ", fontName=" + this.fontName + ", fontSize="
                     + this.fontSize + ", lineWidth=" + this.lineWidth
-                    + ", dashArray=" + this.dashArray + ", transform="
-                    + this.transform;
+                    + ", dashArray=" + Arrays.toString(this.dashArray)
+                    + ", transform=" + this.transform;
         }
     }
 }

@@ -58,7 +58,7 @@ public class RtfContainer extends RtfElement {
     RtfContainer(final RtfContainer parent, final Writer w,
             final RtfAttributes attr) throws IOException {
         super(parent, w, attr);
-        this.children = new LinkedList();
+        this.children = new LinkedList<>();
     }
 
     /**

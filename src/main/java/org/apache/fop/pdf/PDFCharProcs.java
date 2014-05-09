@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFCharProcs.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFCharProcs.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -60,7 +60,7 @@ public class PDFCharProcs extends PDFObject {
 
     /**
      * not done yet
-     *
+     * 
      * @return the pdf byte array
      */
     @Override

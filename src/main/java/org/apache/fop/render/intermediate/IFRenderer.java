@@ -104,7 +104,7 @@ import org.xml.sax.SAXException;
  * interface. It is used to generate content using FOP's intermediate format.
  */
 @Slf4j
-public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
+public class IFRenderer extends AbstractPathOrientedRenderer {
 
     // TODO Many parts of the Renderer infrastructure are using floats
     // (coordinates in points)
@@ -537,7 +537,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
                     this.documentMetadata = createDefaultDocumentMetadata();
                 }
                 this.documentHandler
-                        .handleExtensionObject(this.documentMetadata);
+                .handleExtensionObject(this.documentMetadata);
                 this.documentHandler.endDocumentHeader();
                 this.inPageSequence = true;
             }
@@ -727,12 +727,11 @@ public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(
-            final List<IFGraphicContext> breakOutList) {
+    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
         for (int i = 0, c = breakOutList.size(); i < c; ++i) {
             this.graphicContextStack.push(this.graphicContext);
-            this.graphicContext = breakOutList.get(i);
+            this.graphicContext = (IFGraphicContext) breakOutList.get(i);
 
             // Handle groups
             final IFGraphicContext.Group[] groups = this.graphicContext
@@ -1171,7 +1170,7 @@ public class IFRenderer extends AbstractPathOrientedRenderer<IFGraphicContext> {
             if (this.textUtil.combined && font.hasChar(ch)) {
                 final int tls = i < l - 1 ? parentArea
                         .getTextLetterSpaceAdjust() : 0;
-                        glyphAdjust += tls;
+                glyphAdjust += tls;
             }
             if (letterAdjust != null && i < l - 1) {
                 glyphAdjust += letterAdjust[i + 1];

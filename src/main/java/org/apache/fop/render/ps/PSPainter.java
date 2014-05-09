@@ -144,9 +144,9 @@ public class PSPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    protected Map createDefaultImageProcessingHints(
+    protected Map<Object, Object> createDefaultImageProcessingHints(
             final ImageSessionContext sessionContext) {
-        final Map hints = super
+        final Map<Object, Object> hints = super
                 .createDefaultImageProcessingHints(sessionContext);
 
         // PostScript doesn't support alpha channels
@@ -346,9 +346,9 @@ public class PSPainter extends AbstractIFPainter {
 
     /*
      * Disabled: performance experiment (incomplete)
-     * 
+     *
      * private static final String ZEROS = "0.00";
-     * 
+     *
      * private String formatMptAsPt1(int value) { String s =
      * Integer.toString(value); int len = s.length(); StringBuilder sb = new
      * StringBuilder(); if (len < 4) { sb.append(ZEROS.substring(0, 5 - len));
@@ -360,7 +360,7 @@ public class PSPainter extends AbstractIFPainter {
     @Override
     public void drawText(final int x, final int y, final int letterSpacing,
             final int wordSpacing, final int[] dx, final String text)
-            throws IFException {
+                    throws IFException {
         try {
             // Note: dy is currently ignored
             final PSGenerator generator = getGenerator();

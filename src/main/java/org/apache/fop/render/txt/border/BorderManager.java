@@ -110,7 +110,7 @@ public class BorderManager {
     public Character getCharacter(final int x, final int y) {
         Character c = null;
         if (this.borderInfo[y][x] != null) {
-            c = new Character(this.borderInfo[y][x].convert2Char());
+            c = Character.valueOf(this.borderInfo[y][x].convert2Char());
         }
         return c;
     }

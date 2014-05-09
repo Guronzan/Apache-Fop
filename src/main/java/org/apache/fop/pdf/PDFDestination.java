@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDestination.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFDestination.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import org.apache.commons.io.output.CountingOutputStream;
 
@@ -33,61 +32,54 @@ public class PDFDestination extends PDFObject {
     /**
      * ID Reference for this destination
      */
-    private final String idRef;
+    private String idRef;
 
     /**
      * PDFReference (object reference) for this destination
      */
-    private Object goToReference;
+     private Object goToReference;
 
     /**
      * Create a named destination
-     *
-     * @param idRef
-     *            ID Reference for this destination (the name of the
-     *            destination)
-     * @param goToRef
-     *            Object reference to the GoTo Action
+     * @param idRef ID Reference for this destination (the name of the destination)
+     * @param goToRef Object reference to the GoTo Action
      */
-    public PDFDestination(final String idRef, final Object goToRef) {
+    public PDFDestination(String idRef, Object goToRef) {
         super();
         this.goToReference = goToRef;
         this.idRef = idRef;
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected int output(final OutputStream stream) throws IOException {
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
+    public int output(OutputStream stream) throws IOException {
+        CountingOutputStream cout = new CountingOutputStream(stream);
+        StringBuilder textBuffer = new StringBuilder(64);
 
-        formatObject(getIDRef(), cout, writer);
-        writer.write(' ');
-        formatObject(this.goToReference, cout, writer);
+        formatObject(getIDRef(), cout, textBuffer);
+        textBuffer.append(' ');
+        formatObject(goToReference, cout, textBuffer);
 
-        writer.flush();
+        PDFDocument.flushTextBuffer(textBuffer, cout);
         return cout.getCount();
     }
 
     /**
      * Sets the GoToReference in the associated DestinationData object.
      *
-     * @param goToReference
-     *            the reference to set in the associated DestinationData object.
+     * @param goToReference the reference to set in the associated DestinationData object.
      * @deprecated use setGoToReference(Object) instead
      */
     @Deprecated
-    public void setGoToReference(final String goToReference) {
+    public void setGoToReference(String goToReference) {
         this.goToReference = goToReference;
     }
 
     /**
      * Sets the GoToReference in the associated DestinationData object.
      *
-     * @param goToReference
-     *            the reference to set in the associated DestinationData object.
+     * @param goToReference the reference to set in the associated DestinationData object.
      */
-    public void setGoToReference(final Object goToReference) {
+    public void setGoToReference(Object goToReference) {
         this.goToReference = goToReference;
     }
 
@@ -112,12 +104,11 @@ public class PDFDestination extends PDFObject {
     /**
      * Check if this equals another object.
      *
-     * @param obj
-     *            the object to compare
+     * @param obj the object to compare
      * @return true if this equals other object
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -126,8 +117,8 @@ public class PDFDestination extends PDFObject {
             return false;
         }
 
-        final PDFDestination dest = (PDFDestination) obj;
-        if (dest.getIDRef().equals(getIDRef())) {
+        PDFDestination dest = (PDFDestination)obj;
+        if (dest.getIDRef().equals(this.getIDRef())) {
             return true;
         }
 
@@ -141,3 +132,4 @@ public class PDFDestination extends PDFObject {
     }
 
 }
+

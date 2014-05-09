@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: AlphaRasterImage.java 696365 2008-09-17 16:41:14Z jeremias $ */
+/* $Id: AlphaRasterImage.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -130,7 +130,7 @@ public class AlphaRasterImage implements PDFImage {
         return null;
     }
 
-    /** {@inheritDoc} */
+    /** @return null (unless overridden) */
     public String getSoftMask() {
         return null;
     }
@@ -173,7 +173,7 @@ public class AlphaRasterImage implements PDFImage {
             final byte[] line = new byte[nbands * w];
             for (int y = 0; y < h; y++) {
                 this.alpha.getDataElements(0, y, w, 1, sline);
-                for (int i = 0; i < w; ++i) {
+                for (int i = 0; i < w; i++) {
                     // this compresses a 16-bit alpha channel to 8 bits!
                     // we probably don't ever need a 16-bit channel
                     line[i] = (byte) (sline[i] >> 8);
@@ -193,7 +193,7 @@ public class AlphaRasterImage implements PDFImage {
             final byte[] line = new byte[nbands * w];
             for (int y = 0; y < h; y++) {
                 this.alpha.getDataElements(0, y, w, 1, iline);
-                for (int i = 0; i < w; ++i) {
+                for (int i = 0; i < w; i++) {
                     line[i] = (byte) (iline[i] >> shift);
                 }
                 out.write(line);
@@ -236,4 +236,9 @@ public class AlphaRasterImage implements PDFImage {
         return null;
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public boolean multipleFiltersAllowed() {
+        return true;
+    }
 }

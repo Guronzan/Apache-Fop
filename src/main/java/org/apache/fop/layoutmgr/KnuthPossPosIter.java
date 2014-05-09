@@ -21,7 +21,7 @@ package org.apache.fop.layoutmgr;
 
 import java.util.List;
 
-public class KnuthPossPosIter extends PositionIterator {
+public class KnuthPossPosIter extends PositionIterator<ListElement> {
 
     private int iterCount;
 
@@ -35,8 +35,8 @@ public class KnuthPossPosIter extends PositionIterator {
      * @param endPos
      *            ending position, exclusive
      */
-    public KnuthPossPosIter(final List elementList, final int startPos,
-            final int endPos) {
+    public KnuthPossPosIter(final List<ListElement> elementList,
+            final int startPos, final int endPos) {
         super(elementList.listIterator(startPos));
         this.iterCount = endPos - startPos;
     }
@@ -47,7 +47,7 @@ public class KnuthPossPosIter extends PositionIterator {
      * @param elementList
      *            List of Knuth elements
      */
-    public KnuthPossPosIter(final List elementList) {
+    public KnuthPossPosIter(final List<ListElement> elementList) {
         this(elementList, 0, elementList.size());
     }
 
@@ -70,22 +70,22 @@ public class KnuthPossPosIter extends PositionIterator {
      * {@inheritDoc}
      */
     @Override
-    public Object next() {
+    public Position next() {
         --this.iterCount;
         return super.next();
     }
 
     public ListElement getKE() {
-        return (ListElement) peekNext();
+        return peekNext();
     }
 
     @Override
-    protected LayoutManager getLM(final Object nextObj) {
-        return ((ListElement) nextObj).getLayoutManager();
+    protected LayoutManager getLM(final ListElement nextObj) {
+        return nextObj.getLayoutManager();
     }
 
     @Override
-    protected Position getPos(final Object nextObj) {
-        return ((ListElement) nextObj).getPosition();
+    protected Position getPos(final ListElement nextObj) {
+        return nextObj.getPosition();
     }
 }

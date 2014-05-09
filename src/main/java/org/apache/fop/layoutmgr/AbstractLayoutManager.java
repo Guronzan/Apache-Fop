@@ -32,21 +32,22 @@ import org.apache.fop.area.PageViewport;
 import org.apache.fop.fo.Constants;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
+import org.apache.fop.fo.flow.Marker;
 import org.apache.fop.fo.flow.RetrieveMarker;
 import org.apache.xmlgraphics.util.QName;
 
 @Slf4j
 public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
-        implements Constants {
+implements Constants {
 
     /** Parent LayoutManager for this LayoutManager */
     protected LayoutManager parentLayoutManager;
     /** List of child LayoutManagers */
     protected List<LayoutManager> childLMs;
     /** Iterator for child LayoutManagers */
-    protected ListIterator fobjIter;
+    protected ListIterator<FONode> fobjIter;
     /** Marker map for markers related to this LayoutManager */
-    private Map markers;
+    private Map<String, Marker> markers;
 
     /** True if this LayoutManager has handled all of its content. */
     private boolean isFinished;
@@ -55,7 +56,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
     protected LayoutManager curChildLM;
 
     /** child LM iterator during getNextKnuthElement phase */
-    protected ListIterator childLMiter;
+    protected ListIterator<LayoutManager> childLMiter;
 
     private int lastGeneratedPosition = -1;
     private int smallestPosNumberChecked = Integer.MAX_VALUE;
@@ -112,7 +113,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
             return this.curChildLM;
         }
         if (this.childLMiter.hasNext()) {
-            this.curChildLM = (LayoutManager) this.childLMiter.next();
+            this.curChildLM = this.childLMiter.next();
             this.curChildLM.initialize();
             return this.curChildLM;
         }
@@ -123,7 +124,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
         this.curChildLM = childLM;
         this.childLMiter = new LMiter(this);
         do {
-            this.curChildLM = (LayoutManager) this.childLMiter.next();
+            this.curChildLM = this.childLMiter.next();
         } while (this.curChildLM != childLM);
     }
 
@@ -427,7 +428,7 @@ public abstract class AbstractLayoutManager extends AbstractBaseLayoutManager
             final boolean isFirst, final boolean isLast) {
         if (this.markers != null) {
             getCurrentPV()
-                    .addMarkers(this.markers, isStarting, isFirst, isLast);
+            .addMarkers(this.markers, isStarting, isFirst, isLast);
         }
     }
 

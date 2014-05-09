@@ -102,13 +102,13 @@ public class LayoutContext {
      * A list of pending marks (border and padding) on the after edge when a
      * page break occurs. May be null.
      */
-    private List<UnresolvedListElementWithLength> pendingAfterMarks;
+    private List<ListElement> pendingAfterMarks;
 
     /**
      * A list of pending marks (border and padding) on the before edge when a
      * page break occurs. May be null.
      */
-    private List<UnresolvedListElementWithLength> pendingBeforeMarks;
+    private List<ListElement> pendingBeforeMarks;
 
     /** Current hyphenation context. May be null. */
     private HyphContext hyphContext = null;
@@ -347,7 +347,7 @@ public class LayoutContext {
      * @return the pending border and padding elements at the after edge
      * @see #addPendingAfterMark(UnresolvedListElementWithLength)
      */
-    public List<UnresolvedListElementWithLength> getPendingAfterMarks() {
+    public List<ListElement> getPendingAfterMarks() {
         if (this.pendingAfterMarks != null) {
             return Collections.unmodifiableList(this.pendingAfterMarks);
         } else {
@@ -383,7 +383,7 @@ public class LayoutContext {
      * @return the pending border and padding elements at the before edge
      * @see #addPendingBeforeMark(UnresolvedListElementWithLength)
      */
-    public List<UnresolvedListElementWithLength> getPendingBeforeMarks() {
+    public List<ListElement> getPendingBeforeMarks() {
         if (this.pendingBeforeMarks != null) {
             return Collections.unmodifiableList(this.pendingBeforeMarks);
         } else {
@@ -560,16 +560,16 @@ public class LayoutContext {
      */
     public void signalSpanChange(final int span) {
         switch (span) {
-        case Constants.NOT_SET:
-        case Constants.EN_NONE:
-        case Constants.EN_ALL:
-            this.currentSpan = this.nextSpan;
-            this.nextSpan = span;
-            break;
-        default:
-            assert false;
-            throw new IllegalArgumentException(
-                    "Illegal value on signalSpanChange() for span: " + span);
+            case Constants.NOT_SET:
+            case Constants.EN_NONE:
+            case Constants.EN_ALL:
+                this.currentSpan = this.nextSpan;
+                this.nextSpan = span;
+                break;
+            default:
+                assert false;
+                throw new IllegalArgumentException(
+                        "Illegal value on signalSpanChange() for span: " + span);
         }
     }
 

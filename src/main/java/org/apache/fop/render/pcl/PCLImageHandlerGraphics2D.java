@@ -95,8 +95,8 @@ public class PCLImageHandlerGraphics2D implements ImageHandler {
             final PCLGraphics2D graphics = new PCLGraphics2D(tempGen);
             graphics.setGraphicContext(ctx);
             graphics.setClippingDisabled(false /*
-             * pclContext.isClippingDisabled()
-             */);
+                                                * pclContext.isClippingDisabled()
+                                                */);
             final Rectangle2D area = new Rectangle2D.Double(0.0, 0.0,
                     imageDim.getWidth(), imageDim.getHeight());
             imageG2D.getGraphics2DImagePainter().paint(graphics, area);
@@ -135,10 +135,11 @@ public class PCLImageHandlerGraphics2D implements ImageHandler {
             try {
                 imgRend = (ImageRendered) imageManager.convertImage(imageG2D,
                         new ImageFlavor[] { ImageFlavor.RENDERED_IMAGE }/*
-                         * ,
-                         * hints
-                         */);
+                                                                         * ,
+                                                                         * hints
+                                                                         */);
             } catch (final ImageException e) {
+                log.error("ImageException", e);
                 throw new IOException(
                         "Image conversion error while converting the image to a bitmap"
                                 + " as a fallback measure: " + e.getMessage());

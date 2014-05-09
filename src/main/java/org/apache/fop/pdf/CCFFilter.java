@@ -48,7 +48,7 @@ public class CCFFilter extends NullFilter {
 
     /**
      * Sets the CCF decoding parameters
-     *
+     * 
      * @param decodeParms
      *            The decoding parameters
      */

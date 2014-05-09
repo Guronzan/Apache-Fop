@@ -19,17 +19,14 @@
 
 package org.apache.fop.layoutmgr;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.traits.MinOptMax;
 
 /**
  * This class represents an unresolved list element element with a (conditional)
  * length. This is the base class for spaces, borders and paddings.
  */
-@Slf4j
 public abstract class UnresolvedListElementWithLength extends
-UnresolvedListElement {
+        UnresolvedListElement {
 
     private final MinOptMax length;
     private final boolean conditional;

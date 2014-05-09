@@ -149,8 +149,8 @@ import org.apache.xmlgraphics.util.QName;
  *
  */
 @Slf4j
-public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
-        implements AFPCustomizable {
+public class AFPRenderer extends AbstractPathOrientedRenderer implements
+        AFPCustomizable {
 
     private static final int X = 0;
     private static final int Y = 1;
@@ -476,15 +476,15 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
     }
 
     private static final ImageFlavor[] NATIVE_FLAVORS = new ImageFlavor[] {
-            ImageFlavor.XML_DOM,
-            /* ImageFlavor.RAW_PNG, */// PNG not natively supported in AFP
-            ImageFlavor.RAW_JPEG, ImageFlavor.RAW_CCITTFAX,
-            ImageFlavor.RAW_EPS, ImageFlavor.RAW_TIFF, ImageFlavor.GRAPHICS2D,
-            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
+        ImageFlavor.XML_DOM,
+        /* ImageFlavor.RAW_PNG, */// PNG not natively supported in AFP
+        ImageFlavor.RAW_JPEG, ImageFlavor.RAW_CCITTFAX,
+        ImageFlavor.RAW_EPS, ImageFlavor.RAW_TIFF, ImageFlavor.GRAPHICS2D,
+        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-            ImageFlavor.XML_DOM, ImageFlavor.GRAPHICS2D,
-            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
+        ImageFlavor.XML_DOM, ImageFlavor.GRAPHICS2D,
+        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     /** {@inheritDoc} */
     @Override
@@ -559,7 +559,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
                 } else {
                     throw new UnsupportedOperationException(
                             "No AFPImageHandler available for image: " + info
-                                    + " (" + img.getClass().getName() + ")");
+                            + " (" + img.getClass().getName() + ")");
                 }
 
             } catch (final ImageException ie) {
@@ -609,8 +609,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
 
     /** {@inheritDoc} */
     @Override
-    public void restoreStateStackAfterBreakOut(
-            final List<AbstractData> breakOutList) {
+    public void restoreStateStackAfterBreakOut(final List breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
         this.paintingState.saveAll(breakOutList);
     }
@@ -699,7 +698,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
         variableSpaceCharacterIncrement = Math.round(this.unitConv
                 .mpt2units(variableSpaceCharacterIncrement));
         textDataInfo
-                .setVariableSpaceCharacterIncrement(variableSpaceCharacterIncrement);
+        .setVariableSpaceCharacterIncrement(variableSpaceCharacterIncrement);
 
         final int interCharacterAdjustment = Math.round(this.unitConv
                 .mpt2units(textLetterSpaceAdjust));
@@ -751,17 +750,18 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
         final Color col = (Color) area.getTrait(Trait.COLOR);
 
         switch (style) {
-        case EN_SOLID:
-        case EN_DASHED:
-        case EN_DOUBLE:
-        case EN_DOTTED:
-        case EN_GROOVE:
-        case EN_RIDGE:
-            drawBorderLine(startx, starty, endx, starty + ruleThickness, true,
-                    true, style, col);
-            break;
-        default:
-            throw new UnsupportedOperationException("rule style not supported");
+            case EN_SOLID:
+            case EN_DASHED:
+            case EN_DOUBLE:
+            case EN_DOTTED:
+            case EN_GROOVE:
+            case EN_RIDGE:
+                drawBorderLine(startx, starty, endx, starty + ruleThickness,
+                        true, true, style, col);
+                break;
+            default:
+                throw new UnsupportedOperationException(
+                        "rule style not supported");
         }
         super.renderLeader(area);
     }
@@ -797,7 +797,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
                         if (mediumMap != null) {
                             if (!mediumMap.equals(this.lastMediumMap)) {
                                 this.dataStream
-                                        .createInvokeMediumMap(mediumMap);
+                                .createInvokeMediumMap(mediumMap);
                                 this.lastMediumMap = mediumMap;
                             }
                         }
@@ -836,7 +836,7 @@ public class AFPRenderer extends AbstractPathOrientedRenderer<AbstractData>
                             final String name = aps.getName();
                             final String value = aps.getValue();
                             this.dataStream
-                                    .createTagLogicalElement(name, value);
+                            .createTagLogicalElement(name, value);
                         } else if (AFPElementMapping.NO_OPERATION
                                 .equals(element)) {
                             final String content = aps.getContent();

@@ -119,7 +119,7 @@ import org.apache.xmlgraphics.util.QName;
  * @version $Id: PSRenderer.java 932497 2010-04-09 16:34:29Z vhennebert $
  */
 @Slf4j
-public class PSRenderer extends AbstractPathOrientedRenderer<PSState> implements
+public class PSRenderer extends AbstractPathOrientedRenderer implements
 ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
 
     /** The MIME type for PostScript */
@@ -142,7 +142,7 @@ ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
     /**
      * Used to temporarily store PSSetupCode instance until they can be written.
      */
-    private List<ExtensionAttachment> setupCodeList;
+    private List<PSSetupCode> setupCodeList;
 
     /**
      * This is a map of PSResource instances of all fonts defined (key: font
@@ -837,7 +837,7 @@ ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
                             this.setupCodeList = new ArrayList<>();
                         }
                         if (!this.setupCodeList.contains(attachment)) {
-                            this.setupCodeList.add(attachment);
+                            this.setupCodeList.add((PSSetupCode) attachment);
                         }
                     } else if (attachment instanceof PSSetPageDevice) {
                         /**
@@ -901,11 +901,11 @@ ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
         final List<Long> pageSizes = new ArrayList<>();
         if (getPSUtil().isAutoRotateLandscape() && pageHeight < pageWidth) {
             rotate = true;
-            pageSizes.add(new Long(Math.round(pageHeight)));
-            pageSizes.add(new Long(Math.round(pageWidth)));
+            pageSizes.add(Long.valueOf(Math.round(pageHeight)));
+            pageSizes.add(Long.valueOf(Math.round(pageWidth)));
         } else {
-            pageSizes.add(new Long(Math.round(pageWidth)));
-            pageSizes.add(new Long(Math.round(pageHeight)));
+            pageSizes.add(Long.valueOf(Math.round(pageWidth)));
+            pageSizes.add(Long.valueOf(Math.round(pageHeight)));
         }
         this.pageDeviceDictionary.put("/PageSize", pageSizes);
 
@@ -952,17 +952,19 @@ ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
             this.gen.writeDSCComment(
                     DSCConstants.PAGE_BBOX,
                     new Object[] { zero, zero,
-                            new Long(Math.round(pageHeight)),
-                            new Long(Math.round(pageWidth)) });
+                            Long.valueOf(Math.round(pageHeight)),
+                            Long.valueOf(Math.round(pageWidth)) });
             this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                     new Object[] { zero, zero, new Double(pageHeight),
                     new Double(pageWidth) });
             this.gen.writeDSCComment(DSCConstants.PAGE_ORIENTATION, "Landscape");
         } else {
             pageBoundingBox.setRect(0, 0, pageWidth, pageHeight);
-            this.gen.writeDSCComment(DSCConstants.PAGE_BBOX,
-                    new Object[] { zero, zero, new Long(Math.round(pageWidth)),
-                    new Long(Math.round(pageHeight)) });
+            this.gen.writeDSCComment(
+                    DSCConstants.PAGE_BBOX,
+                    new Object[] { zero, zero,
+                            Long.valueOf(Math.round(pageWidth)),
+                            Long.valueOf(Math.round(pageHeight)) });
             this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                     new Object[] { zero, zero, new Double(pageWidth),
                     new Double(pageHeight) });
@@ -1258,13 +1260,12 @@ ImageAdapter, PSSupportedFlavors, PSConfigurationConstants {
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(
-            final List<PSState> breakOutList) {
+    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
         try {
             comment("------ restoring context after break-out...");
-            for (final PSState state : breakOutList) {
+            for (final Object state : breakOutList) {
                 saveGraphicsState();
-                state.reestablish(this.gen);
+                ((PSState) state).reestablish(this.gen);
             }
             comment("------ done.");
         } catch (final IOException ioe) {

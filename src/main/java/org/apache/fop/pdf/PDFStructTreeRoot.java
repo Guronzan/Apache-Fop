@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFStructTreeRoot.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFStructTreeRoot.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -27,10 +27,9 @@ public class PDFStructTreeRoot extends PDFDictionary {
     /**
      * Creates a new /StructTreeRoot dictionary.
      *
-     * @param parentTree
-     *            the value of the ParenTree entry
+     * @param parentTree the value of the ParenTree entry
      */
-    PDFStructTreeRoot(final PDFParentTree parentTree) {
+    PDFStructTreeRoot(PDFParentTree parentTree) {
         put("Type", new PDFName("StructTreeRoot"));
         put("K", new PDFArray());
         put("ParentTree", parentTree);
@@ -42,16 +41,15 @@ public class PDFStructTreeRoot extends PDFDictionary {
      * @return the value of the K entry
      */
     public PDFArray getKids() {
-        return (PDFArray) get("K");
+        return (PDFArray)get("K");
     }
 
     /**
      * Adds the given object to the array of kids.
      *
-     * @param kid
-     *            an object to be added to the K entry
+     * @param kid an object to be added to the K entry
      */
-    public void addKid(final PDFObject kid) {
+    public void addKid(PDFObject kid) {
         getKids().add(kid);
     }
 }

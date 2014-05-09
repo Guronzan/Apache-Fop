@@ -1,5 +1,8 @@
 package org.apache.fop.fonts.base14;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.fop.fonts.Base14Font;
@@ -10,7 +13,7 @@ import org.apache.fop.fonts.Typeface;
 public class ZapfDingbats extends Base14Font {
     private final static String fontName = "ZapfDingbats";
     private final static String fullName = "ITC Zapf Dingbats";
-    private final static Set familyNames;
+    private final static Set<String> familyNames;
     private final static String encoding = "ZapfDingbatsEncoding";
     private final static int capHeight = 820;
     private final static int xHeight = 426;
@@ -230,7 +233,7 @@ public class ZapfDingbats extends Base14Font {
         width[0x8D] = 334;
         width[0x8B] = 234;
 
-        familyNames = new java.util.HashSet();
+        familyNames = new HashSet<>();
         familyNames.add("ZapfDingbats");
     }
 
@@ -263,7 +266,7 @@ public class ZapfDingbats extends Base14Font {
     }
 
     @Override
-    public Set getFamilyNames() {
+    public Set<String> getFamilyNames() {
         return familyNames;
     }
 
@@ -319,8 +322,8 @@ public class ZapfDingbats extends Base14Font {
     }
 
     @Override
-    public java.util.Map getKerningInfo() {
-        return java.util.Collections.EMPTY_MAP;
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
+        return Collections.emptyMap();
     }
 
     @Override

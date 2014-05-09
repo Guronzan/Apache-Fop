@@ -47,7 +47,7 @@ public class AreaAdditionUtil {
 
     /**
      * Creates the child areas for the given layout manager.
-     * 
+     *
      * @param bslm
      *            the BlockStackingLayoutManager instance for which "addAreas"
      *            is performed.
@@ -67,10 +67,10 @@ public class AreaAdditionUtil {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList();
+        final LinkedList positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             if (pos == null) {
                 continue;
             }

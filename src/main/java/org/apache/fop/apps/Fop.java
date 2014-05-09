@@ -61,7 +61,7 @@ public class Fop {
     /**
      * Constructor for use with already-created FOUserAgents. It uses MIME types
      * to select the output format (ex. "application/pdf" for PDF).
-     * 
+     *
      * @param outputFormat
      *            the MIME type of the output format to use (ex.
      *            "application/pdf").
@@ -76,10 +76,10 @@ public class Fop {
             final OutputStream stream) throws FOPException {
         this.outputFormat = outputFormat;
 
-        this.foUserAgent = ua;
-        if (this.foUserAgent == null) {
-            this.foUserAgent = FopFactory.newInstance().newFOUserAgent();
-        }
+        // this.foUserAgent = ua;
+        // if (this.foUserAgent == null) {
+        this.foUserAgent = FopFactory.newInstance().newFOUserAgent();
+        // }
 
         this.stream = stream;
 
@@ -89,7 +89,7 @@ public class Fop {
     /**
      * Get the FOUserAgent instance associated with the rendering run
      * represented by this instance.
-     * 
+     *
      * @return the user agent
      */
     public FOUserAgent getUserAgent() {
@@ -115,7 +115,7 @@ public class Fop {
     /**
      * Returns the DefaultHandler object that will receive the SAX stream
      * containing the FO document to be rendered.
-     * 
+     *
      * @return the SAX DefaultHandler for handling the SAX events.
      * @throws FOPException
      *             if setting up the DefaultHandler fails
@@ -138,7 +138,7 @@ public class Fop {
      * page-sequence. Call this method only after the rendering process is
      * finished. Note that the results are only available for output formats
      * which make use of FOP's layout engine (PDF, PS, etc.).
-     * 
+     *
      * @return the results of the rendering process, or null for flow-oriented
      *         output formats like RTF and MIF.
      */

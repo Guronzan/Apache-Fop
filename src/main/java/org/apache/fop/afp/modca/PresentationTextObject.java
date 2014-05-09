@@ -58,7 +58,7 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
     /**
      * The presentation text data list
      */
-    private List/* <PresentationTextData> */presentationTextDataList = null;
+    private List<PresentationTextData> presentationTextDataList = null;
 
     private final PtocaBuilder builder = new DefaultBuilder();
 
@@ -88,7 +88,7 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
 
     /**
      * Creates a chain of control sequences using a producer.
-     * 
+     *
      * @param producer
      *            the producer
      * @throws UnsupportedEncodingException
@@ -144,11 +144,7 @@ public class PresentationTextObject extends AbstractNamedAFPObject {
      */
     private void startPresentationTextData() {
         if (this.presentationTextDataList == null) {
-            this.presentationTextDataList = new java.util.ArrayList/*
-                                                                    * <
-                                                                    * PresentationTextData
-                                                                    * >
-                                                                    */();
+            this.presentationTextDataList = new java.util.ArrayList<>();
         }
         if (this.presentationTextDataList.size() == 0) {
             this.currentPresentationTextData = new PresentationTextData(true);

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDocumentHandlerMaker.java 747010 2009-02-23 13:25:08Z jeremias $ */
+/* $Id: PDFDocumentHandlerMaker.java 1242848 2012-02-10 16:51:08Z phancock $ */
 
 package org.apache.fop.render.pdf;
 
@@ -37,6 +37,10 @@ public class PDFDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     public IFDocumentHandler makeIFDocumentHandler(final FOUserAgent ua) {
         final PDFDocumentHandler handler = new PDFDocumentHandler();
         handler.setContext(new IFContext(ua));
+        if (ua.isAccessibilityEnabled()) {
+            ua.setStructureTreeEventHandler(handler
+                    .getStructureTreeEventHandler());
+        }
         return handler;
     }
 

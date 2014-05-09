@@ -55,7 +55,7 @@ public final class NumberProperty extends Property implements Numeric {
         @Override
         public Property convertProperty(final Property p,
                 final PropertyList propertyList, final FObj fo)
-                        throws PropertyException {
+                throws PropertyException {
             if (p instanceof NumberProperty) {
                 return p;
             }
@@ -92,7 +92,7 @@ public final class NumberProperty extends Property implements Numeric {
         @Override
         public Property convertProperty(final Property p,
                 final PropertyList propertyList, final FObj fo)
-                        throws PropertyException {
+                throws PropertyException {
             if (p instanceof EnumProperty) {
                 return EnumNumber.getInstance(p);
             }
@@ -126,9 +126,9 @@ public final class NumberProperty extends Property implements Numeric {
         // if possible
         if (num == Math.floor(num)) {
             if (num < Integer.MAX_VALUE) {
-                this.number = ((int) num);
+                this.number = (int) num;
             } else {
-                this.number = new Long((long) num);
+                this.number = Long.valueOf((long) num);
             }
         } else {
             this.number = new Double(num);
@@ -142,7 +142,7 @@ public final class NumberProperty extends Property implements Numeric {
      *            integer numeric value for property
      */
     private NumberProperty(final int num) {
-        this.number = (num);
+        this.number = num;
     }
 
     /**

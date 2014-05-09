@@ -27,7 +27,7 @@
 	</target>
 
 	<target name="deploy" depends="jarDeploy, conf">
-		<copy file="${fop.dir}/target/Apache-Fop.jar" todir="${fop.dir}/liv/lib" />
+		<copy file="${fop.dir}/target/Fop.jar" todir="${fop.dir}/liv/lib" />
 	</target>
 
 

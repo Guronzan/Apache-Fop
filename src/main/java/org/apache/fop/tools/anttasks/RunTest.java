@@ -129,7 +129,7 @@ public class RunTest extends Task {
                 }
             }
         } catch (final MalformedURLException mue) {
-            mue.printStackTrace();
+            log.error("MalformedURLException", mue);
         }
     }
 
@@ -173,7 +173,7 @@ public class RunTest extends Task {
             if (failed) {
                 throw new BuildException(
                         "Reference jar could not be found in: " + this.basedir
-                        + "/reference/");
+                                + "/reference/");
             }
             f.mkdirs();
             runConverter(loader, "reference/output/", null);
@@ -215,7 +215,7 @@ public class RunTest extends Task {
             diff = (Map) meth.invoke(tc, new Object[] { this.testsuite, dest,
                     compDir });
         } catch (final Exception e) {
-            e.printStackTrace();
+            log.error("Exception", e);
         }
         return diff;
     }

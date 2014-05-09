@@ -37,14 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RasterFont extends AFPFont {
 
-    private final SortedMap/* <Integer,CharacterSet> */charSets = new java.util.TreeMap/*
-     * <
-     * Integer
-     * ,
-     * CharacterSet
-     * >
-     */();
-    private Map/* <Integer,CharacterSet> */substitutionCharSets;
+    private final SortedMap<Integer, CharacterSet> charSets = new java.util.TreeMap<>();
+    private Map<Integer, CharacterSet> substitutionCharSets;
 
     private CharacterSet charSet = null;
 
@@ -69,7 +63,7 @@ public class RasterFont extends AFPFont {
      */
     public void addCharacterSet(final int size, final CharacterSet characterSet) {
         // TODO: replace with Integer.valueOf() once we switch to Java 5
-        this.charSets.put((size), characterSet);
+        this.charSets.put(size, characterSet);
         this.charSet = characterSet;
     }
 
@@ -84,8 +78,8 @@ public class RasterFont extends AFPFont {
     public CharacterSet getCharacterSet(final int size) {
 
         // TODO: replace with Integer.valueOf() once we switch to Java 5
-        final Integer requestedSize = (size);
-        CharacterSet csm = (CharacterSet) this.charSets.get(requestedSize);
+        final Integer requestedSize = size;
+        CharacterSet csm = this.charSets.get(requestedSize);
 
         if (csm != null) {
             return csm;
@@ -93,34 +87,36 @@ public class RasterFont extends AFPFont {
 
         if (this.substitutionCharSets != null) {
             // Check first if a substitution has already been added
-            csm = (CharacterSet) this.substitutionCharSets.get(requestedSize);
+            csm = this.substitutionCharSets.get(requestedSize);
         }
 
         if (csm == null && !this.charSets.isEmpty()) {
             // No match or substitution found, but there exist entries
             // for other sizes
             // Get char set with nearest, smallest font size
-            final SortedMap smallerSizes = this.charSets.headMap(requestedSize);
-            final SortedMap largerSizes = this.charSets.tailMap(requestedSize);
-            final int smallerSize = smallerSizes.isEmpty() ? 0
-                    : ((Integer) smallerSizes.lastKey()).intValue();
+            final SortedMap<Integer, CharacterSet> smallerSizes = this.charSets
+                    .headMap(requestedSize);
+            final SortedMap<Integer, CharacterSet> largerSizes = this.charSets
+                    .tailMap(requestedSize);
+            final int smallerSize = smallerSizes.isEmpty() ? 0 : smallerSizes
+                    .lastKey().intValue();
             final int largerSize = largerSizes.isEmpty() ? Integer.MAX_VALUE
-                    : ((Integer) largerSizes.firstKey()).intValue();
+                    : largerSizes.firstKey().intValue();
 
             Integer fontSize;
             if (!smallerSizes.isEmpty()
                     && size - smallerSize <= largerSize - size) {
-                fontSize = (smallerSize);
+                fontSize = smallerSize;
             } else {
-                fontSize = (largerSize);
+                fontSize = largerSize;
             }
-            csm = (CharacterSet) this.charSets.get(fontSize);
+            csm = this.charSets.get(fontSize);
 
             if (csm != null) {
                 // Add the substitute mapping, so subsequent calls will
                 // find it immediately
                 if (this.substitutionCharSets == null) {
-                    this.substitutionCharSets = new HashMap();
+                    this.substitutionCharSets = new HashMap<>();
                 }
                 this.substitutionCharSets.put(requestedSize, csm);
                 final String msg = "No " + size / 1000f + "pt font "
@@ -148,9 +144,9 @@ public class RasterFont extends AFPFont {
      * @return the first character in this font.
      */
     public int getFirstChar() {
-        final Iterator it = this.charSets.values().iterator();
+        final Iterator<CharacterSet> it = this.charSets.values().iterator();
         if (it.hasNext()) {
-            final CharacterSet csm = (CharacterSet) it.next();
+            final CharacterSet csm = it.next();
             return csm.getFirstChar();
         } else {
             final String msg = "getFirstChar() - No character set found for font:"
@@ -167,9 +163,9 @@ public class RasterFont extends AFPFont {
      */
     public int getLastChar() {
 
-        final Iterator it = this.charSets.values().iterator();
+        final Iterator<CharacterSet> it = this.charSets.values().iterator();
         if (it.hasNext()) {
-            final CharacterSet csm = (CharacterSet) it.next();
+            final CharacterSet csm = it.next();
             return csm.getLastChar();
         } else {
             final String msg = "getLastChar() - No character set found for font:"

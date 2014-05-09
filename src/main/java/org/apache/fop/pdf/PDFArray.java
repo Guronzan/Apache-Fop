@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFArray.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFArray.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.output.CountingOutputStream;
@@ -35,11 +32,11 @@ public class PDFArray extends PDFObject {
     /**
      * List holding the values of this array
      */
-    protected List<Object> values = new ArrayList<>();
+    protected List<Object> values = new java.util.ArrayList<Object>();
 
     /**
      * Create a new, empty array object
-     *
+     * 
      * @param parent
      *            the array's parent if any
      */
@@ -52,12 +49,12 @@ public class PDFArray extends PDFObject {
      * Create a new, empty array object with no parent.
      */
     public PDFArray() {
-        this(null);
+        this((PDFObject) null);
     }
 
     /**
      * Create an array object.
-     *
+     * 
      * @param parent
      *            the array's parent if any
      * @param values
@@ -68,13 +65,13 @@ public class PDFArray extends PDFObject {
         super(parent);
 
         for (final int value : values) {
-            this.values.add(value);
+            this.values.add(Integer.valueOf(value));
         }
     }
 
     /**
      * Create an array object.
-     *
+     * 
      * @param parent
      *            the array's parent if any
      * @param values
@@ -91,13 +88,13 @@ public class PDFArray extends PDFObject {
 
     /**
      * Create an array object.
-     *
+     * 
      * @param parent
      *            the array's parent if any
      * @param values
      *            the actual values wrapped by this object
      */
-    public PDFArray(final PDFObject parent, final Collection<Integer> values) {
+    public PDFArray(final PDFObject parent, final List<?> values) {
         /* generic creation of PDF object */
         super(parent);
 
@@ -105,8 +102,18 @@ public class PDFArray extends PDFObject {
     }
 
     /**
-     * Create the array object
+     * Creates an array object made of the given elements.
      *
+     * @param elements
+     *            the array content
+     */
+    public PDFArray(final Object... elements) {
+        this(null, elements);
+    }
+
+    /**
+     * Create the array object
+     * 
      * @param parent
      *            the array's parent if any
      * @param values
@@ -123,7 +130,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Indicates whether the given object exists in the array.
-     *
+     * 
      * @param obj
      *            the object to look for
      * @return true if obj is contained
@@ -134,7 +141,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Returns the length of the array
-     *
+     * 
      * @return the length of the array
      */
     public int length() {
@@ -143,7 +150,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Sets an entry at a given location.
-     *
+     * 
      * @param index
      *            the index of the value to set
      * @param obj
@@ -155,7 +162,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Sets an entry at a given location.
-     *
+     * 
      * @param index
      *            the index of the value to set
      * @param value
@@ -167,7 +174,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Gets an entry at a given location.
-     *
+     * 
      * @param index
      *            the index of the value to set
      * @return the requested value
@@ -178,7 +185,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Adds a new value to the array.
-     *
+     * 
      * @param obj
      *            the value
      */
@@ -194,7 +201,7 @@ public class PDFArray extends PDFObject {
 
     /**
      * Adds a new value to the array.
-     *
+     * 
      * @param value
      *            the value
      */
@@ -202,33 +209,29 @@ public class PDFArray extends PDFObject {
         this.values.add(new Double(value));
     }
 
+    /**
+     * Clears the PDF array.
+     */
+    public void clear() {
+        this.values.clear();
+    }
+
     /** {@inheritDoc} */
     @Override
-    protected int output(final OutputStream stream) throws IOException {
-        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
-            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
-                if (hasObjectNumber()) {
-                    writer.write(getObjectID());
-                }
-
-                writer.write('[');
-                for (int i = 0; i < this.values.size(); ++i) {
-                    if (i > 0) {
-                        writer.write(' ');
-                    }
-                    final Object obj = this.values.get(i);
-                    formatObject(obj, cout, writer);
-                }
-                writer.write(']');
-
-                if (hasObjectNumber()) {
-                    writer.write("\nendobj\n");
-                }
-
-                writer.flush();
-                return cout.getCount();
+    public int output(final OutputStream stream) throws IOException {
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final StringBuilder textBuffer = new StringBuilder(64);
+        textBuffer.append('[');
+        for (int i = 0; i < this.values.size(); i++) {
+            if (i > 0) {
+                textBuffer.append(' ');
             }
+            final Object obj = this.values.get(i);
+            formatObject(obj, cout, textBuffer);
         }
+        textBuffer.append(']');
+        PDFDocument.flushTextBuffer(textBuffer, cout);
+        return cout.getCount();
     }
 
 }

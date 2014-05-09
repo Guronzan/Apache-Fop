@@ -30,8 +30,8 @@ import javax.xml.transform.Source;
 /**
  * Abstract base class for custom fonts loaded from files, for example.
  */
-public abstract class CustomFont<T, U> extends Typeface implements
-        FontDescriptor, MutableFont<T, U> {
+public abstract class CustomFont<T, U> extends Typeface<T, U> implements
+FontDescriptor<T, U>, MutableFont<T, U> {
 
     private String fontName = null;
     private String fullName = null;

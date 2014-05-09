@@ -48,7 +48,7 @@ public abstract class CharIterator implements Iterator, Cloneable {
      */
     @Override
     public Object next() throws NoSuchElementException {
-        return new Character(nextChar());
+        return Character.valueOf(nextChar());
     }
 
     /**

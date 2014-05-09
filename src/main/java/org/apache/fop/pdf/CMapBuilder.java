@@ -15,18 +15,29 @@
  * limitations under the License.
  */
 
-/* $Id: CMapBuilder.java 731479 2009-01-05 07:47:02Z jeremias $ */
+/* $Id: CMapBuilder.java 1297404 2012-03-06 10:17:54Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.Writer;
 
+/** A cmap builder. */
 public class CMapBuilder {
 
+    /** name */
     protected String name;
+    /** writer */
     protected Writer writer;
 
+    /**
+     * Construct cmap builder.
+     * 
+     * @param writer
+     *            a writer
+     * @param name
+     *            a name
+     */
     public CMapBuilder(final Writer writer, final String name) {
         this.writer = writer;
         this.name = name;
@@ -34,7 +45,7 @@ public class CMapBuilder {
 
     /**
      * Writes the CMap to a Writer.
-     *
+     * 
      * @throws IOException
      *             if an I/O error occurs
      */
@@ -54,12 +65,20 @@ public class CMapBuilder {
         writeUseCMap();
     }
 
-    protected void writePreStream() {
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
+    protected void writePreStream() throws IOException {
         // writer.write("/Type /CMap\n");
         // writer.write(sysInfo.toPDFString());
         // writer.write("/CMapName /" + name + EOL);
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeStreamComments() throws IOException {
         this.writer.write("%!PS-Adobe-3.0 Resource-CMap\n");
         this.writer.write("%%DocumentNeededResources: ProcSet (CIDInit)\n");
@@ -68,12 +87,26 @@ public class CMapBuilder {
         this.writer.write("%%EndComments\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCIDInit() throws IOException {
         this.writer.write("/CIDInit /ProcSet findresource begin\n");
         this.writer.write("12 dict begin\n");
         this.writer.write("begincmap\n");
     }
 
+    /**
+     * @param registry
+     *            string
+     * @param ordering
+     *            string
+     * @param supplement
+     *            string
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCIDSystemInfo(final String registry,
             final String ordering, final int supplement) throws IOException {
         this.writer.write("/CIDSystemInfo 3 dict dup begin\n");
@@ -89,32 +122,64 @@ public class CMapBuilder {
         this.writer.write("end def\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCIDSystemInfo() throws IOException {
         writeCIDSystemInfo("Adobe", "Identity", 0);
     }
 
+    /**
+     * @param version
+     *            a version
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeVersion(final String version) throws IOException {
         this.writer.write("/CMapVersion ");
         this.writer.write(version);
         this.writer.write(" def\n");
     }
 
+    /**
+     * @param type
+     *            a type
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeType(final String type) throws IOException {
         this.writer.write("/CMapType ");
         this.writer.write(type);
         this.writer.write(" def\n");
     }
 
+    /**
+     * @param name
+     *            a name
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeName(final String name) throws IOException {
         this.writer.write("/CMapName /");
         this.writer.write(name);
         this.writer.write(" def\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCodeSpaceRange() throws IOException {
         writeCodeSpaceRange(false);
     }
 
+    /**
+     * @param singleByte
+     *            true if single byte range
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCodeSpaceRange(final boolean singleByte)
             throws IOException {
         this.writer.write("1 begincodespacerange\n");
@@ -126,6 +191,10 @@ public class CMapBuilder {
         this.writer.write("endcodespacerange\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeCIDRange() throws IOException {
         this.writer.write("1 begincidrange\n");
         this.writer.write("<0000> <FFFF> 0\n");
@@ -134,6 +203,7 @@ public class CMapBuilder {
 
     /**
      * @throws IOException
+     *             if i/o exception
      */
     protected void writeBFEntries() throws IOException {
         // writer.write("1 beginbfrange\n");
@@ -141,6 +211,10 @@ public class CMapBuilder {
         // writer.write("endbfrange\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeWrapUp() throws IOException {
         this.writer.write("endcmap\n");
         this.writer.write("CMapName currentdict /CMap defineresource pop\n");
@@ -148,11 +222,16 @@ public class CMapBuilder {
         this.writer.write("end\n");
     }
 
+    /**
+     * @throws IOException
+     *             if i/o exception
+     */
     protected void writeStreamAfterComments() throws IOException {
         this.writer.write("%%EndResource\n");
         this.writer.write("%%EOF\n");
     }
 
+    /** does nothing */
     protected void writeUseCMap() {
         /*
          * writer.write(" /Type /CMap"); writer.write("/CMapName /" + name +

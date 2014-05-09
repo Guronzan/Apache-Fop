@@ -92,12 +92,12 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
         final byte[] va = this.vspace.getArray();
         for (i = 0; i < n; ++i) {
             final int j = i >> 1;
-            final byte v = (byte) (values.charAt(i) - '0' + 1 & 0x0f);
-            if ((i & 1) == 1) {
-                va[j + offset] = (byte) (va[j + offset] | v);
-            } else {
-                va[j + offset] = (byte) (v << 4); // big endian
-            }
+        final byte v = (byte) (values.charAt(i) - '0' + 1 & 0x0f);
+        if ((i & 1) == 1) {
+            va[j + offset] = (byte) (va[j + offset] | v);
+        } else {
+            va[j + offset] = (byte) (v << 4); // big endian
+        }
         }
         va[m - 1 + offset] = 0; // terminator
         return offset;
@@ -507,13 +507,13 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
     }
 
     public static void main(final String[] argv) throws IOException,
-            HyphenationException {
+    HyphenationException {
         HyphenationTree ht = null;
         int minCharCount = 2;
         final BufferedReader in = new BufferedReader(
                 new java.io.InputStreamReader(System.in));
         while (true) {
-            System.out.print("l:\tload patterns from XML\n"
+            log.info("l:\tload patterns from XML\n"
                     + "L:\tload patterns from serialized object\n"
                     + "s:\tset minimum character count\n"
                     + "w:\twrite hyphenation tree to object file\n"
@@ -521,82 +521,62 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
                     + "b:\tbenchmark\n" + "q:\tquit\n\n" + "Command:");
             String token = in.readLine().trim();
             if (token.equals("f")) {
-                System.out.print("Pattern: ");
+                log.info("Pattern: ");
                 token = in.readLine().trim();
-                log.info("Values: " + ht.findPattern(token));
+                if (ht != null) {
+                    log.info("Values: " + ht.findPattern(token));
+                }
             } else if (token.equals("s")) {
-                System.out.print("Minimun value: ");
+                log.info("Minimun value: ");
                 token = in.readLine().trim();
                 minCharCount = Integer.parseInt(token);
             } else if (token.equals("l")) {
                 ht = new HyphenationTree();
-                System.out.print("XML file name: ");
+                log.info("XML file name: ");
                 token = in.readLine().trim();
                 ht.loadPatterns(token);
             } else if (token.equals("L")) {
-                ObjectInputStream ois = null;
-                System.out.print("Object file name: ");
+                log.info("Object file name: ");
                 token = in.readLine().trim();
-                try {
-                    ois = new ObjectInputStream(new FileInputStream(token));
+                try (final ObjectInputStream ois = new ObjectInputStream(
+                        new FileInputStream(token))) {
                     ht = (HyphenationTree) ois.readObject();
                 } catch (final Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if (ois != null) {
-                        try {
-                            ois.close();
-                        } catch (final IOException e) {
-                            // ignore
-                        }
-                    }
+                    log.error("Exception", e);
                 }
             } else if (token.equals("w")) {
-                System.out.print("Object file name: ");
+                log.info("Object file name: ");
                 token = in.readLine().trim();
-                ObjectOutputStream oos = null;
-                try {
-                    oos = new ObjectOutputStream(new FileOutputStream(token));
+                try (final ObjectOutputStream oos = new ObjectOutputStream(
+                        new FileOutputStream(token))) {
                     oos.writeObject(ht);
                 } catch (final Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if (oos != null) {
-                        try {
-                            oos.flush();
-                        } catch (final IOException e) {
-                            // ignore
-                        }
-                        try {
-                            oos.close();
-                        } catch (final IOException e) {
-                            // ignore
-                        }
-                    }
+                    log.error("Exception", e);
                 }
             } else if (token.equals("h")) {
-                System.out.print("Word: ");
+                log.info("Word: ");
                 token = in.readLine().trim();
-                System.out.print("Hyphenation points: ");
-                log.info(ht.hyphenate(token, minCharCount, minCharCount)
-                        .toString());
+                log.info("Hyphenation points: ");
+                if (ht != null) {
+                    log.info(ht.hyphenate(token, minCharCount, minCharCount)
+                            .toString());
+                }
             } else if (token.equals("b")) {
                 if (ht == null) {
                     log.info("No patterns have been loaded.");
                     break;
                 }
-                System.out.print("Word list filename: ");
+                log.info("Word list filename: ");
                 token = in.readLine().trim();
                 long starttime = 0;
                 int counter = 0;
-                try {
-                    final BufferedReader reader = new BufferedReader(
-                            new FileReader(token));
+                try (final BufferedReader reader = new BufferedReader(
+                        new FileReader(token))) {
                     String line;
 
                     starttime = System.currentTimeMillis();
                     while ((line = reader.readLine()) != null) {
-                        // System.out.print("\nline: ");
+                        // log.info("\nline: ");
                         final Hyphenation hyp = ht.hyphenate(line,
                                 minCharCount, minCharCount);
                         if (hyp != null) {
@@ -606,11 +586,10 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
                         } else {
                             // log.info("No hyphenation");
                         }
-                        counter++;
+                        ++counter;
                     }
                 } catch (final Exception ioe) {
-                    log.info("Exception " + ioe);
-                    ioe.printStackTrace();
+                    log.error("Exception " + ioe);
                 }
                 final long endtime = System.currentTimeMillis();
                 final long result = endtime - starttime;

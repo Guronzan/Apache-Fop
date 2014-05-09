@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-/* $Id: PDFImageHandlerGraphics2D.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFImageHandlerGraphics2D.java 1095876 2011-04-22 06:55:48Z jeremias $ */
 
 package org.apache.fop.render.pdf;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 
-import org.apache.fop.pdf.PDFXObject;
 import org.apache.fop.render.AbstractImageHandlerGraphics2D;
-import org.apache.fop.render.RendererContext;
+import org.apache.fop.render.ImageHandlerUtil;
 import org.apache.fop.render.RenderingContext;
 import org.apache.fop.render.pdf.PDFLogicalStructureHandler.MarkedContentInfo;
 import org.apache.fop.svg.PDFGraphics2D;
@@ -40,35 +38,9 @@ import org.apache.xmlgraphics.image.loader.impl.ImageGraphics2D;
 /**
  * PDFImageHandler implementation which handles Graphics2D images.
  */
-public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
-        implements PDFImageHandler {
+public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.GRAPHICS2D, };
-
-    /** {@inheritDoc} */
-    @Override
-    public PDFXObject generateImage(final RendererContext context,
-            final Image image, final Point origin, final Rectangle pos)
-                    throws IOException {
-        final PDFRenderer renderer = (PDFRenderer) context.getRenderer();
-        /*
-         * ImageGraphics2D imageG2D = (ImageGraphics2D)image;
-         * renderer.getGraphics2DAdapter
-         * ().paintImage(imageG2D.getGraphics2DImagePainter(), context, origin.x
-         * + pos.x, origin.y + pos.y, pos.width, pos.height);
-         */
-        final PDFRenderingContext pdfContext = new PDFRenderingContext(
-                context.getUserAgent(), renderer.getGenerator(),
-                renderer.currentPage, renderer.getFontInfo());
-        final Rectangle effPos = new Rectangle(origin.x + pos.x, origin.y
-                + pos.y, pos.width, pos.height);
-        if (context.getUserAgent().isAccessibilityEnabled()) {
-            pdfContext.setMarkedContentInfo(renderer
-                    .addCurrentImageToStructureTree());
-        }
-        handleImage(pdfContext, image, effPos);
-        return null;
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -156,8 +128,18 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D
     @Override
     public boolean isCompatible(final RenderingContext targetContext,
             final Image image) {
-        return (image == null || image instanceof ImageGraphics2D)
+        final boolean supported = (image == null || image instanceof ImageGraphics2D)
                 && targetContext instanceof PDFRenderingContext;
+        if (supported) {
+            final String mode = (String) targetContext
+                    .getHint(ImageHandlerUtil.CONVERSION_MODE);
+            if (ImageHandlerUtil.isConversionModeBitmap(mode)) {
+                // Disabling this image handler automatically causes a bitmap to
+                // be generated
+                return false;
+            }
+        }
+        return supported;
     }
 
 }

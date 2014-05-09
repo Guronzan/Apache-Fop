@@ -38,7 +38,7 @@ import org.apache.fop.apps.MimeConstants;
  * Main command-line class for Apache FOP.
  */
 @Slf4j
-public class Main {
+public class Fop {
 
     /**
      * @return the list of URLs to all libraries.
@@ -118,6 +118,7 @@ public class Main {
             }
             return clazz != null;
         } catch (final Exception e) {
+            log.error(e.getMessage(), e);
             return false;
         }
     }
@@ -142,9 +143,7 @@ public class Main {
                     new Class[] { String[].class });
             mainMethod.invoke(null, new Object[] { args });
         } catch (final Exception e) {
-            System.err.println("Unable to start FOP:");
-            e.printStackTrace();
-            System.exit(-1);
+            log.error(e.getMessage(), e);
         }
     }
 
@@ -158,10 +157,10 @@ public class Main {
      *            command-line arguments
      */
     public static void startFOP(final String[] args) {
-        // log.info("static CCL: "
-        // + Thread.currentThread().getContextClassLoader().toString());
-        // log.info("static CL: " +
-        // Fop.class.getClassLoader().toString());
+         log.info("static CCL: "
+         + Thread.currentThread().getContextClassLoader().toString());
+         log.info("static CL: " +
+         Fop.class.getClassLoader().toString());
         CommandLineOptions options = null;
         FOUserAgent foUserAgent = null;
         OutputStream out = null;

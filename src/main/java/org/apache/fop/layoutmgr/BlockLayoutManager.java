@@ -45,7 +45,7 @@ import org.apache.fop.traits.SpaceVal;
  */
 @Slf4j
 public class BlockLayoutManager extends BlockStackingLayoutManager implements
-        ConditionalElementListener {
+ConditionalElementListener {
 
     private Block curBlockArea;
 
@@ -94,10 +94,10 @@ public class BlockLayoutManager extends BlockStackingLayoutManager implements
                 .getValue(this);
         this.foSpaceBefore = new SpaceVal(
                 getBlockFO().getCommonMarginBlock().spaceBefore, this)
-                .getSpace();
+        .getSpace();
         this.foSpaceAfter = new SpaceVal(
                 getBlockFO().getCommonMarginBlock().spaceAfter, this)
-                .getSpace();
+        .getSpace();
         this.bpUnit = 0; // non-standard extension
         if (this.bpUnit == 0) {
             // use optimum space values
@@ -280,7 +280,7 @@ public class BlockLayoutManager extends BlockStackingLayoutManager implements
         Position firstPos = null;
         Position lastPos = null;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             // log.trace("pos = " + pos.getClass().getName() + "; " + pos);
             if (pos.getIndex() >= 0) {
                 if (firstPos == null) {
@@ -342,7 +342,7 @@ public class BlockLayoutManager extends BlockStackingLayoutManager implements
             // // the last item inside positionList is a Position;
             // // this means that the paragraph has been split
             // // between consecutive pages
-            final LinkedList<KnuthElement> splitList = new LinkedList<>();
+            final LinkedList<ListElement> splitList = new LinkedList<>();
             int splitLength = 0;
             final int iFirst = ((MappingPosition) positionList.getFirst())
                     .getFirstIndex();
@@ -451,7 +451,7 @@ public class BlockLayoutManager extends BlockStackingLayoutManager implements
             // Must get dimensions from parent area
             // Don't optimize this line away. It can have ugly side-effects.
             /* Area parentArea = */this.parentLayoutManager
-                    .getParentArea(this.curBlockArea);
+            .getParentArea(this.curBlockArea);
 
             // set traits
             TraitSetter.setProducerID(this.curBlockArea, getBlockFO().getId());

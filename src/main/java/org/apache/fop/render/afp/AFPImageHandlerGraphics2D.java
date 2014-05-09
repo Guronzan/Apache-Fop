@@ -43,7 +43,7 @@ import org.apache.xmlgraphics.util.MimeConstants;
  * PDFImageHandler implementation which handles Graphics2D images.
  */
 public class AFPImageHandlerGraphics2D extends AFPImageHandler implements
-        ImageHandler {
+ImageHandler {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.GRAPHICS2D };
 
@@ -69,7 +69,7 @@ public class AFPImageHandlerGraphics2D extends AFPImageHandler implements
             final AFPGraphics2DAdapter g2dAdapter = new AFPGraphics2DAdapter(
                     paintingState);
             g2dAdapter
-                    .paintImage(painter, rendererContext, x, y, width, height);
+            .paintImage(painter, rendererContext, x, y, width, height);
             return null;
         } else {
             final AFPGraphicsObjectInfo graphicsObjectInfo = (AFPGraphicsObjectInfo) super
@@ -113,7 +113,7 @@ public class AFPImageHandlerGraphics2D extends AFPImageHandler implements
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageGraphics2D> getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 

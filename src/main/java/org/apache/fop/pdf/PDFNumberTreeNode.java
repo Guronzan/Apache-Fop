@@ -38,86 +38,75 @@ public class PDFNumberTreeNode extends PDFDictionary {
 
     /**
      * Sets the Kids array.
-     * 
-     * @param kids
-     *            the Kids array
+     * @param kids the Kids array
      */
-    public void setKids(final PDFArray kids) {
+    public void setKids(PDFArray kids) {
         put(KIDS, kids);
     }
 
     /**
      * Returns the Kids array.
-     * 
      * @return the Kids array
      */
     public PDFArray getKids() {
-        return (PDFArray) get(KIDS);
+        return (PDFArray)get(KIDS);
     }
 
     /**
      * Sets the Nums array.
-     * 
-     * @param nums
-     *            the Nums array
+     * @param nums the Nums array
      */
-    public void setNums(final PDFNumsArray nums) {
+    public void setNums(PDFNumsArray nums) {
         put(NUMS, nums);
     }
 
     /**
      * Returns the Nums array.
-     * 
      * @return the Nums array
      */
     public PDFNumsArray getNums() {
-        return (PDFNumsArray) get(NUMS);
+        return (PDFNumsArray)get(NUMS);
     }
 
     /**
      * Sets the lower limit value of the Limits array.
-     * 
-     * @param key
-     *            the lower limit value
+     * @param key the lower limit value
      */
-    public void setLowerLimit(final Integer key) {
-        final PDFArray limits = prepareLimitsArray();
+    public void setLowerLimit(Integer key) {
+        PDFArray limits = prepareLimitsArray();
         limits.set(0, key);
     }
 
     /**
      * Returns the lower limit value of the Limits array.
-     * 
      * @return the lower limit value
      */
     public Integer getLowerLimit() {
-        final PDFArray limits = prepareLimitsArray();
-        return (Integer) limits.get(0);
+        PDFArray limits = prepareLimitsArray();
+        return (Integer)limits.get(0);
     }
 
     /**
      * Sets the upper limit value of the Limits array.
-     * 
-     * @param key
-     *            the upper limit value
+     * @param key the upper limit value
      */
-    public void setUpperLimit(final Integer key) {
-        final PDFArray limits = prepareLimitsArray();
+    public void setUpperLimit(Integer key) {
+        PDFArray limits = prepareLimitsArray();
         limits.set(1, key);
     }
 
     /**
      * Returns the upper limit value of the Limits array.
-     * 
      * @return the upper limit value
      */
     public Integer getUpperLimit() {
-        final PDFArray limits = prepareLimitsArray();
-        return (Integer) limits.get(1);
+        PDFArray limits = prepareLimitsArray();
+        return (Integer)limits.get(1);
     }
 
+
     private PDFArray prepareLimitsArray() {
-        PDFArray limits = (PDFArray) get(LIMITS);
+        PDFArray limits = (PDFArray)get(LIMITS);
         if (limits == null) {
             limits = new PDFArray(this, new Object[2]);
             put(LIMITS, limits);
@@ -129,3 +118,4 @@ public class PDFNumberTreeNode extends PDFDictionary {
     }
 
 }
+

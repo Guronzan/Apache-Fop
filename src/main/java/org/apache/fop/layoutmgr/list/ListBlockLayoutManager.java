@@ -34,6 +34,7 @@ import org.apache.fop.layoutmgr.ConditionalElementListener;
 import org.apache.fop.layoutmgr.ElementListUtils;
 import org.apache.fop.layoutmgr.LayoutContext;
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.NonLeafPosition;
 import org.apache.fop.layoutmgr.Position;
 import org.apache.fop.layoutmgr.PositionIterator;
@@ -48,7 +49,7 @@ import org.apache.fop.traits.SpaceVal;
  */
 @Slf4j
 public class ListBlockLayoutManager extends BlockStackingLayoutManager
-implements ConditionalElementListener {
+        implements ConditionalElementListener {
 
     private Block curBlockArea;
 
@@ -118,10 +119,11 @@ implements ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         resetSpaces();
-        final List returnList = super.getNextKnuthElements(context, alignment);
+        final List<ListElement> returnList = super.getNextKnuthElements(
+                context, alignment);
 
         // fox:widow-content-limit
         final int widowRowLimit = getListBlockFO().getWidowContentLimit()
@@ -143,7 +145,8 @@ implements ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
         // log.debug("LBLM.getChangedKnuthElements>");
         return super.getChangedKnuthElements(oldList, alignment);
     }
@@ -182,10 +185,10 @@ implements ConditionalElementListener {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList();
+        final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             if (pos.getIndex() >= 0) {
                 if (firstPos == null) {
                     firstPos = pos;
@@ -255,7 +258,7 @@ implements ConditionalElementListener {
             // Set up dimensions
             // Must get dimensions from parent area
             /* Area parentArea = */this.parentLayoutManager
-            .getParentArea(this.curBlockArea);
+                    .getParentArea(this.curBlockArea);
 
             // set traits
             TraitSetter.setProducerID(this.curBlockArea, getListBlockFO()

@@ -28,6 +28,8 @@ import java.lang.ref.SoftReference;
 
 import javax.swing.JPanel;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.render.awt.AWTRenderer;
 
@@ -38,6 +40,7 @@ import org.apache.fop.render.awt.AWTRenderer;
  * accessed via a soft reference, so it will be garbage collected when moving
  * through large documents.
  */
+@Slf4j
 public class ImageProxyPanel extends JPanel {
 
     /**
@@ -46,7 +49,7 @@ public class ImageProxyPanel extends JPanel {
     private static final long serialVersionUID = -8828404053511562291L;
 
     /** The reference to the BufferedImage storing the page data */
-    private Reference imageRef;
+    private Reference<BufferedImage> imageRef;
 
     /** The maximum and preferred size of the panel */
     private Dimension size;
@@ -59,7 +62,7 @@ public class ImageProxyPanel extends JPanel {
 
     /**
      * Panel constructor. Doesn't allocate anything until needed.
-     * 
+     *
      * @param renderer
      *            the AWTRenderer instance to use for painting
      * @param page
@@ -103,7 +106,7 @@ public class ImageProxyPanel extends JPanel {
 
     /**
      * Sets the number of the page to be displayed and refreshes the display.
-     * 
+     *
      * @param pg
      *            the page number
      */
@@ -118,7 +121,7 @@ public class ImageProxyPanel extends JPanel {
     /**
      * Gets the image data and paints it on screen. Will make calls to
      * getPageImage as required.
-     * 
+     *
      * @param graphics
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see org.apache.fop.render.java2d.Java2DRenderer#getPageImage(int)
@@ -136,9 +139,9 @@ public class ImageProxyPanel extends JPanel {
             BufferedImage image = null;
             if (this.imageRef == null || this.imageRef.get() == null) {
                 image = this.renderer.getPageImage(this.page);
-                this.imageRef = new SoftReference(image);
+                this.imageRef = new SoftReference<>(image);
             } else {
-                image = (BufferedImage) this.imageRef.get();
+                image = this.imageRef.get();
             }
 
             final int x = (getWidth() - image.getWidth()) / 2;
@@ -147,7 +150,7 @@ public class ImageProxyPanel extends JPanel {
             graphics.drawImage(image, x, y, image.getWidth(),
                     image.getHeight(), null);
         } catch (final FOPException fopEx) {
-            fopEx.printStackTrace();
+            log.error("FOPException", fopEx);
         }
     }
 }

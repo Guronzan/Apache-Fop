@@ -119,60 +119,60 @@ public class ImageRawJPEGAdapter extends AbstractImageAdapter {
                 int reclen;
                 final int segID = jpeg.readMarkerSegment();
                 switch (segID) {
-                case JPEGConstants.SOI:
-                    out.write(0xFF);
-                    out.write(segID);
-                    break;
-                case JPEGConstants.EOI:
-                case JPEGConstants.SOS:
-                    out.write(0xFF);
-                    out.write(segID);
-                    IOUtils.copy(in, out); // Just copy the rest!
-                    return;
-                    /*
-                     * case JPEGConstants.APP1: //Metadata case
-                     * JPEGConstants.APPD: jpeg.skipCurrentMarkerSegment();
-                     * break;
-                     */
-                case JPEGConstants.APP2: // ICC (see ICC1V42.pdf)
-                    boolean skipICCProfile = false;
-                    in.mark(16);
-                    try {
-                        reclen = jpeg.readSegmentLength();
-                        // Check for ICC profile
-                        final byte[] iccString = new byte[11];
-                        din.readFully(iccString);
-                        din.skipBytes(1); // string terminator (null byte)
-
-                        if ("ICC_PROFILE".equals(new String(iccString,
-                                "US-ASCII"))) {
-                            skipICCProfile = this.image.getICCProfile() != null;
-                        }
-                    } finally {
-                        in.reset();
-                    }
-                    if (skipICCProfile) {
-                        // ICC profile is skipped as it is already embedded as a
-                        // PDF object
-                        jpeg.skipCurrentMarkerSegment();
+                    case JPEGConstants.SOI:
+                        out.write(0xFF);
+                        out.write(segID);
                         break;
-                    }
-                default:
-                    out.write(0xFF);
-                    out.write(segID);
+                    case JPEGConstants.EOI:
+                    case JPEGConstants.SOS:
+                        out.write(0xFF);
+                        out.write(segID);
+                        IOUtils.copy(in, out); // Just copy the rest!
+                        return;
+                        /*
+                         * case JPEGConstants.APP1: //Metadata case
+                         * JPEGConstants.APPD: jpeg.skipCurrentMarkerSegment();
+                         * break;
+                         */
+                    case JPEGConstants.APP2: // ICC (see ICC1V42.pdf)
+                        boolean skipICCProfile = false;
+                        in.mark(16);
+                        try {
+                            reclen = jpeg.readSegmentLength();
+                            // Check for ICC profile
+                            final byte[] iccString = new byte[11];
+                            din.readFully(iccString);
+                            din.skipBytes(1); // string terminator (null byte)
 
-                    reclen = jpeg.readSegmentLength();
-                    // write short
-                    out.write(reclen >>> 8 & 0xFF);
-                    out.write(reclen >>> 0 & 0xFF);
-                    int left = reclen - 2;
-                    final byte[] buf = new byte[2048];
-                    while (left > 0) {
-                        final int part = Math.min(buf.length, left);
-                        din.readFully(buf, 0, part);
-                        out.write(buf, 0, part);
-                        left -= part;
-                    }
+                            if ("ICC_PROFILE".equals(new String(iccString,
+                                    "US-ASCII"))) {
+                                skipICCProfile = this.image.getICCProfile() != null;
+                            }
+                        } finally {
+                            in.reset();
+                        }
+                        if (skipICCProfile) {
+                            // ICC profile is skipped as it is already embedded
+                            // as a PDF object
+                            jpeg.skipCurrentMarkerSegment();
+                            break;
+                        }
+                    default:
+                        out.write(0xFF);
+                        out.write(segID);
+
+                        reclen = jpeg.readSegmentLength();
+                        // write short
+                        out.write(reclen >>> 8 & 0xFF);
+                        out.write(reclen >>> 0 & 0xFF);
+                        int left = reclen - 2;
+                        final byte[] buf = new byte[2048];
+                        while (left > 0) {
+                            final int part = Math.min(buf.length, left);
+                            din.readFully(buf, 0, part);
+                            out.write(buf, 0, part);
+                            left -= part;
+                        }
                 }
             }
         } finally {

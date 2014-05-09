@@ -37,7 +37,7 @@ public class TableCaptionLayoutManager extends BlockStackingLayoutManager {
 
     private Block curBlockArea;
 
-    // private List childBreaks = new ArrayList();
+    // private List childBreaks = new ArrayList<>();
 
     /**
      * Create a new Caption layout manager.

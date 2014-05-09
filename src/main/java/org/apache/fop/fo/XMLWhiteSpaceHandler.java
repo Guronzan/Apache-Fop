@@ -19,6 +19,7 @@
 
 package org.apache.fop.fo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -69,14 +70,14 @@ public class XMLWhiteSpaceHandler {
     private boolean nextChildIsBlockLevel;
     private RecursiveCharIterator charIter;
 
-    private List pendingInlines;
-    private final Stack nestedBlockStack = new java.util.Stack();
+    private List<PendingInline> pendingInlines;
+    private final Stack<Block> nestedBlockStack = new Stack<>();
     private CharIterator firstWhiteSpaceInSeq;
 
     /**
      * Handle white-space for the fo that is passed in, starting at
      * firstTextNode
-     * 
+     *
      * @param fo
      *            the FO for which to handle white-space
      * @param firstTextNode
@@ -92,42 +93,42 @@ public class XMLWhiteSpaceHandler {
 
         /* set the current block */
         switch (foId) {
-        case Constants.FO_BLOCK:
-            currentBlock = (Block) fo;
-            if (this.nestedBlockStack.empty()
-                    || fo != this.nestedBlockStack.peek()) {
-                if (nextChild != null) {
-                    /*
-                     * if already in a block, push the current block onto the
-                     * stack of nested blocks
-                     */
+            case Constants.FO_BLOCK:
+                currentBlock = (Block) fo;
+                if (this.nestedBlockStack.empty()
+                        || fo != this.nestedBlockStack.peek()) {
+                    if (nextChild != null) {
+                        /*
+                         * if already in a block, push the current block onto
+                         * the stack of nested blocks
+                         */
+                        this.nestedBlockStack.push(currentBlock);
+                    }
+                } else {
+                    if (nextChild == null) {
+                        this.nestedBlockStack.pop();
+                    }
+                }
+                break;
+
+            case Constants.FO_RETRIEVE_MARKER:
+                /* look for the nearest block ancestor, if any */
+                FONode ancestor = fo;
+                do {
+                    ancestor = ancestor.getParent();
+                } while (ancestor.getNameId() != Constants.FO_BLOCK
+                        && ancestor.getNameId() != Constants.FO_STATIC_CONTENT);
+
+                if (ancestor.getNameId() == Constants.FO_BLOCK) {
+                    currentBlock = (Block) ancestor;
                     this.nestedBlockStack.push(currentBlock);
                 }
-            } else {
-                if (nextChild == null) {
-                    this.nestedBlockStack.pop();
+                break;
+
+            default:
+                if (!this.nestedBlockStack.empty()) {
+                    currentBlock = this.nestedBlockStack.peek();
                 }
-            }
-            break;
-
-        case Constants.FO_RETRIEVE_MARKER:
-            /* look for the nearest block ancestor, if any */
-            FONode ancestor = fo;
-            do {
-                ancestor = ancestor.getParent();
-            } while (ancestor.getNameId() != Constants.FO_BLOCK
-                    && ancestor.getNameId() != Constants.FO_STATIC_CONTENT);
-
-            if (ancestor.getNameId() == Constants.FO_BLOCK) {
-                currentBlock = (Block) ancestor;
-                this.nestedBlockStack.push(currentBlock);
-            }
-            break;
-
-        default:
-            if (!this.nestedBlockStack.empty()) {
-                currentBlock = (Block) this.nestedBlockStack.peek();
-            }
         }
 
         if (currentBlock != null) {
@@ -251,7 +252,7 @@ public class XMLWhiteSpaceHandler {
     /**
      * Handle white-space for the fo that is passed in, starting at
      * firstTextNode (when a nested FO is encountered)
-     * 
+     *
      * @param fo
      *            the FO for which to handle white-space
      * @param firstTextNode
@@ -282,90 +283,93 @@ public class XMLWhiteSpaceHandler {
                 currentCharClass = CharUtilities.classOf(currentChar);
             }
             switch (CharUtilities.classOf(currentChar)) {
-            case CharUtilities.XMLWHITESPACE:
-                // Some kind of whitespace character, except linefeed.
-                if (this.inWhiteSpace
-                        && this.whiteSpaceCollapse == Constants.EN_TRUE) {
-                    // We are in a run of whitespace and should collapse
-                    // Just delete the char
-                    this.charIter.remove();
-                } else {
-                    // Do the white space treatment here
-                    boolean bIgnore = false;
-
-                    switch (this.whiteSpaceTreatment) {
-                    case Constants.EN_IGNORE:
-                        bIgnore = true;
-                        break;
-                    case Constants.EN_IGNORE_IF_BEFORE_LINEFEED:
-                        bIgnore = lfCheck.beforeLinefeed();
-                        break;
-                    case Constants.EN_IGNORE_IF_SURROUNDING_LINEFEED:
-                        bIgnore = this.afterLinefeed
-                                || lfCheck.beforeLinefeed();
-                        break;
-                    case Constants.EN_IGNORE_IF_AFTER_LINEFEED:
-                        bIgnore = this.afterLinefeed;
-                        break;
-                    case Constants.EN_PRESERVE:
-                        // nothing to do now, replacement takes place later
-                        break;
-                    default:
-                        // nop
-                    }
-                    // Handle ignore and replacement
-                    if (bIgnore) {
+                case CharUtilities.XMLWHITESPACE:
+                    // Some kind of whitespace character, except linefeed.
+                    if (this.inWhiteSpace
+                            && this.whiteSpaceCollapse == Constants.EN_TRUE) {
+                        // We are in a run of whitespace and should collapse
+                        // Just delete the char
                         this.charIter.remove();
                     } else {
-                        // this is to retain a single space between words
-                        this.inWhiteSpace = true;
-                        if (currentChar != '\u0020') {
-                            this.charIter.replaceChar('\u0020');
+                        // Do the white space treatment here
+                        boolean bIgnore = false;
+
+                        switch (this.whiteSpaceTreatment) {
+                            case Constants.EN_IGNORE:
+                                bIgnore = true;
+                                break;
+                            case Constants.EN_IGNORE_IF_BEFORE_LINEFEED:
+                                bIgnore = lfCheck.beforeLinefeed();
+                                break;
+                            case Constants.EN_IGNORE_IF_SURROUNDING_LINEFEED:
+                                bIgnore = this.afterLinefeed
+                                || lfCheck.beforeLinefeed();
+                                break;
+                            case Constants.EN_IGNORE_IF_AFTER_LINEFEED:
+                                bIgnore = this.afterLinefeed;
+                                break;
+                            case Constants.EN_PRESERVE:
+                                // nothing to do now, replacement takes place
+                                // later
+                                break;
+                            default:
+                                // nop
+                        }
+                        // Handle ignore and replacement
+                        if (bIgnore) {
+                            this.charIter.remove();
+                        } else {
+                            // this is to retain a single space between words
+                            this.inWhiteSpace = true;
+                            if (currentChar != '\u0020') {
+                                this.charIter.replaceChar('\u0020');
+                            }
                         }
                     }
-                }
-                break;
+                    break;
 
-            case CharUtilities.LINEFEED:
-                // A linefeed
-                switch (this.linefeedTreatment) {
-                case Constants.EN_IGNORE:
-                    this.charIter.remove();
+                case CharUtilities.LINEFEED:
+                    // A linefeed
+                    switch (this.linefeedTreatment) {
+                        case Constants.EN_IGNORE:
+                            this.charIter.remove();
+                            break;
+                        case Constants.EN_TREAT_AS_ZERO_WIDTH_SPACE:
+                            this.charIter
+                            .replaceChar(CharUtilities.ZERO_WIDTH_SPACE);
+                            this.inWhiteSpace = false;
+                            break;
+                        case Constants.EN_PRESERVE:
+                            lfCheck.reset();
+                            this.inWhiteSpace = false;
+                            this.afterLinefeed = true; // for following
+                            // whitespace
+                            break;
+                        default:
+                            // nop
+                    }
                     break;
-                case Constants.EN_TREAT_AS_ZERO_WIDTH_SPACE:
-                    this.charIter.replaceChar(CharUtilities.ZERO_WIDTH_SPACE);
-                    this.inWhiteSpace = false;
-                    break;
-                case Constants.EN_PRESERVE:
-                    lfCheck.reset();
-                    this.inWhiteSpace = false;
-                    this.afterLinefeed = true; // for following whitespace
-                    break;
+
+                case CharUtilities.EOT:
+                    // A "boundary" objects such as non-character inline
+                    // or nested block object was encountered. (? can't happen)
+                    // If any whitespace run in progress, finish it.
+                    // FALL THROUGH
+
                 default:
-                    // nop
-                }
-                break;
-
-            case CharUtilities.EOT:
-                // A "boundary" objects such as non-character inline
-                // or nested block object was encountered. (? can't happen)
-                // If any whitespace run in progress, finish it.
-                // FALL THROUGH
-
-            default:
-                // Any other character
-                this.inWhiteSpace = false;
-                this.afterLinefeed = false;
-                this.nonWhiteSpaceCount++;
-                lfCheck.reset();
-                break;
+                    // Any other character
+                    this.inWhiteSpace = false;
+                    this.afterLinefeed = false;
+                    this.nonWhiteSpaceCount++;
+                    lfCheck.reset();
+                    break;
             }
         }
     }
 
     private void addPendingInline(final FObjMixed fo) {
         if (this.pendingInlines == null) {
-            this.pendingInlines = new java.util.ArrayList(5);
+            this.pendingInlines = new ArrayList<>(5);
         }
         this.pendingInlines
                 .add(new PendingInline(fo, this.firstWhiteSpaceInSeq));
@@ -377,7 +381,7 @@ public class XMLWhiteSpaceHandler {
                 /* handle white-space for all pending inlines */
                 PendingInline p;
                 for (int i = this.pendingInlines.size(); --i >= 0;) {
-                    p = (PendingInline) this.pendingInlines.get(i);
+                    p = this.pendingInlines.get(i);
                     this.charIter = (RecursiveCharIterator) p.firstTrailingWhiteSpace;
                     handleWhiteSpace();
                     this.pendingInlines.remove(p);

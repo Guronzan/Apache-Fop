@@ -178,7 +178,7 @@ public class AreaTreeParser {
         private Attributes pageSequenceAttributes;
 
         private final class StructureTreeBuilderWrapper extends
-        DelegatingContentHandler {
+                DelegatingContentHandler {
 
             private StructureTreeBuilderWrapper() throws SAXException {
                 super(Handler.this.structureTreeBuilder
@@ -288,7 +288,7 @@ public class AreaTreeParser {
         @Override
         public void startElement(final String uri, final String localName,
                 final String qName, final Attributes attributes)
-                        throws SAXException {
+                throws SAXException {
             if (this.delegate != null) {
                 this.delegateStack.push(qName);
                 this.delegate.startElement(uri, localName, qName, attributes);
@@ -545,7 +545,7 @@ public class AreaTreeParser {
             @Override
             public void endElement() {
                 Handler.this.treeModel
-                .addPage(Handler.this.currentPageViewport);
+                        .addPage(Handler.this.currentPageViewport);
                 Handler.this.currentPageViewport = null;
             }
         }
@@ -1107,7 +1107,7 @@ public class AreaTreeParser {
                 final Object tos = Handler.this.areaStack.pop();
                 assertObjectOfClass(tos, BookmarkData.class);
                 Handler.this.treeModel
-                .handleOffDocumentItem((BookmarkData) tos);
+                        .handleOffDocumentItem((BookmarkData) tos);
                 // as long as the bookmark tree comes after the last
                 // PageViewport in the
                 // area tree XML, we don't have to worry about
@@ -1166,7 +1166,7 @@ public class AreaTreeParser {
                 final Object tos = Handler.this.areaStack.pop();
                 assertObjectOfClass(tos, DestinationData.class);
                 Handler.this.treeModel
-                .handleOffDocumentItem((DestinationData) tos);
+                        .handleOffDocumentItem((DestinationData) tos);
             }
         }
 
@@ -1209,8 +1209,8 @@ public class AreaTreeParser {
                 final ExtensionAttachment attachment = (ExtensionAttachment) obj;
                 if (this.currentPageViewport == null) {
                     this.treeModel
-                    .handleOffDocumentItem(new OffDocumentExtensionAttachment(
-                            attachment));
+                            .handleOffDocumentItem(new OffDocumentExtensionAttachment(
+                                    attachment));
                 } else {
                     this.currentPageViewport.addExtensionAttachment(attachment);
                 }
@@ -1236,24 +1236,24 @@ public class AreaTreeParser {
 
         private static final Integer[] SUBSET_COMMON = new Integer[] { Trait.PROD_ID };
         private static final Integer[] SUBSET_LINK = new Integer[] {
-            Trait.INTERNAL_LINK, Trait.EXTERNAL_LINK };
+                Trait.INTERNAL_LINK, Trait.EXTERNAL_LINK };
         private static final Integer[] SUBSET_COLOR = new Integer[] {
-            Trait.BACKGROUND, Trait.COLOR };
+                Trait.BACKGROUND, Trait.COLOR };
         private static final Integer[] SUBSET_FONT = new Integer[] {
-                Trait.FONT, Trait.FONT_SIZE, Trait.BLINK, Trait.OVERLINE,
-            Trait.OVERLINE_COLOR, Trait.LINETHROUGH,
-            Trait.LINETHROUGH_COLOR, Trait.UNDERLINE, Trait.UNDERLINE_COLOR };
+            Trait.FONT, Trait.FONT_SIZE, Trait.BLINK, Trait.OVERLINE,
+                Trait.OVERLINE_COLOR, Trait.LINETHROUGH,
+                Trait.LINETHROUGH_COLOR, Trait.UNDERLINE, Trait.UNDERLINE_COLOR };
         private static final Integer[] SUBSET_BOX = new Integer[] {
-            Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
-            Trait.BORDER_END, Trait.SPACE_BEFORE, Trait.SPACE_AFTER,
-            Trait.SPACE_START, Trait.SPACE_END, Trait.PADDING_BEFORE,
-            Trait.PADDING_AFTER, Trait.PADDING_START, Trait.PADDING_END,
-            Trait.START_INDENT, Trait.END_INDENT, Trait.IS_REFERENCE_AREA,
-            Trait.IS_VIEWPORT_AREA };
+                Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
+                Trait.BORDER_END, Trait.SPACE_BEFORE, Trait.SPACE_AFTER,
+                Trait.SPACE_START, Trait.SPACE_END, Trait.PADDING_BEFORE,
+                Trait.PADDING_AFTER, Trait.PADDING_START, Trait.PADDING_END,
+                Trait.START_INDENT, Trait.END_INDENT, Trait.IS_REFERENCE_AREA,
+                Trait.IS_VIEWPORT_AREA };
         private static final Integer[] SUBSET_BORDER_PADDING = new Integer[] {
-            Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
-            Trait.BORDER_END, Trait.PADDING_BEFORE, Trait.PADDING_AFTER,
-            Trait.PADDING_START, Trait.PADDING_END };
+                Trait.BORDER_BEFORE, Trait.BORDER_AFTER, Trait.BORDER_START,
+                Trait.BORDER_END, Trait.PADDING_BEFORE, Trait.PADDING_AFTER,
+                Trait.PADDING_START, Trait.PADDING_END };
 
         private void setTraits(final Attributes attributes, final Area area,
                 final Integer[] traitSubset) {

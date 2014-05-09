@@ -50,7 +50,7 @@ import org.apache.fop.layoutmgr.SpaceSpecifier;
  */
 @Slf4j
 public class ContentLayoutManager extends AbstractBaseLayoutManager implements
-InlineLevelLayoutManager {
+        InlineLevelLayoutManager {
 
     private final Area holder;
     private int stackSize;
@@ -129,9 +129,9 @@ InlineLevelLayoutManager {
 
         this.stackSize = 0;
 
-        final List<KnuthElement> contentList = getNextKnuthElements(childLC,
+        final List<ListElement> contentList = getNextKnuthElements(childLC,
                 Constants.EN_START);
-        for (final KnuthElement element : contentList) {
+        for (final ListElement element : contentList) {
             if (element instanceof KnuthInlineBox) {
                 final KnuthInlineBox box = (KnuthInlineBox) element;
                 // TODO handle alignment here?
@@ -265,9 +265,9 @@ InlineLevelLayoutManager {
     }
 
     @Override
-    public List<KnuthElement> getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
-        final List<KnuthElement> contentList = new LinkedList<>();
+        final List<ListElement> contentList = new LinkedList<>();
         List<KnuthElement> returnedList;
 
         this.childLM.initialize();

@@ -22,14 +22,14 @@ package org.apache.fop.layoutmgr;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public abstract class PositionIterator implements Iterator {
+public abstract class PositionIterator<T> implements Iterator<Position> {
 
-    private final Iterator parentIter;
-    private Object nextObj;
+    private final Iterator<T> parentIter;
+    private T nextObj;
     private LayoutManager childLM;
     private boolean bHasNext;
 
-    protected PositionIterator(final Iterator pIter) {
+    protected PositionIterator(final Iterator<T> pIter) {
         this.parentIter = pIter;
         lookAhead();
         // checkNext();
@@ -44,9 +44,9 @@ public abstract class PositionIterator implements Iterator {
         return this.childLM;
     }
 
-    protected abstract LayoutManager getLM(final Object nextObj);
+    protected abstract LayoutManager getLM(final T nextObj);
 
-    protected abstract Position getPos(final Object nextObj);
+    protected abstract Position getPos(final T nextObj);
 
     private void lookAhead() {
         if (this.parentIter.hasNext()) {
@@ -82,9 +82,9 @@ public abstract class PositionIterator implements Iterator {
     }
 
     @Override
-    public Object next() throws NoSuchElementException {
+    public Position next() throws NoSuchElementException {
         if (this.bHasNext) {
-            final Object retObj = getPos(this.nextObj);
+            final Position retObj = getPos(this.nextObj);
             lookAhead();
             return retObj;
         } else {
@@ -92,7 +92,7 @@ public abstract class PositionIterator implements Iterator {
         }
     }
 
-    public Object peekNext() {
+    public T peekNext() {
         return this.nextObj;
     }
 

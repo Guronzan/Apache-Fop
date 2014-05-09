@@ -78,14 +78,14 @@ public class SVGElementMapping extends ElementMapping {
             // normally the user agent value is used
             try {
                 XMLResourceDescriptor
-                .setXMLParserClassName(getAParserClassName());
+                        .setXMLParserClassName(getAParserClassName());
 
-                this.foObjs = new HashMap();
+                this.foObjs = new HashMap<>();
                 this.foObjs.put("svg", new SE());
                 this.foObjs.put(DEFAULT, new SVGMaker());
-            } catch (final Throwable t) {
+            } catch (final Exception e) {
                 log.error("Error while initializing the Batik SVG extensions",
-                        t);
+                        e);
                 // if the classes are not available
                 // the DISPLAY is not checked
                 this.batikAvailable = false;

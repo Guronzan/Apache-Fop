@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: AbstractPDFStream.java 757712 2009-03-24 10:46:59Z vhennebert $ */
+/* $Id: AbstractPDFStream.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.fop.util.CloseBlockerOutputStream;
@@ -29,16 +28,51 @@ import org.apache.fop.util.CloseBlockerOutputStream;
 /**
  * This is an abstract base class for PDF streams.
  */
-public abstract class AbstractPDFStream extends PDFDictionary {
+public abstract class AbstractPDFStream extends PDFObject {
+
+    private final PDFDictionary dictionary;
 
     /** The filters that should be applied */
     private PDFFilterList filters;
 
+    private final boolean encodeOnTheFly;
+
+    protected AbstractPDFStream() {
+        this(true);
+    }
+
+    protected AbstractPDFStream(final PDFDictionary dictionary) {
+        this(dictionary, true);
+    }
+
+    protected AbstractPDFStream(final boolean encodeOnTheFly) {
+        this(new PDFDictionary(), encodeOnTheFly);
+    }
+
+    protected AbstractPDFStream(final PDFDictionary dictionary,
+            final boolean encodeOnTheFly) {
+        this.dictionary = dictionary;
+        this.encodeOnTheFly = encodeOnTheFly;
+    }
+
+    protected final PDFDictionary getDictionary() {
+        return this.dictionary;
+    }
+
+    protected Object get(final String key) {
+        return this.dictionary.get(key);
+    }
+
     /**
-     * Constructor for AbstractPDFStream.
+     * Puts the given object in the dictionary associated to this stream.
+     *
+     * @param key
+     *            the key in the dictionary
+     * @param value
+     *            the value to store
      */
-    public AbstractPDFStream() {
-        super();
+    public void put(final String key, final Object value) {
+        this.dictionary.put(key, value);
     }
 
     /**
@@ -46,7 +80,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
      * outside.
      */
     protected void setupFilterList() {
-        if (!getFilterList().isInitialized()) {
+        if (multipleFiltersAllowed() && !getFilterList().isInitialized()) {
             getFilterList().addDefaultFilters(
                     getDocumentSafely().getFilterMap(), getDefaultFilterName());
         }
@@ -66,7 +100,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
 
     /**
      * Returns the associated filter list.
-     *
+     * 
      * @return the filter list
      */
     public PDFFilterList getFilterList() {
@@ -89,7 +123,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
      * Returns a value that hints at the size of the encoded stream. This is
      * used to optimize buffer allocation so fewer buffer reallocations are
      * necessary.
-     *
+     * 
      * @return an estimated size (0 if no hint can be given)
      * @throws IOException
      *             in case of an I/O problem
@@ -98,7 +132,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
 
     /**
      * Sends the raw stream data to the target OutputStream.
-     *
+     * 
      * @param out
      *            OutputStream to write to
      * @throws IOException
@@ -109,7 +143,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
 
     /**
      * Output just the stream data enclosed by stream/endstream markers
-     *
+     * 
      * @param encodedStream
      *            already encoded/filtered stream to write
      * @param out
@@ -136,7 +170,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
 
     /**
      * Encodes the raw data stream for output to a PDF file.
-     *
+     * 
      * @return the encoded stream
      * @throws IOException
      *             in case of an I/O problem
@@ -158,7 +192,7 @@ public abstract class AbstractPDFStream extends PDFDictionary {
      * Encodes and writes a stream directly to an OutputStream. The length of
      * the stream, in this case, is set on a PDFNumber object that has to be
      * prepared beforehand.
-     *
+     * 
      * @param out
      *            OutputStream to write to
      * @param refLength
@@ -176,25 +210,20 @@ public abstract class AbstractPDFStream extends PDFDictionary {
         bytesWritten += buf.length;
 
         // Stream contents
-        try (final CloseBlockerOutputStream cbout = new CloseBlockerOutputStream(
-                out)) {
-            try (final CountingOutputStream cout = new CountingOutputStream(
-                    cbout)) {
-                final OutputStream filteredOutput = getFilterList()
-                        .applyFilters(cout);
-                outputRawStreamData(filteredOutput);
-                filteredOutput.close();
-                refLength.setNumber(cout.getCount());
-                bytesWritten += cout.getCount();
+        final CloseBlockerOutputStream cbout = new CloseBlockerOutputStream(out);
+        final CountingOutputStream cout = new CountingOutputStream(cbout);
+        final OutputStream filteredOutput = getFilterList().applyFilters(cout);
+        outputRawStreamData(filteredOutput);
+        filteredOutput.close();
+        refLength.setNumber(Integer.valueOf(cout.getCount()));
+        bytesWritten += cout.getCount();
 
-                // Stream trailer
-                buf = encode("\nendstream");
-                out.write(buf);
-                bytesWritten += buf.length;
+        // Stream trailer
+        buf = encode("\nendstream");
+        out.write(buf);
+        bytesWritten += buf.length;
 
-                return bytesWritten;
-            }
-        }
+        return bytesWritten;
     }
 
     /**
@@ -202,57 +231,57 @@ public abstract class AbstractPDFStream extends PDFDictionary {
      * around so much {@inheritDoc}
      */
     @Override
-    protected int output(final OutputStream stream) throws IOException {
+    public int output(final OutputStream stream) throws IOException {
         setupFilterList();
 
-        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
-            try (final Writer writer = PDFDocument.getWriterFor(cout)) {
-                writer.write(getObjectID());
-                // int length = 0;
+        final CountingOutputStream cout = new CountingOutputStream(stream);
+        final StringBuilder textBuffer = new StringBuilder(64);
 
-                StreamCache encodedStream = null;
-                PDFNumber refLength = null;
-                final Object lengthEntry;
-                if (getDocument().isEncodingOnTheFly()) {
-                    refLength = new PDFNumber();
-                    getDocumentSafely().registerObject(refLength);
-                    lengthEntry = refLength;
-                } else {
-                    encodedStream = encodeStream();
-                    lengthEntry = encodedStream.getSize() + 1;
-                }
-
-                populateStreamDict(lengthEntry);
-                writeDictionary(cout, writer);
-
-                // Send encoded stream to target OutputStream
-                writer.flush();
-                if (encodedStream == null) {
-                    encodeAndWriteStream(cout, refLength);
-                } else {
-                    outputStreamData(encodedStream, cout);
-                    encodedStream.clear(); // Encoded stream can now be
-                                           // discarded
-                }
-
-                writer.write("\nendobj\n");
-                writer.flush();
-                return cout.getCount();
-            }
+        StreamCache encodedStream = null;
+        PDFNumber refLength = null;
+        final Object lengthEntry;
+        if (this.encodeOnTheFly) {
+            refLength = new PDFNumber();
+            getDocumentSafely().registerObject(refLength);
+            lengthEntry = refLength;
+        } else {
+            encodedStream = encodeStream();
+            lengthEntry = Integer.valueOf(encodedStream.getSize() + 1);
         }
+
+        populateStreamDict(lengthEntry);
+        this.dictionary.writeDictionary(cout, textBuffer);
+
+        // Send encoded stream to target OutputStream
+        PDFDocument.flushTextBuffer(textBuffer, cout);
+        if (encodedStream == null) {
+            encodeAndWriteStream(cout, refLength);
+        } else {
+            outputStreamData(encodedStream, cout);
+            encodedStream.clear(); // Encoded stream can now be discarded
+        }
+
+        PDFDocument.flushTextBuffer(textBuffer, cout);
+        return cout.getCount();
+    }
+
+    @Override
+    public void setDocument(final PDFDocument doc) {
+        this.dictionary.setDocument(doc);
+        super.setDocument(doc);
     }
 
     /**
      * Populates the dictionary with all necessary entries for the stream.
      * Override this method if you need additional entries.
-     *
+     * 
      * @param lengthEntry
      *            value for the /Length entry
      */
     protected void populateStreamDict(final Object lengthEntry) {
         put("Length", lengthEntry);
         if (!getFilterList().isDisableAllFilters()) {
-            getFilterList().putFilterDictEntries(this);
+            getFilterList().putFilterDictEntries(this.dictionary);
         }
     }
 
@@ -265,4 +294,12 @@ public abstract class AbstractPDFStream extends PDFDictionary {
         // nop: No default implicit filters
     }
 
+    /**
+     * Whether multiple filters can be applied.
+     * 
+     * @return true if multiple filters allowed
+     */
+    protected boolean multipleFiltersAllowed() {
+        return true;
+    }
 }

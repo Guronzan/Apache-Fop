@@ -29,10 +29,10 @@ import java.util.LinkedList;
  */
 public class RtfSpaceManager {
     /** Stack for saving rtf block-level attributes. */
-    private final LinkedList blockAttributes = new LinkedList();
+    private final LinkedList blockAttributes = new LinkedList<>();
 
     /** Stack for saving rtf inline-level attributes. */
-    private final LinkedList inlineAttributes = new LinkedList();
+    private final LinkedList inlineAttributes = new LinkedList<>();
 
     /**
      * Keeps value of accumulated space in twips. For example if block has

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: ASCII85Filter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: ASCII85Filter.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -25,7 +25,8 @@ import java.io.OutputStream;
 import org.apache.xmlgraphics.util.io.ASCII85OutputStream;
 
 /**
- * PDF Filter for ASCII85. This applies a filter to a pdf stream that converts
+ * PDF Filter for ASCII85.
+ * This applies a filter to a pdf stream that converts
  * the data to ASCII.
  */
 public class ASCII85Filter extends PDFFilter {
@@ -35,7 +36,6 @@ public class ASCII85Filter extends PDFFilter {
      *
      * @return the name of the filter to be inserted into the PDF
      */
-    @Override
     public String getName() {
         return "/ASCII85Decode";
     }
@@ -43,7 +43,6 @@ public class ASCII85Filter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
-    @Override
     public boolean isASCIIFilter() {
         return true;
     }
@@ -53,7 +52,6 @@ public class ASCII85Filter extends PDFFilter {
      *
      * @return always null
      */
-    @Override
     public PDFObject getDecodeParms() {
         return null;
     }
@@ -61,8 +59,7 @@ public class ASCII85Filter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
-    @Override
-    public OutputStream applyFilter(final OutputStream out) throws IOException {
+    public OutputStream applyFilter(OutputStream out) throws IOException {
         if (isApplied()) {
             return out;
         } else {

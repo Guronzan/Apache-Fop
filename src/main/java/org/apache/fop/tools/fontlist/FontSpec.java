@@ -113,4 +113,53 @@ public class FontSpec implements Comparable<FontSpec> {
                 .compareTo(other.metrics.getFullName());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (this.key == null ? 0 : this.key.hashCode());
+        result = prime * result
+                + (this.metrics == null ? 0 : this.metrics.hashCode());
+        return result;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof FontSpec)) {
+            return false;
+        }
+        final FontSpec other = (FontSpec) obj;
+        if (this.key == null) {
+            if (other.key != null) {
+                return false;
+            }
+        } else if (!this.key.equals(other.key)) {
+            return false;
+        }
+        if (this.metrics == null) {
+            if (other.metrics != null) {
+                return false;
+            }
+        } else if (!this.metrics.equals(other.metrics)) {
+            return false;
+        }
+        return true;
+    }
+
 }

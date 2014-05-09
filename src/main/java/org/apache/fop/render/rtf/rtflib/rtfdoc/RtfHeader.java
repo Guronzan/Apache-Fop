@@ -44,7 +44,7 @@ import java.util.Map;
 
 class RtfHeader extends RtfContainer {
     private final String charset = "ansi";
-    private final Map userProperties = new HashMap();
+    private final Map userProperties = new HashMap<>();
 
     /** Create an RTF header */
     RtfHeader(final RtfFile f, final Writer w) throws IOException {

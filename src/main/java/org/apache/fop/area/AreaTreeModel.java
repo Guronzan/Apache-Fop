@@ -86,10 +86,9 @@ public class AreaTreeModel {
 
     /**
      * Signal the end of the document for any processing.
-     * 
+     *
      * @throws SAXException
      */
-    @SuppressWarnings("unused")
     public void endDocument() throws SAXException {
     };
 

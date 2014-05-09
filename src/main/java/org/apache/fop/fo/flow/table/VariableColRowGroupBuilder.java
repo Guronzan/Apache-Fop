@@ -54,7 +54,7 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** The queue of events sent to this builder. */
-    private final List events = new LinkedList();
+    private final List events = new LinkedList<>();
 
     /** {@inheritDoc} */
     @Override

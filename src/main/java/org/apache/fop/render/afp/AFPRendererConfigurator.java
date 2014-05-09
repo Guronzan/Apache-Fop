@@ -44,6 +44,7 @@ import org.apache.fop.afp.util.DefaultFOPResourceAccessor;
 import org.apache.fop.afp.util.ResourceAccessor;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
+import org.apache.fop.fonts.EmbedFontInfo;
 import org.apache.fop.fonts.FontCollection;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontManager;
@@ -291,7 +292,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
 
     private void toConfigurationException(final String codepage,
             final String characterset, final IOException ioe)
-            throws ConfigurationException {
+                    throws ConfigurationException {
         final String msg = "Failed to load the character set metrics "
                 + characterset + " with code page " + codepage
                 + ". I/O error: " + ioe.getMessage();
@@ -307,7 +308,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
      * @throws ConfigurationException
      *             if something's wrong with the config data
      */
-    private List<AFPFontInfo> buildFontListFromConfiguration(
+    private List<EmbedFontInfo> buildFontListFromConfiguration(
             final Configuration cfg) throws FOPException,
             ConfigurationException {
 
@@ -327,18 +328,16 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
         if (referencedFontsCfg != null) {
             localMatcher = FontManagerConfigurator.createFontsMatcher(
                     referencedFontsCfg, this.userAgent.getFactory()
-                            .validateUserConfigStrictly());
+                    .validateUserConfigStrictly());
         }
 
-        final List<AFPFontInfo> fontList = new ArrayList<>();
+        final List fontList = new ArrayList<>();
         final Configuration[] font = fonts.getChildren("font");
         final String fontPath = null;
         for (final Configuration element : font) {
             final AFPFontInfo afi = buildFont(element, fontPath);
             if (afi != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Adding font " + afi.getAFPFont().getFontName());
-                }
+                log.debug("Adding font {}", afi.getAFPFont().getFontName());
                 final List<FontTriplet> fontTriplets = afi.getFontTriplets();
                 for (final FontTriplet triplet : fontTriplets) {
                     if (log.isDebugEnabled()) {
@@ -384,7 +383,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
             final AFPRenderer afpRenderer = (AFPRenderer) renderer;
 
             try {
-                final List/* <AFPFontInfo> */fontList = buildFontListFromConfiguration(cfg);
+                final List<EmbedFontInfo> fontList = buildFontListFromConfiguration(cfg);
                 afpRenderer.setFontList(fontList);
             } catch (final ConfigurationException e) {
                 LogUtil.handleException(log, e, this.userAgent.getFactory()
@@ -464,7 +463,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
                     resourceGroupFile.createNewFile();
                     if (resourceGroupFile.canWrite()) {
                         customizable
-                                .setDefaultResourceGroupFilePath(resourceGroupDest);
+                        .setDefaultResourceGroupFilePath(resourceGroupDest);
                     } else {
                         log.warn("Unable to write to default external resource group file '"
                                 + resourceGroupDest + "'");

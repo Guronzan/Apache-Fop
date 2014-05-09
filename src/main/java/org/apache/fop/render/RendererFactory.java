@@ -20,7 +20,9 @@
 package org.apache.fop.render;
 
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +45,9 @@ import org.apache.xmlgraphics.util.Service;
 @Slf4j
 public class RendererFactory {
 
-    private final Map rendererMakerMapping = new java.util.HashMap();
-    private final Map eventHandlerMakerMapping = new java.util.HashMap();
-    private final Map documentHandlerMakerMapping = new java.util.HashMap();
+    private final Map<String, AbstractRendererMaker> rendererMakerMapping = new HashMap<>();
+    private final Map<String, AbstractFOEventHandlerMaker> eventHandlerMakerMapping = new HashMap<>();
+    private final Map<String, AbstractIFDocumentHandlerMaker> documentHandlerMakerMapping = new HashMap<>();
 
     private boolean rendererPreferred = false;
 
@@ -206,13 +208,17 @@ public class RendererFactory {
                     .forName(className).newInstance();
             addDocumentHandlerMaker(makerInstance);
         } catch (final ClassNotFoundException e) {
+            log.error("ClassNotFoundException", e);
             throw new IllegalArgumentException("Could not find " + className);
         } catch (final InstantiationException e) {
+            log.error("InstantiationException", e);
             throw new IllegalArgumentException("Could not instantiate "
                     + className);
         } catch (final IllegalAccessException e) {
+            log.error("IllegalAccessException", e);
             throw new IllegalArgumentException("Could not access " + className);
         } catch (final ClassCastException e) {
+            log.error("ClassCastException", e);
             throw new IllegalArgumentException(className + " is not an "
                     + AbstractIFDocumentHandlerMaker.class.getName());
         }
@@ -226,9 +232,7 @@ public class RendererFactory {
      * @return the requested RendererMaker or null if none is available
      */
     public AbstractRendererMaker getRendererMaker(final String mime) {
-        final AbstractRendererMaker maker = (AbstractRendererMaker) this.rendererMakerMapping
-                .get(mime);
-        return maker;
+        return this.rendererMakerMapping.get(mime);
     }
 
     /**
@@ -239,9 +243,7 @@ public class RendererFactory {
      * @return the requested FOEventHandlerMaker or null if none is available
      */
     public AbstractFOEventHandlerMaker getFOEventHandlerMaker(final String mime) {
-        final AbstractFOEventHandlerMaker maker = (AbstractFOEventHandlerMaker) this.eventHandlerMakerMapping
-                .get(mime);
-        return maker;
+        return this.eventHandlerMakerMapping.get(mime);
     }
 
     /**
@@ -253,9 +255,7 @@ public class RendererFactory {
      */
     public AbstractIFDocumentHandlerMaker getDocumentHandlerMaker(
             final String mime) {
-        final AbstractIFDocumentHandlerMaker maker = (AbstractIFDocumentHandlerMaker) this.documentHandlerMakerMapping
-                .get(mime);
-        return maker;
+        return this.documentHandlerMakerMapping.get(mime);
     }
 
     /**
@@ -439,21 +439,18 @@ public class RendererFactory {
      * @return an array of all supported MIME types
      */
     public String[] listSupportedMimeTypes() {
-        final List lst = new java.util.ArrayList();
-        Iterator iter = this.rendererMakerMapping.keySet().iterator();
-        while (iter.hasNext()) {
-            lst.add(iter.next());
+        final List<String> lst = new ArrayList<>();
+        for (final String entry : this.rendererMakerMapping.keySet()) {
+            lst.add(entry);
         }
-        iter = this.eventHandlerMakerMapping.keySet().iterator();
-        while (iter.hasNext()) {
-            lst.add(iter.next());
+        for (final String entry : this.eventHandlerMakerMapping.keySet()) {
+            lst.add(entry);
         }
-        iter = this.documentHandlerMakerMapping.keySet().iterator();
-        while (iter.hasNext()) {
-            lst.add(iter.next());
+        for (final String entry : this.documentHandlerMakerMapping.keySet()) {
+            lst.add(entry);
         }
         Collections.sort(lst);
-        return (String[]) lst.toArray(new String[lst.size()]);
+        return lst.toArray(new String[lst.size()]);
     }
 
     /**
@@ -531,5 +528,4 @@ public class RendererFactory {
             }
         }
     }
-
 }

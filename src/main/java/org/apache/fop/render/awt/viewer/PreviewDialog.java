@@ -58,6 +58,8 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.render.awt.AWTRenderer;
@@ -66,6 +68,7 @@ import org.apache.fop.render.awt.AWTRenderer;
  * AWT Viewer main window. Surrounds a PreviewPanel with a bunch of pretty
  * buttons and controls.
  */
+@Slf4j
 public class PreviewDialog extends JFrame implements StatusListener {
 
     /**
@@ -610,7 +613,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
                     @Override
                     public void doit() {
                         PreviewDialog.this.previewPanel
-                                .setDisplayMode(PreviewPanel.SINGLE);
+                        .setDisplayMode(PreviewPanel.SINGLE);
                     }
                 });
         final JRadioButtonMenuItem cont = new JRadioButtonMenuItem(new Command(
@@ -623,7 +626,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
             @Override
             public void doit() {
                 PreviewDialog.this.previewPanel
-                        .setDisplayMode(PreviewPanel.CONTINUOUS);
+                .setDisplayMode(PreviewPanel.CONTINUOUS);
             }
         });
         final JRadioButtonMenuItem facing = new JRadioButtonMenuItem(
@@ -636,7 +639,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
                     @Override
                     public void doit() {
                         PreviewDialog.this.previewPanel
-                                .setDisplayMode(PreviewPanel.CONT_FACING);
+                        .setDisplayMode(PreviewPanel.CONT_FACING);
                     }
                 });
         single.setSelected(true);
@@ -762,7 +765,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
      */
     public void setScale(final double scaleFactor) {
         this.scale
-                .setSelectedItem(this.percentFormat.format(scaleFactor) + "%");
+        .setSelectedItem(this.percentFormat.format(scaleFactor) + "%");
         this.previewPanel.setScaleFactor(scaleFactor / 100d);
     }
 
@@ -773,7 +776,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
         try {
             setScale(this.previewPanel.getScaleToFitWindow() * 100);
         } catch (final FOPException fopEx) {
-            fopEx.printStackTrace();
+            log.error("FOPException", fopEx);
         }
     }
 
@@ -785,7 +788,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
         try {
             setScale(this.previewPanel.getScaleToFitWidth() * 100);
         } catch (final FOPException fopEx) {
-            fopEx.printStackTrace();
+            log.error("FOPException", fopEx);
         }
     }
 
@@ -813,7 +816,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
             try {
                 pj.print();
             } catch (final PrinterException e) {
-                e.printStackTrace();
+                log.error("PrinterException", e);
             }
         }
 
@@ -888,7 +891,7 @@ public class PreviewDialog extends JFrame implements StatusListener {
         setStatus(msg);
         JOptionPane.showMessageDialog(getContentPane(),
                 "<html><b>" + msg + ":</b><br>" + e.getClass().getName()
-                        + "<br>" + e.getMessage() + "</html>",
+                + "<br>" + e.getMessage() + "</html>",
                 this.translator.getString("Exception.Error"),
                 JOptionPane.ERROR_MESSAGE);
     }

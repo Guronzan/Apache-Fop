@@ -73,7 +73,7 @@ public final class CharacterProperty extends Property {
      */
     @Override
     public Object getObject() {
-        return new Character(this.character);
+        return Character.valueOf(this.character);
     }
 
     /**
@@ -89,7 +89,7 @@ public final class CharacterProperty extends Property {
      */
     @Override
     public String getString() {
-        return new Character(this.character).toString();
+        return Character.valueOf(this.character).toString();
     }
 
     /**

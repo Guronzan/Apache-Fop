@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFGoToRemote.java 815358 2009-09-15 15:07:51Z maxberger $ */
+/* $Id: PDFGoToRemote.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -27,7 +27,7 @@ public class PDFGoToRemote extends PDFAction {
     /**
      * the file specification
      */
-    private final PDFFileSpec pdfFileSpec;
+    private PDFReference pdfFileSpec;
     private int pageReference = 0;
     private String destination = null;
     private boolean newWindow = false;
@@ -35,34 +35,39 @@ public class PDFGoToRemote extends PDFAction {
     /**
      * Create an GoToR object.
      *
-     * @param pdfFileSpec
-     *            the fileSpec associated with the action
-     * @param newWindow
-     *            boolean indicating whether the target should be displayed in a
-     *            new window
+     * @param pdfFileSpec the fileSpec associated with the action
+     * @param newWindow boolean indicating whether the target should be
+     *                  displayed in a new window
      */
-    public PDFGoToRemote(final PDFFileSpec pdfFileSpec, final boolean newWindow) {
+    public PDFGoToRemote(PDFFileSpec pdfFileSpec, boolean newWindow) {
         /* generic creation of object */
         super();
 
-        this.pdfFileSpec = pdfFileSpec;
+        this.pdfFileSpec = pdfFileSpec.makeReference();
         this.newWindow = newWindow;
     }
 
     /**
-     * create an GoToR object.
+     * Create an GoToR object.
      *
-     * @param pdfFileSpec
-     *            the fileSpec associated with the action
-     * @param page
-     *            a page reference within the remote document
-     * @param newWindow
-     *            boolean indicating whether the target should be displayed in a
-     *            new window
+     * @param pdfFileSpec the fileSpec associated with the action
+     * @param page a page reference within the remote document
+     * @param newWindow boolean indicating whether the target should be
+     *                  displayed in a new window
      */
-    public PDFGoToRemote(final PDFFileSpec pdfFileSpec, final int page,
-            final boolean newWindow) {
-        /* generic creation of object */
+    public PDFGoToRemote(PDFFileSpec pdfFileSpec, int page, boolean newWindow) {
+        this(pdfFileSpec.makeReference(), page, newWindow);
+    }
+
+    /**
+     * Create an GoToR object.
+     *
+     * @param pdfFileSpec the fileSpec associated with the action
+     * @param page a page reference within the remote document
+     * @param newWindow boolean indicating whether the target should be
+     *                  displayed in a new window
+     */
+    public PDFGoToRemote(PDFReference pdfFileSpec, int page, boolean newWindow) {
         super();
 
         this.pdfFileSpec = pdfFileSpec;
@@ -73,20 +78,16 @@ public class PDFGoToRemote extends PDFAction {
     /**
      * create an GoToR object.
      *
-     * @param pdfFileSpec
-     *            the fileSpec associated with the action
-     * @param dest
-     *            a named destination within the remote document
-     * @param newWindow
-     *            boolean indicating whether the target should be displayed in a
-     *            new window
+     * @param pdfFileSpec the fileSpec associated with the action
+     * @param dest a named destination within the remote document
+     * @param newWindow boolean indicating whether the target should be
+     *                  displayed in a new window
      */
-    public PDFGoToRemote(final PDFFileSpec pdfFileSpec, final String dest,
-            final boolean newWindow) {
+    public PDFGoToRemote(PDFFileSpec pdfFileSpec, String dest, boolean newWindow) {
         /* generic creation of object */
         super();
 
-        this.pdfFileSpec = pdfFileSpec;
+        this.pdfFileSpec = pdfFileSpec.makeReference();
         this.destination = dest;
         this.newWindow = newWindow;
     }
@@ -96,46 +97,48 @@ public class PDFGoToRemote extends PDFAction {
      *
      * @return the action String
      */
-    @Override
     public String getAction() {
-        return referencePDF();
+        return this.referencePDF();
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public String toPDFString() {
-        final StringBuilder sb = new StringBuilder(64);
-        sb.append(getObjectID());
+        StringBuffer sb = new StringBuffer(64);
         sb.append("<<\n/S /GoToR\n/F ");
-        sb.append(this.pdfFileSpec.referencePDF());
+        sb.append(pdfFileSpec.toString());
         sb.append("\n");
 
-        if (this.destination != null) {
+        if (destination != null) {
             sb.append("/D (").append(this.destination).append(")");
         } else {
-            sb.append("/D [ ").append(this.pageReference)
-            .append(" /XYZ null null null ]");
+            sb.append("/D [ ").append(this.pageReference).append(" /XYZ null null null ]");
         }
 
-        if (this.newWindow) {
+        if (newWindow) {
             sb.append("/NewWindow true");
         }
 
-        sb.append(" \n>>\nendobj\n");
+        sb.append("\n>>");
 
         return sb.toString();
     }
 
+
     /*
-     * example 28 0 obj << /S /GoToR /F 29 0 R /D [ 0 /XYZ -6 797 null ] >>
+     * example
+     * 28 0 obj
+     * <<
+     * /S /GoToR
+     * /F 29 0 R
+     * /D [ 0 /XYZ -6 797 null ]
+     * >>
      * endobj
      */
 
     /** {@inheritDoc} */
-    @Override
-    protected boolean contentEquals(final PDFObject obj) {
+    protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;
         }
@@ -144,23 +147,23 @@ public class PDFGoToRemote extends PDFAction {
             return false;
         }
 
-        final PDFGoToRemote remote = (PDFGoToRemote) obj;
+        PDFGoToRemote remote = (PDFGoToRemote)obj;
 
-        if (!remote.pdfFileSpec.referencePDF().equals(
-                this.pdfFileSpec.referencePDF())) {
+        if (!remote.pdfFileSpec.toString().equals(pdfFileSpec.toString())) {
             return false;
         }
 
-        if (this.destination != null) {
-            if (!this.destination.equals(remote.destination)) {
+        if (destination != null) {
+            if (!destination.equals(remote.destination)) {
                 return false;
             }
         } else {
-            if (this.pageReference != remote.pageReference) {
+            if (pageReference != remote.pageReference) {
                 return false;
             }
         }
 
-        return this.newWindow == remote.newWindow;
+        return (this.newWindow == remote.newWindow);
     }
 }
+

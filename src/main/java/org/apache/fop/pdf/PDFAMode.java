@@ -33,7 +33,7 @@ public final class PDFAMode {
 
     /**
      * Constructor to add a new named item.
-     *
+     * 
      * @param name
      *            Name of the item.
      */
@@ -49,7 +49,7 @@ public final class PDFAMode {
     /**
      * Indicates whether this mode obeys the restrictions established by
      * PDF/A-1a.
-     *
+     * 
      * @return true if this mode obeys the restrictions established by PDF/A-1a.
      */
     public boolean isPDFA1LevelA() {
@@ -59,7 +59,7 @@ public final class PDFAMode {
     /**
      * Indicates whether this mode obeys the restrictions established by
      * PDF/A-1b.
-     *
+     * 
      * @return true if this mode obeys the restrictions established by PDF/A-1b.
      */
     public boolean isPDFA1LevelB() {
@@ -69,7 +69,7 @@ public final class PDFAMode {
 
     /**
      * Returns the mode enum object given a String.
-     *
+     * 
      * @param s
      *            the string
      * @return the PDFAMode enum object (DISABLED will be returned if no match

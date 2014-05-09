@@ -259,7 +259,7 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
         List returnedList;
 
         // the list which will be returned to the parent LM
-        final List returnList = new LinkedList();
+        final List returnList = new LinkedList<>();
         KnuthSequence lastSequence = null;
 
         if (this.fobj instanceof Title) {
@@ -274,7 +274,7 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
                     this.lineHeight.getOptimum(this).getLength().getValue(this),
                     this.alignmentAdjust, this.alignmentBaseline,
                     this.baselineShift, this.dominantBaseline, context
-                    .getAlignmentContext());
+                            .getAlignmentContext());
         }
 
         this.childLC = new LayoutContext(context);
@@ -313,14 +313,14 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
                 // Leave room for start/end border and padding
                 if (this.borderProps != null) {
                     this.childLC
-                    .setRefIPD(this.childLC.getRefIPD()
-                            - this.borderProps.getPaddingStart(
-                                    this.lastChildLM != null, this)
+                            .setRefIPD(this.childLC.getRefIPD()
+                                    - this.borderProps.getPaddingStart(
+                                            this.lastChildLM != null, this)
                                     - this.borderProps
-                                    .getBorderStartWidth(this.lastChildLM != null)
+                                            .getBorderStartWidth(this.lastChildLM != null)
                                     - this.borderProps.getPaddingEnd(
                                             hasNextChildLM(), this)
-                                            - this.borderProps
+                                    - this.borderProps
                                             .getBorderEndWidth(hasNextChildLM()));
                 }
             }
@@ -340,17 +340,17 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
             if (curLM instanceof InlineLevelLayoutManager) {
                 context.clearKeepWithNextPending();
                 // "wrap" the Position stored in each element of returnedList
-                final ListIterator seqIter = returnedList.listIterator();
+                final ListIterator<KnuthSequence> seqIter = returnedList
+                        .listIterator();
                 while (seqIter.hasNext()) {
-                    final KnuthSequence sequence = (KnuthSequence) seqIter
-                            .next();
+                    final KnuthSequence sequence = seqIter.next();
                     sequence.wrapPositions(this);
                 }
                 int insertionStartIndex = 0;
                 if (lastSequence != null
                         && lastSequence
-                        .appendSequenceOrClose((KnuthSequence) returnedList
-                                .get(0))) {
+                                .appendSequenceOrClose((KnuthSequence) returnedList
+                                        .get(0))) {
                     insertionStartIndex = 1;
                 }
                 // add border and padding to the first complete sequence of this
@@ -461,7 +461,7 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
         // set in the layout context, it must be also set in the
         // layout context given to lastLM, but must be cleared in the
         // layout context given to the other LMs.
-        final List positionList = new LinkedList();
+        final List positionList = new LinkedList<>();
         NonLeafPosition pos;
         LayoutManager lastLM = null;// last child LM in this iterator
         Position lastPos = null;
@@ -562,7 +562,7 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
     /** {@inheritDoc} */
     @Override
     public List getChangedKnuthElements(final List oldList, final int alignment) {
-        final List returnedList = new LinkedList();
+        final List returnedList = new LinkedList<>();
         addKnuthElementsForBorderPaddingStart(returnedList);
         returnedList.addAll(super.getChangedKnuthElements(oldList, alignment));
         addKnuthElementsForBorderPaddingEnd(returnedList);
@@ -622,7 +622,7 @@ public class InlineLayoutManager extends InlineStackingLayoutManager {
                     + borderAndPadding.getPaddingEnd(false, this);
             if (ipEnd > 0) {
                 returnList
-                .add(new KnuthBox(ipEnd, getAuxiliaryPosition(), true));
+                        .add(new KnuthBox(ipEnd, getAuxiliaryPosition(), true));
             }
         }
     }

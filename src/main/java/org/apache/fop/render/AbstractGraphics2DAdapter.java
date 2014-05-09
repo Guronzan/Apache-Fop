@@ -32,10 +32,8 @@ import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import java.io.IOException;
 
 import org.apache.fop.render.RendererContext.RendererContextWrapper;
-import org.apache.xmlgraphics.java2d.Graphics2DImagePainter;
 import org.apache.xmlgraphics.util.UnitConv;
 
 /**
@@ -153,14 +151,6 @@ public abstract class AbstractGraphics2DAdapter implements Graphics2DAdapter {
                 RenderingHints.VALUE_ANTIALIAS_OFF);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void paintImage(final Graphics2DImagePainter painter,
-            final RendererContext context, final int x, final int y,
-            final int width, final int height) throws IOException {
-        paintImage(painter, context, x, y, width, height);
     }
 
 }

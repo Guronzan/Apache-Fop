@@ -276,25 +276,25 @@ public class TraitSetter {
         int padding = bordProps.getPadding(
                 CommonBorderPaddingBackground.BEFORE, discardBefore, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_BEFORE, new Integer(padding));
+            area.addTrait(Trait.PADDING_BEFORE, Integer.valueOf(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.AFTER,
                 discardAfter, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_AFTER, new Integer(padding));
+            area.addTrait(Trait.PADDING_AFTER, Integer.valueOf(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.START,
                 discardStart, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_START, new Integer(padding));
+            area.addTrait(Trait.PADDING_START, Integer.valueOf(padding));
         }
 
         padding = bordProps.getPadding(CommonBorderPaddingBackground.END,
                 discardEnd, context);
         if (padding != 0) {
-            area.addTrait(Trait.PADDING_END, new Integer(padding));
+            area.addTrait(Trait.PADDING_END, Integer.valueOf(padding));
         }
 
     }

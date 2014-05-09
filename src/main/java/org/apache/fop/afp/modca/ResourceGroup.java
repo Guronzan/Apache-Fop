@@ -21,7 +21,6 @@ package org.apache.fop.afp.modca;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.fop.afp.Streamable;
@@ -32,9 +31,7 @@ import org.apache.fop.afp.Streamable;
 public class ResourceGroup extends AbstractNamedAFPObject {
 
     /** Set of resource uri */
-    private final Set/* <String> */resourceSet = new java.util.HashSet/*
-                                                                       * <String>
-                                                                       */();
+    private final Set<AbstractNamedAFPObject> resourceSet = new java.util.HashSet<>();
 
     /**
      * Constructor for the ResourceGroup, this takes a name parameter which must
@@ -92,11 +89,8 @@ public class ResourceGroup extends AbstractNamedAFPObject {
     /** {@inheritDoc} */
     @Override
     public void writeContent(final OutputStream os) throws IOException {
-        final Iterator it = this.resourceSet.iterator();
-        while (it.hasNext()) {
-            final Object object = it.next();
-            if (object instanceof Streamable) {
-                final Streamable streamableObject = (Streamable) object;
+        for (final Streamable streamableObject : this.resourceSet) {
+            if (streamableObject != null) {
                 streamableObject.writeToStream(os);
             }
         }
@@ -113,6 +107,6 @@ public class ResourceGroup extends AbstractNamedAFPObject {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return this.name + " " + this.resourceSet/* getResourceMap() */;
+        return this.name + " " + this.resourceSet.toString();
     }
 }

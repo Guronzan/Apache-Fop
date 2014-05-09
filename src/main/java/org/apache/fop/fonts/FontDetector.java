@@ -22,6 +22,7 @@ package org.apache.fop.fonts;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +40,7 @@ import org.apache.xmlgraphics.util.ClasspathResource;
 public class FontDetector {
 
     private static final String[] FONT_MIMETYPES = { "application/x-font",
-    "application/x-font-truetype" };
+            "application/x-font-truetype" };
 
     private final FontManager fontManager;
     private final FontAdder fontAdder;
@@ -82,7 +83,11 @@ public class FontDetector {
                 if (fontBase != null) {
                     final List<File> fontURLList = fontFileFinder.find(fontBase
                             .getAbsolutePath());
-                    this.fontAdder.add(fontURLList, fontInfoList);
+                    final List<URL> urls = new LinkedList<>();
+                    for (final File file : fontURLList) {
+                        urls.add(file.toURI().toURL());
+                    }
+                    this.fontAdder.add(urls, fontInfoList);
 
                     // Can only use the font base URL if it's a file URL
                 }
@@ -92,10 +97,13 @@ public class FontDetector {
         }
 
         // native o/s font directory finding
-        List<File> systemFontList;
         try {
-            systemFontList = fontFileFinder.find();
-            this.fontAdder.add(systemFontList, fontInfoList);
+            final List<File> systemFontList = fontFileFinder.find();
+            final List<URL> urls = new LinkedList<>();
+            for (final File file : systemFontList) {
+                urls.add(file.toURI().toURL());
+            }
+            this.fontAdder.add(urls, fontInfoList);
         } catch (final IOException e) {
             LogUtil.handleException(log, e, this.strict);
         }

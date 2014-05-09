@@ -22,13 +22,14 @@ import java.awt.Font;
 import java.awt.FontFormatException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.fop.fonts.CustomFont;
+import org.apache.fop.fonts.FontMetrics;
 import org.apache.fop.fonts.FontType;
 import org.apache.fop.fonts.LazyFont;
 import org.apache.fop.fonts.Typeface;
@@ -40,7 +41,7 @@ import org.apache.fop.fonts.Typeface;
  * in the current graphics environment.
  */
 public class CustomFontMetricsMapper extends Typeface implements
-        FontMetricsMapper {
+FontMetricsMapper {
 
     /**
      * Font metrics for the font this class models.
@@ -60,7 +61,7 @@ public class CustomFontMetricsMapper extends Typeface implements
     /**
      * Construction of this class results in the immediate construction of the
      * underlying {@link java.awt.Font}.
-     * 
+     *
      * @param fontMetrics
      *            the metrics of the custom font
      * @throws FontFormatException
@@ -77,7 +78,7 @@ public class CustomFontMetricsMapper extends Typeface implements
     /**
      * Construction of this class results in the immediate construction of the
      * underlying {@link java.awt.Font}.
-     * 
+     *
      * @param fontMetrics
      *            the font
      * @param fontSource
@@ -97,13 +98,13 @@ public class CustomFontMetricsMapper extends Typeface implements
 
     /**
      * Loads the java.awt.Font
-     * 
+     *
      * @param source
      * @throws FontFormatException
      * @throws IOException
      */
     private void initialize(final Source source) throws FontFormatException,
-            IOException {
+    IOException {
         int type = Font.TRUETYPE_FONT;
         if (FontType.TYPE1.equals(this.typeface.getFontType())) {
             type = TYPE1_FONT; // Font.TYPE1_FONT; only available in Java 1.5
@@ -179,7 +180,7 @@ public class CustomFontMetricsMapper extends Typeface implements
 
     /** {@inheritDoc} */
     @Override
-    public final Set getFamilyNames() {
+    public final Collection<String> getFamilyNames() {
         return this.typeface.getFamilyNames();
     }
 

@@ -15,14 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFNumsArray.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFNumsArray.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 
@@ -34,21 +32,18 @@ import org.apache.commons.io.output.CountingOutputStream;
 public class PDFNumsArray extends PDFObject {
 
     /** Sorted Map holding the values of this array. */
-    protected SortedMap map = new java.util.TreeMap();
+    protected SortedMap<Integer, Object> map = new java.util.TreeMap<Integer, Object>();
 
     /**
      * Create a new, empty array object.
-     *
-     * @param parent
-     *            the object's parent if any
+     * @param parent the object's parent if any
      */
-    public PDFNumsArray(final PDFObject parent) {
+    public PDFNumsArray(PDFObject parent) {
         super(parent);
     }
 
     /**
      * Returns the length of the array
-     *
      * @return the length of the array
      */
     public int length() {
@@ -57,79 +52,58 @@ public class PDFNumsArray extends PDFObject {
 
     /**
      * Sets an entry.
-     *
-     * @param key
-     *            the key of the value to set
-     * @param obj
-     *            the new value
+     * @param key the key of the value to set
+     * @param obj the new value
      */
-    public void put(final Integer key, final Object obj) {
+    public void put(Integer key, Object obj) {
         this.map.put(key, obj);
     }
 
     /**
      * Sets an entry.
-     *
-     * @param key
-     *            the key of the value to set
-     * @param obj
-     *            the new value
+     * @param key the key of the value to set
+     * @param obj the new value
      */
-    public void put(final int key, final Object obj) {
-        put((key), obj);
+    public void put(int key, Object obj) {
+        put(Integer.valueOf(key), obj);
     }
 
     /**
      * Gets an entry.
-     *
-     * @param key
-     *            the key of requested value
+     * @param key the key of requested value
      * @return the requested value
      */
-    public Object get(final Integer key) {
+    public Object get(Integer key) {
         return this.map.get(key);
     }
 
     /**
      * Gets an entry.
-     *
-     * @param key
-     *            the key of requested value
+     * @param key the key of requested value
      * @return the requested value
      */
-    public Object get(final int key) {
-        return get((key));
+    public Object get(int key) {
+        return get(Integer.valueOf(key));
     }
 
     /** {@inheritDoc} */
     @Override
-    protected int output(final OutputStream stream) throws IOException {
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
-        if (hasObjectNumber()) {
-            writer.write(getObjectID());
-        }
-
-        writer.write('[');
+    public int output(OutputStream stream) throws IOException {
+        CountingOutputStream cout = new CountingOutputStream(stream);
+        StringBuilder textBuffer = new StringBuilder(64);
+        textBuffer.append('[');
         boolean first = true;
-        final Iterator iter = this.map.entrySet().iterator();
-        while (iter.hasNext()) {
-            final Map.Entry entry = (Map.Entry) iter.next();
+        for (Map.Entry<Integer, Object> entry : this.map.entrySet()) {
             if (!first) {
-                writer.write(" ");
+                textBuffer.append(" ");
             }
             first = false;
-            formatObject(entry.getKey(), cout, writer);
-            writer.write(" ");
-            formatObject(entry.getValue(), cout, writer);
+            formatObject(entry.getKey(), cout, textBuffer);
+            textBuffer.append(" ");
+            formatObject(entry.getValue(), cout, textBuffer);
         }
-        writer.write(']');
-
-        if (hasObjectNumber()) {
-            writer.write("\nendobj\n");
-        }
-
-        writer.flush();
+        textBuffer.append(']');
+        PDFDocument.flushTextBuffer(textBuffer, cout);
         return cout.getCount();
     }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: CTMHelper.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: CTMHelper.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.render.pdf;
 
@@ -32,6 +32,10 @@ import org.apache.fop.pdf.PDFNumber;
  * @see org.apache.fop.area.CTM
  */
 public final class CTMHelper {
+
+    private CTMHelper() {
+    }
+
     /**
      * <p>
      * Converts the sourceMatrix to a string for use in the PDFRenderer cm

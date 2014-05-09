@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: InMemoryStreamCache.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: InMemoryStreamCache.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -43,7 +43,7 @@ public class InMemoryStreamCache implements StreamCache {
 
     /**
      * Creates a new InMemoryStreamCache.
-     *
+     * 
      * @param hintSize
      *            a hint about the approximate expected size of the buffer
      */
@@ -54,7 +54,7 @@ public class InMemoryStreamCache implements StreamCache {
     /**
      * Get the current OutputStream. Do not store it - it may change from call
      * to call.
-     *
+     * 
      * @throws IOException
      *             if there is an error getting the output stream
      * @return the output stream containing the data
@@ -81,7 +81,7 @@ public class InMemoryStreamCache implements StreamCache {
 
     /**
      * Outputs the cached bytes to the given stream.
-     *
+     * 
      * @param out
      *            the output stream to write to
      * @return the number of bytes written
@@ -100,7 +100,7 @@ public class InMemoryStreamCache implements StreamCache {
 
     /**
      * Returns the current size of the stream.
-     *
+     * 
      * @throws IOException
      *             if there is an error getting the size
      * @return the length of the stream
@@ -116,7 +116,7 @@ public class InMemoryStreamCache implements StreamCache {
 
     /**
      * Clears and resets the cache.
-     *
+     * 
      * @throws IOException
      *             if there is an error closing the stream
      */

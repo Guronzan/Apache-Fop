@@ -125,7 +125,7 @@ public class PropertyMaker implements Cloneable {
      */
     public void addKeyword(final String keyword, final String value) {
         if (this.keywords == null) {
-            this.keywords = new HashMap();
+            this.keywords = new HashMap<>();
         }
         this.keywords.put(keyword, value);
     }
@@ -140,7 +140,7 @@ public class PropertyMaker implements Cloneable {
      */
     public void addEnum(final String constant, final Property value) {
         if (this.enums == null) {
-            this.enums = new HashMap();
+            this.enums = new HashMap<>();
         }
         this.enums.put(constant, value);
     }

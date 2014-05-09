@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFEncryption.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFEncryption.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -25,44 +25,25 @@ package org.apache.fop.pdf;
 public interface PDFEncryption {
 
     /**
-     * Returns the encryption parameters.
-     * 
-     * @return the encryption parameters
-     */
-    PDFEncryptionParams getParams();
-
-    /**
-     * Sets the encryption parameters.
-     * 
-     * @param params
-     *            The parameterss to set
-     */
-    void setParams(final PDFEncryptionParams params);
-
-    /**
      * Adds a PDFFilter to the PDFStream object
-     * 
-     * @param stream
-     *            the stream to add an encryption filter to
+     * @param stream the stream to add an encryption filter to
      */
-    void applyFilter(final AbstractPDFStream stream);
+    void applyFilter(AbstractPDFStream stream);
 
     /**
-     * Encrypt an array of bytes using a reference PDFObject for calculating the
-     * encryption key.
-     * 
-     * @param data
-     *            data to encrypt
-     * @param refObj
-     *            reference PDFObject
+     * Encrypt an array of bytes using a reference PDFObject for calculating
+     * the encryption key.
+     * @param data data to encrypt
+     * @param refObj reference PDFObject
      * @return byte[] the encrypted data
      */
-    byte[] encrypt(final byte[] data, final PDFObject refObj);
+    byte[] encrypt(byte[] data, PDFObject refObj);
 
     /**
-     * Returns the trailer entry for encryption.
-     * 
-     * @return the trailer entry
+     * Returns the /Encrypt entry in the file trailer dictionary.
+     *
+     * @return the string "/Encrypt n g R\n" where n and g are the number and generation
+     * of the document's encryption dictionary
      */
     String getTrailerEntry();
 }

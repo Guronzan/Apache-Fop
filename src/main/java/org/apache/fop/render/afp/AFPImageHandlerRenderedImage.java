@@ -56,10 +56,10 @@ import org.apache.xmlgraphics.util.UnitConv;
  */
 @Slf4j
 public class AFPImageHandlerRenderedImage extends AFPImageHandler implements
-ImageHandler {
+        ImageHandler {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
+            ImageFlavor.BUFFERED_IMAGE, ImageFlavor.RENDERED_IMAGE };
 
     /** {@inheritDoc} */
     @Override
@@ -88,7 +88,7 @@ ImageHandler {
             final AFPImageObjectInfo imageObjectInfo,
             final AFPPaintingState paintingState,
             final ImageRendered imageRendered, final Dimension targetSize)
-            throws IOException {
+                    throws IOException {
 
         final long start = System.currentTimeMillis();
 
@@ -119,7 +119,7 @@ ImageHandler {
             final Dimension resampledDim = new Dimension(
                     (int) Math.ceil(UnitConv.mpt2px(targetSize.getWidth(),
                             resolution)), (int) Math.ceil(UnitConv.mpt2px(
-                                    targetSize.getHeight(), resolution)));
+                            targetSize.getHeight(), resolution)));
 
             imageObjectInfo.setCreatePageSegment(true);
             imageObjectInfo.getResourceInfo().setImageDimension(resampledDim);
@@ -169,100 +169,108 @@ ImageHandler {
         }
 
         byte[] imageData = null;
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        final boolean allowDirectEncoding = true;
-        if (allowDirectEncoding && pixelSize <= maxPixelSize) {
-            // Attempt to encode without resampling the image
-            final ImageEncodingHelper helper = new ImageEncodingHelper(
-                    renderedImage, pixelSize == 32);
-            final ColorModel encodedColorModel = helper.getEncodedColorModel();
-            boolean directEncode = true;
-            if (helper.getEncodedColorModel().getPixelSize() > maxPixelSize) {
-                directEncode = false; // pixel size needs to be reduced
-            }
-            if (BitmapImageUtil.getColorIndexSize(renderedImage) > 2) {
-                directEncode = false; // Lookup tables are not implemented, yet
-            }
-            if (useFS10 && BitmapImageUtil.isMonochromeImage(renderedImage)
-                    && BitmapImageUtil.isZeroBlack(renderedImage)) {
-                directEncode = false;
-                // need a special method to invert the bit-stream since setting
-                // the subtractive mode
-                // in AFP alone doesn't seem to do the trick.
-                if (encodeInvertedBilevel(helper, imageObjectInfo, baos)) {
+        try (final ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            final boolean allowDirectEncoding = true;
+            if (allowDirectEncoding && pixelSize <= maxPixelSize) {
+                // Attempt to encode without resampling the image
+                final ImageEncodingHelper helper = new ImageEncodingHelper(
+                        renderedImage, pixelSize == 32);
+                final ColorModel encodedColorModel = helper
+                        .getEncodedColorModel();
+                boolean directEncode = true;
+                if (helper.getEncodedColorModel().getPixelSize() > maxPixelSize) {
+                    directEncode = false; // pixel size needs to be reduced
+                }
+                if (BitmapImageUtil.getColorIndexSize(renderedImage) > 2) {
+                    directEncode = false; // Lookup tables are not implemented,
+                                          // yet
+                }
+                if (useFS10 && BitmapImageUtil.isMonochromeImage(renderedImage)
+                        && BitmapImageUtil.isZeroBlack(renderedImage)) {
+                    directEncode = false;
+                    // need a special method to invert the bit-stream since
+                    // setting
+                    // the subtractive mode
+                    // in AFP alone doesn't seem to do the trick.
+                    if (encodeInvertedBilevel(helper, imageObjectInfo, baos)) {
+                        imageData = baos.toByteArray();
+                    }
+                }
+                if (directEncode) {
+                    log.debug("Encoding image directly...");
+                    imageObjectInfo.setBitsPerPixel(encodedColorModel
+                            .getPixelSize());
+                    if (pixelSize == 32) {
+                        functionSet = 45; // IOCA FS45 required for CMYK
+                    }
+
+                    helper.encode(baos);
                     imageData = baos.toByteArray();
                 }
             }
-            if (directEncode) {
-                log.debug("Encoding image directly...");
-                imageObjectInfo.setBitsPerPixel(encodedColorModel
-                        .getPixelSize());
-                if (pixelSize == 32) {
-                    functionSet = 45; // IOCA FS45 required for CMYK
-                }
+            if (imageData == null) {
+                log.debug("Encoding image via RGB...");
 
-                helper.encode(baos);
+                // Convert image to 24bit RGB
+                ImageEncodingHelper.encodeRenderedImageAsRGB(renderedImage,
+                        baos);
                 imageData = baos.toByteArray();
-            }
-        }
-        if (imageData == null) {
-            log.debug("Encoding image via RGB...");
+                imageObjectInfo.setBitsPerPixel(24);
 
-            // Convert image to 24bit RGB
-            ImageEncodingHelper.encodeRenderedImageAsRGB(renderedImage, baos);
-            imageData = baos.toByteArray();
-            imageObjectInfo.setBitsPerPixel(24);
+                final boolean colorImages = paintingState.isColorImages();
+                imageObjectInfo.setColor(colorImages);
 
-            final boolean colorImages = paintingState.isColorImages();
-            imageObjectInfo.setColor(colorImages);
-
-            // convert to grayscale
-            if (!colorImages) {
-                log.debug("Converting RGB image to grayscale...");
-                baos.reset();
-                final int bitsPerPixel = paintingState.getBitsPerPixel();
-                imageObjectInfo.setBitsPerPixel(bitsPerPixel);
-                // TODO this should be done off the RenderedImage to avoid
-                // buffering the
-                // intermediate 24bit image
-                ImageEncodingHelper.encodeRGBAsGrayScale(imageData, dataWidth,
-                        dataHeight, bitsPerPixel, baos);
-                imageData = baos.toByteArray();
-                if (bitsPerPixel == 1) {
-                    imageObjectInfo.setSubtractive(true);
+                // convert to grayscale
+                if (!colorImages) {
+                    log.debug("Converting RGB image to grayscale...");
+                    baos.reset();
+                    final int bitsPerPixel = paintingState.getBitsPerPixel();
+                    imageObjectInfo.setBitsPerPixel(bitsPerPixel);
+                    // TODO this should be done off the RenderedImage to avoid
+                    // buffering the
+                    // intermediate 24bit image
+                    ImageEncodingHelper.encodeRGBAsGrayScale(imageData,
+                            dataWidth, dataHeight, bitsPerPixel, baos);
+                    imageData = baos.toByteArray();
+                    if (bitsPerPixel == 1) {
+                        imageObjectInfo.setSubtractive(true);
+                    }
                 }
             }
+
+            switch (functionSet) {
+                case 10:
+                    imageObjectInfo
+                            .setMimeType(MimeConstants.MIME_AFP_IOCA_FS10);
+                    break;
+                case 11:
+                    imageObjectInfo
+                            .setMimeType(MimeConstants.MIME_AFP_IOCA_FS11);
+                    break;
+                case 45:
+                    imageObjectInfo
+                            .setMimeType(MimeConstants.MIME_AFP_IOCA_FS45);
+                    break;
+                default:
+                    throw new IllegalStateException(
+                            "Invalid IOCA function set: " + functionSet);
+            }
+
+            imageObjectInfo.setData(imageData);
+
+            // set object area info
+            final AFPObjectAreaInfo objectAreaInfo = imageObjectInfo
+                    .getObjectAreaInfo();
+            objectAreaInfo.setWidthRes(resolution);
+            objectAreaInfo.setHeightRes(resolution);
+
+            if (log.isDebugEnabled()) {
+                final long duration = System.currentTimeMillis() - start;
+                log.debug("Image encoding took " + duration + "ms.");
+            }
+
+            return imageObjectInfo;
         }
-
-        switch (functionSet) {
-        case 10:
-            imageObjectInfo.setMimeType(MimeConstants.MIME_AFP_IOCA_FS10);
-            break;
-        case 11:
-            imageObjectInfo.setMimeType(MimeConstants.MIME_AFP_IOCA_FS11);
-            break;
-        case 45:
-            imageObjectInfo.setMimeType(MimeConstants.MIME_AFP_IOCA_FS45);
-            break;
-        default:
-            throw new IllegalStateException("Invalid IOCA function set: "
-                    + functionSet);
-        }
-
-        imageObjectInfo.setData(imageData);
-
-        // set object area info
-        final AFPObjectAreaInfo objectAreaInfo = imageObjectInfo
-                .getObjectAreaInfo();
-        objectAreaInfo.setWidthRes(resolution);
-        objectAreaInfo.setHeightRes(resolution);
-
-        if (log.isDebugEnabled()) {
-            final long duration = System.currentTimeMillis() - start;
-            log.debug("Image encoding took " + duration + "ms.");
-        }
-
-        return imageObjectInfo;
     }
 
     /**
@@ -282,7 +290,7 @@ ImageHandler {
      */
     private boolean encodeInvertedBilevel(final ImageEncodingHelper helper,
             final AFPImageObjectInfo imageObjectInfo, final OutputStream out)
-                    throws IOException {
+            throws IOException {
         final RenderedImage renderedImage = helper.getImage();
         if (!BitmapImageUtil.isMonochromeImage(renderedImage)) {
             throw new IllegalStateException(
@@ -343,7 +351,7 @@ ImageHandler {
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageRendered> getSupportedImageClass() {
         return ImageRendered.class;
     }
 

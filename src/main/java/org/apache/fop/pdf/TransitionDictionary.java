@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-/* $Id: TransitionDictionary.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TransitionDictionary.java 985537 2010-08-14 17:17:00Z jeremias $ */
 
 package org.apache.fop.pdf;
 
 /**
- * Transition Dictionary This class is used to build a transition dictionary to
+ * Transition Dictionary
+ * This class is used to build a transition dictionary to
  * specify the transition between pages.
  */
 public class TransitionDictionary extends PDFDictionary {
 
     /**
      * Create a Transition Dictionary
-     *
-     * @param values
-     *            the dictionary values to output
      */
     public TransitionDictionary() {
         put("Type", new PDFName("Trans"));
     }
 
 }
+

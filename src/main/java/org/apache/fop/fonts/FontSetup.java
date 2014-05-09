@@ -269,7 +269,7 @@ public class FontSetup {
      *            the font resolver
      */
     private static void addConfiguredFonts(final FontInfo fontInfo,
-            final List/* <EmbedFontInfo> */embedFontInfoList, int num,
+            final List<EmbedFontInfo> embedFontInfoList, int num,
             FontResolver resolver) {
         if (embedFontInfoList == null) {
             return; // No fonts to process
@@ -283,8 +283,7 @@ public class FontSetup {
         String internalName = null;
 
         for (int i = 0; i < embedFontInfoList.size(); ++i) {
-            final EmbedFontInfo embedFontInfo = (EmbedFontInfo) embedFontInfoList
-                    .get(i);
+            final EmbedFontInfo embedFontInfo = embedFontInfoList.get(i);
 
             internalName = "F" + num;
             num++;

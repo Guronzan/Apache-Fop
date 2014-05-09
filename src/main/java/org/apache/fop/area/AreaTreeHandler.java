@@ -98,7 +98,7 @@ public class AreaTreeHandler extends FOEventHandler {
      */
     public AreaTreeHandler(final FOUserAgent userAgent,
             final String outputFormat, final OutputStream stream)
-            throws FOPException {
+                    throws FOPException {
         super(userAgent);
 
         setupModel(userAgent, outputFormat, stream);
@@ -130,7 +130,7 @@ public class AreaTreeHandler extends FOEventHandler {
      */
     protected void setupModel(final FOUserAgent userAgent,
             final String outputFormat, final OutputStream stream)
-            throws FOPException {
+                    throws FOPException {
         if (userAgent.isConserveMemoryPolicyEnabled()) {
             this.model = new CachedRenderPagesModel(userAgent, outputFormat,
                     this.fontInfo, stream);
@@ -300,9 +300,8 @@ public class AreaTreeHandler extends FOEventHandler {
 
     /**
      * End the document.
-     *
+     * 
      * @throws SAXException
-     *             if there is some error
      */
     @Override
     public void endDocument() throws SAXException {
@@ -360,7 +359,7 @@ public class AreaTreeHandler extends FOEventHandler {
                     final AreaEventProducer eventProducer = AreaEventProducer.Provider
                             .get(getUserAgent().getEventBroadcaster());
                     eventProducer
-                            .unresolvedIDReference(this, odi.getName(), id);
+                    .unresolvedIDReference(this, odi.getName(), id);
                     this.idTracker.addUnresolvedIDRef(id, res);
                 }
             }

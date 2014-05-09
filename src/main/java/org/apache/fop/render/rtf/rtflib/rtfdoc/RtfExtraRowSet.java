@@ -61,9 +61,9 @@ public class RtfExtraRowSet extends RtfContainer {
      * RtfTableCells that must be rendered in extra rows. This holds a cell with
      * positioning information
      */
-    private final List cells = new LinkedList();
+    private final List<PositionedCell> cells = new LinkedList<>();
 
-    private static class PositionedCell implements Comparable {
+    private static class PositionedCell implements Comparable<PositionedCell> {
         private final RtfTableCell cell;
         private final int xOffset;
         private final int rowIndex;
@@ -83,14 +83,12 @@ public class RtfExtraRowSet extends RtfContainer {
 
         /** cells need to be sorted by row index and then by x offset */
         @Override
-        public int compareTo(final Object o) {
+        public int compareTo(final PositionedCell o) {
             int result = 0;
             if (o == null) {
                 result = 1;
-            } else if (!(o instanceof PositionedCell)) {
-                result = 1;
             } else {
-                final PositionedCell pc = (PositionedCell) o;
+                final PositionedCell pc = o;
                 if (this.rowIndex < pc.rowIndex) {
                     result = -1;
                 } else if (this.rowIndex > pc.rowIndex) {
@@ -107,7 +105,10 @@ public class RtfExtraRowSet extends RtfContainer {
 
         @Override
         public boolean equals(final Object o) {
-            return o != null && compareTo(o) == 0;
+            if (o instanceof PositionedCell) {
+                return compareTo((PositionedCell) o) == 0;
+            }
+            return false;
         }
     }
 
@@ -139,7 +140,7 @@ public class RtfExtraRowSet extends RtfContainer {
             final RtfElement e = (RtfElement) it.next();
             if (e instanceof RtfTableRow) {
                 addRow((RtfTableRow) e, rowIndex, xOffset);
-                rowIndex++;
+                ++rowIndex;
                 this.maxRowIndex = Math.max(rowIndex, this.maxRowIndex);
             }
         }
@@ -187,15 +188,15 @@ public class RtfExtraRowSet extends RtfContainer {
         // process all extra cells by rendering them into extra rows
         List rowCells = null;
         int rowIndex = -1;
-        for (final Iterator it = this.cells.iterator(); it.hasNext();) {
-            final PositionedCell pc = (PositionedCell) it.next();
+        for (final Object element : this.cells) {
+            final PositionedCell pc = (PositionedCell) element;
             if (pc.rowIndex != rowIndex) {
                 // starting a new row, render previous one
                 if (rowCells != null) {
                     writeRow(rowCells);
                 }
                 rowIndex = pc.rowIndex;
-                rowCells = new LinkedList();
+                rowCells = new LinkedList<>();
             }
             rowCells.add(pc);
         }

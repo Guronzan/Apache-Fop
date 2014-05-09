@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-/* $Id: PDFInfo.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFInfo.java 1336129 2012-05-09 12:20:34Z gadams $ */
 
 package org.apache.fop.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.TimeZone;
 
-import lombok.extern.slf4j.Slf4j;
+import org.apache.xmlgraphics.util.DateFormatUtil;
 
 /**
  * class representing an /Info object
  */
-@Slf4j
 public class PDFInfo extends PDFObject {
 
     /**
@@ -44,8 +44,8 @@ public class PDFInfo extends PDFObject {
     private Date modDate = null;
 
     /**
-     * the name of the application that created the original document before
-     * converting to PDF
+     * the name of the application that created the
+     * original document before converting to PDF
      */
     private String creator;
 
@@ -57,10 +57,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the producer string
      *
-     * @param producer
-     *            the producer string
+     * @param producer the producer string
      */
-    public void setProducer(final String producer) {
+    public void setProducer(String producer) {
         this.producer = producer;
     }
 
@@ -72,10 +71,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the creator string
      *
-     * @param creator
-     *            the document creator
+     * @param creator the document creator
      */
-    public void setCreator(final String creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
@@ -87,10 +85,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the title string
      *
-     * @param t
-     *            the document title
+     * @param t the document title
      */
-    public void setTitle(final String t) {
+    public void setTitle(String t) {
         this.title = t;
     }
 
@@ -102,10 +99,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the author string
      *
-     * @param a
-     *            the document author
+     * @param a the document author
      */
-    public void setAuthor(final String a) {
+    public void setAuthor(String a) {
         this.author = a;
     }
 
@@ -117,10 +113,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the subject string
      *
-     * @param s
-     *            the document subject
+     * @param s the document subject
      */
-    public void setSubject(final String s) {
+    public void setSubject(String s) {
         this.subject = s;
     }
 
@@ -132,10 +127,9 @@ public class PDFInfo extends PDFObject {
     /**
      * set the keywords string
      *
-     * @param k
-     *            the keywords for this document
+     * @param k the keywords for this document
      */
-    public void setKeywords(final String k) {
+    public void setKeywords(String k) {
         this.keywords = k;
     }
 
@@ -143,20 +137,17 @@ public class PDFInfo extends PDFObject {
      * @return last set creation date
      */
     public Date getCreationDate() {
-        return this.creationDate;
+        return creationDate;
     }
 
     /**
-     * @param date
-     *            Date to store in the PDF as creation date. Use null to force
-     *            current system date.
+     * @param date Date to store in the PDF as creation date. Use null to force current system date.
      */
-    public void setCreationDate(final Date date) {
-        this.creationDate = date;
+    public void setCreationDate(Date date) {
+        creationDate = date;
     }
 
-    /**
-     * @return last modification date
+    /** @return last modification date
      */
     public Date getModDate() {
         return this.modDate;
@@ -164,49 +155,44 @@ public class PDFInfo extends PDFObject {
 
     /**
      * Sets the date of the last modification.
-     *
-     * @param date
-     *            the last modification date or null if there are no
-     *            modifications
+     * @param date the last modification date or null if there are no modifications
      */
-    public void setModDate(final Date date) {
+    public void setModDate(Date date) {
         this.modDate = date;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     public byte[] toPDF() {
-        final PDFProfile profile = getDocumentSafely().getProfile();
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
+        PDFProfile profile = getDocumentSafely().getProfile();
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
         try {
-            bout.write(encode(getObjectID()));
             bout.write(encode("<<\n"));
-            if (this.title != null && this.title.length() > 0) {
+            if (title != null && title.length() > 0) {
                 bout.write(encode("/Title "));
                 bout.write(encodeText(this.title));
                 bout.write(encode("\n"));
             } else {
                 profile.verifyTitleAbsent();
             }
-            if (this.author != null) {
+            if (author != null) {
                 bout.write(encode("/Author "));
                 bout.write(encodeText(this.author));
                 bout.write(encode("\n"));
             }
-            if (this.subject != null) {
+            if (subject != null) {
                 bout.write(encode("/Subject "));
                 bout.write(encodeText(this.subject));
                 bout.write(encode("\n"));
             }
-            if (this.keywords != null) {
+            if (keywords != null) {
                 bout.write(encode("/Keywords "));
                 bout.write(encodeText(this.keywords));
                 bout.write(encode("\n"));
             }
 
-            if (this.creator != null) {
+            if (creator != null) {
                 bout.write(encode("/Creator "));
                 bout.write(encodeText(this.creator));
                 bout.write(encode("\n"));
@@ -217,11 +203,11 @@ public class PDFInfo extends PDFObject {
             bout.write(encode("\n"));
 
             // creation date in form (D:YYYYMMDDHHmmSSOHH'mm')
-            if (this.creationDate == null) {
-                this.creationDate = new Date();
+            if (creationDate == null) {
+                creationDate = new Date();
             }
             bout.write(encode("/CreationDate "));
-            bout.write(encodeString(formatDateTime(this.creationDate)));
+            bout.write(encodeString(formatDateTime(creationDate)));
             bout.write(encode("\n"));
 
             if (profile.isModDateRequired() && this.modDate == null) {
@@ -229,7 +215,7 @@ public class PDFInfo extends PDFObject {
             }
             if (this.modDate != null) {
                 bout.write(encode("/ModDate "));
-                bout.write(encodeString(formatDateTime(this.modDate)));
+                bout.write(encodeString(formatDateTime(modDate)));
                 bout.write(encode("\n"));
             }
             if (profile.isPDFXActive()) {
@@ -241,11 +227,30 @@ public class PDFInfo extends PDFObject {
                 bout.write(encode("/Trapped /False\n"));
             }
 
-            bout.write(encode(">>\nendobj\n"));
-        } catch (final IOException ioe) {
+            bout.write(encode(">>"));
+        } catch (IOException ioe) {
             log.error("Ignored I/O exception", ioe);
         }
         return bout.toByteArray();
     }
 
+    /**
+     * Formats a date/time according to the PDF specification (D:YYYYMMDDHHmmSSOHH'mm').
+     * @param time date/time value to format
+     * @param tz the time zone
+     * @return the requested String representation
+     */
+    protected static String formatDateTime(final Date time, TimeZone tz) {
+        return DateFormatUtil.formatPDFDate(time, tz);
+    }
+
+    /**
+     * Formats a date/time according to the PDF specification. (D:YYYYMMDDHHmmSSOHH'mm').
+     * @param time date/time value to format
+     * @return the requested String representation
+     */
+    protected static String formatDateTime(final Date time) {
+        return formatDateTime(time, TimeZone.getDefault());
+    }
 }
+

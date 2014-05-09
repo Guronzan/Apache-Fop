@@ -21,23 +21,28 @@ package org.apache.fop.layoutmgr.table;
 
 import java.util.List;
 
+import lombok.ToString;
+
 import org.apache.fop.layoutmgr.LayoutManager;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.Position;
 
 /**
  * This class represents a Position specific to TableContentLayoutManager. Used
  * for table headers and footers at breaks.
  */
+// TODO ToString via lombok
+@ToString
 class TableHFPenaltyPosition extends Position {
 
     /** Element list for the header */
-    protected List headerElements;
+    protected List<ListElement> headerElements;
     /** Element list for the footer */
-    protected List footerElements;
+    protected List<ListElement> footerElements;
 
     /**
      * Creates a new TableHFPenaltyPosition
-     * 
+     *
      * @param lm
      *            applicable layout manager
      */
@@ -51,15 +56,4 @@ class TableHFPenaltyPosition extends Position {
         return true;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("TableHFPenaltyPosition:");
-        sb.append(getIndex()).append("(");
-        sb.append("header:");
-        sb.append(this.headerElements);
-        sb.append(", footer:");
-        sb.append(this.footerElements);
-        sb.append(")");
-        return sb.toString();
-    }
 }

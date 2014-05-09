@@ -76,7 +76,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
     /**
      * @return list of available embedded fonts
      */
-    public List<EmbedFontInfo> getFontList() {
+    public List getFontList() {
         return this.embedFontInfoList;
     }
 

@@ -24,15 +24,14 @@ package org.apache.fop.pdf;
  */
 public class PDFInternalLink extends PDFAction {
 
-    private final String goToReference;
+    private String goToReference;
 
     /**
      * create an internal link instance.
      *
-     * @param goToReference
-     *            the GoTo Reference to which the link should point
+     * @param goToReference the GoTo Reference to which the link should point
      */
-    public PDFInternalLink(final String goToReference) {
+    public PDFInternalLink(String goToReference) {
 
         this.goToReference = goToReference;
     }
@@ -42,18 +41,15 @@ public class PDFInternalLink extends PDFAction {
      *
      * @return the action to place next to /A within a Link
      */
-    @Override
     public String getAction() {
-        return this.goToReference;
+        return goToReference;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     protected String toPDFString() {
-        throw new UnsupportedOperationException(
-                "This method should not be called");
+        throw new UnsupportedOperationException("This method should not be called");
     }
 
 }

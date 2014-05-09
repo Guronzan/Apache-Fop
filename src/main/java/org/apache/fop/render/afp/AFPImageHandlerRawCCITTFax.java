@@ -33,7 +33,7 @@ import org.apache.xmlgraphics.util.MimeConstants;
  * group 3/4).
  */
 public class AFPImageHandlerRawCCITTFax extends
-        AbstractAFPImageHandlerRawStream {
+AbstractAFPImageHandlerRawStream {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] { ImageFlavor.RAW_CCITTFAX, };
 
@@ -69,7 +69,7 @@ public class AFPImageHandlerRawCCITTFax extends
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageRawCCITTFax> getSupportedImageClass() {
         return ImageRawCCITTFax.class;
     }
 

@@ -29,7 +29,7 @@ import org.apache.fop.afp.modca.ResourceObject;
  */
 public class AFPResourceLevelDefaults {
 
-    private static final Map RESOURCE_TYPE_NAMES = new java.util.HashMap();
+    private static final Map<String, Byte> RESOURCE_TYPE_NAMES = new java.util.HashMap<>();
 
     static {
         // Map to be extended as need arises:
@@ -39,11 +39,11 @@ public class AFPResourceLevelDefaults {
 
     private static void registerResourceTypeName(final String name,
             final byte type) {
-        RESOURCE_TYPE_NAMES.put(name.toLowerCase(), new Byte(type));
+        RESOURCE_TYPE_NAMES.put(name.toLowerCase(), Byte.valueOf(type));
     }
 
     private static byte getResourceType(final String resourceTypeName) {
-        final Byte result = (Byte) RESOURCE_TYPE_NAMES.get(resourceTypeName
+        final Byte result = RESOURCE_TYPE_NAMES.get(resourceTypeName
                 .toLowerCase());
         if (result == null) {
             throw new IllegalArgumentException("Unknown resource type name: "
@@ -52,7 +52,7 @@ public class AFPResourceLevelDefaults {
         return result.byteValue();
     }
 
-    private final Map defaultResourceLevels = new java.util.HashMap();
+    private final Map<Object, Object> defaultResourceLevels = new java.util.HashMap<>();
 
     /**
      * Creates a new instance with default values.
@@ -68,7 +68,7 @@ public class AFPResourceLevelDefaults {
 
     /**
      * Sets the default resource level for a particular resource type.
-     * 
+     *
      * @param type
      *            the resource type name
      * @param level
@@ -81,7 +81,7 @@ public class AFPResourceLevelDefaults {
 
     /**
      * Sets the default resource level for a particular resource type.
-     * 
+     *
      * @param type
      *            the resource type ({@link ResourceObject}.TYPE_*)
      * @param level
@@ -89,19 +89,19 @@ public class AFPResourceLevelDefaults {
      */
     public void setDefaultResourceLevel(final byte type,
             final AFPResourceLevel level) {
-        this.defaultResourceLevels.put(new Byte(type), level);
+        this.defaultResourceLevels.put(Byte.valueOf(type), level);
     }
 
     /**
      * Returns the default resource level for a particular resource type.
-     * 
+     *
      * @param type
      *            the resource type ({@link ResourceObject}.TYPE_*)
      * @return the default resource level
      */
     public AFPResourceLevel getDefaultResourceLevel(final byte type) {
         AFPResourceLevel result = (AFPResourceLevel) this.defaultResourceLevels
-                .get(new Byte(type));
+                .get(Byte.valueOf(type));
         if (result == null) {
             result = AFPResourceInfo.DEFAULT_LEVEL;
         }
@@ -111,7 +111,7 @@ public class AFPResourceLevelDefaults {
     /**
      * Allows to merge the values from one instance into another. Values from
      * the instance passed in as a parameter override values of this instance.
-     * 
+     *
      * @param other
      *            the other instance to get the defaults from
      */

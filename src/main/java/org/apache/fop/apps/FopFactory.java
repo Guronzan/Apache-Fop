@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.xml.transform.Source;
@@ -133,7 +134,7 @@ public class FopFactory implements ImageContext {
     /** Optional overriding LayoutManagerMaker */
     private LayoutManagerMaker lmMakerOverride = null;
 
-    private final Set ignoredNamespaces;
+    private final Set<String> ignoredNamespaces;
 
     private final FOURIResolver foURIResolver;
 
@@ -159,7 +160,7 @@ public class FopFactory implements ImageContext {
         this.rendererFactory = new RendererFactory();
         this.xmlHandlers = new XMLHandlerRegistry();
         this.imageHandlers = new ImageHandlerRegistry();
-        this.ignoredNamespaces = new java.util.HashSet();
+        this.ignoredNamespaces = new HashSet<>();
     }
 
     /**
@@ -182,8 +183,7 @@ public class FopFactory implements ImageContext {
      * @throws FOPException
      */
     public FOUserAgent newFOUserAgent() {
-        final FOUserAgent userAgent = new FOUserAgent(this);
-        return userAgent;
+        return new FOUserAgent(this);
     }
 
     /**
@@ -713,7 +713,7 @@ public class FopFactory implements ImageContext {
      * @param namespaceURIs
      *            the namespace URIs
      */
-    public void ignoreNamespaces(final Collection namespaceURIs) {
+    public void ignoreNamespaces(final Collection<String> namespaceURIs) {
         this.ignoredNamespaces.addAll(namespaceURIs);
     }
 
@@ -729,7 +729,7 @@ public class FopFactory implements ImageContext {
     }
 
     /** @return the set of namespaces that are ignored by FOP */
-    public Set getIgnoredNamespace() {
+    public Set<String> getIgnoredNamespace() {
         return Collections.unmodifiableSet(this.ignoredNamespaces);
     }
 
@@ -746,7 +746,7 @@ public class FopFactory implements ImageContext {
      *             if a parsing error occurs
      */
     public void setUserConfig(final File userConfigFile) throws SAXException,
-    IOException {
+            IOException {
         this.config.setUserConfig(userConfigFile);
     }
 
@@ -761,7 +761,7 @@ public class FopFactory implements ImageContext {
      *             if a parsing error occurs
      */
     public void setUserConfig(final String uri) throws SAXException,
-    IOException {
+            IOException {
         this.config.setUserConfig(uri);
     }
 

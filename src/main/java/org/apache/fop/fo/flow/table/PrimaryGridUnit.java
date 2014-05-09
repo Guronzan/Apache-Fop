@@ -26,6 +26,7 @@ import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.layoutmgr.ElementListUtils;
 import org.apache.fop.layoutmgr.Keep;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.layoutmgr.table.TableCellLayoutManager;
 
 /**
@@ -37,7 +38,7 @@ public class PrimaryGridUnit extends GridUnit {
     /** Cell layout manager. */
     private TableCellLayoutManager cellLM;
     /** List of Knuth elements representing the contents of the cell. */
-    private List elements;
+    private List<ListElement> elements;
 
     /** Index of the row where this cell starts. */
     private int rowIndex;
@@ -49,7 +50,7 @@ public class PrimaryGridUnit extends GridUnit {
      * Links to the spanned grid units. (List of GridUnit arrays, one array
      * represents a row)
      */
-    private List rows;
+    private List<GridUnit[]> rows;
     /** The calculated size of the cell's content. (cached value) */
     private int contentLength = -1;
 
@@ -113,11 +114,11 @@ public class PrimaryGridUnit extends GridUnit {
      * @param elements
      *            a list of ListElement (?)
      */
-    public void setElements(final List elements) {
+    public void setElements(final List<ListElement> elements) {
         this.elements = elements;
     }
 
-    public List getElements() {
+    public List<ListElement> getElements() {
         return this.elements;
     }
 
@@ -159,27 +160,28 @@ public class PrimaryGridUnit extends GridUnit {
                 final CommonBorderPaddingBackground cellBorders = getCell()
                         .getCommonBorderPaddingBackground();
                 switch (which) {
-                case ConditionalBorder.NORMAL:
-                case ConditionalBorder.LEADING_TRAILING:
-                    return cellBorders.getBorderBeforeWidth(false)
-                            + this.halfBorderSeparationBPD;
-                case ConditionalBorder.REST:
-                    if (cellBorders
-                            .getBorderInfo(CommonBorderPaddingBackground.BEFORE)
-                            .getWidth().isDiscard()) {
-                        return 0;
-                    } else {
-                        return cellBorders.getBorderBeforeWidth(true)
+                    case ConditionalBorder.NORMAL:
+                    case ConditionalBorder.LEADING_TRAILING:
+                        return cellBorders.getBorderBeforeWidth(false)
                                 + this.halfBorderSeparationBPD;
-                    }
-                default:
-                    assert false;
-                    return 0;
+                    case ConditionalBorder.REST:
+                        if (cellBorders
+                                .getBorderInfo(
+                                        CommonBorderPaddingBackground.BEFORE)
+                                .getWidth().isDiscard()) {
+                            return 0;
+                        } else {
+                            return cellBorders.getBorderBeforeWidth(true)
+                                    + this.halfBorderSeparationBPD;
+                        }
+                    default:
+                        assert false;
+                        return 0;
                 }
             }
         } else {
             int width = 0;
-            final GridUnit[] row = (GridUnit[]) this.rows.get(rowIndex);
+            final GridUnit[] row = this.rows.get(rowIndex);
             for (final GridUnit element : row) {
                 width = Math.max(width, element.getBorderBefore(which)
                         .getRetainedWidth());
@@ -212,27 +214,28 @@ public class PrimaryGridUnit extends GridUnit {
                 final CommonBorderPaddingBackground cellBorders = getCell()
                         .getCommonBorderPaddingBackground();
                 switch (which) {
-                case ConditionalBorder.NORMAL:
-                case ConditionalBorder.LEADING_TRAILING:
-                    return cellBorders.getBorderAfterWidth(false)
-                            + this.halfBorderSeparationBPD;
-                case ConditionalBorder.REST:
-                    if (cellBorders
-                            .getBorderInfo(CommonBorderPaddingBackground.AFTER)
-                            .getWidth().isDiscard()) {
-                        return 0;
-                    } else {
-                        return cellBorders.getBorderAfterWidth(true)
+                    case ConditionalBorder.NORMAL:
+                    case ConditionalBorder.LEADING_TRAILING:
+                        return cellBorders.getBorderAfterWidth(false)
                                 + this.halfBorderSeparationBPD;
-                    }
-                default:
-                    assert false;
-                    return 0;
+                    case ConditionalBorder.REST:
+                        if (cellBorders
+                                .getBorderInfo(
+                                        CommonBorderPaddingBackground.AFTER)
+                                .getWidth().isDiscard()) {
+                            return 0;
+                        } else {
+                            return cellBorders.getBorderAfterWidth(true)
+                                    + this.halfBorderSeparationBPD;
+                        }
+                    default:
+                        assert false;
+                        return 0;
                 }
             }
         } else {
             int width = 0;
-            final GridUnit[] row = (GridUnit[]) this.rows.get(rowIndex);
+            final GridUnit[] row = this.rows.get(rowIndex);
             for (final GridUnit element : row) {
                 width = Math.max(width, element.getBorderAfter(which)
                         .getRetainedWidth());
@@ -275,7 +278,7 @@ public class PrimaryGridUnit extends GridUnit {
 
     public void addRow(final GridUnit[] row) {
         if (this.rows == null) {
-            this.rows = new java.util.ArrayList();
+            this.rows = new java.util.ArrayList<>();
         }
         this.rows.add(row);
     }
@@ -324,12 +327,12 @@ public class PrimaryGridUnit extends GridUnit {
                     .getBorderEndWidth(false);
         } else {
             for (int i = 0; i < this.rows.size(); ++i) {
-                final GridUnit[] gridUnits = (GridUnit[]) this.rows.get(i);
+                final GridUnit[] gridUnits = this.rows.get(i);
                 widths[0] = Math.max(widths[0], gridUnits[0].borderStart
                         .getBorderInfo().getRetainedWidth());
                 widths[1] = Math.max(widths[1],
                         gridUnits[gridUnits.length - 1].borderEnd
-                                .getBorderInfo().getRetainedWidth());
+                        .getBorderInfo().getRetainedWidth());
             }
         }
         return widths;
@@ -370,7 +373,7 @@ public class PrimaryGridUnit extends GridUnit {
 
     /**
      * Don't use, reserved for TableCellLM. TODO
-     * 
+     *
      * @param keep
      *            the keep strength
      */
@@ -390,7 +393,7 @@ public class PrimaryGridUnit extends GridUnit {
 
     /**
      * Don't use, reserved for TableCellLM. TODO
-     * 
+     *
      * @param keep
      *            the keep strength
      */

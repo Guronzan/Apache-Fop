@@ -57,7 +57,7 @@ public abstract class TablePart extends TableCellContainer {
 
     private boolean lastCellEndsRow = true;
 
-    private List rowGroups = new LinkedList();
+    private List<List> rowGroups = new LinkedList<>();
 
     /**
      * Create a TablePart instance with the given {@link FONode} as parent.
@@ -73,7 +73,7 @@ public abstract class TablePart extends TableCellContainer {
     @Override
     protected Object clone() {
         final TablePart clone = (TablePart) super.clone();
-        clone.rowGroups = new LinkedList(this.rowGroups);
+        clone.rowGroups = new LinkedList<>(this.rowGroups);
         return clone;
     }
 
@@ -89,19 +89,19 @@ public abstract class TablePart extends TableCellContainer {
     @Override
     public void processNode(final String elementName, final Locator locator,
             final Attributes attlist, final PropertyList pList)
-                    throws FOPException {
+            throws FOPException {
 
         super.processNode(elementName, locator, attlist, pList);
         if (!inMarker()) {
             final Table t = getTable();
             if (t.hasExplicitColumns()) {
                 final int size = t.getNumberOfColumns();
-                this.pendingSpans = new ArrayList(size);
+                this.pendingSpans = new ArrayList<>(size);
                 for (int i = 0; i < size; ++i) {
                     this.pendingSpans.add(null);
                 }
             } else {
-                this.pendingSpans = new ArrayList();
+                this.pendingSpans = new ArrayList<>();
             }
             this.columnNumberManager = new ColumnNumberManager();
         }
@@ -188,34 +188,35 @@ public abstract class TablePart extends TableCellContainer {
     protected void addChildNode(final FONode child) throws FOPException {
         if (!inMarker()) {
             switch (child.getNameId()) {
-            case FO_TABLE_ROW:
-                if (!this.rowsStarted) {
-                    getTable().getRowGroupBuilder().startTablePart(this);
-                } else {
-                    this.columnNumberManager
-                    .prepareForNextRow(this.pendingSpans);
-                    getTable().getRowGroupBuilder().endTableRow();
-                }
-                this.rowsStarted = true;
-                getTable().getRowGroupBuilder().startTableRow((TableRow) child);
-                break;
-            case FO_TABLE_CELL:
-                if (!this.rowsStarted) {
-                    getTable().getRowGroupBuilder().startTablePart(this);
-                }
-                this.rowsStarted = true;
-                final TableCell cell = (TableCell) child;
-                addTableCellChild(cell, this.firstRow);
-                this.lastCellEndsRow = cell.endsRow();
-                if (this.lastCellEndsRow) {
-                    this.firstRow = false;
-                    this.columnNumberManager
-                    .prepareForNextRow(this.pendingSpans);
-                    getTable().getRowGroupBuilder().endRow(this);
-                }
-                break;
-            default:
-                // nop
+                case FO_TABLE_ROW:
+                    if (!this.rowsStarted) {
+                        getTable().getRowGroupBuilder().startTablePart(this);
+                    } else {
+                        this.columnNumberManager
+                                .prepareForNextRow(this.pendingSpans);
+                        getTable().getRowGroupBuilder().endTableRow();
+                    }
+                    this.rowsStarted = true;
+                    getTable().getRowGroupBuilder().startTableRow(
+                            (TableRow) child);
+                    break;
+                case FO_TABLE_CELL:
+                    if (!this.rowsStarted) {
+                        getTable().getRowGroupBuilder().startTablePart(this);
+                    }
+                    this.rowsStarted = true;
+                    final TableCell cell = (TableCell) child;
+                    addTableCellChild(cell, this.firstRow);
+                    this.lastCellEndsRow = cell.endsRow();
+                    if (this.lastCellEndsRow) {
+                        this.firstRow = false;
+                        this.columnNumberManager
+                                .prepareForNextRow(this.pendingSpans);
+                        getTable().getRowGroupBuilder().endRow(this);
+                    }
+                    break;
+                default:
+                    // nop
             }
         }
         // TODO: possible performance problems in case of large tables...
@@ -228,7 +229,7 @@ public abstract class TablePart extends TableCellContainer {
         this.rowGroups.add(rowGroup);
     }
 
-    public List getRowGroups() {
+    public List<List> getRowGroups() {
         return this.rowGroups;
     }
 

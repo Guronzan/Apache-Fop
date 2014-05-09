@@ -77,7 +77,7 @@ public class TableRowIterator {
                     .iterator();
             break;
         case BODY:
-            final List rowGroupsList = new LinkedList();
+            final List rowGroupsList = new LinkedList<>();
             // TODO this is ugly
             for (final FONodeIterator iter = table.getChildNodes(); iter
                     .hasNext();) {

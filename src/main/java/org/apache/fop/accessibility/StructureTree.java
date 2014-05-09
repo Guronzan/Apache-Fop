@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
  */
 public final class StructureTree {
 
-    private final List pageSequenceStructures = new ArrayList();
+    private final List pageSequenceStructures = new ArrayList<>();
 
     /**
      * Package-private default constructor.

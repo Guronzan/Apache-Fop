@@ -1,5 +1,9 @@
 package org.apache.fop.fonts.base14;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.fop.fonts.Base14Font;
@@ -10,7 +14,7 @@ import org.apache.fop.fonts.Typeface;
 public class Courier extends Base14Font {
     private final static String fontName = "Courier";
     private final static String fullName = "Courier";
-    private final static Set familyNames;
+    private final static Set<String> familyNames;
     private final static String encoding = "WinAnsiEncoding";
     private final static int capHeight = 562;
     private final static int xHeight = 426;
@@ -277,7 +281,7 @@ public class Courier extends Base14Font {
         width[0x9e] = 600;
         width[0x30] = 600;
 
-        familyNames = new java.util.HashSet();
+        familyNames = new HashSet<>();
         familyNames.add("Courier");
     }
 
@@ -310,7 +314,7 @@ public class Courier extends Base14Font {
     }
 
     @Override
-    public Set getFamilyNames() {
+    public Collection<String> getFamilyNames() {
         return familyNames;
     }
 
@@ -366,8 +370,8 @@ public class Courier extends Base14Font {
     }
 
     @Override
-    public java.util.Map getKerningInfo() {
-        return java.util.Collections.EMPTY_MAP;
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
+        return Collections.emptyMap();
     }
 
     @Override

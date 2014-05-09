@@ -108,8 +108,8 @@ import org.apache.xmlgraphics.util.QName;
  *
  */
 @Slf4j
-public abstract class Java2DRenderer extends
-        AbstractPathOrientedRenderer<Java2DGraphicsState> implements Printable {
+public abstract class Java2DRenderer extends AbstractPathOrientedRenderer
+        implements Printable {
 
     /**
      * Rendering Options key for the controlling the transparent page background
@@ -192,7 +192,7 @@ public abstract class Java2DRenderer extends
                 new InstalledFontCollection(graphics2D),
                 new ConfiguredFontCollection(getFontResolver(), getFontList()) };
         this.userAgent.getFactory().getFontManager()
-                .setup(getFontInfo(), fontCollections);
+        .setup(getFontInfo(), fontCollections);
     }
 
     /** {@inheritDoc} */
@@ -530,13 +530,12 @@ public abstract class Java2DRenderer extends
 
     /** {@inheritDoc} */
     @Override
-    protected void restoreStateStackAfterBreakOut(
-            final List<Java2DGraphicsState> breakOutList) {
+    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
         log.debug("Block.FIXED --> restoring context after break-out");
 
-        for (final Java2DGraphicsState s : breakOutList) {
+        for (final Object s : breakOutList) {
             this.stateStack.push(this.state);
-            this.state = s;
+            this.state = (Java2DGraphicsState) s;
         }
     }
 
@@ -638,145 +637,153 @@ public abstract class Java2DRenderer extends
             return;
         }
         switch (style) {
-        case Constants.EN_DASHED:
-            g2d.setColor(col);
-            if (horz) {
-                float unit = Math.abs(2 * h);
-                int rep = (int) (w / unit);
-                if (rep % 2 == 0) {
-                    rep++;
-                }
-                unit = w / rep;
-                final float ym = y1 + h / 2;
-                final BasicStroke s = new BasicStroke(h, BasicStroke.CAP_BUTT,
-                        BasicStroke.JOIN_MITER, 10.0f, new float[] { unit }, 0);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(x1, ym, x2, ym));
-            } else {
-                float unit = Math.abs(2 * w);
-                int rep = (int) (h / unit);
-                if (rep % 2 == 0) {
-                    rep++;
-                }
-                unit = h / rep;
-                final float xm = x1 + w / 2;
-                final BasicStroke s = new BasicStroke(w, BasicStroke.CAP_BUTT,
-                        BasicStroke.JOIN_MITER, 10.0f, new float[] { unit }, 0);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(xm, y1, xm, y2));
-            }
-            break;
-        case Constants.EN_DOTTED:
-            g2d.setColor(col);
-            if (horz) {
-                float unit = Math.abs(2 * h);
-                int rep = (int) (w / unit);
-                if (rep % 2 == 0) {
-                    rep++;
-                }
-                unit = w / rep;
-                final float ym = y1 + h / 2;
-                final BasicStroke s = new BasicStroke(h, BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_MITER, 10.0f, new float[] { 0, unit },
-                        0);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(x1, ym, x2, ym));
-            } else {
-                float unit = Math.abs(2 * w);
-                int rep = (int) (h / unit);
-                if (rep % 2 == 0) {
-                    rep++;
-                }
-                unit = h / rep;
-                final float xm = x1 + w / 2;
-                final BasicStroke s = new BasicStroke(w, BasicStroke.CAP_ROUND,
-                        BasicStroke.JOIN_MITER, 10.0f, new float[] { 0, unit },
-                        0);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(xm, y1, xm, y2));
-            }
-            break;
-        case Constants.EN_DOUBLE:
-            g2d.setColor(col);
-            if (horz) {
-                final float h3 = h / 3;
-                final float ym1 = y1 + h3 / 2;
-                final float ym2 = ym1 + h3 + h3;
-                final BasicStroke s = new BasicStroke(h3);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
-                g2d.draw(new Line2D.Float(x1, ym2, x2, ym2));
-            } else {
-                final float w3 = w / 3;
-                final float xm1 = x1 + w3 / 2;
-                final float xm2 = xm1 + w3 + w3;
-                final BasicStroke s = new BasicStroke(w3);
-                g2d.setStroke(s);
-                g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
-                g2d.draw(new Line2D.Float(xm2, y1, xm2, y2));
-            }
-            break;
-        case Constants.EN_GROOVE:
-        case Constants.EN_RIDGE:
-            float colFactor = style == EN_GROOVE ? 0.4f : -0.4f;
-            if (horz) {
-                final Color uppercol = ColorUtil.lightenColor(col, -colFactor);
-                final Color lowercol = ColorUtil.lightenColor(col, colFactor);
-                final float h3 = h / 3;
-                final float ym1 = y1 + h3 / 2;
-                g2d.setStroke(new BasicStroke(h3));
-                g2d.setColor(uppercol);
-                g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
+            case Constants.EN_DASHED:
                 g2d.setColor(col);
-                g2d.draw(new Line2D.Float(x1, ym1 + h3, x2, ym1 + h3));
-                g2d.setColor(lowercol);
-                g2d.draw(new Line2D.Float(x1, ym1 + h3 + h3, x2, ym1 + h3 + h3));
-            } else {
-                final Color leftcol = ColorUtil.lightenColor(col, -colFactor);
-                final Color rightcol = ColorUtil.lightenColor(col, colFactor);
-                final float w3 = w / 3;
-                final float xm1 = x1 + w3 / 2;
-                g2d.setStroke(new BasicStroke(w3));
-                g2d.setColor(leftcol);
-                g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
+                if (horz) {
+                    float unit = Math.abs(2 * h);
+                    int rep = (int) (w / unit);
+                    if (rep % 2 == 0) {
+                        rep++;
+                    }
+                    unit = w / rep;
+                    final float ym = y1 + h / 2;
+                    final BasicStroke s = new BasicStroke(h,
+                            BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+                            10.0f, new float[] { unit }, 0);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(x1, ym, x2, ym));
+                } else {
+                    float unit = Math.abs(2 * w);
+                    int rep = (int) (h / unit);
+                    if (rep % 2 == 0) {
+                        rep++;
+                    }
+                    unit = h / rep;
+                    final float xm = x1 + w / 2;
+                    final BasicStroke s = new BasicStroke(w,
+                            BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
+                            10.0f, new float[] { unit }, 0);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(xm, y1, xm, y2));
+                }
+                break;
+            case Constants.EN_DOTTED:
                 g2d.setColor(col);
-                g2d.draw(new Line2D.Float(xm1 + w3, y1, xm1 + w3, y2));
-                g2d.setColor(rightcol);
-                g2d.draw(new Line2D.Float(xm1 + w3 + w3, y1, xm1 + w3 + w3, y2));
-            }
-            break;
-        case Constants.EN_INSET:
-        case Constants.EN_OUTSET:
-            colFactor = style == EN_OUTSET ? 0.4f : -0.4f;
-            if (horz) {
-                col = ColorUtil.lightenColor(col, (startOrBefore ? 1 : -1)
-                        * colFactor);
-                g2d.setStroke(new BasicStroke(h));
-                final float ym1 = y1 + h / 2;
+                if (horz) {
+                    float unit = Math.abs(2 * h);
+                    int rep = (int) (w / unit);
+                    if (rep % 2 == 0) {
+                        rep++;
+                    }
+                    unit = w / rep;
+                    final float ym = y1 + h / 2;
+                    final BasicStroke s = new BasicStroke(h,
+                            BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER,
+                            10.0f, new float[] { 0, unit }, 0);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(x1, ym, x2, ym));
+                } else {
+                    float unit = Math.abs(2 * w);
+                    int rep = (int) (h / unit);
+                    if (rep % 2 == 0) {
+                        rep++;
+                    }
+                    unit = h / rep;
+                    final float xm = x1 + w / 2;
+                    final BasicStroke s = new BasicStroke(w,
+                            BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER,
+                            10.0f, new float[] { 0, unit }, 0);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(xm, y1, xm, y2));
+                }
+                break;
+            case Constants.EN_DOUBLE:
                 g2d.setColor(col);
-                g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
-            } else {
-                col = ColorUtil.lightenColor(col, (startOrBefore ? 1 : -1)
-                        * colFactor);
-                final float xm1 = x1 + w / 2;
-                g2d.setStroke(new BasicStroke(w));
+                if (horz) {
+                    final float h3 = h / 3;
+                    final float ym1 = y1 + h3 / 2;
+                    final float ym2 = ym1 + h3 + h3;
+                    final BasicStroke s = new BasicStroke(h3);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
+                    g2d.draw(new Line2D.Float(x1, ym2, x2, ym2));
+                } else {
+                    final float w3 = w / 3;
+                    final float xm1 = x1 + w3 / 2;
+                    final float xm2 = xm1 + w3 + w3;
+                    final BasicStroke s = new BasicStroke(w3);
+                    g2d.setStroke(s);
+                    g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
+                    g2d.draw(new Line2D.Float(xm2, y1, xm2, y2));
+                }
+                break;
+            case Constants.EN_GROOVE:
+            case Constants.EN_RIDGE:
+                float colFactor = style == EN_GROOVE ? 0.4f : -0.4f;
+                if (horz) {
+                    final Color uppercol = ColorUtil.lightenColor(col,
+                            -colFactor);
+                    final Color lowercol = ColorUtil.lightenColor(col,
+                            colFactor);
+                    final float h3 = h / 3;
+                    final float ym1 = y1 + h3 / 2;
+                    g2d.setStroke(new BasicStroke(h3));
+                    g2d.setColor(uppercol);
+                    g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
+                    g2d.setColor(col);
+                    g2d.draw(new Line2D.Float(x1, ym1 + h3, x2, ym1 + h3));
+                    g2d.setColor(lowercol);
+                    g2d.draw(new Line2D.Float(x1, ym1 + h3 + h3, x2, ym1 + h3
+                            + h3));
+                } else {
+                    final Color leftcol = ColorUtil.lightenColor(col,
+                            -colFactor);
+                    final Color rightcol = ColorUtil.lightenColor(col,
+                            colFactor);
+                    final float w3 = w / 3;
+                    final float xm1 = x1 + w3 / 2;
+                    g2d.setStroke(new BasicStroke(w3));
+                    g2d.setColor(leftcol);
+                    g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
+                    g2d.setColor(col);
+                    g2d.draw(new Line2D.Float(xm1 + w3, y1, xm1 + w3, y2));
+                    g2d.setColor(rightcol);
+                    g2d.draw(new Line2D.Float(xm1 + w3 + w3, y1, xm1 + w3 + w3,
+                            y2));
+                }
+                break;
+            case Constants.EN_INSET:
+            case Constants.EN_OUTSET:
+                colFactor = style == EN_OUTSET ? 0.4f : -0.4f;
+                if (horz) {
+                    col = ColorUtil.lightenColor(col, (startOrBefore ? 1 : -1)
+                            * colFactor);
+                    g2d.setStroke(new BasicStroke(h));
+                    final float ym1 = y1 + h / 2;
+                    g2d.setColor(col);
+                    g2d.draw(new Line2D.Float(x1, ym1, x2, ym1));
+                } else {
+                    col = ColorUtil.lightenColor(col, (startOrBefore ? 1 : -1)
+                            * colFactor);
+                    final float xm1 = x1 + w / 2;
+                    g2d.setStroke(new BasicStroke(w));
+                    g2d.setColor(col);
+                    g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
+                }
+                break;
+            case Constants.EN_HIDDEN:
+                break;
+            default:
                 g2d.setColor(col);
-                g2d.draw(new Line2D.Float(xm1, y1, xm1, y2));
-            }
-            break;
-        case Constants.EN_HIDDEN:
-            break;
-        default:
-            g2d.setColor(col);
-            if (horz) {
-                final float ym = y1 + h / 2;
-                g2d.setStroke(new BasicStroke(h));
-                g2d.draw(new Line2D.Float(x1, ym, x2, ym));
-            } else {
-                final float xm = x1 + w / 2;
-                g2d.setStroke(new BasicStroke(w));
-                g2d.draw(new Line2D.Float(xm, y1, xm, y2));
-            }
+                if (horz) {
+                    final float ym = y1 + h / 2;
+                    g2d.setStroke(new BasicStroke(h));
+                    g2d.draw(new Line2D.Float(x1, ym, x2, ym));
+                } else {
+                    final float xm = x1 + w / 2;
+                    g2d.setStroke(new BasicStroke(w));
+                    g2d.draw(new Line2D.Float(xm, y1, xm, y2));
+                }
         }
     }
 
@@ -866,7 +873,7 @@ public abstract class Java2DRenderer extends
                         + 2
                         * text.getTextLetterSpaceAdjust() : 0;
 
-                        textCursor += (font.getCharWidth(sp) + tws) / 1000f;
+                textCursor += (font.getCharWidth(sp) + tws) / 1000f;
             } else {
                 throw new IllegalStateException("Unsupported child element: "
                         + child);
@@ -927,54 +934,54 @@ public abstract class Java2DRenderer extends
 
         final int style = area.getRuleStyle();
         switch (style) {
-        case EN_SOLID:
-        case EN_DASHED:
-        case EN_DOUBLE:
-            drawBorderLine(startx, starty, endx, starty + ruleThickness, true,
-                    true, style, col);
-            break;
-        case EN_DOTTED:
-            // TODO Dots should be shifted to the left by ruleThickness / 2
-            this.state.updateStroke(ruleThickness, style);
-            final float rt2 = ruleThickness / 2f;
-            line.setLine(line.getX1(), line.getY1() + rt2, line.getX2(),
-                    line.getY2() + rt2);
-            this.state.getGraph().draw(line);
-            break;
-        case EN_GROOVE:
-        case EN_RIDGE:
-            final float half = area.getRuleThickness() / 2000f;
+            case EN_SOLID:
+            case EN_DASHED:
+            case EN_DOUBLE:
+                drawBorderLine(startx, starty, endx, starty + ruleThickness,
+                        true, true, style, col);
+                break;
+            case EN_DOTTED:
+                // TODO Dots should be shifted to the left by ruleThickness / 2
+                this.state.updateStroke(ruleThickness, style);
+                final float rt2 = ruleThickness / 2f;
+                line.setLine(line.getX1(), line.getY1() + rt2, line.getX2(),
+                        line.getY2() + rt2);
+                this.state.getGraph().draw(line);
+                break;
+            case EN_GROOVE:
+            case EN_RIDGE:
+                final float half = area.getRuleThickness() / 2000f;
 
-            this.state.updateColor(ColorUtil.lightenColor(col, 0.6f));
-            moveTo(startx, starty);
-            lineTo(endx, starty);
-            lineTo(endx, starty + 2 * half);
-            lineTo(startx, starty + 2 * half);
-            closePath();
-            this.state.getGraph().fill(this.currentPath);
-            this.currentPath = null;
-            this.state.updateColor(col);
-            if (style == EN_GROOVE) {
+                this.state.updateColor(ColorUtil.lightenColor(col, 0.6f));
                 moveTo(startx, starty);
                 lineTo(endx, starty);
-                lineTo(endx, starty + half);
-                lineTo(startx + half, starty + half);
-                lineTo(startx, starty + 2 * half);
-            } else {
-                moveTo(endx, starty);
                 lineTo(endx, starty + 2 * half);
                 lineTo(startx, starty + 2 * half);
-                lineTo(startx, starty + half);
-                lineTo(endx - half, starty + half);
-            }
-            closePath();
-            this.state.getGraph().fill(this.currentPath);
-            this.currentPath = null;
+                closePath();
+                this.state.getGraph().fill(this.currentPath);
+                this.currentPath = null;
+                this.state.updateColor(col);
+                if (style == EN_GROOVE) {
+                    moveTo(startx, starty);
+                    lineTo(endx, starty);
+                    lineTo(endx, starty + half);
+                    lineTo(startx + half, starty + half);
+                    lineTo(startx, starty + 2 * half);
+                } else {
+                    moveTo(endx, starty);
+                    lineTo(endx, starty + 2 * half);
+                    lineTo(startx, starty + 2 * half);
+                    lineTo(startx, starty + half);
+                    lineTo(endx - half, starty + half);
+                }
+                closePath();
+                this.state.getGraph().fill(this.currentPath);
+                this.currentPath = null;
 
-        case EN_NONE:
-            // No rule is drawn
-            break;
-        default:
+            case EN_NONE:
+                // No rule is drawn
+                break;
+            default:
         } // end switch
 
         super.renderLeader(area);
@@ -989,8 +996,8 @@ public abstract class Java2DRenderer extends
     }
 
     private static final ImageFlavor[] FLAVOURS = new ImageFlavor[] {
-            ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
-            ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
+        ImageFlavor.GRAPHICS2D, ImageFlavor.BUFFERED_IMAGE,
+        ImageFlavor.RENDERED_IMAGE, ImageFlavor.XML_DOM };
 
     /** {@inheritDoc} */
     @Override

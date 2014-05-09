@@ -164,7 +164,7 @@ public class FontReader extends DefaultHandler {
     @Override
     public void startElement(final String uri, final String localName,
             final String qName, final Attributes attributes)
-                    throws SAXException {
+            throws SAXException {
         if (localName.equals("font-metrics")) {
             if ("TYPE0".equals(attributes.getValue("type"))) {
                 this.multiFont = new MultiByteFont();

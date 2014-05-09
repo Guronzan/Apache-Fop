@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-/* $Id: PDFStream.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFStream.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
 
 /**
  * Class representing a PDF stream.
  * <p>
- * A derivative of the PDF Object, a PDF Stream has not only a dictionary but a
- * stream of PDF commands. The stream of commands is where the real work is
- * done, the dictionary just provides information like the stream length.
+ * A derivative of the PDF Object, a PDF Stream has not only a dictionary
+ * but a stream of PDF commands. The stream of commands is where the real
+ * work is done, the dictionary just provides information like the stream
+ * length.
  */
 public class PDFStream extends AbstractPDFStream {
 
@@ -43,30 +45,46 @@ public class PDFStream extends AbstractPDFStream {
      * Create an empty stream object
      */
     public PDFStream() {
-        super();
+        setUp();
+    }
+
+    public PDFStream(PDFDictionary dictionary) {
+        super(dictionary);
+        setUp();
+    }
+
+    public PDFStream(PDFDictionary dictionary, boolean encodeOnTheFly) {
+        super(dictionary, encodeOnTheFly);
+        setUp();
+    }
+
+    public PDFStream(boolean encodeOnTheFly) {
+        super(encodeOnTheFly);
+        setUp();
+    }
+
+    private void setUp() {
         try {
-            this.data = StreamCacheFactory.getInstance().createStreamCache();
-            this.streamWriter = new java.io.OutputStreamWriter(
+            data = StreamCacheFactory.getInstance().createStreamCache();
+            this.streamWriter = new OutputStreamWriter(
                     getBufferOutputStream(), PDFDocument.ENCODING);
-            // Buffer to minimize calls to the converter
+            //Buffer to minimize calls to the converter
             this.streamWriter = new java.io.BufferedWriter(this.streamWriter);
-        } catch (final IOException ex) {
-            // TODO throw the exception and catch it elsewhere
-            ex.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Append data to the stream
      *
-     * @param s
-     *            the string of PDF to add
+     * @param s the string of PDF to add
      */
-    public void add(final String s) {
+    public void add(String s) {
         try {
             this.streamWriter.write(s);
-        } catch (final IOException ex) {
-            // TODO throw the exception and catch it elsewhere
+        } catch (IOException ex) {
+            //TODO throw the exception and catch it elsewhere
             ex.printStackTrace();
         }
     }
@@ -77,7 +95,6 @@ public class PDFStream extends AbstractPDFStream {
 
     /**
      * Returns a Writer that writes to the OutputStream of the buffer.
-     *
      * @return the Writer
      */
     public Writer getBufferWriter() {
@@ -85,72 +102,62 @@ public class PDFStream extends AbstractPDFStream {
     }
 
     /**
-     * Returns an OutputStream that can be used to write to the buffer which is
-     * used to build up the PDF stream.
-     *
+     * Returns an OutputStream that can be used to write to the buffer which is used
+     * to build up the PDF stream.
      * @return the OutputStream
-     * @throws IOException
-     *             In case of an I/O problem
+     * @throws IOException In case of an I/O problem
      */
     public OutputStream getBufferOutputStream() throws IOException {
         if (this.streamWriter != null) {
-            flush(); // Just to be sure
+            flush(); //Just to be sure
         }
         return this.data.getOutputStream();
     }
 
     /**
      * Used to set the contents of the PDF stream.
-     *
-     * @param data
-     *            the contents as a byte array
-     * @throws IOException
-     *             in case of an I/O problem
+     * @param data the contents as a byte array
+     * @throws IOException in case of an I/O problem
      */
-    public void setData(final byte[] data) throws IOException {
+    public void setData(byte[] data) throws IOException {
         this.data.clear();
         this.data.write(data);
     }
 
     /**
      * Returns the size of the content.
-     *
      * @return size of the content
      */
     public int getDataLength() {
         try {
             flush();
-            return this.data.getSize();
-        } catch (final Exception e) {
-            // TODO throw the exception and catch it elsewhere
+            return data.getSize();
+        } catch (Exception e) {
+            //TODO throw the exception and catch it elsewhere
             e.printStackTrace();
             return 0;
         }
     }
 
     /** {@inheritDoc} */
-    @Override
     protected int getSizeHint() throws IOException {
         flush();
-        return this.data.getSize();
+        return data.getSize();
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected void outputRawStreamData(final OutputStream out)
-            throws IOException {
+    protected void outputRawStreamData(OutputStream out) throws IOException {
         flush();
-        this.data.outputContents(out);
+        data.outputContents(out);
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    protected int output(final OutputStream stream) throws IOException {
+    public int output(OutputStream stream) throws IOException {
         final int len = super.output(stream);
 
-        // Now that the data has been written, it can be discarded.
+        //Now that the data has been written, it can be discarded.
         this.data = null;
         return len;
     }

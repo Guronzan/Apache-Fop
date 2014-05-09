@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-/* $Id: TempFileStreamCache.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: TempFileStreamCache.java 1296526 2012-03-03 00:18:45Z gadams $ */
 
 package org.apache.fop.pdf;
 
-// Java
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-//Commons
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -41,65 +39,58 @@ public class TempFileStreamCache implements StreamCache {
     /**
      * The temp file.
      */
-    private final File tempFile;
+    private File tempFile;
 
     /**
      * Creates a new TempFileStreamCache.
      *
-     * @throws IOException
-     *             if there is an IO error
+     * @throws IOException if there is an IO error
      */
     public TempFileStreamCache() throws IOException {
-        this.tempFile = File.createTempFile("org.apache.fop.pdf.StreamCache-",
-                ".temp");
-        this.tempFile.deleteOnExit();
+        tempFile = File.createTempFile("org.apache.fop.pdf.StreamCache-",
+                                       ".temp");
+        tempFile.deleteOnExit();
     }
 
     /**
-     * Get the current OutputStream. Do not store it - it may change from call
-     * to call.
+     * Get the current OutputStream. Do not store it - it may change
+     * from call to call.
      *
-     * @throws IOException
-     *             if there is an IO error
+     * @throws IOException if there is an IO error
      * @return the output stream for this cache
      */
-    @Override
     public OutputStream getOutputStream() throws IOException {
-        if (this.output == null) {
-            this.output = new java.io.BufferedOutputStream(
-                    new java.io.FileOutputStream(this.tempFile));
+        if (output == null) {
+            output = new java.io.BufferedOutputStream(
+                       new java.io.FileOutputStream(tempFile));
         }
-        return this.output;
+        return output;
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
-    public void write(final byte[] data) throws IOException {
+    public void write(byte[] data) throws IOException {
         getOutputStream().write(data);
     }
 
     /**
      * Outputs the cached bytes to the given stream.
      *
-     * @param out
-     *            the output stream to write to
+     * @param out the output stream to write to
      * @return the number of bytes written
-     * @throws IOException
-     *             if there is an IO error
+     * @throws IOException if there is an IO error
      */
-    @Override
-    public int outputContents(final OutputStream out) throws IOException {
-        if (this.output == null) {
+    public int outputContents(OutputStream out) throws IOException {
+        if (output == null) {
             return 0;
         }
 
-        this.output.close();
-        this.output = null;
+        output.close();
+        output = null;
 
         // don't need a buffer because copy() is buffered
-        final InputStream input = new java.io.FileInputStream(this.tempFile);
+        InputStream input = new java.io.FileInputStream(tempFile);
         try {
             return IOUtils.copy(input, out);
         } finally {
@@ -110,32 +101,28 @@ public class TempFileStreamCache implements StreamCache {
     /**
      * Returns the current size of the stream.
      *
-     * @throws IOException
-     *             if there is an IO error
+     * @throws IOException if there is an IO error
      * @return the size of the cache
      */
-    @Override
     public int getSize() throws IOException {
-        if (this.output != null) {
-            this.output.flush();
+        if (output != null) {
+            output.flush();
         }
-        return (int) this.tempFile.length();
+        return (int) tempFile.length();
     }
 
     /**
      * Clears and resets the cache.
      *
-     * @throws IOException
-     *             if there is an IO error
+     * @throws IOException if there is an IO error
      */
-    @Override
     public void clear() throws IOException {
-        if (this.output != null) {
-            this.output.close();
-            this.output = null;
+        if (output != null) {
+            output.close();
+            output = null;
         }
-        if (this.tempFile.exists()) {
-            this.tempFile.delete();
+        if (tempFile.exists()) {
+            tempFile.delete();
         }
     }
 }

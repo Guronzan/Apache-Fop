@@ -188,10 +188,10 @@ ConditionalElementListener {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
 
-        final List returnList = new LinkedList();
+        final List<ListElement> returnList = new LinkedList<>();
 
         /*
          * Compute the IPD and adjust it if necessary (overconstrained)
@@ -253,7 +253,6 @@ ConditionalElementListener {
         }
 
         // Elements for the table-header/footer/body
-        LinkedList contentKnuthElements;
         this.contentLM = new TableContentLayoutManager(this);
         final LayoutContext childLC = new LayoutContext(0);
         /*
@@ -263,12 +262,12 @@ ConditionalElementListener {
         childLC.setRefIPD(context.getRefIPD());
         childLC.copyPendingMarksFrom(context);
 
-        contentKnuthElements = this.contentLM.getNextKnuthElements(childLC,
-                alignment);
+        final List<ListElement> contentKnuthElements = this.contentLM
+                .getNextKnuthElements(childLC, alignment);
         // Set index values on elements coming from the content LM
-        final Iterator iter = contentKnuthElements.iterator();
+        final Iterator<ListElement> iter = contentKnuthElements.iterator();
         while (iter.hasNext()) {
-            final ListElement el = (ListElement) iter.next();
+            final ListElement el = iter.next();
             notifyPos(el.getPosition());
         }
         log.debug(contentKnuthElements.toString());
@@ -347,7 +346,7 @@ ConditionalElementListener {
             final Block backgroundArea, final int xShift) {
         addBackgroundArea(backgroundArea);
         if (this.columnBackgroundAreas == null) {
-            this.columnBackgroundAreas = new ArrayList();
+            this.columnBackgroundAreas = new ArrayList<>();
         }
         this.columnBackgroundAreas.add(new ColumnBackgroundInfo(column,
                 backgroundArea, xShift));
@@ -533,20 +532,20 @@ ConditionalElementListener {
         // Special handler for TableColumn width specifications
         if (fobj instanceof TableColumn && fobj.getParent() == getFObj()) {
             switch (lengthBase) {
-            case LengthBase.CONTAINING_BLOCK_WIDTH:
-                return getContentAreaIPD();
-            case LengthBase.TABLE_UNITS:
-                return (int) this.tableUnit;
-            default:
-                log.error("Unknown base type for LengthBase.");
-                return 0;
+                case LengthBase.CONTAINING_BLOCK_WIDTH:
+                    return getContentAreaIPD();
+                case LengthBase.TABLE_UNITS:
+                    return (int) this.tableUnit;
+                default:
+                    log.error("Unknown base type for LengthBase.");
+                    return 0;
             }
         } else {
             switch (lengthBase) {
-            case LengthBase.TABLE_UNITS:
-                return (int) this.tableUnit;
-            default:
-                return super.getBaseLength(lengthBase, fobj);
+                case LengthBase.TABLE_UNITS:
+                    return (int) this.tableUnit;
+                default:
+                    return super.getBaseLength(lengthBase, fobj);
             }
         }
     }

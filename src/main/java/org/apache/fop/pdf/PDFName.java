@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFName.java 833375 2009-11-06 12:25:50Z jeremias $ */
+/* $Id: PDFName.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 import org.apache.commons.io.output.CountingOutputStream;
 
@@ -30,49 +29,49 @@ import org.apache.commons.io.output.CountingOutputStream;
  */
 public class PDFName extends PDFObject {
 
-    private final String name;
+    private String name;
 
     /**
      * Creates a new PDF name object.
-     *
-     * @param name
-     *            the name value
+     * @param name the name value
      */
-    public PDFName(final String name) {
+    public PDFName(String name) {
         super();
         this.name = escapeName(name);
     }
 
+    private static final String ESCAPED_NAME_CHARS = "/()<>[]%#";
+
     /**
-     * Escapes a PDF name. It adds the leading slash and escapes characters as
-     * necessary.
-     *
-     * @param name
-     *            the name
+     * Escapes a PDF name. It adds the leading slash and escapes characters as necessary.
+     * @param name the name
      * @return the escaped name
      */
-    static String escapeName(final String name) {
-        final StringBuilder sb = new StringBuilder(
-                Math.min(16, name.length() + 4));
-        if (!name.startsWith("/")) {
-            sb.append('/');
+    static String escapeName(String name) {
+        StringBuilder sb = new StringBuilder(Math.min(16, name.length() + 4));
+        boolean skipFirst = false;
+        sb.append('/');
+        if (name.startsWith("/")) {
+            skipFirst = true;
         }
-        for (int i = 0, c = name.length(); i < c; ++i) {
-            final char ch = name.charAt(i);
-            if (ch >= 33 && ch <= 126) {
-                sb.append(ch);
-            } else {
+        for (int i = (skipFirst ? 1 : 0), c = name.length(); i < c; i++) {
+            char ch = name.charAt(i);
+
+            if (ch < 33 || ch > 126 || ESCAPED_NAME_CHARS.indexOf(ch) >= 0) {
                 sb.append('#');
                 toHex(ch, sb);
+            } else {
+                sb.append(ch);
             }
         }
         return sb.toString();
     }
 
-    private static final char[] DIGITS = { '0', '1', '2', '3', '4', '5', '6',
-        '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+    private static final char[] DIGITS
+        = {'0', '1', '2', '3', '4', '5', '6', '7',
+           '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
 
-    private static void toHex(final char ch, final StringBuilder sb) {
+    private static void toHex(char ch, StringBuilder sb) {
         if (ch >= 256) {
             throw new IllegalArgumentException(
                     "Only 8-bit characters allowed by this implementation");
@@ -87,33 +86,43 @@ public class PDFName extends PDFObject {
         return this.name;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected int output(final OutputStream stream) throws IOException {
-        final CountingOutputStream cout = new CountingOutputStream(stream);
-        final Writer writer = PDFDocument.getWriterFor(cout);
-        if (hasObjectNumber()) {
-            writer.write(getObjectID());
-        }
-
-        writer.write(toString());
-
-        if (hasObjectNumber()) {
-            writer.write("\nendobj\n");
-        }
-
-        writer.flush();
-        return cout.getCount();
+    /**
+     * Returns the name without the leading slash.
+     * @return the name without the leading slash
+     */
+    public String getName() {
+        return this.name.substring(1);
     }
 
     /** {@inheritDoc} */
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PDFName)) {
+            return false;
+        }
+        PDFName other = (PDFName)obj;
+        return this.name.equals(other.name);
+    }
+
+    /** {@inheritDoc} */
+    public int hashCode() {
+        return name.hashCode();
+    }
+
     @Override
-    public void outputInline(final OutputStream out, final Writer writer)
-            throws IOException {
+    public int output(OutputStream stream) throws IOException {
+        CountingOutputStream cout = new CountingOutputStream(stream);
+        StringBuilder textBuffer = new StringBuilder(64);
+        textBuffer.append(toString());
+        PDFDocument.flushTextBuffer(textBuffer, cout);
+        return cout.getCount();
+    }
+
+    @Override
+    public void outputInline(OutputStream out, StringBuilder textBuffer) throws IOException {
         if (hasObjectNumber()) {
-            writer.write(referencePDF());
+            textBuffer.append(referencePDF());
         } else {
-            writer.write(toString());
+            textBuffer.append(toString());
         }
     }
 

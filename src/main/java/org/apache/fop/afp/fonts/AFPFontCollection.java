@@ -19,7 +19,6 @@
 
 package org.apache.fop.afp.fonts;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.fop.afp.AFPEventProducer;
@@ -36,7 +35,7 @@ public class AFPFontCollection implements FontCollection {
 
     private final EventBroadcaster eventBroadcaster;
 
-    private final List/* <AFPFontInfo> */fontInfoList;
+    private final List<AFPFontInfo> fontInfoList;
 
     /**
      * Main constructor
@@ -47,7 +46,7 @@ public class AFPFontCollection implements FontCollection {
      *            the font info list
      */
     public AFPFontCollection(final EventBroadcaster eventBroadcaster,
-            final List/* <AFPFontInfo> */fontInfoList) {
+            final List<AFPFontInfo> fontInfoList) {
         this.eventBroadcaster = eventBroadcaster;
         this.fontInfoList = fontInfoList;
     }
@@ -59,13 +58,11 @@ public class AFPFontCollection implements FontCollection {
         final AFPEventProducer eventProducer = AFPEventProducer.Provider
                 .get(this.eventBroadcaster);
         if (this.fontInfoList != null && this.fontInfoList.size() > 0) {
-            for (final Iterator it = this.fontInfoList.iterator(); it.hasNext();) {
-                final AFPFontInfo afpFontInfo = (AFPFontInfo) it.next();
+            for (final AFPFontInfo afpFontInfo : this.fontInfoList) {
                 final AFPFont afpFont = afpFontInfo.getAFPFont();
-                final List/* <FontTriplet> */tripletList = afpFontInfo
+                final List<FontTriplet> tripletList = afpFontInfo
                         .getFontTriplets();
-                for (final Iterator it2 = tripletList.iterator(); it2.hasNext();) {
-                    final FontTriplet triplet = (FontTriplet) it2.next();
+                for (final FontTriplet triplet : tripletList) {
                     fontInfo.addFontProperties("F" + num, triplet.getName(),
                             triplet.getStyle(), triplet.getWeight());
                     fontInfo.addMetrics("F" + num, afpFont);

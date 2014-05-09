@@ -33,7 +33,7 @@ import org.apache.fop.area.CTM;
 public class TXTState {
 
     /** Keeps all coordinate transformation matrices during rendering. */
-    private final LinkedList stackCTM = new LinkedList();
+    private final LinkedList stackCTM = new LinkedList<>();
 
     /**
      * Current result coordinate transformation matrix. It's product of all

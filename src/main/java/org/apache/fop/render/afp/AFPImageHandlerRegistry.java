@@ -36,7 +36,7 @@ public class AFPImageHandlerRegistry extends AbstractImageHandlerRegistry {
 
     /** {@inheritDoc} */
     @Override
-    public Class getHandlerClass() {
+    public Class<AFPImageHandler> getHandlerClass() {
         return AFPImageHandler.class;
     }
 

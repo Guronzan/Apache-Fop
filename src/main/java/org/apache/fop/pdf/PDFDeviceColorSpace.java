@@ -15,13 +15,14 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDeviceColorSpace.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFDeviceColorSpace.java 1069439 2011-02-10 15:58:57Z jeremias $ */
 
 package org.apache.fop.pdf;
 
+import java.awt.color.ColorSpace;
+
 /**
- * Represents a device-specific color space. Used for mapping DeviceRGB,
- * DeviceCMYK and DeviceGray.
+ * Represents a device-specific color space. Used for mapping DeviceRGB, DeviceCMYK and DeviceGray.
  */
 public class PDFDeviceColorSpace implements PDFColorSpace {
 
@@ -57,20 +58,19 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     /**
      * Create a PDF colorspace object.
      *
-     * @param theColorSpace
-     *            the current colorspace
+     * @param theColorSpace the current colorspace
      */
-    public PDFDeviceColorSpace(final int theColorSpace) {
+    public PDFDeviceColorSpace(int theColorSpace) {
         this.currentColorSpace = theColorSpace;
-        this.numComponents = calculateNumComponents();
+        numComponents = calculateNumComponents();
     }
 
     private int calculateNumComponents() {
-        if (this.currentColorSpace == DEVICE_GRAY) {
+        if (currentColorSpace == DEVICE_GRAY) {
             return 1;
-        } else if (this.currentColorSpace == DEVICE_RGB) {
+        } else if (currentColorSpace == DEVICE_RGB) {
             return 3;
-        } else if (this.currentColorSpace == DEVICE_CMYK) {
+        } else if (currentColorSpace == DEVICE_CMYK) {
             return 4;
         } else {
             return 0;
@@ -80,12 +80,11 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     /**
      * Set the current colorspace.
      *
-     * @param theColorSpace
-     *            the new color space value
+     * @param theColorSpace the new color space value
      */
-    public void setColorSpace(final int theColorSpace) {
+    public void setColorSpace(int theColorSpace) {
         this.currentColorSpace = theColorSpace;
-        this.numComponents = calculateNumComponents();
+        numComponents = calculateNumComponents();
     }
 
     /**
@@ -94,7 +93,7 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
      * @return the colorspace value
      */
     public int getColorSpace() {
-        return this.currentColorSpace;
+        return (this.currentColorSpace);
     }
 
     /**
@@ -102,15 +101,13 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
      *
      * @return the number of components
      */
-    @Override
     public int getNumComponents() {
-        return this.numComponents;
+        return numComponents;
     }
 
     /** @return the name of the color space */
-    @Override
     public String getName() {
-        switch (this.currentColorSpace) {
+        switch (currentColorSpace) {
         case DEVICE_CMYK:
             return "DeviceCMYK";
         case DEVICE_GRAY:
@@ -123,27 +120,47 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isDeviceColorSpace() {
         return true;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isRGBColorSpace() {
         return getColorSpace() == DEVICE_RGB;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isCMYKColorSpace() {
         return getColorSpace() == DEVICE_CMYK;
     }
 
     /** {@inheritDoc} */
-    @Override
     public boolean isGrayColorSpace() {
         return getColorSpace() == DEVICE_GRAY;
+    }
+
+    /**
+     * Returns a suitable {@link PDFDeviceColorSpace} object given a {@link ColorSpace} object.
+     * @param cs ColorSpace instance
+     * @return a PDF-based color space
+     */
+    public static PDFDeviceColorSpace toPDFColorSpace(ColorSpace cs) {
+        if (cs == null) {
+            return null;
+        }
+
+        PDFDeviceColorSpace pdfCS = new PDFDeviceColorSpace(0);
+        switch (cs.getType()) {
+            case ColorSpace.TYPE_CMYK:
+                pdfCS.setColorSpace(PDFDeviceColorSpace.DEVICE_CMYK);
+            break;
+            case ColorSpace.TYPE_GRAY:
+                pdfCS.setColorSpace(PDFDeviceColorSpace.DEVICE_GRAY);
+                break;
+            default:
+                pdfCS.setColorSpace(PDFDeviceColorSpace.DEVICE_RGB);
+        }
+        return pdfCS;
     }
 
 }

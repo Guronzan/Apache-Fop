@@ -559,7 +559,7 @@ public class Table extends TableFObj implements ColumnNumberManagerHolder,
             throws FOPException {
         final Table clone = (Table) super.clone(parent, removeChildren);
         if (removeChildren) {
-            clone.columns = new ArrayList();
+            clone.columns = new ArrayList<>();
             clone.columnsFinalized = false;
             clone.columnNumberManager = new ColumnNumberManager();
             clone.tableHeader = null;

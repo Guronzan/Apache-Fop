@@ -105,8 +105,8 @@ public class FontListGenerator {
                 container = new FontSpec(key, metrics);
                 container.addFamilyNames(metrics.getFamilyNames());
                 keys.put(key, container);
-                final String firstFamilyName = (String) container
-                        .getFamilyNames().first();
+                final String firstFamilyName = container.getFamilyNames()
+                        .first();
                 List<FontSpec> containers = fontFamilies.get(firstFamilyName);
                 if (containers == null) {
                     containers = new ArrayList<>();

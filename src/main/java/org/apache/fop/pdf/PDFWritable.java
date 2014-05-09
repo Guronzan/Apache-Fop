@@ -15,35 +15,30 @@
  * limitations under the License.
  */
 
-/* $Id: PDFWritable.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFWritable.java 1228243 2012-01-06 16:03:44Z cbowditch $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 /**
- * This interface is implemented by classes that can be serialized to a PDF file
- * either by serializing the object or by writing a indirect reference to the
- * actual object.
+ * This interface is implemented by classes that can be serialized to a PDF file either by
+ * serializing the object or by writing a indirect reference to the actual object.
  */
 public interface PDFWritable {
 
     /**
-     * Writes a "direct object" (inline object) representation to the stream. A
-     * Writer is given for optimized encoding of text content. Since the Writer
-     * is buffered, make sure <code>flush()</code> is called before any direct
-     * calls to <code>out</code> are made.
-     * 
-     * @param out
-     *            the OutputStream (for binary content)
-     * @param writer
-     *            the Writer (for text content, wraps the above OutputStream)
-     * @throws IOException
-     *             if an I/O error occurs
+     * Writes a "direct object" (inline object) representation to the stream. A text buffer is given
+     * for optimized encoding of text content.
+     * <p>
+     * IMPORTANT: If you need to write out binary output, call
+     * {@link PDFDocument#flushTextBuffer(StringBuilder, OutputStream)} before writing any content
+     * to the {@link OutputStream}!
+     * @param out the OutputStream (for binary content)
+     * @param textBuffer the text buffer for text content
+     * @throws IOException if an I/O error occurs
      */
-    void outputInline(final OutputStream out, final Writer writer)
-            throws IOException;
+    void outputInline(OutputStream out, StringBuilder textBuffer) throws IOException;
 
 }

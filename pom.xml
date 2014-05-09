@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>Apache</groupId>
-	<artifactId>Apache-Fop</artifactId>
+	<artifactId>Fop</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<build>
 		<plugins>
@@ -107,6 +107,12 @@
 			<groupId>batik</groupId>
 			<artifactId>batik-transcoder</artifactId>
 			<version>1.6-1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>fop</artifactId>
+					<groupId>fop</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>batik</groupId>
@@ -129,6 +135,16 @@
 			<version>${project.version}</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/jai-core-1.1.3-alpha.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avalon.framework</groupId>
+			<artifactId>avalon-framework-impl</artifactId>
+			<version>4.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.avalon.framework</groupId>
+			<artifactId>avalon-framework-api</artifactId>
+			<version>4.3.1</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -145,12 +145,13 @@ public abstract class AbstractGraphicsCoord extends
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        String coordsStr = "";
+        final StringBuilder coords = new StringBuilder();
         for (int i = 0; i < this.coords.length; ++i) {
-            coordsStr += i % 2 == 0 ? "x" : "y";
-            coordsStr += i / 2 + "=" + this.coords[i] + ",";
+            coords.append(i % 2 == 0 ? "x" : "y");
+            coords.append(i / 2).append("=").append(this.coords[i]).append(",");
         }
-        coordsStr = coordsStr.substring(0, coordsStr.length() - 1);
+        final String string = coords.toString();
+        final String coordsStr = string.substring(0, string.length() - 1);
         return getName() + "{" + coordsStr + "}";
     }
 

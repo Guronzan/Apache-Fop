@@ -49,10 +49,10 @@ public class FootnoteBodyLayoutManager extends BlockStackingLayoutManager {
 
         // "unwrap" the NonLeafPositions stored in parentIter
         // and put them in a new list;
-        final LinkedList positionList = new LinkedList();
+        final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             // log.trace("pos = " + pos.getClass().getName() + "; " + pos);
             Position innerPosition = pos;
             if (pos instanceof NonLeafPosition) {

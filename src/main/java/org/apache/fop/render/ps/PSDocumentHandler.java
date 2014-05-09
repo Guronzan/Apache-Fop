@@ -337,11 +337,11 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             final List<Long> pageSizes = new ArrayList<>();
             if (this.psUtil.isAutoRotateLandscape() && pageHeight < pageWidth) {
                 rotate = true;
-                pageSizes.add(new Long(Math.round(pageHeight)));
-                pageSizes.add(new Long(Math.round(pageWidth)));
+                pageSizes.add(Long.valueOf(Math.round(pageHeight)));
+                pageSizes.add(Long.valueOf(Math.round(pageWidth)));
             } else {
-                pageSizes.add(new Long(Math.round(pageWidth)));
-                pageSizes.add(new Long(Math.round(pageHeight)));
+                pageSizes.add(Long.valueOf(Math.round(pageWidth)));
+                pageSizes.add(Long.valueOf(Math.round(pageHeight)));
             }
             this.pageDeviceDictionary.put("/PageSize", pageSizes);
             this.currentPageDefinition = new PageDefinition(
@@ -376,8 +376,8 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             if (rotate) {
                 pageBoundingBox.setRect(0, 0, pageHeight, pageWidth);
                 this.gen.writeDSCComment(DSCConstants.PAGE_BBOX, new Object[] {
-                        zero, zero, new Long(Math.round(pageHeight)),
-                        new Long(Math.round(pageWidth)) });
+                        zero, zero, Long.valueOf(Math.round(pageHeight)),
+                        Long.valueOf(Math.round(pageWidth)) });
                 this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                         new Object[] { zero, zero, new Double(pageHeight),
                                 new Double(pageWidth) });
@@ -386,8 +386,8 @@ public class PSDocumentHandler extends AbstractBinaryWritingIFDocumentHandler {
             } else {
                 pageBoundingBox.setRect(0, 0, pageWidth, pageHeight);
                 this.gen.writeDSCComment(DSCConstants.PAGE_BBOX, new Object[] {
-                        zero, zero, new Long(Math.round(pageWidth)),
-                        new Long(Math.round(pageHeight)) });
+                        zero, zero, Long.valueOf(Math.round(pageWidth)),
+                        Long.valueOf(Math.round(pageHeight)) });
                 this.gen.writeDSCComment(DSCConstants.PAGE_HIRES_BBOX,
                         new Object[] { zero, zero, new Double(pageWidth),
                                 new Double(pageHeight) });

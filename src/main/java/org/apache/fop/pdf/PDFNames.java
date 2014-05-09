@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFNames.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFNames.java 986203 2010-08-17 06:56:46Z jeremias $ */
 
 package org.apache.fop.pdf;
 
@@ -23,6 +23,9 @@ package org.apache.fop.pdf;
  * Class representing a PDF Names object
  */
 public class PDFNames extends PDFDictionary {
+
+    private static final String DESTS = "Dests";
+    private static final String EMBEDDED_FILES = "EmbeddedFiles";
 
     /**
      * Create the Names object
@@ -34,21 +37,34 @@ public class PDFNames extends PDFDictionary {
 
     /**
      * Returns the Dests object
-     * 
      * @return the Dests object, or null if it's not used
      */
     public PDFDests getDests() {
-        return (PDFDests) get("Dests");
+        return (PDFDests)get(DESTS);
     }
 
     /**
      * Set the Dests object
-     * 
-     * @param dests
-     *            the Dests object
+     * @param dests the Dests object
      */
-    public void setDests(final PDFDests dests) {
-        put("Dests", dests);
+    public void setDests(PDFDests dests) {
+        put(DESTS, dests);
+    }
+
+    /**
+     * Returns the EmbeddedFiles object
+     * @return the EmbeddedFiles object, or null if it's not used
+     */
+    public PDFEmbeddedFiles getEmbeddedFiles() {
+        return (PDFEmbeddedFiles)get(EMBEDDED_FILES);
+    }
+
+    /**
+     * Set the EmbeddedFiles object
+     * @param embeddedFiles the EmbeddedFiles object
+     */
+    public void setEmbeddedFiles(PDFEmbeddedFiles embeddedFiles) {
+        put(EMBEDDED_FILES, embeddedFiles);
     }
 
 }

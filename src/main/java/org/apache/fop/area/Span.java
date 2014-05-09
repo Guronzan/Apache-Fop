@@ -19,6 +19,7 @@
 
 package org.apache.fop.area;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public class Span extends Area {
      */
     private static final long serialVersionUID = -5551430053660081549L;
     // the list of flow reference areas in this span area
-    private List flowAreas;
+    private List<NormalFlow> flowAreas;
     private final int colCount;
     private final int colGap;
     private int colWidth; // width for each normal flow, calculated value
@@ -63,7 +64,7 @@ public class Span extends Area {
      * Create the normal flows for this Span
      */
     private void createNormalFlows() {
-        this.flowAreas = new java.util.ArrayList(this.colCount);
+        this.flowAreas = new ArrayList<>(this.colCount);
         this.colWidth = (this.ipd - (this.colCount - 1) * this.colGap)
                 / this.colCount;
 
@@ -109,7 +110,7 @@ public class Span extends Area {
      */
     public NormalFlow getNormalFlow(final int colRequested) {
         if (colRequested >= 0 && colRequested < this.colCount) {
-            return (NormalFlow) this.flowAreas.get(colRequested);
+            return this.flowAreas.get(colRequested);
         } else { // internal error
             throw new IllegalArgumentException("Invalid column number "
                     + colRequested + " requested; only 0-"
@@ -171,7 +172,7 @@ public class Span extends Area {
      * Indicates whether any child areas have been added to this span area.
      *
      * This is achieved by looping through each flow.
-     * 
+     *
      * @return true if no child areas have been added yet.
      */
     public boolean isEmpty() {

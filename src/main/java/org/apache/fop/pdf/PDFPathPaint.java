@@ -33,21 +33,19 @@ public abstract class PDFPathPaint extends PDFObject {
     /**
      * Get the PDF string for setting the path paint.
      *
-     * @param fillNotStroke
-     *            if true fill otherwise stroke
+     * @param fillNotStroke if true fill otherwise stroke
      * @return the PDF instruction string
      */
-    public String getColorSpaceOut(final boolean fillNotStroke) {
-        return "";
+    public String getColorSpaceOut(boolean fillNotStroke) {
+        return ("");
     }
 
     /**
      * Set the color space for this paint.
      *
-     * @param theColorSpace
-     *            the color space value
+     * @param theColorSpace the color space value
      */
-    public void setColorSpace(final int theColorSpace) {
+    public void setColorSpace(int theColorSpace) {
         this.colorSpace.setColorSpace(theColorSpace);
     }
 
@@ -61,3 +59,4 @@ public abstract class PDFPathPaint extends PDFObject {
     }
 
 }
+

@@ -163,14 +163,13 @@ public abstract class AbstractImageHandlerRegistry {
             final List<ImageFlavor> flavors = new ArrayList<>();
             final Iterator<ImageHandlerBase> iter = this.handlerList.iterator();
             while (iter.hasNext()) {
-                final ImageFlavor[] f = ((ImageHandlerBase) iter.next())
-                        .getSupportedImageFlavors();
+                final ImageFlavor[] f = iter.next().getSupportedImageFlavors();
                 for (final ImageFlavor element : f) {
                     flavors.add(element);
                 }
             }
             this.supportedFlavors = flavors.toArray(new ImageFlavor[flavors
-                    .size()]);
+                                                                    .size()]);
             this.lastSync = this.handlerRegistrations;
         }
         return this.supportedFlavors;

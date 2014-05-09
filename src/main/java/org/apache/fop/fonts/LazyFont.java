@@ -22,8 +22,8 @@ package org.apache.fop.fonts;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -238,7 +238,7 @@ public class LazyFont extends Typeface implements FontDescriptor {
 
     /** {@inheritDoc} */
     @Override
-    public Set getFamilyNames() {
+    public Collection<String> getFamilyNames() {
         load(true);
         return this.realFont.getFamilyNames();
     }
@@ -319,7 +319,7 @@ public class LazyFont extends Typeface implements FontDescriptor {
      * {@inheritDoc}
      */
     @Override
-    public Map getKerningInfo() {
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
         load(true);
         return this.realFont.getKerningInfo();
     }

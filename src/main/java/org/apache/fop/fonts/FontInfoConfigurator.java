@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -138,7 +139,7 @@ public class FontInfoConfigurator {
 
     private void addDirectories(final Configuration fontsCfg,
             final FontAdder fontAdder, final List<EmbedFontInfo> fontInfoList)
-            throws FOPException {
+                    throws FOPException {
         // directory (multiple font) configuration
         final Configuration[] directories = fontsCfg.getChildren("directory");
         for (final Configuration directorie : directories) {
@@ -160,10 +161,12 @@ public class FontInfoConfigurator {
             // add fonts found in directory
             final FontFileFinder fontFileFinder = new FontFileFinder(
                     recursive ? -1 : 1);
-            List<File> fontURLList;
             try {
-                fontURLList = fontFileFinder.find(directory);
-                fontAdder.add(fontURLList, fontInfoList);
+                final List<URL> urls = new LinkedList<>();
+                for (final File file : fontFileFinder.find(directory)) {
+                    urls.add(file.toURI().toURL());
+                }
+                fontAdder.add(urls, fontInfoList);
             } catch (final IOException e) {
                 LogUtil.handleException(log, e, this.strict);
             }
@@ -184,7 +187,7 @@ public class FontInfoConfigurator {
      */
     protected void addFonts(final Configuration fontsCfg,
             final FontCache fontCache, final List<EmbedFontInfo> fontInfoList)
-                    throws FOPException {
+            throws FOPException {
         // font file (singular) configuration
         final Configuration[] font = fontsCfg.getChildren("font");
         for (final Configuration element : font) {

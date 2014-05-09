@@ -107,7 +107,7 @@ public class XMLHandlerRegistry {
     private void addXMLHandler(final String ns, final XMLHandler handler) {
         List lst = (List) this.handlers.get(ns);
         if (lst == null) {
-            lst = new java.util.ArrayList();
+            lst = new java.util.ArrayList<>();
             this.handlers.put(ns, lst);
         }
         lst.add(handler);

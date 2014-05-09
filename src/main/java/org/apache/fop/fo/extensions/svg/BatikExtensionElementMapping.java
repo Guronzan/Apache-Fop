@@ -23,6 +23,8 @@ import java.util.HashMap;
 
 import javax.xml.parsers.SAXParserFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
@@ -32,6 +34,7 @@ import org.w3c.dom.DOMImplementation;
  * This Element Mapping is for Batik SVG Extension elements of the
  * http://xml.apache.org/batik/ext namespace.
  */
+@Slf4j
 public class BatikExtensionElementMapping extends ElementMapping {
 
     /** Namespace URI for Batik extension elements */
@@ -53,7 +56,7 @@ public class BatikExtensionElementMapping extends ElementMapping {
     /**
      * Returns the fully qualified classname of an XML parser for Batik classes
      * that apparently need it (error messages, perhaps)
-     * 
+     *
      * @return an XML parser classname
      */
     private final String getAParserClassName() {
@@ -74,12 +77,13 @@ public class BatikExtensionElementMapping extends ElementMapping {
             // normally the user agent value is used
             try {
                 XMLResourceDescriptor
-                        .setXMLParserClassName(getAParserClassName());
+                .setXMLParserClassName(getAParserClassName());
 
-                this.foObjs = new HashMap();
+                this.foObjs = new HashMap<>();
                 this.foObjs.put("batik", new SE());
                 this.foObjs.put(DEFAULT, new SVGMaker());
-            } catch (final Throwable t) {
+            } catch (final Exception e) {
+                log.error("Exception", e);
                 // if the classes are not available
                 // the DISPLAY is not checked
                 this.batikAvail = false;

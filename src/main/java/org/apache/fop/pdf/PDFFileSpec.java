@@ -15,51 +15,51 @@
  * limitations under the License.
  */
 
-/* $Id: PDFFileSpec.java 815358 2009-09-15 15:07:51Z maxberger $ */
+/* $Id: PDFFileSpec.java 985843 2010-08-16 09:39:34Z jeremias $ */
 
 package org.apache.fop.pdf;
 
 /**
- * class representing a /FileSpec object.
- *
+ * Class representing a /FileSpec object.
  */
-public class PDFFileSpec extends PDFObject {
-
-    /**
-     * the filename
-     */
-    protected String filename;
+public class PDFFileSpec extends PDFDictionary {
 
     /**
      * create a /FileSpec object.
      *
-     * @param filename
-     *            the filename represented by this object
+     * @param filename the filename represented by this object
      */
-    public PDFFileSpec(final String filename) {
+    public PDFFileSpec(String filename) {
 
         /* generic creation of object */
         super();
+        put("Type", new PDFName("Filespec"));
+        put("F", filename);
+    }
 
-        this.filename = filename;
+    private String getFilename() {
+        return (String)get("F");
     }
 
     /**
-     * {@inheritDoc}
+     * Associates an dictionary with pointers to embedded file streams with this file spec.
+     * @param embeddedFileDict the dictionary with pointers to embedded file streams
      */
-    @Override
-    public String toPDFString() {
-        return getObjectID() + "<<\n/Type /FileSpec\n" + "/F (" + this.filename
-                + ")\n" + ">>\nendobj\n";
+    public void setEmbeddedFile(PDFDictionary embeddedFileDict) {
+        put("EF", embeddedFileDict);
     }
 
-    /*
-     * example 29 0 obj << /Type /FileSpec /F (table1.pdf) >> endobj
+    /**
+     * Sets a description for the file spec.
+     * @param description the description
+     * @since PDF 1.6
      */
+    public void setDescription(String description) {
+        put("Desc", description);
+    }
 
     /** {@inheritDoc} */
-    @Override
-    protected boolean contentEquals(final PDFObject obj) {
+    protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;
         }
@@ -68,12 +68,13 @@ public class PDFFileSpec extends PDFObject {
             return false;
         }
 
-        final PDFFileSpec spec = (PDFFileSpec) obj;
+        PDFFileSpec spec = (PDFFileSpec)obj;
 
-        if (!spec.filename.equals(this.filename)) {
+        if (!spec.getFilename().equals(getFilename())) {
             return false;
         }
 
         return true;
     }
 }
+

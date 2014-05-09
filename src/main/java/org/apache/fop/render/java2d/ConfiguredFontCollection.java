@@ -43,7 +43,7 @@ import org.apache.fop.fonts.LazyFont;
 public class ConfiguredFontCollection implements FontCollection {
 
     private FontResolver fontResolver;
-    private final List/* <EmbedFontInfo> */embedFontInfoList;
+    private final List<EmbedFontInfo> embedFontInfoList;
 
     /**
      * Main constructor
@@ -54,7 +54,7 @@ public class ConfiguredFontCollection implements FontCollection {
      *            the list of custom fonts
      */
     public ConfiguredFontCollection(final FontResolver fontResolver,
-            final List/* <EmbedFontInfo> */customFonts) {
+            final List<EmbedFontInfo> customFonts) {
         this.fontResolver = fontResolver;
         if (this.fontResolver == null) {
             // Ensure that we have minimal font resolution capabilities
@@ -75,8 +75,7 @@ public class ConfiguredFontCollection implements FontCollection {
 
         for (int i = 0; i < this.embedFontInfoList.size(); ++i) {
 
-            final EmbedFontInfo configFontInfo = (EmbedFontInfo) this.embedFontInfoList
-                    .get(i);
+            final EmbedFontInfo configFontInfo = this.embedFontInfoList.get(i);
             final String fontFile = configFontInfo.getEmbedFile();
             internalName = "F" + num;
             num++;

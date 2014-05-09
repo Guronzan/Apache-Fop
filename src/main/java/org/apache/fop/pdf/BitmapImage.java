@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: BitmapImage.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: BitmapImage.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -36,6 +36,8 @@ public class BitmapImage implements PDFImage {
     private PDFColor transparent = null;
     private final String key;
     private PDFDocument pdfDoc;
+    private PDFFilter pdfFilter;
+    private boolean multipleFiltersAllowed = true;
 
     /**
      * Create a bitmap image. Creates a new bitmap image with the given data.
@@ -201,7 +203,7 @@ public class BitmapImage implements PDFImage {
 
     /**
      * Get the ICC stream.
-     *
+     * 
      * @return always returns null since this has no icc color space
      */
     @Override
@@ -211,7 +213,7 @@ public class BitmapImage implements PDFImage {
 
     /**
      * Check if this is a postscript image.
-     *
+     * 
      * @return always returns false
      */
     @Override
@@ -232,7 +234,24 @@ public class BitmapImage implements PDFImage {
      */
     @Override
     public PDFFilter getPDFFilter() {
-        return null;
+        return this.pdfFilter;
+    }
+
+    public void setPDFFilter(final PDFFilter pdfFilter) {
+        this.pdfFilter = pdfFilter;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean multipleFiltersAllowed() {
+        return this.multipleFiltersAllowed;
+    }
+
+    /**
+     * Disallows multiple filters.
+     */
+    public void disallowMultipleFilters() {
+        this.multipleFiltersAllowed = false;
     }
 
 }

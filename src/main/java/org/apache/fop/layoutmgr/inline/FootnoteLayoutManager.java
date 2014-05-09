@@ -84,7 +84,7 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
         this.bodyLM.initialize();
 
         // get Knuth elements representing the footnote citation
-        final List returnedList = new LinkedList();
+        final List returnedList = new LinkedList<>();
         while (!this.citationLM.isFinished()) {
             final List partialList = this.citationLM.getNextKnuthElements(
                     context, alignment);
@@ -129,9 +129,10 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
      * {@inheritDoc}
      */
     @Override
-    public List getChangedKnuthElements(final List oldList, final int alignment) {
-        final List returnedList = super.getChangedKnuthElements(oldList,
-                alignment);
+    public List<ListElement> getChangedKnuthElements(
+            final List<ListElement> oldList, final int alignment) {
+        final List<ListElement> returnedList = super.getChangedKnuthElements(
+                oldList, alignment);
         addAnchor(returnedList);
         return returnedList;
     }
@@ -144,7 +145,7 @@ public class FootnoteLayoutManager extends InlineStackingLayoutManager {
             final LayoutContext context) {
         // "Unwrap" the NonLeafPositions stored in posIter and put
         // them in a new list, that will be given to the citationLM
-        final LinkedList positionList = new LinkedList();
+        final LinkedList positionList = new LinkedList<>();
         NonLeafPosition pos = null;
         while (posIter.hasNext()) {
             pos = (NonLeafPosition) posIter.next();

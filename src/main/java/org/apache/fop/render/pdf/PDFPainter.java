@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFPainter.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFPainter.java 1293736 2012-02-26 02:29:01Z gadams $ */
 
 package org.apache.fop.render.pdf;
 
@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
+import org.apache.fop.fo.properties.Direction;
 import org.apache.fop.fonts.Font;
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontTriplet;
@@ -35,6 +36,7 @@ import org.apache.fop.fonts.SingleByteFont;
 import org.apache.fop.fonts.Typeface;
 import org.apache.fop.pdf.PDFDocument;
 import org.apache.fop.pdf.PDFNumber;
+import org.apache.fop.pdf.PDFStructElem;
 import org.apache.fop.pdf.PDFTextUtil;
 import org.apache.fop.pdf.PDFXObject;
 import org.apache.fop.render.RenderingContext;
@@ -42,6 +44,7 @@ import org.apache.fop.render.intermediate.AbstractIFPainter;
 import org.apache.fop.render.intermediate.IFContext;
 import org.apache.fop.render.intermediate.IFException;
 import org.apache.fop.render.intermediate.IFState;
+import org.apache.fop.render.intermediate.IFUtil;
 import org.apache.fop.render.pdf.PDFLogicalStructureHandler.MarkedContentInfo;
 import org.apache.fop.traits.BorderProps;
 import org.apache.fop.traits.RuleStyle;
@@ -68,7 +71,7 @@ public class PDFPainter extends AbstractIFPainter {
 
     /**
      * Default constructor.
-     *
+     * 
      * @param documentHandler
      *            the parent document handler
      * @param logicalStructureHandler
@@ -106,7 +109,7 @@ public class PDFPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void startViewport(final AffineTransform transform,
-            final Dimension size, final Rectangle clipRect) {
+            final Dimension size, final Rectangle clipRect) throws IFException {
         this.generator.saveGraphicsState();
         this.generator.concatenate(toPoints(transform));
         if (clipRect != null) {
@@ -116,52 +119,51 @@ public class PDFPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void endViewport() {
+    public void endViewport() throws IFException {
         this.generator.restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
     @Override
-    public void startGroup(final AffineTransform transform) {
+    public void startGroup(final AffineTransform transform) throws IFException {
         this.generator.saveGraphicsState();
         this.generator.concatenate(toPoints(transform));
     }
 
     /** {@inheritDoc} */
     @Override
-    public void endGroup() {
+    public void endGroup() throws IFException {
         this.generator.restoreGraphicsState();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
+    /** {@inheritDoc} */
     @Override
     public void drawImage(final String uri, final Rectangle rect)
             throws IFException {
         final PDFXObject xobject = getPDFDoc().getXObject(uri);
         if (xobject != null) {
             if (this.accessEnabled) {
-                final String ptr = getContext().getStructurePointer();
-                prepareImageMCID(ptr);
+                final PDFStructElem structElem = (PDFStructElem) getContext()
+                        .getStructureTreeElement();
+                prepareImageMCID(structElem);
                 placeImageAccess(rect, xobject);
             } else {
                 placeImage(rect, xobject);
             }
         } else {
             if (this.accessEnabled) {
-                final String ptr = getContext().getStructurePointer();
-                prepareImageMCID(ptr);
+                final PDFStructElem structElem = (PDFStructElem) getContext()
+                        .getStructureTreeElement();
+                prepareImageMCID(structElem);
             }
             drawImageUsingURI(uri, rect);
             flushPDFDoc();
         }
     }
 
-    private void prepareImageMCID(final String ptr) {
-        this.imageMCI = this.logicalStructureHandler.addImageContentItem(ptr);
+    private void prepareImageMCID(final PDFStructElem structElem) {
+        this.imageMCI = this.logicalStructureHandler
+                .addImageContentItem(structElem);
     }
 
     /** {@inheritDoc} */
@@ -176,15 +178,9 @@ public class PDFPainter extends AbstractIFPainter {
 
     /**
      * Places a previously registered image at a certain place on the page.
-     *
-     * @param x
-     *            X coordinate
-     * @param y
-     *            Y coordinate
-     * @param w
-     *            width for image
-     * @param h
-     *            height for image
+     * 
+     * @param rect
+     *            the rectangle for the image
      * @param xobj
      *            the image XObject
      */
@@ -199,15 +195,9 @@ public class PDFPainter extends AbstractIFPainter {
     /**
      * Places a previously registered image at a certain place on the page -
      * Accessibility version
-     *
-     * @param x
-     *            X coordinate
-     * @param y
-     *            Y coordinate
-     * @param w
-     *            width for image
-     * @param h
-     *            height for image
+     * 
+     * @param rect
+     *            the rectangle for the image
      * @param xobj
      *            the image XObject
      */
@@ -219,17 +209,14 @@ public class PDFPainter extends AbstractIFPainter {
         this.generator.restoreGraphicsStateAccess();
     }
 
-    /**
-     * {@inheritDoc}
-     * 
-     * @throws IFException
-     */
+    /** {@inheritDoc} */
     @Override
     public void drawImage(final Document doc, final Rectangle rect)
             throws IFException {
         if (this.accessEnabled) {
-            final String ptr = getContext().getStructurePointer();
-            prepareImageMCID(ptr);
+            final PDFStructElem structElem = (PDFStructElem) getContext()
+                    .getStructureTreeElement();
+            prepareImageMCID(structElem);
         }
         drawImageUsingDocument(doc, rect);
         flushPDFDoc();
@@ -247,7 +234,7 @@ public class PDFPainter extends AbstractIFPainter {
     /**
      * Formats a integer value (normally coordinates in millipoints) to a
      * String.
-     *
+     * 
      * @param value
      *            the value (in millipoints)
      * @return the formatted value
@@ -258,14 +245,15 @@ public class PDFPainter extends AbstractIFPainter {
 
     /** {@inheritDoc} */
     @Override
-    public void clipRect(final Rectangle rect) {
+    public void clipRect(final Rectangle rect) throws IFException {
         this.generator.endTextObject();
         this.generator.clipRect(rect);
     }
 
     /** {@inheritDoc} */
     @Override
-    public void fillRect(final Rectangle rect, final Paint fill) {
+    public void fillRect(final Rectangle rect, final Paint fill)
+            throws IFException {
         if (fill == null) {
             return;
         }
@@ -279,7 +267,7 @@ public class PDFPainter extends AbstractIFPainter {
                             "Non-Color paints NYI");
                 }
             }
-            final StringBuilder sb = new StringBuilder();
+            final StringBuffer sb = new StringBuffer();
             sb.append(format(rect.x)).append(' ');
             sb.append(format(rect.y)).append(' ');
             sb.append(format(rect.width)).append(' ');
@@ -296,19 +284,15 @@ public class PDFPainter extends AbstractIFPainter {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws IFException
-     */
+    /** {@inheritDoc} */
     @Override
-    public void drawBorderRect(final Rectangle rect, final BorderProps before,
-            final BorderProps after, final BorderProps start,
-            final BorderProps end) throws IFException {
-        if (before != null || after != null || start != null || end != null) {
+    public void drawBorderRect(final Rectangle rect, final BorderProps top,
+            final BorderProps bottom, final BorderProps left,
+            final BorderProps right) throws IFException {
+        if (top != null || bottom != null || left != null || right != null) {
             this.generator.endTextObject();
             try {
-                this.borderPainter.drawBorders(rect, before, after, start, end);
+                this.borderPainter.drawBorders(rect, top, bottom, left, right);
             } catch (final IOException ioe) {
                 throw new IFException("I/O error while drawing borders", ioe);
             }
@@ -318,7 +302,7 @@ public class PDFPainter extends AbstractIFPainter {
     /** {@inheritDoc} */
     @Override
     public void drawLine(final Point start, final Point end, final int width,
-            final Color color, final RuleStyle style) {
+            final Color color, final RuleStyle style) throws IFException {
         this.generator.endTextObject();
         this.borderPainter.drawLine(start, end, width, color, style);
     }
@@ -327,7 +311,7 @@ public class PDFPainter extends AbstractIFPainter {
         if (fontName == null) {
             throw new NullPointerException("fontName must not be null");
         }
-        Typeface tf = (Typeface) getFontInfo().getFonts().get(fontName);
+        Typeface tf = getFontInfo().getFonts().get(fontName);
         if (tf instanceof LazyFont) {
             tf = ((LazyFont) tf).getRealFont();
         }
@@ -335,13 +319,14 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
-    @Override
     public void drawText(final int x, final int y, final int letterSpacing,
-            final int wordSpacing, final int[] dx, final String text) {
+            final int wordSpacing, final int[][] dp, final String text)
+                    throws IFException {
         if (this.accessEnabled) {
-            final String ptr = getContext().getStructurePointer();
+            final PDFStructElem structElem = (PDFStructElem) getContext()
+                    .getStructureTreeElement();
             final MarkedContentInfo mci = this.logicalStructureHandler
-                    .addTextContentItem(ptr);
+                    .addTextContentItem(structElem);
             if (this.generator.getTextUtil().isInTextObject()) {
                 this.generator.separateTextElements(mci.tag, mci.mcid);
             }
@@ -354,6 +339,19 @@ public class PDFPainter extends AbstractIFPainter {
 
         final FontTriplet triplet = new FontTriplet(this.state.getFontFamily(),
                 this.state.getFontStyle(), this.state.getFontWeight());
+
+        if (dp == null || IFUtil.isDPOnlyDX(dp)) {
+            drawTextWithDX(x, y, text, triplet, letterSpacing, wordSpacing,
+                    IFUtil.convertDPToDX(dp));
+        } else {
+            drawTextWithDP(x, y, text, triplet, letterSpacing, wordSpacing, dp);
+        }
+    }
+
+    private void drawTextWithDX(final int x, final int y, final String text,
+            final FontTriplet triplet, final int letterSpacing,
+            final int wordSpacing, final int[] dx) {
+
         // TODO Ignored: state.getFontVariant()
         // TODO Opportunity for font caching if font state is more heavily used
         final String fontKey = getFontInfo().getInternalFontKey(triplet);
@@ -383,24 +381,14 @@ public class PDFPainter extends AbstractIFPainter {
         if (dx != null && dxl > 0 && dx[0] != 0) {
             textutil.adjustGlyphTJ(-dx[0] / fontSize);
         }
-        for (int i = 0; i < l; ++i) {
+        for (int i = 0; i < l; i++) {
             final char orgChar = text.charAt(i);
             char ch;
             float glyphAdjust = 0;
             if (font.hasChar(orgChar)) {
                 ch = font.mapChar(orgChar);
-                if (singleByteFont != null
-                        && singleByteFont.hasAdditionalEncodings()) {
-                    final int encoding = ch / 256;
-                    if (encoding == 0) {
-                        textutil.updateTf(fontName, fontSize, tf.isMultiByte());
-                    } else {
-                        textutil.updateTf(
-                                fontName + "_" + Integer.toString(encoding),
-                                fontSize, tf.isMultiByte());
-                        ch = (char) (ch % 256);
-                    }
-                }
+                ch = selectAndMapSingleByteFont(singleByteFont, fontName,
+                        fontSize, textutil, ch);
                 if (wordSpacing != 0
                         && CharUtilities.isAdjustableSpace(orgChar)) {
                     glyphAdjust += wordSpacing;
@@ -420,6 +408,8 @@ public class PDFPainter extends AbstractIFPainter {
                         glyphAdjust += wordSpacing;
                     }
                 }
+                ch = selectAndMapSingleByteFont(singleByteFont, fontName,
+                        fontSize, textutil, ch);
             }
             textutil.writeTJMappedChar(ch);
 
@@ -433,6 +423,85 @@ public class PDFPainter extends AbstractIFPainter {
 
         }
         textutil.writeTJ();
+    }
+
+    private static int[] paZero = new int[4];
+
+    private void drawTextWithDP(final int x, final int y, final String text,
+            final FontTriplet triplet, final int letterSpacing,
+            final int wordSpacing, final int[][] dp) {
+        assert text != null;
+        assert triplet != null;
+        assert dp != null;
+        final String fk = getFontInfo().getInternalFontKey(triplet);
+        final Typeface tf = getTypeface(fk);
+        if (tf.isMultiByte()) {
+            final int fs = this.state.getFontSize();
+            final float fsPoints = fs / 1000f;
+            final Font f = getFontInfo().getFontInstance(triplet, fs);
+            // String fn = f.getFontName();
+            final PDFTextUtil tu = this.generator.getTextUtil();
+            double xc = 0f;
+            double yc = 0f;
+            double xoLast = 0f;
+            double yoLast = 0f;
+            final double wox = wordSpacing;
+            tu.writeTextMatrix(new AffineTransform(1, 0, 0, -1, x / 1000f,
+                    y / 1000f));
+            tu.updateTf(fk, fsPoints, true);
+            this.generator.updateCharacterSpacing(letterSpacing / 1000f);
+            for (int i = 0, n = text.length(); i < n; i++) {
+                final char ch = text.charAt(i);
+                final int[] pa = i < dp.length ? dp[i] : paZero;
+                final double xo = xc + pa[0];
+                final double yo = yc + pa[1];
+                final double xa = f.getCharWidth(ch)
+                        + maybeWordOffsetX(wox, ch, null);
+                final double ya = 0;
+                final double xd = (xo - xoLast) / 1000f;
+                final double yd = (yo - yoLast) / 1000f;
+                tu.writeTd(xd, yd);
+                tu.writeTj(f.mapChar(ch));
+                xc += xa + pa[2];
+                yc += ya + pa[3];
+                xoLast = xo;
+                yoLast = yo;
+            }
+        }
+    }
+
+    private double maybeWordOffsetX(final double wox, final char ch,
+            final Direction dir) {
+        if (wox != 0 && CharUtilities.isAdjustableSpace(ch)
+                && (dir == null || dir.isHorizontal())) {
+            return wox;
+        } else {
+            return 0;
+        }
+    }
+
+    /*
+     * private double maybeWordOffsetY ( double woy, char ch, Direction dir ) {
+     * if ( ( woy != 0 ) && CharUtilities.isAdjustableSpace ( ch ) &&
+     * dir.isVertical() && ( ( dir != null ) && dir.isVertical() ) ) { return
+     * woy; } else { return 0; } }
+     */
+
+    private char selectAndMapSingleByteFont(
+            final SingleByteFont singleByteFont, final String fontName,
+            final float fontSize, final PDFTextUtil textutil, char ch) {
+        if (singleByteFont != null && singleByteFont.hasAdditionalEncodings()) {
+            final int encoding = ch / 256;
+            if (encoding == 0) {
+                textutil.updateTf(fontName, fontSize,
+                        singleByteFont.isMultiByte());
+            } else {
+                textutil.updateTf(fontName + "_" + Integer.toString(encoding),
+                        fontSize, singleByteFont.isMultiByte());
+                ch = (char) (ch % 256);
+            }
+        }
+        return ch;
     }
 
 }

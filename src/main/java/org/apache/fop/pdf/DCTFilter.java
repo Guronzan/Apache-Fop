@@ -15,23 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: DCTFilter.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: DCTFilter.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.pdf;
 
 /**
+ * <p>
  * DCT Filter class. Right now it is just used as a dummy filter flag so we can
  * write JPG images to the PDF. The encode method just returns the data passed
  * to it. In the future an actual JPEG compression should be added to the encode
  * method so other images can be compressed.
+ * </p>
  *
- * @author Eric Dalquist
+ * <p>
+ * This work was authored by Eric Dalquist.
+ * </p>
  */
 public class DCTFilter extends NullFilter {
 
     /**
      * Get filter name.
-     *
+     * 
      * @return the pdf name for the DCT filter
      */
     @Override
@@ -41,7 +45,7 @@ public class DCTFilter extends NullFilter {
 
     /**
      * Get the decode params for this filter.
-     *
+     * 
      * @return the DCT filter has no decode params
      */
     @Override

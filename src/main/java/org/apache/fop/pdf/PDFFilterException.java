@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-/* $Id: PDFFilterException.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFFilterException.java 1297284 2012-03-05 23:29:29Z gadams $ */
 
 package org.apache.fop.pdf;
 
 /**
- * PDF Filter exception. This is used for exceptions relating to use a PDF
- * filter.
+ * <p>PDF Filter exception.
+ * This is used for exceptions relating to use a PDF filter.</p>
  *
- * @author Eric SCHAEFFER
+ * <p>This work was authored by Eric Schaeffer.</p>
  */
 public class PDFFilterException extends Exception {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1918563911064982515L;
-
     /**
      * Create a basic filter exception.
      */
@@ -40,10 +35,10 @@ public class PDFFilterException extends Exception {
     /**
      * Create a filter exception with a message.
      *
-     * @param message
-     *            the error message
+     * @param message the error message
      */
-    public PDFFilterException(final String message) {
+    public PDFFilterException(String message) {
         super(message);
     }
 }
+

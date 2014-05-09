@@ -19,8 +19,8 @@
 
 package org.apache.fop.fonts;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,7 +30,7 @@ import org.apache.xmlgraphics.fonts.Glyphs;
  * Base class for font classes
  */
 @Slf4j
-public abstract class Typeface implements FontMetrics {
+public abstract class Typeface<T, U> implements FontMetrics<T, U> {
 
     /**
      * Code point that is used if no code point for a specific character has
@@ -51,7 +51,7 @@ public abstract class Typeface implements FontMetrics {
      */
     protected FontEventListener eventListener;
 
-    private Set<Character> warnedChars;
+    private Collection<Character> warnedChars;
 
     /**
      * Get the encoding of the font.
@@ -131,7 +131,7 @@ public abstract class Typeface implements FontMetrics {
      */
     protected void warnMissingGlyph(final char c) {
         // Give up, character is not available
-        final Character ch = new Character(c);
+        final Character ch = Character.valueOf(c);
         if (this.warnedChars == null) {
             this.warnedChars = new HashSet<>();
         }

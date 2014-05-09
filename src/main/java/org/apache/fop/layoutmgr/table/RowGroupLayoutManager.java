@@ -35,6 +35,7 @@ import org.apache.fop.fo.properties.CommonBorderPaddingBackground;
 import org.apache.fop.fo.properties.LengthRangeProperty;
 import org.apache.fop.layoutmgr.ElementListObserver;
 import org.apache.fop.layoutmgr.LayoutContext;
+import org.apache.fop.layoutmgr.ListElement;
 import org.apache.fop.traits.MinOptMax;
 import org.apache.fop.util.BreakUtil;
 
@@ -57,9 +58,9 @@ class RowGroupLayoutManager {
         this.tableStepper = tableStepper;
     }
 
-    public LinkedList getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment, final int bodyType) {
-        final LinkedList returnList = new LinkedList();
+        final List<ListElement> returnList = new LinkedList<>();
         createElementsForRowGroup(context, alignment, bodyType, returnList);
 
         context.updateKeepWithPreviousPending(this.rowGroup[0]
@@ -102,15 +103,12 @@ class RowGroupLayoutManager {
      *            List to received the generated elements
      */
     private void createElementsForRowGroup(final LayoutContext context,
-            final int alignment, final int bodyType, final LinkedList returnList) {
+            final int alignment, final int bodyType,
+            final List<ListElement> returnList) {
         log.debug("Handling row group with " + this.rowGroup.length
                 + " rows...");
-        EffRow row;
-        for (final EffRow element : this.rowGroup) {
-            row = element;
-            for (final Iterator iter = row.getGridUnits().iterator(); iter
-                    .hasNext();) {
-                final GridUnit gu = (GridUnit) iter.next();
+        for (final EffRow row : this.rowGroup) {
+            for (final GridUnit gu : row.getGridUnits()) {
                 if (gu.isPrimary()) {
                     final PrimaryGridUnit primary = gu.getPrimary();
                     // TODO a new LM must be created for every new
@@ -119,19 +117,20 @@ class RowGroupLayoutManager {
                     primary.getCellLM().setParent(this.tableLM);
                     // Calculate width of cell
                     int spanWidth = 0;
-                    final Iterator colIter = this.tableLM.getTable()
-                            .getColumns().listIterator(primary.getColIndex());
+                    final Iterator<TableColumn> colIter = this.tableLM
+                            .getTable().getColumns()
+                            .listIterator(primary.getColIndex());
                     for (int i = 0, c = primary.getCell()
                             .getNumberColumnsSpanned(); i < c; ++i) {
-                        spanWidth += ((TableColumn) colIter.next())
-                                .getColumnWidth().getValue(this.tableLM);
+                        spanWidth += colIter.next().getColumnWidth()
+                                .getValue(this.tableLM);
                     }
                     final LayoutContext childLC = new LayoutContext(0);
                     childLC.setStackLimitBP(context.getStackLimitBP()); // necessary?
                     childLC.setRefIPD(spanWidth);
 
                     // Get the element list for the cell contents
-                    final List elems = primary.getCellLM()
+                    final List<ListElement> elems = primary.getCellLM()
                             .getNextKnuthElements(childLC, alignment);
                     ElementListObserver.observe(elems, "table-cell", primary
                             .getCell().getId());
@@ -140,7 +139,7 @@ class RowGroupLayoutManager {
             }
         }
         computeRowHeights();
-        final List elements = this.tableStepper
+        final List<ListElement> elements = this.tableStepper
                 .getCombinedKnuthElementsForRowGroup(context, this.rowGroup,
                         bodyType);
         returnList.addAll(elements);
@@ -173,9 +172,8 @@ class RowGroupLayoutManager {
                 rowHeights[rgi] = rowBPD.toMinOptMax(this.tableLM);
                 explicitRowHeight = rowBPD.toMinOptMax(this.tableLM);
             }
-            for (final Iterator iter = row.getGridUnits().iterator(); iter
-                    .hasNext();) {
-                final GridUnit gu = (GridUnit) iter.next();
+            for (final Object element : row.getGridUnits()) {
+                final GridUnit gu = (GridUnit) element;
                 if (!gu.isEmpty() && gu.getColSpanIndex() == 0
                         && gu.isLastGridUnitRowSpan()) {
                     final PrimaryGridUnit primary = gu.getPrimary();

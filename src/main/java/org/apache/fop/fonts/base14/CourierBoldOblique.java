@@ -1,6 +1,8 @@
 package org.apache.fop.fonts.base14;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 import org.apache.fop.fonts.Base14Font;
 import org.apache.fop.fonts.CodePointMapping;
@@ -10,7 +12,7 @@ import org.apache.fop.fonts.Typeface;
 public class CourierBoldOblique extends Base14Font {
     private final static String fontName = "Courier-BoldOblique";
     private final static String fullName = "Courier Bold Oblique";
-    private final static Set familyNames;
+    private final static Collection<String> familyNames;
     private final static String encoding = "WinAnsiEncoding";
     private final static int capHeight = 562;
     private final static int xHeight = 439;
@@ -277,7 +279,7 @@ public class CourierBoldOblique extends Base14Font {
         width[0x9e] = 600;
         width[0x30] = 600;
 
-        familyNames = new java.util.HashSet();
+        familyNames = new java.util.HashSet<>();
         familyNames.add("Courier");
     }
 
@@ -310,7 +312,7 @@ public class CourierBoldOblique extends Base14Font {
     }
 
     @Override
-    public Set getFamilyNames() {
+    public Collection<String> getFamilyNames() {
         return familyNames;
     }
 
@@ -366,8 +368,8 @@ public class CourierBoldOblique extends Base14Font {
     }
 
     @Override
-    public java.util.Map getKerningInfo() {
-        return java.util.Collections.EMPTY_MAP;
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
+        return Collections.emptyMap();
     }
 
     @Override

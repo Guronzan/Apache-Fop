@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-/* $Id: PDFNull.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFNull.java 1228243 2012-01-06 16:03:44Z cbowditch $ */
 
 package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 /**
  * Class representing a PDF name object.
@@ -33,9 +32,6 @@ public final class PDFNull implements PDFWritable {
 
     /**
      * Creates a new PDF name object.
-     *
-     * @param name
-     *            the name value
      */
     private PDFNull() {
     }
@@ -47,10 +43,8 @@ public final class PDFNull implements PDFWritable {
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void outputInline(final OutputStream out, final Writer writer)
-            throws IOException {
-        writer.write(toString());
+    public void outputInline(OutputStream out, StringBuilder textBuffer) throws IOException {
+        textBuffer.append(toString());
     }
 
 }

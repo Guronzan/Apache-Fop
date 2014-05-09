@@ -238,9 +238,9 @@ public class PageBreaker extends AbstractBreaker {
 
     /** {@inheritDoc} */
     @Override
-    protected List getNextKnuthElements(final LayoutContext context,
-            final int alignment) {
-        List contentList = null;
+    protected List<ListElement> getNextKnuthElements(
+            final LayoutContext context, final int alignment) {
+        List<ListElement> contentList = null;
 
         while (!this.childFLM.isFinished() && contentList == null) {
             contentList = this.childFLM
@@ -257,10 +257,10 @@ public class PageBreaker extends AbstractBreaker {
 
     /** {@inheritDoc} */
     @Override
-    protected List getNextKnuthElements(final LayoutContext context,
-            final int alignment, final Position positionAtIPDChange,
-            final LayoutManager restartAtLM) {
-        List contentList = null;
+    protected List<ListElement> getNextKnuthElements(
+            final LayoutContext context, final int alignment,
+            final Position positionAtIPDChange, final LayoutManager restartAtLM) {
+        List<ListElement> contentList = null;
 
         do {
             contentList = this.childFLM.getNextKnuthElements(context,
@@ -368,8 +368,8 @@ public class PageBreaker extends AbstractBreaker {
             // restarting point
             addAreas(alg, restartPoint, originalList, effectiveList);
             // Get page break from which we restart
-            final PageBreakPosition pbp = (PageBreakPosition) alg
-                    .getPageBreaks().get(restartPoint - 1);
+            final PageBreakPosition pbp = alg.getPageBreaks().get(
+                    restartPoint - 1);
             newStartPos = pbp.getLeafPos() + 1;
             // Handle page break right here to avoid any side-effects
             if (newStartPos > 0) {
@@ -557,50 +557,51 @@ public class PageBreaker extends AbstractBreaker {
     private void handleBreakTrait(final int breakVal) {
         Page curPage = this.pslm.getCurrentPage();
         switch (breakVal) {
-        case Constants.EN_ALL:
-            // break due to span change in multi-column layout
-            curPage.getPageViewport().createSpan(true);
-            return;
-        case Constants.EN_NONE:
-            curPage.getPageViewport().createSpan(false);
-            return;
-        case Constants.EN_COLUMN:
-        case Constants.EN_AUTO:
-        case Constants.EN_PAGE:
-        case -1:
-            final PageViewport pv = curPage.getPageViewport();
-
-            // Check if previous page was spanned
-            boolean forceNewPageWithSpan = false;
-            final RegionBody rb = (RegionBody) curPage.getSimplePageMaster()
-                    .getRegion(Constants.FO_REGION_BODY);
-            forceNewPageWithSpan = rb.getColumnCount() > 1
-                    && pv.getCurrentSpan().getColumnCount() == 1;
-
-            if (forceNewPageWithSpan) {
-                log.trace("Forcing new page with span");
-                curPage = this.pslm.makeNewPage(false, false);
+            case Constants.EN_ALL:
+                // break due to span change in multi-column layout
                 curPage.getPageViewport().createSpan(true);
-            } else if (pv.getCurrentSpan().hasMoreFlows()) {
-                log.trace("Moving to next flow");
-                pv.getCurrentSpan().moveToNextFlow();
-            } else {
-                log.trace("Making new page");
-                /* curPage = */this.pslm.makeNewPage(false, false);
-            }
-            return;
-        default:
-            log.debug("handling break-before after page "
-                    + this.pslm.getCurrentPageNum() + " breakVal="
-                    + getBreakClassName(breakVal));
-            if (needBlankPageBeforeNew(breakVal)) {
-                log.trace("Inserting blank page");
-                /* curPage = */this.pslm.makeNewPage(true, false);
-            }
-            if (needNewPage(breakVal)) {
-                log.trace("Making new page");
-                /* curPage = */this.pslm.makeNewPage(false, false);
-            }
+                return;
+            case Constants.EN_NONE:
+                curPage.getPageViewport().createSpan(false);
+                return;
+            case Constants.EN_COLUMN:
+            case Constants.EN_AUTO:
+            case Constants.EN_PAGE:
+            case -1:
+                final PageViewport pv = curPage.getPageViewport();
+
+                // Check if previous page was spanned
+                boolean forceNewPageWithSpan = false;
+                final RegionBody rb = (RegionBody) curPage
+                        .getSimplePageMaster().getRegion(
+                                Constants.FO_REGION_BODY);
+                forceNewPageWithSpan = rb.getColumnCount() > 1
+                        && pv.getCurrentSpan().getColumnCount() == 1;
+
+                if (forceNewPageWithSpan) {
+                    log.trace("Forcing new page with span");
+                    curPage = this.pslm.makeNewPage(false, false);
+                    curPage.getPageViewport().createSpan(true);
+                } else if (pv.getCurrentSpan().hasMoreFlows()) {
+                    log.trace("Moving to next flow");
+                    pv.getCurrentSpan().moveToNextFlow();
+                } else {
+                    log.trace("Making new page");
+                    /* curPage = */this.pslm.makeNewPage(false, false);
+                }
+                return;
+            default:
+                log.debug("handling break-before after page "
+                        + this.pslm.getCurrentPageNum() + " breakVal="
+                        + getBreakClassName(breakVal));
+                if (needBlankPageBeforeNew(breakVal)) {
+                    log.trace("Inserting blank page");
+                    /* curPage = */this.pslm.makeNewPage(true, false);
+                }
+                if (needNewPage(breakVal)) {
+                    log.trace("Making new page");
+                    /* curPage = */this.pslm.makeNewPage(false, false);
+                }
         }
     }
 

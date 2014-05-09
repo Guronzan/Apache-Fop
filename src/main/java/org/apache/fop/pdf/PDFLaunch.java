@@ -5,7 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
-
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -14,7 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* $Id: PDFLaunch.java 815358 2009-09-15 15:07:51Z maxberger $ */
+
+/* $Id: PDFLaunch.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
+
 package org.apache.fop.pdf;
 
 /**
@@ -22,31 +24,45 @@ package org.apache.fop.pdf;
  */
 public class PDFLaunch extends PDFAction {
 
-    private final PDFFileSpec externalFileSpec;
+    private PDFReference externalFileSpec;
 
-    public PDFLaunch(final PDFFileSpec fileSpec) {
+    /**
+     * Creates a new /Launch action.
+     * @param fileSpec the file specification to launch
+     */
+    public PDFLaunch(PDFFileSpec fileSpec) {
+        this(fileSpec.makeReference());
+    }
+
+    /**
+     * Creates a new /Launch action.
+     * @param fileSpec a reference to the file specification
+     */
+    public PDFLaunch(PDFReference fileSpec) {
+        PDFObject fs = fileSpec.getObject();
+        if (fs != null) {
+            assert fs instanceof PDFFileSpec;
+        }
         this.externalFileSpec = fileSpec;
     }
 
-    @Override
+    /** {@inheritDoc} */
     public String getAction() {
-        return referencePDF();
+        return this.referencePDF();
     }
 
-    @Override
+    /** {@inheritDoc} */
     public String toPDFString() {
-        final StringBuilder sb = new StringBuilder(64);
-        sb.append(getObjectID());
+        StringBuffer sb = new StringBuffer(64);
         sb.append("<<\n/S /Launch\n/F ");
-        sb.append(this.externalFileSpec.referencePDF());
-        sb.append(" \n>>\nendobj\n");
+        sb.append(externalFileSpec.toString());
+        sb.append("\n>>");
 
         return sb.toString();
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected boolean contentEquals(final PDFObject obj) {
+    protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;
         }
@@ -55,10 +71,9 @@ public class PDFLaunch extends PDFAction {
             return false;
         }
 
-        final PDFLaunch launch = (PDFLaunch) obj;
+        PDFLaunch launch = (PDFLaunch) obj;
 
-        if (!launch.externalFileSpec.referencePDF().equals(
-                this.externalFileSpec.referencePDF())) {
+        if (!launch.externalFileSpec.toString().equals(externalFileSpec.toString())) {
             return false;
         }
 

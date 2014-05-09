@@ -72,7 +72,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  */
 @Slf4j
 public class AFPGraphics2D extends AbstractGraphics2D implements
-NativeImageHandler {
+        NativeImageHandler {
 
     private static final int X = 0;
 
@@ -330,7 +330,7 @@ NativeImageHandler {
                     } else if (dashArray.length == 6) {
                         if (dashArray[0] > dashArray[1]
                                 && dashArray[2] < dashArray[3]
-                                        && dashArray[4] < dashArray[5]) {
+                                && dashArray[4] < dashArray[5]) {
                             type = GraphicsSetLineType.DASH_DOUBLE_DOTTED;
                         }
                     }
@@ -454,55 +454,55 @@ NativeImageHandler {
         double[] currentPosition = new double[2];
         for (int[] openingCoords = new int[2]; !iter.isDone(); iter.next()) {
             switch (iter.currentSegment(dstPts)) {
-            case PathIterator.SEG_LINETO:
-                this.graphicsObj.addLine(
-                        new int[] { (int) Math.round(dstPts[X]),
-                                (int) Math.round(dstPts[Y]) }, true);
-                currentPosition = new double[] { dstPts[X], dstPts[Y] };
-                break;
-            case PathIterator.SEG_QUADTO:
-                this.graphicsObj.addFillet(
-                        new int[] { (int) Math.round(dstPts[X1]),
-                                (int) Math.round(dstPts[Y1]),
-                                (int) Math.round(dstPts[X2]),
-                                (int) Math.round(dstPts[Y2]) }, true);
-                currentPosition = new double[] { dstPts[X2], dstPts[Y2] };
-                break;
-            case PathIterator.SEG_CUBICTO:
-                final double[] cubicCoords = new double[] { currentPosition[0],
-                        currentPosition[1], dstPts[X1], dstPts[Y1], dstPts[X2],
-                        dstPts[Y2], dstPts[X3], dstPts[Y3] };
-                final double[][] quadParts = CubicBezierApproximator
-                        .fixedMidPointApproximation(cubicCoords);
-                if (quadParts.length >= 4) {
-                    for (final double[] quadPts : quadParts) {
-                        if (quadPts != null && quadPts.length == 4) {
-                            this.graphicsObj.addFillet(
-                                    new int[] { (int) Math.round(quadPts[X1]),
-                                            (int) Math.round(quadPts[Y1]),
-                                            (int) Math.round(quadPts[X2]),
-                                            (int) Math.round(quadPts[Y2]) },
-                                    true);
-                            currentPosition = new double[] { quadPts[X2],
-                                    quadPts[Y2] };
+                case PathIterator.SEG_LINETO:
+                    this.graphicsObj.addLine(
+                            new int[] { (int) Math.round(dstPts[X]),
+                                    (int) Math.round(dstPts[Y]) }, true);
+                    currentPosition = new double[] { dstPts[X], dstPts[Y] };
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    this.graphicsObj.addFillet(
+                            new int[] { (int) Math.round(dstPts[X1]),
+                                    (int) Math.round(dstPts[Y1]),
+                                    (int) Math.round(dstPts[X2]),
+                                    (int) Math.round(dstPts[Y2]) }, true);
+                    currentPosition = new double[] { dstPts[X2], dstPts[Y2] };
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    final double[] cubicCoords = new double[] {
+                            currentPosition[0], currentPosition[1], dstPts[X1],
+                            dstPts[Y1], dstPts[X2], dstPts[Y2], dstPts[X3],
+                            dstPts[Y3] };
+                    final double[][] quadParts = CubicBezierApproximator
+                            .fixedMidPointApproximation(cubicCoords);
+                    if (quadParts.length >= 4) {
+                        for (final double[] quadPts : quadParts) {
+                            if (quadPts != null && quadPts.length == 4) {
+                                this.graphicsObj.addFillet(new int[] {
+                                        (int) Math.round(quadPts[X1]),
+                                        (int) Math.round(quadPts[Y1]),
+                                        (int) Math.round(quadPts[X2]),
+                                        (int) Math.round(quadPts[Y2]) }, true);
+                                currentPosition = new double[] { quadPts[X2],
+                                        quadPts[Y2] };
+                            }
                         }
                     }
-                }
-                break;
-            case PathIterator.SEG_MOVETO:
-                openingCoords = new int[] { (int) Math.round(dstPts[X]),
-                        (int) Math.round(dstPts[Y]) };
-                currentPosition = new double[] { dstPts[X], dstPts[Y] };
-                this.graphicsObj.setCurrentPosition(openingCoords);
-                break;
-            case PathIterator.SEG_CLOSE:
-                this.graphicsObj.addLine(openingCoords, true);
-                currentPosition = new double[] { openingCoords[0],
-                        openingCoords[1] };
-                break;
-            default:
-                log.debug("Unrecognised path iterator type");
-                break;
+                    break;
+                case PathIterator.SEG_MOVETO:
+                    openingCoords = new int[] { (int) Math.round(dstPts[X]),
+                            (int) Math.round(dstPts[Y]) };
+                    currentPosition = new double[] { dstPts[X], dstPts[Y] };
+                    this.graphicsObj.setCurrentPosition(openingCoords);
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    this.graphicsObj.addLine(openingCoords, true);
+                    currentPosition = new double[] { openingCoords[0],
+                            openingCoords[1] };
+                    break;
+                default:
+                    log.debug("Unrecognised path iterator type");
+                    break;
             }
         }
     }
@@ -529,8 +529,7 @@ NativeImageHandler {
      */
     public void handleIOException(final IOException ioe) {
         // TODO Surely, there's a better way to do this.
-        log.error(ioe.getMessage());
-        ioe.printStackTrace();
+        log.error(ioe.getMessage(), ioe);
     }
 
     /** {@inheritDoc} */

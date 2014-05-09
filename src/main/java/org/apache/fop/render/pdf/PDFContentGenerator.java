@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFContentGenerator.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFContentGenerator.java 1088231 2011-04-03 09:40:27Z adelmelle $ */
 
 package org.apache.fop.render.pdf;
 
@@ -25,7 +25,6 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.fop.pdf.PDFColor;
 import org.apache.fop.pdf.PDFDocument;
 import org.apache.fop.pdf.PDFFilterList;
 import org.apache.fop.pdf.PDFNumber;
@@ -50,6 +49,8 @@ public class PDFContentGenerator {
 
     /** the current stream to add PDF commands to */
     private final PDFStream currentStream;
+
+    private final PDFColorHandler colorHandler;
 
     /** drawing state */
     protected PDFPaintingState currentState = null;
@@ -85,6 +86,7 @@ public class PDFContentGenerator {
         };
 
         this.currentState = new PDFPaintingState();
+        this.colorHandler = new PDFColorHandler(document.getResources());
     }
 
     /**
@@ -124,7 +126,7 @@ public class PDFContentGenerator {
     }
 
     /**
-     * Returns the {@link PDFState} associated with this instance.
+     * Returns the {@link PDFPaintingState} associated with this instance.
      * 
      * @return the PDF state
      */
@@ -163,14 +165,21 @@ public class PDFContentGenerator {
         }
     }
 
-    /** {@inheritDoc} */
+    /** Save graphics state. */
     protected void saveGraphicsState() {
         endTextObject();
         this.currentState.save();
         this.currentStream.add("q\n");
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Save graphics state.
+     * 
+     * @param structElemType
+     *            an element type
+     * @param sequenceNum
+     *            a sequence number
+     */
     protected void saveGraphicsState(final String structElemType,
             final int sequenceNum) {
         endTextObject();
@@ -291,10 +300,10 @@ public class PDFContentGenerator {
     /** Indicates the end of a text object. */
     protected void endTextObject() {
         if (this.textutil.isInTextObject()) {
+            this.textutil.endTextObject();
             if (this.inMarkedContentSequence) {
                 endMarkedContentSequence();
             }
-            this.textutil.endTextObject();
         }
     }
 
@@ -319,7 +328,7 @@ public class PDFContentGenerator {
      *            the clip rectangle
      */
     public void clipRect(final Rectangle rect) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuffer sb = new StringBuffer();
         sb.append(format(rect.x / 1000f)).append(' ');
         sb.append(format(rect.y / 1000f)).append(' ');
         sb.append(format(rect.width / 1000f)).append(' ');
@@ -386,8 +395,9 @@ public class PDFContentGenerator {
     public void setColor(final Color col, final boolean fill,
             final PDFStream stream) {
         assert stream != null;
-        final PDFColor color = new PDFColor(this.document, col);
-        stream.add(color.getColorSpaceOut(fill));
+        final StringBuffer sb = new StringBuffer();
+        setColor(col, fill, sb);
+        stream.add(sb.toString());
     }
 
     /**
@@ -411,14 +421,13 @@ public class PDFContentGenerator {
      * @param fill
      *            true to set the fill color, false for the foreground color
      * @param pdf
-     *            StringBuilder to write the PDF code to, if null, the code is
+     *            StringBuffer to write the PDF code to, if null, the code is
      *            written to the current stream.
      */
     protected void setColor(final Color col, final boolean fill,
-            final StringBuilder pdf) {
+            final StringBuffer pdf) {
         if (pdf != null) {
-            final PDFColor color = new PDFColor(this.document, col);
-            pdf.append(color.getColorSpaceOut(fill));
+            this.colorHandler.establishColor(pdf, col, fill);
         } else {
             setColor(col, fill, this.currentStream);
         }
@@ -432,11 +441,11 @@ public class PDFContentGenerator {
      * @param fill
      *            true to set the fill color, false for the foreground color
      * @param pdf
-     *            StringBuilder to write the PDF code to, if null, the code is
+     *            StringBuffer to write the PDF code to, if null, the code is
      *            written to the current stream.
      */
     public void updateColor(final Color col, final boolean fill,
-            final StringBuilder pdf) {
+            final StringBuffer pdf) {
         if (col == null) {
             return;
         }

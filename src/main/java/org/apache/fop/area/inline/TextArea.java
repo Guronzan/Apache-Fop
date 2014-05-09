@@ -37,7 +37,7 @@ public class TextArea extends AbstractTextArea {
 
     /**
      * Constructor with extra parameters: create a TextAdjustingInfo object
-     * 
+     *
      * @param stretch
      *            the available stretch of the text
      * @param shrink
@@ -116,7 +116,7 @@ public class TextArea extends AbstractTextArea {
         InlineArea child;
         // assemble the text
         for (int i = 0; i < this.inlines.size(); ++i) {
-            child = (InlineArea) this.inlines.get(i);
+            child = this.inlines.get(i);
             if (child instanceof WordArea) {
                 text.append(((WordArea) child).getWord());
             } else {

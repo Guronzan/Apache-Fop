@@ -92,7 +92,7 @@ public final class FontListMain {
     private void generateXML(
             final SortedMap<String, List<FontSpec>> fontFamilies,
             final File outFile, final String singleFamily)
-            throws TransformerConfigurationException, SAXException, IOException {
+                    throws TransformerConfigurationException, SAXException, IOException {
         final SAXTransformerFactory tFactory = (SAXTransformerFactory) TransformerFactory
                 .newInstance();
         TransformerHandler handler;
@@ -176,7 +176,7 @@ public final class FontListMain {
             final List<FontSpec> list = entry.getValue();
             for (final FontSpec f : list) {
                 System.out
-                .println("  " + f.getKey() + " " + f.getFamilyNames());
+                        .println("  " + f.getKey() + " " + f.getFamilyNames());
                 for (final FontTriplet triplet : f.getTriplets()) {
                     log.info("    " + triplet.toString());
                 }
@@ -186,7 +186,7 @@ public final class FontListMain {
 
     private void writeOutput(
             final SortedMap<String, List<FontSpec>> fontFamilies)
-                    throws TransformerConfigurationException, SAXException, IOException {
+            throws TransformerConfigurationException, SAXException, IOException {
         if (this.outputFile.isDirectory()) {
             log.info("Creating one file for each family...");
             for (final Entry<String, List<FontSpec>> entry : fontFamilies
@@ -195,17 +195,17 @@ public final class FontListMain {
                 log.info("Creating output file for " + familyName + "...");
                 String filename;
                 switch (this.mode) {
-                case GENERATE_RENDERED:
-                    filename = familyName + ".pdf";
-                    break;
-                case GENERATE_FO:
-                    filename = familyName + ".fo";
-                    break;
-                case GENERATE_XML:
-                    filename = familyName + ".xml";
-                    break;
-                default:
-                    throw new IllegalStateException("Unsupported mode");
+                    case GENERATE_RENDERED:
+                        filename = familyName + ".pdf";
+                        break;
+                    case GENERATE_FO:
+                        filename = familyName + ".fo";
+                        break;
+                    case GENERATE_XML:
+                        filename = familyName + ".xml";
+                        break;
+                    default:
+                        throw new IllegalStateException("Unsupported mode");
                 }
                 final File outFile = new File(this.outputFile, filename);
                 generateXML(fontFamilies, outFile, familyName);
@@ -309,10 +309,9 @@ public final class FontListMain {
             final FontListMain app = new FontListMain();
             app.parseArguments(args);
             app.generate();
-        } catch (final Throwable t) {
+        } catch (final Exception e) {
             printHelp();
-            t.printStackTrace();
-            System.exit(-1);
+            log.error("Exception", e);
         }
     }
 

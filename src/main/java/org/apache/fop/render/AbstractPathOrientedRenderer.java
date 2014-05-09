@@ -52,7 +52,7 @@ import org.w3c.dom.Document;
  * operations follow similar patterns which makes it possible to share some
  * code.
  */
-public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
+public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
 
     /**
      * Handle block traits. The block could be any sort of block with any
@@ -331,9 +331,9 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
         float height = borderRect.height;
         final float[] borderWidth = new float[] {
                 border[BEFORE] ? bpsBefore.width / 1000f : 0.0f,
-                        border[END] ? bpsEnd.width / 1000f : 0.0f,
-                                border[AFTER] ? bpsAfter.width / 1000f : 0.0f,
-                                        border[START] ? bpsStart.width / 1000f : 0.0f };
+                border[END] ? bpsEnd.width / 1000f : 0.0f,
+                border[AFTER] ? bpsAfter.width / 1000f : 0.0f,
+                border[START] ? bpsStart.width / 1000f : 0.0f };
         final float[] clipw = new float[] {
                 BorderProps.getClippedWidth(bpsBefore) / 1000f,
                 BorderProps.getClippedWidth(bpsEnd) / 1000f,
@@ -355,36 +355,36 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
             final float sx1 = startx;
             final float sx2 = slant[BEFORE] ? sx1 + borderWidth[START]
                     - clipw[START] : sx1;
-                    final float ex1 = startx + width;
-                    final float ex2 = slant[END] ? ex1 - borderWidth[END] + clipw[END]
-                            : ex1;
-                    final float outery = starty - clipw[BEFORE];
-                    final float clipy = outery + clipw[BEFORE];
-                    final float innery = outery + borderWidth[BEFORE];
+            final float ex1 = startx + width;
+            final float ex2 = slant[END] ? ex1 - borderWidth[END] + clipw[END]
+                    : ex1;
+            final float outery = starty - clipw[BEFORE];
+            final float clipy = outery + clipw[BEFORE];
+            final float innery = outery + borderWidth[BEFORE];
 
-                    saveGraphicsState();
-                    moveTo(sx1, clipy);
-                    float sx1a = sx1;
-                    float ex1a = ex1;
-                    if (bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
-                        if (bpsStart != null
-                                && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
-                            sx1a -= clipw[START];
-                        }
-                        if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
-                            ex1a += clipw[END];
-                        }
-                        lineTo(sx1a, outery);
-                        lineTo(ex1a, outery);
-                    }
-                    lineTo(ex1, clipy);
-                    lineTo(ex2, innery);
-                    lineTo(sx2, innery);
-                    closePath();
-                    clip();
-                    drawBorderLine(sx1a, outery, ex1a, innery, true, true,
-                            bpsBefore.style, bpsBefore.color);
-                    restoreGraphicsState();
+            saveGraphicsState();
+            moveTo(sx1, clipy);
+            float sx1a = sx1;
+            float ex1a = ex1;
+            if (bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsStart != null
+                        && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
+                    sx1a -= clipw[START];
+                }
+                if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
+                    ex1a += clipw[END];
+                }
+                lineTo(sx1a, outery);
+                lineTo(ex1a, outery);
+            }
+            lineTo(ex1, clipy);
+            lineTo(ex2, innery);
+            lineTo(sx2, innery);
+            closePath();
+            clip();
+            drawBorderLine(sx1a, outery, ex1a, innery, true, true,
+                    bpsBefore.style, bpsBefore.color);
+            restoreGraphicsState();
         }
         if (bpsEnd != null) {
             endTextObject();
@@ -392,37 +392,37 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
             final float sy1 = starty;
             final float sy2 = slant[END] ? sy1 + borderWidth[BEFORE]
                     - clipw[BEFORE] : sy1;
-                    final float ey1 = starty + height;
-                    final float ey2 = slant[AFTER] ? ey1 - borderWidth[AFTER]
-                            + clipw[AFTER] : ey1;
-                            final float outerx = startx + width + clipw[END];
-                            final float clipx = outerx - clipw[END];
-                            final float innerx = outerx - borderWidth[END];
+            final float ey1 = starty + height;
+            final float ey2 = slant[AFTER] ? ey1 - borderWidth[AFTER]
+                    + clipw[AFTER] : ey1;
+            final float outerx = startx + width + clipw[END];
+            final float clipx = outerx - clipw[END];
+            final float innerx = outerx - borderWidth[END];
 
-                            saveGraphicsState();
-                            moveTo(clipx, sy1);
-                            float sy1a = sy1;
-                            float ey1a = ey1;
-                            if (bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
-                                if (bpsBefore != null
-                                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
-                                    sy1a -= clipw[BEFORE];
-                                }
-                                if (bpsAfter != null
-                                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
-                                    ey1a += clipw[AFTER];
-                                }
-                                lineTo(outerx, sy1a);
-                                lineTo(outerx, ey1a);
-                            }
-                            lineTo(clipx, ey1);
-                            lineTo(innerx, ey2);
-                            lineTo(innerx, sy2);
-                            closePath();
-                            clip();
-                            drawBorderLine(innerx, sy1a, outerx, ey1a, false, false,
-                                    bpsEnd.style, bpsEnd.color);
-                            restoreGraphicsState();
+            saveGraphicsState();
+            moveTo(clipx, sy1);
+            float sy1a = sy1;
+            float ey1a = ey1;
+            if (bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsBefore != null
+                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
+                    sy1a -= clipw[BEFORE];
+                }
+                if (bpsAfter != null
+                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
+                    ey1a += clipw[AFTER];
+                }
+                lineTo(outerx, sy1a);
+                lineTo(outerx, ey1a);
+            }
+            lineTo(clipx, ey1);
+            lineTo(innerx, ey2);
+            lineTo(innerx, sy2);
+            closePath();
+            clip();
+            drawBorderLine(innerx, sy1a, outerx, ey1a, false, false,
+                    bpsEnd.style, bpsEnd.color);
+            restoreGraphicsState();
         }
         if (bpsAfter != null) {
             endTextObject();
@@ -430,36 +430,36 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
             final float sx1 = startx;
             final float sx2 = slant[START] ? sx1 + borderWidth[START]
                     - clipw[START] : sx1;
-                    final float ex1 = startx + width;
-                    final float ex2 = slant[AFTER] ? ex1 - borderWidth[END]
-                            + clipw[END] : ex1;
-                            final float outery = starty + height + clipw[AFTER];
-                            final float clipy = outery - clipw[AFTER];
-                            final float innery = outery - borderWidth[AFTER];
+            final float ex1 = startx + width;
+            final float ex2 = slant[AFTER] ? ex1 - borderWidth[END]
+                    + clipw[END] : ex1;
+            final float outery = starty + height + clipw[AFTER];
+            final float clipy = outery - clipw[AFTER];
+            final float innery = outery - borderWidth[AFTER];
 
-                            saveGraphicsState();
-                            moveTo(ex1, clipy);
-                            float sx1a = sx1;
-                            float ex1a = ex1;
-                            if (bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
-                                if (bpsStart != null
-                                        && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
-                                    sx1a -= clipw[START];
-                                }
-                                if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
-                                    ex1a += clipw[END];
-                                }
-                                lineTo(ex1a, outery);
-                                lineTo(sx1a, outery);
-                            }
-                            lineTo(sx1, clipy);
-                            lineTo(sx2, innery);
-                            lineTo(ex2, innery);
-                            closePath();
-                            clip();
-                            drawBorderLine(sx1a, innery, ex1a, outery, true, false,
-                                    bpsAfter.style, bpsAfter.color);
-                            restoreGraphicsState();
+            saveGraphicsState();
+            moveTo(ex1, clipy);
+            float sx1a = sx1;
+            float ex1a = ex1;
+            if (bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsStart != null
+                        && bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
+                    sx1a -= clipw[START];
+                }
+                if (bpsEnd != null && bpsEnd.mode == BorderProps.COLLAPSE_OUTER) {
+                    ex1a += clipw[END];
+                }
+                lineTo(ex1a, outery);
+                lineTo(sx1a, outery);
+            }
+            lineTo(sx1, clipy);
+            lineTo(sx2, innery);
+            lineTo(ex2, innery);
+            closePath();
+            clip();
+            drawBorderLine(sx1a, innery, ex1a, outery, true, false,
+                    bpsAfter.style, bpsAfter.color);
+            restoreGraphicsState();
         }
         if (bpsStart != null) {
             endTextObject();
@@ -467,37 +467,37 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
             final float sy1 = starty;
             final float sy2 = slant[BEFORE] ? sy1 + borderWidth[BEFORE]
                     - clipw[BEFORE] : sy1;
-                    final float ey1 = sy1 + height;
-                    final float ey2 = slant[START] ? ey1 - borderWidth[AFTER]
-                            + clipw[AFTER] : ey1;
-                            final float outerx = startx - clipw[START];
-                            final float clipx = outerx + clipw[START];
-                            final float innerx = outerx + borderWidth[START];
+            final float ey1 = sy1 + height;
+            final float ey2 = slant[START] ? ey1 - borderWidth[AFTER]
+                    + clipw[AFTER] : ey1;
+            final float outerx = startx - clipw[START];
+            final float clipx = outerx + clipw[START];
+            final float innerx = outerx + borderWidth[START];
 
-                            saveGraphicsState();
-                            moveTo(clipx, ey1);
-                            float sy1a = sy1;
-                            float ey1a = ey1;
-                            if (bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
-                                if (bpsBefore != null
-                                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
-                                    sy1a -= clipw[BEFORE];
-                                }
-                                if (bpsAfter != null
-                                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
-                                    ey1a += clipw[AFTER];
-                                }
-                                lineTo(outerx, ey1a);
-                                lineTo(outerx, sy1a);
-                            }
-                            lineTo(clipx, sy1);
-                            lineTo(innerx, sy2);
-                            lineTo(innerx, ey2);
-                            closePath();
-                            clip();
-                            drawBorderLine(outerx, sy1a, innerx, ey1a, false, true,
-                                    bpsStart.style, bpsStart.color);
-                            restoreGraphicsState();
+            saveGraphicsState();
+            moveTo(clipx, ey1);
+            float sy1a = sy1;
+            float ey1a = ey1;
+            if (bpsStart.mode == BorderProps.COLLAPSE_OUTER) {
+                if (bpsBefore != null
+                        && bpsBefore.mode == BorderProps.COLLAPSE_OUTER) {
+                    sy1a -= clipw[BEFORE];
+                }
+                if (bpsAfter != null
+                        && bpsAfter.mode == BorderProps.COLLAPSE_OUTER) {
+                    ey1a += clipw[AFTER];
+                }
+                lineTo(outerx, ey1a);
+                lineTo(outerx, sy1a);
+            }
+            lineTo(clipx, sy1);
+            lineTo(innerx, sy2);
+            lineTo(innerx, ey2);
+            closePath();
+            clip();
+            drawBorderLine(outerx, sy1a, innerx, ey1a, false, true,
+                    bpsStart.style, bpsStart.color);
+            restoreGraphicsState();
         }
     }
 
@@ -793,14 +793,14 @@ public abstract class AbstractPathOrientedRenderer<T> extends PrintRenderer {
      *            the state stack to restore.
      */
     protected abstract void restoreStateStackAfterBreakOut(
-            final List<T> breakOutList);
+            final List breakOutList);
 
     /**
      * Breaks out of the state stack to handle fixed block-containers.
      *
      * @return the saved state stack to recreate later
      */
-    protected abstract List<T> breakOutOfStateStack();
+    protected abstract List breakOutOfStateStack();
 
     /** Saves the graphics state of the rendering engine. */
     protected abstract void saveGraphicsState();

@@ -42,6 +42,8 @@ import java.awt.image.renderable.RenderableImage;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.xmlgraphics.java2d.AbstractGraphics2D;
 import org.apache.xmlgraphics.java2d.GraphicContext;
 import org.apache.xmlgraphics.util.UnitConv;
@@ -50,6 +52,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  * Graphics2D implementation implementing PCL and HP GL/2. Note: This class
  * cannot be used stand-alone to create full PCL documents.
  */
+@Slf4j
 public class PCLGraphics2D extends AbstractGraphics2D {
 
     /** The PCL generator */
@@ -122,7 +125,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
      */
     public void handleIOException(final IOException ioe) {
         // TODO Surely, there's a better way to do this.
-        ioe.printStackTrace();
+        log.error("IOException", ioe);
     }
 
     /**
@@ -200,33 +203,33 @@ public class PCLGraphics2D extends AbstractGraphics2D {
             this.gen.writeText("LA1"); // line cap
             final int ec = bs.getEndCap();
             switch (ec) {
-            case BasicStroke.CAP_BUTT:
-                this.gen.writeText(",1");
-                break;
-            case BasicStroke.CAP_ROUND:
-                this.gen.writeText(",4");
-                break;
-            case BasicStroke.CAP_SQUARE:
-                this.gen.writeText(",2");
-                break;
-            default:
-                System.err.println("Unsupported line cap: " + ec);
+                case BasicStroke.CAP_BUTT:
+                    this.gen.writeText(",1");
+                    break;
+                case BasicStroke.CAP_ROUND:
+                    this.gen.writeText(",4");
+                    break;
+                case BasicStroke.CAP_SQUARE:
+                    this.gen.writeText(",2");
+                    break;
+                default:
+                    System.err.println("Unsupported line cap: " + ec);
             }
 
             this.gen.writeText(",2"); // line join
             final int lj = bs.getLineJoin();
             switch (lj) {
-            case BasicStroke.JOIN_MITER:
-                this.gen.writeText(",1");
-                break;
-            case BasicStroke.JOIN_ROUND:
-                this.gen.writeText(",4");
-                break;
-            case BasicStroke.JOIN_BEVEL:
-                this.gen.writeText(",5");
-                break;
-            default:
-                System.err.println("Unsupported line join: " + lj);
+                case BasicStroke.JOIN_MITER:
+                    this.gen.writeText(",1");
+                    break;
+                case BasicStroke.JOIN_ROUND:
+                    this.gen.writeText(",4");
+                    break;
+                case BasicStroke.JOIN_BEVEL:
+                    this.gen.writeText(",5");
+                    break;
+                default:
+                    System.err.println("Unsupported line join: " + lj);
             }
 
             final float ml = bs.getMiterLimit();
@@ -373,35 +376,35 @@ public class PCLGraphics2D extends AbstractGraphics2D {
                 }
             }
             switch (type) {
-            case PathIterator.SEG_CLOSE:
-                break;
-            case PathIterator.SEG_MOVETO:
-                x = vals[0];
-                y = vals[1];
-                plotAbsolute(x, y, sb);
-                this.gen.writeText(sb.toString());
-                sb.setLength(0);
-                break;
-            case PathIterator.SEG_LINETO:
-                x = vals[0];
-                y = vals[1];
-                plotAbsolute(x, y, sb);
-                break;
-            case PathIterator.SEG_CUBICTO:
-                x = vals[4];
-                y = vals[5];
-                bezierAbsolute(vals[0], vals[1], vals[2], vals[3], x, y, sb);
-                break;
-            case PathIterator.SEG_QUADTO:
-                final double originX = x;
-                final double originY = y;
-                x = vals[2];
-                y = vals[3];
-                quadraticBezierAbsolute(originX, originY, vals[0], vals[1], x,
-                        y, sb);
-                break;
-            default:
-                break;
+                case PathIterator.SEG_CLOSE:
+                    break;
+                case PathIterator.SEG_MOVETO:
+                    x = vals[0];
+                    y = vals[1];
+                    plotAbsolute(x, y, sb);
+                    this.gen.writeText(sb.toString());
+                    sb.setLength(0);
+                    break;
+                case PathIterator.SEG_LINETO:
+                    x = vals[0];
+                    y = vals[1];
+                    plotAbsolute(x, y, sb);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    x = vals[4];
+                    y = vals[5];
+                    bezierAbsolute(vals[0], vals[1], vals[2], vals[3], x, y, sb);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    final double originX = x;
+                    final double originY = y;
+                    x = vals[2];
+                    y = vals[3];
+                    quadraticBezierAbsolute(originX, originY, vals[0], vals[1],
+                            x, y, sb);
+                    break;
+                default:
+                    break;
             }
             iter.next();
         }
@@ -445,31 +448,31 @@ public class PCLGraphics2D extends AbstractGraphics2D {
                 }
             }
             switch (type) {
-            case PathIterator.SEG_MOVETO:
-                x = vals[0];
-                y = vals[1];
-                plotAbsolute(x, y, sb);
-                break;
-            case PathIterator.SEG_LINETO:
-                x = vals[0];
-                y = vals[1];
-                plotAbsolute(x, y, sb);
-                break;
-            case PathIterator.SEG_CUBICTO:
-                x = vals[4];
-                y = vals[5];
-                bezierAbsolute(vals[0], vals[1], vals[2], vals[3], x, y, sb);
-                break;
-            case PathIterator.SEG_QUADTO:
-                final double originX = x;
-                final double originY = y;
-                x = vals[2];
-                y = vals[3];
-                quadraticBezierAbsolute(originX, originY, vals[0], vals[1], x,
-                        y, sb);
-                break;
-            default:
-                throw new IllegalStateException("Must not get here");
+                case PathIterator.SEG_MOVETO:
+                    x = vals[0];
+                    y = vals[1];
+                    plotAbsolute(x, y, sb);
+                    break;
+                case PathIterator.SEG_LINETO:
+                    x = vals[0];
+                    y = vals[1];
+                    plotAbsolute(x, y, sb);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    x = vals[4];
+                    y = vals[5];
+                    bezierAbsolute(vals[0], vals[1], vals[2], vals[3], x, y, sb);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    final double originX = x;
+                    final double originY = y;
+                    x = vals[2];
+                    y = vals[3];
+                    quadraticBezierAbsolute(originX, originY, vals[0], vals[1],
+                            x, y, sb);
+                    break;
+                default:
+                    throw new IllegalStateException("Must not get here");
             }
             if (pendingPM0) {
                 pendingPM0 = false;
@@ -579,19 +582,19 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * positioning and rotation issues final int width =
          * img.getWidth(observer); final int height = img.getHeight(observer);
          * if (width == -1 || height == -1) { return false; }
-         * 
+         *
          * Dimension size = new Dimension(width, height); BufferedImage buf =
          * buildBufferedImage(size);
-         * 
+         *
          * java.awt.Graphics2D g = buf.createGraphics(); try {
          * g.setComposite(AlphaComposite.SrcOver); g.setBackground(new
          * Color(255, 255, 255)); g.setPaint(new Color(255, 255, 255));
          * g.fillRect(0, 0, width, height); g.clip(new Rectangle(0, 0,
          * buf.getWidth(), buf.getHeight()));
-         * 
+         *
          * if (!g.drawImage(img, 0, 0, observer)) { return false; } } finally {
          * g.dispose(); }
-         * 
+         *
          * try { AffineTransform at = getTransform(); gen.enterPCLMode(false);
          * //Shape imclip = getClip(); Clipping is not available in PCL Point2D
          * p1 = new Point2D.Double(x, y); at.transform(p1, p1);
@@ -599,7 +602,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
          * gen.setCursorPos(p1.getX(), p1.getY()); gen.paintBitmap(buf, 72);
          * gen.enterHPGL2Mode(false); } catch (IOException ioe) {
          * handleIOException(ioe); }
-         * 
+         *
          * return true;
          */
     }

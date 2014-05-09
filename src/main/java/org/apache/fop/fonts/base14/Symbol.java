@@ -1,6 +1,9 @@
 package org.apache.fop.fonts.base14;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 
 import org.apache.fop.fonts.Base14Font;
 import org.apache.fop.fonts.CodePointMapping;
@@ -10,7 +13,7 @@ import org.apache.fop.fonts.Typeface;
 public class Symbol extends Base14Font {
     private final static String fontName = "Symbol";
     private final static String fullName = "Symbol";
-    private final static Set familyNames;
+    private final static Collection<String> familyNames;
     private final static String encoding = "SymbolEncoding";
     private final static int capHeight = 1010;
     private final static int xHeight = 520;
@@ -218,7 +221,7 @@ public class Symbol extends Base14Font {
         width[0xfd] = 494;
         width[0xfe] = 494;
 
-        familyNames = new java.util.HashSet();
+        familyNames = new HashSet<>();
         familyNames.add("Symbol");
     }
 
@@ -251,7 +254,7 @@ public class Symbol extends Base14Font {
     }
 
     @Override
-    public Set getFamilyNames() {
+    public Collection<String> getFamilyNames() {
         return familyNames;
     }
 
@@ -307,8 +310,8 @@ public class Symbol extends Base14Font {
     }
 
     @Override
-    public java.util.Map getKerningInfo() {
-        return java.util.Collections.EMPTY_MAP;
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
+        return Collections.emptyMap();
     }
 
     @Override

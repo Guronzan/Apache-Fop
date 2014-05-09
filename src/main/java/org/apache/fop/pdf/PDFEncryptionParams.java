@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFEncryptionParams.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFEncryptionParams.java 1154998 2011-08-08 15:51:43Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -24,33 +24,34 @@ package org.apache.fop.pdf;
  */
 public class PDFEncryptionParams {
 
-    private String userPassword = ""; // May not be null
-    private String ownerPassword = ""; // May not be null
+    private String userPassword = ""; //May not be null
+    private String ownerPassword = ""; //May not be null
+
     private boolean allowPrint = true;
     private boolean allowCopyContent = true;
     private boolean allowEditContent = true;
     private boolean allowEditAnnotations = true;
+    private boolean allowFillInForms = true;
+    private boolean allowAccessContent = true;
+    private boolean allowAssembleDocument = true;
+    private boolean allowPrintHq = true;
+
+    private int encryptionLengthInBits = 40;
 
     /**
      * Creates a new instance.
-     *
-     * @param userPassword
-     *            the user password
-     * @param ownerPassword
-     *            the owner password
-     * @param allowPrint
-     *            true if printing is allowed
-     * @param allowCopyContent
-     *            true if copying content is allowed
-     * @param allowEditContent
-     *            true if editing content is allowed
-     * @param allowEditAnnotations
-     *            true if editing annotations is allowed
+     * @param userPassword the user password
+     * @param ownerPassword the owner password
+     * @param allowPrint true if printing is allowed
+     * @param allowCopyContent true if copying content is allowed
+     * @param allowEditContent true if editing content is allowed
+     * @param allowEditAnnotations true if editing annotations is allowed
      */
-    public PDFEncryptionParams(final String userPassword,
-            final String ownerPassword, final boolean allowPrint,
-            final boolean allowCopyContent, final boolean allowEditContent,
-            final boolean allowEditAnnotations) {
+    public PDFEncryptionParams(String userPassword, String ownerPassword,
+                               boolean allowPrint,
+                               boolean allowCopyContent,
+                               boolean allowEditContent,
+                               boolean allowEditAnnotations) {
         setUserPassword(userPassword);
         setOwnerPassword(ownerPassword);
         setAllowPrint(allowPrint);
@@ -63,111 +64,178 @@ public class PDFEncryptionParams {
      * Default constructor initializing to default values.
      */
     public PDFEncryptionParams() {
-        // nop
+        //nop
+    }
+
+    /**
+     * Creates a copy of the given encryption parameters.
+     *
+     * @param source source encryption parameters
+     */
+    public PDFEncryptionParams(PDFEncryptionParams source) {
+        setUserPassword(source.getUserPassword());
+        setOwnerPassword(source.getOwnerPassword());
+        setAllowPrint(source.isAllowPrint());
+        setAllowCopyContent(source.isAllowCopyContent());
+        setAllowEditContent(source.isAllowEditContent());
+        setAllowEditAnnotations(source.isAllowEditAnnotations());
+        setAllowAssembleDocument(source.isAllowAssembleDocument());
+        setAllowAccessContent(source.isAllowAccessContent());
+        setAllowFillInForms(source.isAllowFillInForms());
+        setAllowPrintHq(source.isAllowPrintHq());
+        setEncryptionLengthInBits(source.getEncryptionLengthInBits());
     }
 
     /**
      * Indicates whether copying content is allowed.
-     *
      * @return true if copying is allowed
      */
     public boolean isAllowCopyContent() {
-        return this.allowCopyContent;
+        return allowCopyContent;
     }
 
     /**
      * Indicates whether editing annotations is allowed.
-     *
      * @return true is editing annotations is allowed
      */
     public boolean isAllowEditAnnotations() {
-        return this.allowEditAnnotations;
+        return allowEditAnnotations;
     }
 
     /**
      * Indicates whether editing content is allowed.
-     *
      * @return true if editing content is allowed
      */
     public boolean isAllowEditContent() {
-        return this.allowEditContent;
+        return allowEditContent;
     }
 
     /**
      * Indicates whether printing is allowed.
-     *
      * @return true if printing is allowed
      */
     public boolean isAllowPrint() {
-        return this.allowPrint;
+        return allowPrint;
+    }
+
+    /**
+     * Indicates whether revision 3 filling in forms is allowed.
+     * @return true if revision 3 filling in forms is allowed
+     */
+    public boolean isAllowFillInForms() {
+        return allowFillInForms;
+    }
+
+    /**
+     * Indicates whether revision 3 extracting text and graphics is allowed.
+     * @return true if revision 3 extracting text and graphics is allowed
+     */
+    public boolean isAllowAccessContent() {
+        return allowAccessContent;
+    }
+
+    /**
+     * Indicates whether revision 3 assembling document is allowed.
+     * @return true if revision 3 assembling document is allowed
+     */
+    public boolean isAllowAssembleDocument() {
+        return allowAssembleDocument;
+    }
+
+    /**
+     * Indicates whether revision 3 printing to high quality is allowed.
+     * @return true if revision 3 printing to high quality is allowed
+     */
+    public boolean isAllowPrintHq() {
+        return allowPrintHq;
     }
 
     /**
      * Returns the owner password.
-     *
      * @return the owner password, an empty string if no password applies
      */
     public String getOwnerPassword() {
-        return this.ownerPassword;
+        return ownerPassword;
     }
 
     /**
      * Returns the user password.
-     *
      * @return the user password, an empty string if no password applies
      */
     public String getUserPassword() {
-        return this.userPassword;
+        return userPassword;
     }
 
     /**
      * Sets the permission for copying content.
-     *
-     * @param allowCopyContent
-     *            true if copying content is allowed
+     * @param allowCopyContent true if copying content is allowed
      */
-    public void setAllowCopyContent(final boolean allowCopyContent) {
+    public void setAllowCopyContent(boolean allowCopyContent) {
         this.allowCopyContent = allowCopyContent;
     }
 
     /**
      * Sets the permission for editing annotations.
-     *
-     * @param allowEditAnnotations
-     *            true if editing annotations is allowed
+     * @param allowEditAnnotations true if editing annotations is allowed
      */
-    public void setAllowEditAnnotations(final boolean allowEditAnnotations) {
+    public void setAllowEditAnnotations(boolean allowEditAnnotations) {
         this.allowEditAnnotations = allowEditAnnotations;
     }
 
     /**
      * Sets the permission for editing content.
-     *
-     * @param allowEditContent
-     *            true if editing annotations is allowed
+     * @param allowEditContent true if editing annotations is allowed
      */
-    public void setAllowEditContent(final boolean allowEditContent) {
+    public void setAllowEditContent(boolean allowEditContent) {
         this.allowEditContent = allowEditContent;
     }
 
     /**
-     * Sets the persmission for printing.
-     *
-     * @param allowPrint
-     *            true if printing is allowed
+     * Sets the permission for printing.
+     * @param allowPrint true if printing is allowed
      */
-    public void setAllowPrint(final boolean allowPrint) {
+    public void setAllowPrint(boolean allowPrint) {
         this.allowPrint = allowPrint;
     }
 
     /**
-     * Sets the owner password.
-     *
-     * @param ownerPassword
-     *            The owner password to set, null or an empty String if no
-     *            password is applicable
+     * Sets whether revision 3 filling in forms is allowed.
+     * @param allowFillInForms true if revision 3 filling in forms is allowed.
      */
-    public void setOwnerPassword(final String ownerPassword) {
+    public void setAllowFillInForms(boolean allowFillInForms) {
+        this.allowFillInForms = allowFillInForms;
+    }
+
+    /**
+     * Sets whether revision 3 extracting text and graphics is allowed.
+     * @param allowAccessContent true if revision 3 extracting text and graphics is allowed
+     */
+    public void setAllowAccessContent(boolean allowAccessContent) {
+        this.allowAccessContent = allowAccessContent;
+    }
+
+    /**
+     * Sets whether revision 3 assembling document is allowed.
+     * @param allowAssembleDocument true if revision 3 assembling document is allowed
+     */
+    public void setAllowAssembleDocument(boolean allowAssembleDocument) {
+        this.allowAssembleDocument = allowAssembleDocument;
+    }
+
+    /**
+     * Sets whether revision 3 printing to high quality is allowed.
+     * @param allowPrintHq true if revision 3 printing to high quality is allowed
+     */
+    public void setAllowPrintHq(boolean allowPrintHq) {
+        this.allowPrintHq = allowPrintHq;
+    }
+
+    /**
+     * Sets the owner password.
+     * @param ownerPassword The owner password to set, null or an empty String
+     * if no password is applicable
+     */
+    public void setOwnerPassword(String ownerPassword) {
         if (ownerPassword == null) {
             this.ownerPassword = "";
         } else {
@@ -177,17 +245,32 @@ public class PDFEncryptionParams {
 
     /**
      * Sets the user password.
-     *
-     * @param userPassword
-     *            The user password to set, null or an empty String if no
-     *            password is applicable
+     * @param userPassword The user password to set, null or an empty String
+     * if no password is applicable
      */
-    public void setUserPassword(final String userPassword) {
+    public void setUserPassword(String userPassword) {
         if (userPassword == null) {
             this.userPassword = "";
         } else {
             this.userPassword = userPassword;
         }
+    }
+
+    /**
+     * Returns the encryption length.
+     * @return the encryption length
+     */
+    public int getEncryptionLengthInBits() {
+        return encryptionLengthInBits;
+    }
+
+    /**
+     * Sets the encryption length.
+     *
+     * @param encryptionLength the encryption length
+     */
+    public void setEncryptionLengthInBits(int encryptionLength) {
+        this.encryptionLengthInBits = encryptionLength;
     }
 
 }

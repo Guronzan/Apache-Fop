@@ -135,7 +135,7 @@ public class CIDSubset {
             final int selector = this.usedGlyphsCount;
             this.usedGlyphs.put(glyphIndex, selector);
             this.usedGlyphsIndex.put(selector, glyphIndex);
-            this.usedCharsIndex.put(selector, new Character(unicode));
+            this.usedCharsIndex.put(selector, Character.valueOf(unicode));
             this.usedGlyphsCount++;
             return selector;
         } else {

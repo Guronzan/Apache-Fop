@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: DestinationComparator.java 529544 2007-04-17 09:44:47Z vhennebert $ */
+/* $Id: DestinationComparator.java 1296437 2012-03-02 20:24:40Z gadams $ */
 
 package org.apache.fop.pdf;
 
@@ -23,12 +23,18 @@ package org.apache.fop.pdf;
  * Comparator class to enable comparing (and hence sorting) of PDFDestination
  * objects.
  */
-public class DestinationComparator implements
-        java.util.Comparator<PDFDestination> {
+public class DestinationComparator implements java.util.Comparator {
+    /*
+     * public int compare (PDFDestination dest1, PDFDestination dest2) { return
+     * dest1.getIDRef().compareTo(dest2.getIDRef()); }
+     */
 
+    /** {@inheritDoc} */
     @Override
-    public int compare(final PDFDestination dest1, final PDFDestination dest2) {
-        if (dest1 != null && dest2 != null) {
+    public int compare(final Object obj1, final Object obj2) {
+        if (obj1 instanceof PDFDestination && obj2 instanceof PDFDestination) {
+            final PDFDestination dest1 = (PDFDestination) obj1;
+            final PDFDestination dest2 = (PDFDestination) obj2;
             return dest1.getIDRef().compareTo(dest2.getIDRef());
         }
         return 0;

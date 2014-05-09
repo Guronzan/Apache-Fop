@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFEventProducer.java 932510 2010-04-09 17:05:34Z vhennebert $ */
+/* $Id: PDFEventProducer.java 1154998 2011-08-08 15:51:43Z vhennebert $ */
 
 package org.apache.fop.render.pdf;
 
@@ -75,4 +75,18 @@ public interface PDFEventProducer extends EventProducer {
      */
     void nonStandardStructureType(final Object source, final String fo,
             final String type, final String fallback);
+
+    /**
+     * The encryption length must be a multiple of 8 between 40 and 128.
+     *
+     * @param source
+     *            the event source
+     * @param originalValue
+     *            requested encryption length
+     * @param correctedValue
+     *            corrected encryption length
+     * @event.severity WARN
+     */
+    void incorrectEncryptionLength(final Object source,
+            final int originalValue, final int correctedValue);
 }

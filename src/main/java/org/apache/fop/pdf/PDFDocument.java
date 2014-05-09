@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFDocument.java 830293 2009-10-27 19:07:52Z vhennebert $ */
+/* $Id: PDFDocument.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -24,12 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -39,6 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
+import pdf.xref.CrossReferenceStream;
+import pdf.xref.CrossReferenceTable;
+import pdf.xref.TrailerDictionary;
 
 /* image support modified from work of BoBoGi */
 /* font support based on work by Takayuki Takeuchi */
@@ -66,28 +66,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PDFDocument {
 
-    private static final Integer LOCATION_PLACEHOLDER = 0;
-
-    /** Integer constant to represent PDF 1.3 */
-    public static final int PDF_VERSION_1_3 = 3;
-
-    /** Integer constant to represent PDF 1.4 */
-    public static final int PDF_VERSION_1_4 = 4;
-
     /** the encoding to use when converting strings to PDF commands */
     public static final String ENCODING = "ISO-8859-1";
 
     /** the counter for object numbering */
-    protected int objectcount = 0;
+    protected int objectcount;
 
     /** the current character position */
-    private int position = 0;
-
-    /** character position of xref table */
-    private int xref;
+    private long position;
 
     /** the character position of each object */
-    private final List<Integer> location = new ArrayList<>();
+    private final List<Long> indirectObjectOffsets = new ArrayList<>();
+
+    private Collection<PDFStructElem> structureTreeElements;
 
     /** List of objects to write in the trailer */
     private final List<PDFObject> trailerObjects = new ArrayList<>();
@@ -95,8 +86,8 @@ public class PDFDocument {
     /** the objects themselves */
     private final List<PDFObject> objects = new LinkedList<>();
 
-    /** Indicates what PDF version is active */
-    private final int pdfVersion = PDF_VERSION_1_4;
+    /** Controls the PDF version of this document */
+    private VersionController versionController;
 
     /** Indicates which PDF profiles are active (PDF/A, PDF/X etc.) */
     private final PDFProfile pdfProfile = new PDFProfile(this);
@@ -105,7 +96,7 @@ public class PDFDocument {
     private final PDFRoot root;
 
     /** The root outline object */
-    private PDFOutline outlineRoot = null;
+    private PDFOutline outlineRoot;
 
     /** The /Pages object (mark-fop@inomial.com) */
     private final PDFPages pages;
@@ -124,63 +115,46 @@ public class PDFDocument {
             PDFDeviceColorSpace.DEVICE_RGB);
 
     /** the counter for Pattern name numbering (e.g. 'Pattern1') */
-    private int patternCount = 0;
+    private int patternCount;
 
     /** the counter for Shading name numbering */
-    private int shadingCount = 0;
+    private int shadingCount;
 
     /** the counter for XObject numbering */
-    private int xObjectCount = 0;
+    private int xObjectCount;
 
-    /** the {@link PDFXObject}s map */
     /* TODO: Should be modified (works only for image subtype) */
     private final Map<String, PDFXObject> xObjectsMap = new HashMap<>();
 
-    /** The {@link PDFFont} map */
     private final Map<String, PDFFont> fontMap = new HashMap<>();
 
-    /** The {@link PDFFilter} map */
     private Map<String, List<String>> filterMap = new HashMap<>();
 
-    /** List of {@link PDFGState}s. */
-    private final List<PDFObject> gstates = new ArrayList<>();
+    private final List<PDFGState> gstates = new ArrayList<>();
 
-    /** List of {@link PDFFunction}s. */
-    private final List<PDFObject> functions = new ArrayList<>();
+    private final List<PDFFunction> functions = new ArrayList<>();
 
-    /** List of {@link PDFShading}s. */
-    private final List<PDFObject> shadings = new ArrayList<>();
+    private final List<PDFShading> shadings = new ArrayList<>();
 
-    /** List of {@link PDFPattern}s. */
-    private final List<PDFObject> patterns = new ArrayList<>();
+    private final List<PDFPattern> patterns = new ArrayList<>();
 
-    /** List of {@link PDFLink}s. */
-    private final List<PDFObject> links = new ArrayList<>();
+    private final List<PDFLink> links = new ArrayList<>();
 
-    /** List of {@link PDFDestination}s. */
     private List<PDFDestination> destinations;
 
-    /** List of {@link PDFFileSpec}s. */
-    private final List<PDFObject> filespecs = new ArrayList<>();
+    private final List<PDFFileSpec> filespecs = new ArrayList<>();
 
-    /** List of {@link PDFGoToRemote}s. */
-    private final List<PDFObject> gotoremotes = new ArrayList<>();
+    private final List<PDFGoToRemote> gotoremotes = new ArrayList<>();
 
-    /** List of {@link PDFGoTo}s. */
-    private final List<PDFObject> gotos = new ArrayList<>();
+    private final List<PDFGoTo> gotos = new ArrayList<>();
 
-    /** List of {@link PDFLaunch}es. */
-    private final List<PDFObject> launches = new ArrayList<>();
-
-    /**
-     * The PDFDests object for the name dictionary. Note: This object is not a
-     * list.
-     */
-    private PDFDests dests;
+    private final List<PDFLaunch> launches = new ArrayList<>();
 
     private final PDFFactory factory;
 
-    private final boolean encodingOnTheFly = true;
+    private FileIDGenerator fileIDGenerator;
+
+    private boolean accessibilityEnabled;
 
     /**
      * Creates an empty PDF document.
@@ -195,6 +169,27 @@ public class PDFDocument {
      *            the name of the producer of this pdf document
      */
     public PDFDocument(final String prod) {
+        this(prod, null);
+        this.versionController = VersionController.getDynamicVersionController(
+                Version.V1_4, this);
+    }
+
+    /**
+     * Creates an empty PDF document.
+     *
+     * The constructor creates a /Root and /Pages object to track the document
+     * but does not write these objects until the trailer is written. Note that
+     * the object ID of the pages object is determined now, and the xref table
+     * is updated later. This allows Pages to refer to their Parent before we
+     * write it out.
+     *
+     * @param prod
+     *            the name of the producer of this pdf document
+     * @param versionController
+     *            the version controller of this PDF document
+     */
+    public PDFDocument(final String prod,
+            final VersionController versionController) {
 
         this.factory = new PDFFactory(this);
 
@@ -209,26 +204,34 @@ public class PDFDocument {
 
         // Make the /Info record
         this.info = getFactory().makeInfo(prod);
+
+        this.versionController = versionController;
     }
 
     /**
-     * @return the integer representing the active PDF version (one of
-     *         PDFDocument.PDF_VERSION_*)
+     * Returns the current PDF version.
+     *
+     * @return returns the PDF version
      */
-    public int getPDFVersion() {
-        return this.pdfVersion;
+    public Version getPDFVersion() {
+        return this.versionController.getPDFVersion();
     }
 
-    /** @return the String representing the active PDF version */
+    /**
+     * Sets the PDF version of this document.
+     *
+     * @param version
+     *            the PDF version
+     * @throws IllegalStateException
+     *             if the version of this PDF is not allowed to change.
+     */
+    public void setPDFVersion(final Version version) {
+        this.versionController.setPDFVersion(version);
+    }
+
+    /** @return the String representing the current PDF version */
     public String getPDFVersionString() {
-        switch (getPDFVersion()) {
-        case PDF_VERSION_1_3:
-            return "1.3";
-        case PDF_VERSION_1_4:
-            return "1.4";
-        default:
-            throw new IllegalStateException("Unsupported PDF version selected");
-        }
+        return this.versionController.getPDFVersion().toString();
     }
 
     /** @return the PDF profile currently active. */
@@ -243,17 +246,6 @@ public class PDFDocument {
      */
     public PDFFactory getFactory() {
         return this.factory;
-    }
-
-    /**
-     * Indicates whether stream encoding on-the-fly is enabled. If enabled
-     * stream can be serialized without the need for a buffer to merely
-     * calculate the stream length.
-     *
-     * @return <code>true</code> if on-the-fly encoding is enabled
-     */
-    public boolean isEncodingOnTheFly() {
-        return this.encodingOnTheFly;
     }
 
     /**
@@ -272,22 +264,21 @@ public class PDFDocument {
     }
 
     /**
-     * Creates and returns a Writer object wrapping the given OutputStream. The
-     * Writer is buffered to reduce the number of calls to the encoding
-     * converter so don't forget to <code>flush()</code> the Writer after use or
-     * before writing directly to the underlying OutputStream.
+     * Flushes the given text buffer to an output stream with the right encoding
+     * and resets the text buffer. This is used to efficiently switch between
+     * outputting text and binary content.
      *
+     * @param textBuffer
+     *            the text buffer
      * @param out
-     *            the OutputStream to write to
-     * @return the requested Writer
+     *            the output stream to flush the text content to
+     * @throws IOException
+     *             if an I/O error occurs while writing to the output stream
      */
-    public static Writer getWriterFor(final OutputStream out) {
-        try {
-            return new java.io.BufferedWriter(new java.io.OutputStreamWriter(
-                    out, ENCODING));
-        } catch (final UnsupportedEncodingException uee) {
-            throw new Error("JVM doesn't support " + ENCODING + " encoding!");
-        }
+    public static void flushTextBuffer(final StringBuilder textBuffer,
+            final OutputStream out) throws IOException {
+        out.write(encode(textBuffer.toString()));
+        textBuffer.setLength(0);
     }
 
     /**
@@ -358,23 +349,39 @@ public class PDFDocument {
     }
 
     /**
-     * Makes sure a Lang entry has been set on the document catalog, setting it
-     * to a default value if necessary. When accessibility is enabled the
-     * language must be specified for any text element in the document.
+     * Creates and returns a StructTreeRoot object.
+     *
+     * @param parentTree
+     *            the value of the ParenTree entry
+     * @return the structure tree root
      */
-    public void enforceLanguageOnRoot() {
-        if (this.root.getLanguage() == null) {
-            String fallbackLanguage;
-            if (getProfile().getPDFAMode().isPDFA1LevelA()) {
-                // According to Annex B of ISO-19005-1:2005(E), section B.2
-                fallbackLanguage = "x-unknown";
-            } else {
-                // No language has been set on the first page-sequence, so fall
-                // back to "en".
-                fallbackLanguage = "en";
-            }
-            this.root.setLanguage(fallbackLanguage);
-        }
+    public PDFStructTreeRoot makeStructTreeRoot(final PDFParentTree parentTree) {
+        final PDFStructTreeRoot structTreeRoot = new PDFStructTreeRoot(
+                parentTree);
+        assignObjectNumber(structTreeRoot);
+        addTrailerObject(structTreeRoot);
+        this.root.setStructTreeRoot(structTreeRoot);
+        this.structureTreeElements = new ArrayList<>();
+        return structTreeRoot;
+    }
+
+    /**
+     * Creates and returns a structure element.
+     *
+     * @param structureType
+     *            the structure type of the new element (value for the S entry)
+     * @param parent
+     *            the parent of the new structure element in the structure
+     *            hierarchy
+     * @return a dictionary of type StructElem
+     */
+    public PDFStructElem makeStructureElement(final PDFName structureType,
+            final PDFObject parent) {
+        final PDFStructElem structElem = new PDFStructElem(parent,
+                structureType);
+        assignObjectNumber(structElem);
+        this.structureTreeElements.add(structElem);
+        return structElem;
     }
 
     /**
@@ -449,39 +456,39 @@ public class PDFDocument {
 
         // Add object to special lists where necessary
         if (obj instanceof PDFFunction) {
-            this.functions.add(obj);
+            this.functions.add((PDFFunction) obj);
         }
         if (obj instanceof PDFShading) {
             final String shadingName = "Sh" + (++this.shadingCount);
             ((PDFShading) obj).setName(shadingName);
-            this.shadings.add(obj);
+            this.shadings.add((PDFShading) obj);
         }
         if (obj instanceof PDFPattern) {
             final String patternName = "Pa" + (++this.patternCount);
             ((PDFPattern) obj).setName(patternName);
-            this.patterns.add(obj);
+            this.patterns.add((PDFPattern) obj);
         }
         if (obj instanceof PDFFont) {
             final PDFFont font = (PDFFont) obj;
             this.fontMap.put(font.getName(), font);
         }
         if (obj instanceof PDFGState) {
-            this.gstates.add(obj);
+            this.gstates.add((PDFGState) obj);
         }
         if (obj instanceof PDFPage) {
             this.pages.notifyKidRegistered((PDFPage) obj);
         }
         if (obj instanceof PDFLaunch) {
-            this.launches.add(obj);
+            this.launches.add((PDFLaunch) obj);
         }
         if (obj instanceof PDFLink) {
-            this.links.add(obj);
+            this.links.add((PDFLink) obj);
         }
         if (obj instanceof PDFFileSpec) {
-            this.filespecs.add(obj);
+            this.filespecs.add((PDFFileSpec) obj);
         }
         if (obj instanceof PDFGoToRemote) {
-            this.gotoremotes.add(obj);
+            this.gotoremotes.add((PDFGoToRemote) obj);
         }
     }
 
@@ -495,7 +502,7 @@ public class PDFDocument {
         this.trailerObjects.add(obj);
 
         if (obj instanceof PDFGoTo) {
-            this.gotos.add(obj);
+            this.gotos.add((PDFGoTo) obj);
         }
     }
 
@@ -519,11 +526,11 @@ public class PDFDocument {
      */
     public void setEncryption(final PDFEncryptionParams params) {
         getProfile().verifyEncryptionAllowed();
+        this.fileIDGenerator = FileIDGenerator.getRandomFileIDGenerator();
         this.encryption = PDFEncryptionManager.newInstance(++this.objectcount,
-                params);
+                params, this);
         if (this.encryption != null) {
             final PDFObject pdfObject = (PDFObject) this.encryption;
-            pdfObject.setDocument(this);
             addTrailerObject(pdfObject);
         } else {
             log.warn("PDF encryption is unavailable. PDF will be "
@@ -549,7 +556,7 @@ public class PDFDocument {
         return this.encryption;
     }
 
-    private PDFObject findPDFObject(final List<PDFObject> list,
+    private Object findPDFObject(final List<? extends PDFObject> list,
             final PDFObject compare) {
         for (final PDFObject obj : list) {
             if (compare.contentEquals(obj)) {
@@ -690,9 +697,9 @@ public class PDFDocument {
     protected PDFGState findGState(final PDFGState wanted,
             final PDFGState current) {
         PDFGState poss;
-        final Iterator<PDFObject> iter = this.gstates.iterator();
+        final Iterator<PDFGState> iter = this.gstates.iterator();
         while (iter.hasNext()) {
-            final PDFGState avail = (PDFGState) iter.next();
+            final PDFGState avail = iter.next();
             poss = new PDFGState();
             poss.addValues(current);
             poss.addValues(avail);
@@ -783,15 +790,6 @@ public class PDFDocument {
      */
     public PDFXObject getXObject(final String key) {
         return this.xObjectsMap.get(key);
-    }
-
-    /**
-     * Gets the PDFDests object (which represents the /Dests entry).
-     *
-     * @return the PDFDests object (which represents the /Dests entry).
-     */
-    public PDFDests getDests() {
-        return this.dests;
     }
 
     /**
@@ -929,20 +927,8 @@ public class PDFDocument {
         return this.resources;
     }
 
-    /**
-     * Ensure there is room in the locations xref for the number of objects that
-     * have been created.
-     *
-     * @param objidx
-     *            the object's index
-     * @param position
-     *            the position
-     */
-    private void setLocation(final int objidx, final int position) {
-        while (this.location.size() <= objidx) {
-            this.location.add(LOCATION_PLACEHOLDER);
-        }
-        this.location.set(objidx, position);
+    public void enableAccessibility(final boolean enableAccessibility) {
+        this.accessibilityEnabled = enableAccessibility;
     }
 
     /**
@@ -959,22 +945,55 @@ public class PDFDocument {
         // objects
         // on the fly even during serialization.
         while (this.objects.size() > 0) {
-            /* Retrieve first */
             final PDFObject object = this.objects.remove(0);
-            /*
-             * add the position of this object to the list of object locations
-             */
-            setLocation(object.getObjectNumber() - 1, this.position);
-
-            /*
-             * output the object and increment the character position by the
-             * object's length
-             */
-            this.position += object.output(stream);
+            streamIndirectObject(object, stream);
         }
+    }
 
-        // Clear all objects written to the file
-        // this.objects.clear();
+    private void streamIndirectObject(final PDFObject o,
+            final OutputStream stream) throws IOException {
+        recordObjectOffset(o);
+        this.position += outputIndirectObject(o, stream);
+    }
+
+    private void streamIndirectObjects(
+            final Collection<? extends PDFObject> objects,
+            final OutputStream stream) throws IOException {
+        for (final PDFObject o : objects) {
+            streamIndirectObject(o, stream);
+        }
+    }
+
+    private void recordObjectOffset(final PDFObject object) {
+        final int index = object.getObjectNumber() - 1;
+        while (this.indirectObjectOffsets.size() <= index) {
+            this.indirectObjectOffsets.add(null);
+        }
+        this.indirectObjectOffsets.set(index, this.position);
+    }
+
+    /**
+     * Outputs the given object, wrapped by obj/endobj, to the given stream.
+     *
+     * @param object
+     *            an indirect object, as described in Section 3.2.9 of the PDF
+     *            1.5 Reference.
+     * @param stream
+     *            the stream to which the object must be output
+     * @throws IllegalArgumentException
+     *             if the object is not an indirect object
+     */
+    public static int outputIndirectObject(final PDFObject object,
+            final OutputStream stream) throws IOException {
+        if (!object.hasObjectNumber()) {
+            throw new IllegalArgumentException("Not an indirect object");
+        }
+        final byte[] obj = encode(object.getObjectID());
+        stream.write(obj);
+        final int length = object.output(stream);
+        final byte[] endobj = encode("\nendobj\n");
+        stream.write(endobj);
+        return obj.length + length + endobj.length;
     }
 
     /**
@@ -1003,30 +1022,6 @@ public class PDFDocument {
         this.position += bin.length;
     }
 
-    /** @return the "ID" entry for the file trailer */
-    protected String getIDEntry() {
-        try {
-            final MessageDigest digest = MessageDigest.getInstance("MD5");
-            final DateFormat df = new SimpleDateFormat(
-                    "yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS");
-            digest.update(encode(df.format(new Date())));
-            // Ignoring the filename here for simplicity even though it's
-            // recommended by the PDF spec
-            digest.update(encode(String.valueOf(this.position)));
-            digest.update(getInfo().toPDF());
-            final byte[] res = digest.digest();
-            final String s = PDFText.toHex(res);
-            return "/ID [" + s + " " + s + "]";
-        } catch (final NoSuchAlgorithmException e) {
-            if (getProfile().isIDEntryRequired()) {
-                throw new UnsupportedOperationException("MD5 not available: "
-                        + e.getMessage());
-            } else {
-                return ""; // Entry is optional if PDF/A or PDF/X are not active
-            }
-        }
-    }
-
     /**
      * Write the trailer
      *
@@ -1036,82 +1031,132 @@ public class PDFDocument {
      *             if there is an exception writing to the output stream
      */
     public void outputTrailer(final OutputStream stream) throws IOException {
+        createDestinations();
+        output(stream);
+        outputTrailerObjectsAndXref(stream);
+    }
+
+    private void createDestinations() {
         if (hasDestinations()) {
             Collections.sort(this.destinations, new DestinationComparator());
-            this.dests = getFactory().makeDests(this.destinations);
+            final PDFDests dests = getFactory().makeDests(this.destinations);
             if (this.root.getNames() == null) {
                 this.root.setNames(getFactory().makeNames());
             }
-            this.root.getNames().setDests(this.dests);
+            this.root.getNames().setDests(dests);
         }
-        output(stream);
-        for (int count = 0; count < this.trailerObjects.size(); count++) {
-            final PDFObject o = this.trailerObjects.get(count);
-            this.location.set(o.getObjectNumber() - 1, this.position);
-            this.position += o.output(stream);
+    }
+
+    private void outputTrailerObjectsAndXref(final OutputStream stream)
+            throws IOException {
+        final TrailerOutputHelper trailerOutputHelper = mayCompressStructureTreeElements() ? new CompressedTrailerOutputHelper()
+                : new UncompressedTrailerOutputHelper();
+        if (this.structureTreeElements != null) {
+            trailerOutputHelper.outputStructureTreeElements(stream);
         }
-        /*
-         * output the xref table and increment the character position by the
-         * table's length
-         */
-        this.position += outputXref(stream);
+        streamIndirectObjects(this.trailerObjects, stream);
+        final TrailerDictionary trailerDictionary = createTrailerDictionary();
+        final long startxref = trailerOutputHelper.outputCrossReferenceObject(
+                stream, trailerDictionary);
+        final String trailer = "startxref\n" + startxref + "\n%%EOF\n";
+        stream.write(encode(trailer));
+    }
 
-        /* construct the trailer */
-        final StringBuilder pdf = new StringBuilder(128);
-        pdf.append("trailer\n<<\n/Size ").append(this.objectcount + 1)
-                .append("\n/Root ").append(this.root.referencePDF())
-                .append("\n/Info ").append(this.info.referencePDF())
-                .append('\n');
+    private boolean mayCompressStructureTreeElements() {
+        return this.accessibilityEnabled
+                && this.versionController.getPDFVersion().compareTo(
+                        Version.V1_5) >= 0;
+    }
 
+    private TrailerDictionary createTrailerDictionary() {
+        final FileIDGenerator gen = getFileIDGenerator();
+        final TrailerDictionary trailerDictionary = new TrailerDictionary(this)
+                .setRoot(this.root).setInfo(this.info)
+                .setFileID(gen.getOriginalFileID(), gen.getUpdatedFileID());
         if (isEncryptionActive()) {
-            pdf.append(this.encryption.getTrailerEntry());
-        } else {
-            pdf.append(getIDEntry());
+            trailerDictionary.setEncryption(this.encryption);
         }
-
-        pdf.append("\n>>\nstartxref\n").append(this.xref).append("\n%%EOF\n");
-
-        /* write the trailer */
-        stream.write(encode(pdf.toString()));
+        return trailerDictionary;
     }
 
-    /**
-     * Write the xref table
-     *
-     * @param stream
-     *            the OutputStream to write the xref table to
-     * @return the number of characters written
-     * @throws IOException
-     *             in case of an error writing the result to the parameter
-     *             stream
-     */
-    private int outputXref(final OutputStream stream) throws IOException {
+    private interface TrailerOutputHelper {
 
-        /* remember position of xref table */
-        this.xref = this.position;
+        void outputStructureTreeElements(final OutputStream stream)
+                throws IOException;
 
-        /* construct initial part of xref */
-        StringBuilder pdf = new StringBuilder(128);
-        pdf.append("xref\n0 ");
-        pdf.append(this.objectcount + 1);
-        pdf.append("\n0000000000 65535 f \n");
-
-        String s, loc;
-        for (int count = 0; count < this.location.size(); count++) {
-            final String padding = "0000000000";
-            s = this.location.get(count).toString();
-
-            /* contruct xref entry for object */
-            loc = padding.substring(s.length()) + s;
-
-            /* append to xref table */
-            pdf = pdf.append(loc).append(" 00000 n \n");
-        }
-
-        /* write the xref table and return the character length */
-        final byte[] pdfBytes = encode(pdf.toString());
-        stream.write(pdfBytes);
-        return pdfBytes.length;
+        /**
+         * @return the offset of the cross-reference object (the value of
+         *         startxref)
+         */
+        long outputCrossReferenceObject(final OutputStream stream,
+                final TrailerDictionary trailerDictionary) throws IOException;
     }
 
+    private class UncompressedTrailerOutputHelper implements
+    TrailerOutputHelper {
+
+        @Override
+        public void outputStructureTreeElements(final OutputStream stream)
+                throws IOException {
+            streamIndirectObjects(PDFDocument.this.structureTreeElements,
+                    stream);
+        }
+
+        @Override
+        public long outputCrossReferenceObject(final OutputStream stream,
+                final TrailerDictionary trailerDictionary) throws IOException {
+            new CrossReferenceTable(trailerDictionary,
+                    PDFDocument.this.position,
+                    PDFDocument.this.indirectObjectOffsets).output(stream);
+            return PDFDocument.this.position;
+        }
+    }
+
+    private class CompressedTrailerOutputHelper implements TrailerOutputHelper {
+
+        private ObjectStreamManager structureTreeObjectStreams;
+
+        @Override
+        public void outputStructureTreeElements(final OutputStream stream)
+                throws IOException {
+            assert PDFDocument.this.structureTreeElements.size() > 0;
+            this.structureTreeObjectStreams = new ObjectStreamManager(
+                    PDFDocument.this);
+            for (final PDFStructElem structElem : PDFDocument.this.structureTreeElements) {
+                this.structureTreeObjectStreams.add(structElem);
+            }
+        }
+
+        @Override
+        public long outputCrossReferenceObject(final OutputStream stream,
+                final TrailerDictionary trailerDictionary) throws IOException {
+            // Outputting the object streams should not have created new
+            // indirect objects
+            assert PDFDocument.this.objects.isEmpty();
+            new CrossReferenceStream(PDFDocument.this,
+                    ++PDFDocument.this.objectcount, trailerDictionary,
+                    PDFDocument.this.position,
+                    PDFDocument.this.indirectObjectOffsets,
+                    this.structureTreeObjectStreams
+                    .getCompressedObjectReferences()).output(stream);
+            return PDFDocument.this.position;
+        }
+    }
+
+    long getCurrentFileSize() {
+        return this.position;
+    }
+
+    FileIDGenerator getFileIDGenerator() {
+        if (this.fileIDGenerator == null) {
+            try {
+                this.fileIDGenerator = FileIDGenerator
+                        .getDigestFileIDGenerator(this);
+            } catch (final NoSuchAlgorithmException e) {
+                this.fileIDGenerator = FileIDGenerator
+                        .getRandomFileIDGenerator();
+            }
+        }
+        return this.fileIDGenerator;
+    }
 }

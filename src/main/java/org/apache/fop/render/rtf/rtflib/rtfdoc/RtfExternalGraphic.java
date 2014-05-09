@@ -331,7 +331,7 @@ public class RtfExternalGraphic extends RtfElement {
      */
     public RtfExternalGraphic(final RtfContainer container,
             final Writer writer, final RtfAttributes attributes)
-            throws IOException {
+                    throws IOException {
         super(container, writer, attributes);
     }
 
@@ -342,7 +342,7 @@ public class RtfExternalGraphic extends RtfElement {
     /**
      * RtfElement override - catches ExternalGraphicException and writes a
      * warning message to the document if image cannot be read
-     * 
+     *
      * @throws IOException
      *             for I/O problems
      */
@@ -556,16 +556,16 @@ public class RtfExternalGraphic extends RtfElement {
         }
 
         if (this.cropValues[0] != 0) {
-            writeOneAttribute("piccropl", (this.cropValues[0]));
+            writeOneAttribute("piccropl", this.cropValues[0]);
         }
         if (this.cropValues[1] != 0) {
-            writeOneAttribute("piccropt", (this.cropValues[1]));
+            writeOneAttribute("piccropt", this.cropValues[1]);
         }
         if (this.cropValues[2] != 0) {
-            writeOneAttribute("piccropr", (this.cropValues[2]));
+            writeOneAttribute("piccropr", this.cropValues[2]);
         }
         if (this.cropValues[3] != 0) {
-            writeOneAttribute("piccropb", (this.cropValues[3]));
+            writeOneAttribute("piccropb", this.cropValues[3]);
         }
     }
 
@@ -599,7 +599,7 @@ public class RtfExternalGraphic extends RtfElement {
 
     /**
      * Sets the desired width of the image.
-     * 
+     *
      * @param twips
      *            The desired image width (in twips)
      */
@@ -610,7 +610,7 @@ public class RtfExternalGraphic extends RtfElement {
 
     /**
      * Sets the desired height of the image.
-     * 
+     *
      * @param twips
      *            The desired image height (in twips)
      */
@@ -645,7 +645,7 @@ public class RtfExternalGraphic extends RtfElement {
      * Sets cropping values for all four edges for the \piccrop*N commands. A
      * positive value crops toward the center of the picture; a negative value
      * crops away from the center, adding a space border around the picture
-     * 
+     *
      * @param left
      *            left cropping value (in twips)
      * @param top
@@ -689,7 +689,7 @@ public class RtfExternalGraphic extends RtfElement {
             tmpUrl = new URL(urlString);
         } catch (final MalformedURLException e) {
             try {
-                tmpUrl = new File(urlString).toURL();
+                tmpUrl = new File(urlString).toURI().toURL();
             } catch (final MalformedURLException ee) {
                 throw new ExternalGraphicException("The attribute 'src' of "
                         + "<fo:external-graphic> has a invalid value: '"
@@ -701,7 +701,7 @@ public class RtfExternalGraphic extends RtfElement {
 
     /**
      * Gets the compression rate for the image in percent.
-     * 
+     *
      * @return Compression rate
      */
     public int getCompressionRate() {

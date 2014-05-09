@@ -34,7 +34,7 @@ import org.apache.xmlgraphics.util.MimeConstants;
 public class AFPImageHandlerRawStream extends AbstractAFPImageHandlerRawStream {
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-            ImageFlavor.RAW_JPEG, ImageFlavor.RAW_TIFF, ImageFlavor.RAW_EPS, };
+        ImageFlavor.RAW_JPEG, ImageFlavor.RAW_TIFF, ImageFlavor.RAW_EPS, };
 
     /** {@inheritDoc} */
     @Override
@@ -44,7 +44,7 @@ public class AFPImageHandlerRawStream extends AbstractAFPImageHandlerRawStream {
 
     /** {@inheritDoc} */
     @Override
-    public Class getSupportedImageClass() {
+    public Class<ImageRawStream> getSupportedImageClass() {
         return ImageRawStream.class;
     }
 
@@ -68,10 +68,10 @@ public class AFPImageHandlerRawStream extends AbstractAFPImageHandlerRawStream {
             final AFPRenderingContext afpContext = (AFPRenderingContext) targetContext;
             return afpContext.getPaintingState().isNativeImagesSupported()
                     && (image == null || image instanceof ImageRawJPEG
-                            || image instanceof ImageRawEPS || image instanceof ImageRawStream
-                            && MimeConstants.MIME_TIFF
-                                    .equals(((ImageRawStream) image)
-                                            .getMimeType()));
+                    || image instanceof ImageRawEPS || image instanceof ImageRawStream
+                    && MimeConstants.MIME_TIFF
+                    .equals(((ImageRawStream) image)
+                            .getMimeType()));
         }
         return false;
     }

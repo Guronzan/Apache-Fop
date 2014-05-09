@@ -467,7 +467,7 @@ public class TTFFile {
         this.ansiIndex = new java.util.HashMap<>();
         for (int i = 32; i < Glyphs.WINANSI_ENCODING.length; ++i) {
             final Integer ansi = i;
-            final Integer uni = new Integer(Glyphs.WINANSI_ENCODING[i]);
+            final Integer uni = Integer.valueOf(Glyphs.WINANSI_ENCODING[i]);
 
             List<Integer> v = this.ansiIndex.get(uni);
             if (v == null) {
@@ -542,9 +542,8 @@ public class TTFFile {
         return true;
     }
 
-    @SuppressWarnings("unused")
     private void createCMaps() {
-        this.cmaps = new java.util.ArrayList<TTFCmapEntry>();
+        this.cmaps = new java.util.ArrayList<>();
         TTFCmapEntry tce = new TTFCmapEntry();
 
         final Iterator<UnicodeMapping> e = this.unicodeMapping.listIterator();
@@ -823,23 +822,23 @@ public class TTFFile {
     protected void readDirTabs(final FontFileReader in) throws IOException {
         final int sfntVersion = in.readTTFLong(); // TTF_FIXED_SIZE (4 bytes)
         switch (sfntVersion) {
-        case 0x10000:
-            log.debug("sfnt version: OpenType 1.0");
-            break;
-        case 0x4F54544F: // "OTTO"
-            this.isCFF = true;
-            log.debug("sfnt version: OpenType with CFF data");
-            break;
-        case 0x74727565: // "true"
-            log.debug("sfnt version: Apple TrueType");
-            break;
-        case 0x74797031: // "typ1"
-            log.debug("sfnt version: Apple Type 1 housed in sfnt wrapper");
-            break;
-        default:
-            log.debug("Unknown sfnt version: "
-                    + Integer.toHexString(sfntVersion));
-            break;
+            case 0x10000:
+                log.debug("sfnt version: OpenType 1.0");
+                break;
+            case 0x4F54544F: // "OTTO"
+                this.isCFF = true;
+                log.debug("sfnt version: OpenType with CFF data");
+                break;
+            case 0x74727565: // "true"
+                log.debug("sfnt version: Apple TrueType");
+                break;
+            case 0x74797031: // "typ1"
+                log.debug("sfnt version: Apple Type 1 housed in sfnt wrapper");
+                break;
+            default:
+                log.debug("Unknown sfnt version: "
+                        + Integer.toHexString(sfntVersion));
+                break;
         }
         final int ntabs = in.readTTFUShort();
         in.skip(6); // 3xTTF_USHORT_SIZE
@@ -995,73 +994,75 @@ public class TTFFile {
         log.debug("PostScript format: 0x"
                 + Integer.toHexString(this.postFormat));
         switch (this.postFormat) {
-        case 0x00010000:
-            log.debug("PostScript format 1");
-            for (int i = 0; i < Glyphs.TEX8R_GLYPH_NAMES.length; ++i) {
-                this.mtxTab[i].setName(Glyphs.TEX8R_GLYPH_NAMES[i]);
-            }
-            break;
-        case 0x00020000:
-            log.debug("PostScript format 2");
-            int numGlyphStrings = 0;
-
-            // Read Number of Glyphs
-            final int l = in.readTTFUShort();
-
-            // Read indexes
-            for (int i = 0; i < l; ++i) {
-                this.mtxTab[i].setIndex(in.readTTFUShort());
-
-                if (this.mtxTab[i].getIndex() > 257) {
-                    // Index is not in the Macintosh standard set
-                    numGlyphStrings++;
+            case 0x00010000:
+                log.debug("PostScript format 1");
+                for (int i = 0; i < Glyphs.TEX8R_GLYPH_NAMES.length; ++i) {
+                    this.mtxTab[i].setName(Glyphs.TEX8R_GLYPH_NAMES[i]);
                 }
+                break;
+            case 0x00020000:
+                log.debug("PostScript format 2");
+                int numGlyphStrings = 0;
 
-                if (log.isTraceEnabled()) {
-                    log.trace("PostScript index: "
-                            + this.mtxTab[i].getIndexAsString());
-                }
-            }
+                // Read Number of Glyphs
+                final int l = in.readTTFUShort();
 
-            // firstChar=minIndex;
-            final String[] psGlyphsBuffer = new String[numGlyphStrings];
-            if (log.isDebugEnabled()) {
-                log.debug("Reading " + numGlyphStrings
-                        + " glyphnames, that are not in the standard Macintosh"
-                        + " set. Total number of glyphs=" + l);
-            }
-            for (int i = 0; i < psGlyphsBuffer.length; ++i) {
-                psGlyphsBuffer[i] = in.readTTFString(in.readTTFUByte());
-            }
+                // Read indexes
+                for (int i = 0; i < l; ++i) {
+                    this.mtxTab[i].setIndex(in.readTTFUShort());
 
-            // Set glyph names
-            for (int i = 0; i < l; ++i) {
-                if (this.mtxTab[i].getIndex() < NMACGLYPHS) {
-                    this.mtxTab[i]
-                            .setName(Glyphs.TEX8R_GLYPH_NAMES[this.mtxTab[i]
-                                    .getIndex()]);
-                } else {
-                    if (!this.mtxTab[i].isIndexReserved()) {
-                        final int k = this.mtxTab[i].getIndex() - NMACGLYPHS;
+                    if (this.mtxTab[i].getIndex() > 257) {
+                        // Index is not in the Macintosh standard set
+                        numGlyphStrings++;
+                    }
 
-                        if (log.isTraceEnabled()) {
-                            log.trace(k + " i=" + i + " mtx="
-                                    + this.mtxTab.length + " ps="
-                                    + psGlyphsBuffer.length);
-                        }
-
-                        this.mtxTab[i].setName(psGlyphsBuffer[k]);
+                    if (log.isTraceEnabled()) {
+                        log.trace("PostScript index: "
+                                + this.mtxTab[i].getIndexAsString());
                     }
                 }
-            }
 
-            break;
-        case 0x00030000:
-            // PostScript format 3 contains no glyph names
-            log.debug("PostScript format 3");
-            break;
-        default:
-            log.error("Unknown PostScript format: " + this.postFormat);
+                // firstChar=minIndex;
+                final String[] psGlyphsBuffer = new String[numGlyphStrings];
+                if (log.isDebugEnabled()) {
+                    log.debug("Reading "
+                            + numGlyphStrings
+                            + " glyphnames, that are not in the standard Macintosh"
+                            + " set. Total number of glyphs=" + l);
+                }
+                for (int i = 0; i < psGlyphsBuffer.length; ++i) {
+                    psGlyphsBuffer[i] = in.readTTFString(in.readTTFUByte());
+                }
+
+                // Set glyph names
+                for (int i = 0; i < l; ++i) {
+                    if (this.mtxTab[i].getIndex() < NMACGLYPHS) {
+                        this.mtxTab[i]
+                                .setName(Glyphs.TEX8R_GLYPH_NAMES[this.mtxTab[i]
+                                        .getIndex()]);
+                    } else {
+                        if (!this.mtxTab[i].isIndexReserved()) {
+                            final int k = this.mtxTab[i].getIndex()
+                                    - NMACGLYPHS;
+
+                            if (log.isTraceEnabled()) {
+                                log.trace(k + " i=" + i + " mtx="
+                                        + this.mtxTab.length + " ps="
+                                        + psGlyphsBuffer.length);
+                            }
+
+                            this.mtxTab[i].setName(psGlyphsBuffer[k]);
+                        }
+                    }
+                }
+
+                break;
+            case 0x00030000:
+                // PostScript format 3 contains no glyph names
+                log.debug("PostScript format 3");
+                break;
+            default:
+                log.error("Unknown PostScript format: " + this.postFormat);
         }
     }
 
@@ -1254,33 +1255,33 @@ public class TTFFile {
                             + " " + k + " " + txt);
                 }
                 switch (k) {
-                case 0:
-                    if (this.notice.length() == 0) {
-                        this.notice = txt;
-                    }
-                    break;
-                case 1: // Font Family Name
-                case 16: // Preferred Family
-                    this.familyNames.add(txt);
-                    break;
-                case 2:
-                    if (this.subFamilyName.length() == 0) {
-                        this.subFamilyName = txt;
-                    }
-                    break;
-                case 4:
-                    if (this.fullName.length() == 0 || platformID == 3
-                    && languageID == 1033) {
-                        this.fullName = txt;
-                    }
-                    break;
-                case 6:
-                    if (this.postScriptName.length() == 0) {
-                        this.postScriptName = txt;
-                    }
-                    break;
-                default:
-                    break;
+                    case 0:
+                        if (this.notice.length() == 0) {
+                            this.notice = txt;
+                        }
+                        break;
+                    case 1: // Font Family Name
+                    case 16: // Preferred Family
+                        this.familyNames.add(txt);
+                        break;
+                    case 2:
+                        if (this.subFamilyName.length() == 0) {
+                            this.subFamilyName = txt;
+                        }
+                        break;
+                    case 4:
+                        if (this.fullName.length() == 0 || platformID == 3
+                        && languageID == 1033) {
+                            this.fullName = txt;
+                        }
+                        break;
+                    case 6:
+                        if (this.postScriptName.length() == 0) {
+                            this.postScriptName = txt;
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
             i += 6 * 2;
@@ -1774,8 +1775,7 @@ public class TTFFile {
             ttfFile.printStuff();
 
         } catch (final IOException ioe) {
-            System.err.println("Problem reading font: " + ioe.toString());
-            ioe.printStackTrace(System.err);
+            log.error("Problem reading font: ", ioe);
         }
     }
 }

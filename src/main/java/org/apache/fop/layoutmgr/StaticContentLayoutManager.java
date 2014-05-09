@@ -86,7 +86,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
 
     /** {@inheritDoc} */
     @Override
-    public List getNextKnuthElements(final LayoutContext context,
+    public List<ListElement> getNextKnuthElements(final LayoutContext context,
             final int alignment) {
         throw new IllegalStateException();
     }
@@ -197,7 +197,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
 
         /** {@inheritDoc} */
         @Override
-        protected void observeElementList(final List elementList) {
+        protected void observeElementList(final List<ListElement> elementList) {
             String elementListID = getStaticContentFO().getFlowName();
             final String pageSequenceID = ((PageSequence) this.lm.getParent()
                     .getFObj()).getId();
@@ -264,7 +264,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
                 childLC.setRefIPD(context.getRefIPD());
                 childLC.setWritingMode(context.getWritingMode());
 
-                List returnedList = null;
+                List<ListElement> returnedList = null;
                 // The following is a HACK! Ignore leading and trailing white
                 // space
                 final boolean ignore = curLM instanceof TextLayoutManager;
@@ -302,8 +302,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
                 final int partCount, final BlockSequence originalList,
                 final BlockSequence effectiveList) {
             if (partCount > 1) {
-                final PageBreakPosition pos = (PageBreakPosition) alg
-                        .getPageBreaks().getFirst();
+                final PageBreakPosition pos = alg.getPageBreaks().getFirst();
                 final int firstPartLength = ElementListUtils.calcContentLength(
                         effectiveList, effectiveList.ignoreAtStart,
                         pos.getLeafPos());

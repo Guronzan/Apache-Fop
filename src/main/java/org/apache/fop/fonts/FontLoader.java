@@ -28,15 +28,12 @@ import java.net.URL;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.fonts.truetype.TTFFontLoader;
 import org.apache.fop.fonts.type1.Type1FontLoader;
 
 /**
  * Base class for font loaders.
  */
-@Slf4j
 public abstract class FontLoader {
 
     /** URI representing the font file */
@@ -154,11 +151,11 @@ public abstract class FontLoader {
      * @throws IOException
      *             In case of an I/O error
      */
-    public static CustomFont loadFont(String fontFileURI,
+    public static CustomFont loadFont(final String inFontFileURI,
             final String subFontName, final boolean embedded,
             final EncodingMode encodingMode, final boolean useKerning,
             final FontResolver resolver) throws IOException {
-        fontFileURI = fontFileURI.trim();
+        final String fontFileURI = inFontFileURI.trim();
         final boolean type1 = isType1(fontFileURI);
         FontLoader loader;
         if (type1) {

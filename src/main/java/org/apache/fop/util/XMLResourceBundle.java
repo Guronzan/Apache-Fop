@@ -128,7 +128,7 @@ public class XMLResourceBundle extends ResourceBundle {
      */
     public static ResourceBundle getXMLBundle(final String baseName,
             final Locale locale, final ClassLoader loader)
-                    throws MissingResourceException {
+            throws MissingResourceException {
         if (loader == null) {
             throw new NullPointerException("loader must not be null");
         }
@@ -154,7 +154,7 @@ public class XMLResourceBundle extends ResourceBundle {
 
     static class MissingBundle extends ResourceBundle {
         @Override
-        public Enumeration getKeys() {
+        public Enumeration<String> getKeys() {
             return null;
         }
 
@@ -167,9 +167,7 @@ public class XMLResourceBundle extends ResourceBundle {
     private static final ResourceBundle MISSING = new MissingBundle();
     private static final ResourceBundle MISSINGBASE = new MissingBundle();
 
-    private static Map cache = new java.util.WeakHashMap();
-
-    // <Object, Hashtable<String, ResourceBundle>>
+    private static Map<Object, Map<String, ResourceBundle>> cache = new java.util.WeakHashMap<>();
 
     private static ResourceBundle handleGetXMLBundle(final String base,
             final String locale, final boolean loadBase,
@@ -178,16 +176,15 @@ public class XMLResourceBundle extends ResourceBundle {
         final String bundleName = base + locale;
         final Object cacheKey = loader != null ? (Object) loader
                 : (Object) "null";
-        Hashtable loaderCache; // <String, ResourceBundle>
+        Map<String, ResourceBundle> loaderCache;
         synchronized (cache) {
-            loaderCache = (Hashtable) cache.get(cacheKey);
+            loaderCache = cache.get(cacheKey);
             if (loaderCache == null) {
-                loaderCache = new Hashtable();
+                loaderCache = new Hashtable<>();
                 cache.put(cacheKey, loaderCache);
             }
         }
-        final ResourceBundle result = (ResourceBundle) loaderCache
-                .get(bundleName);
+        final ResourceBundle result = loaderCache.get(bundleName);
         if (result != null) {
             if (result == MISSINGBASE) {
                 return null;
@@ -284,8 +281,8 @@ public class XMLResourceBundle extends ResourceBundle {
         return null;
     }
 
-    private Enumeration getLocalKeys() {
-        return this.resources.propertyNames();
+    private Enumeration<String> getLocalKeys() {
+        return (Enumeration<String>) this.resources.propertyNames();
     }
 
     /** {@inheritDoc} */
@@ -296,23 +293,23 @@ public class XMLResourceBundle extends ResourceBundle {
 
     /** {@inheritDoc} */
     @Override
-    public Enumeration getKeys() {
+    public Enumeration<String> getKeys() {
         if (this.parent == null) {
             return getLocalKeys();
         }
-        return new Enumeration() {
-            private final Enumeration local = getLocalKeys();
-            private final Enumeration pEnum = XMLResourceBundle.this.parent
+        return new Enumeration<String>() {
+            private final Enumeration<String> local = getLocalKeys();
+            private final Enumeration<String> pEnum = XMLResourceBundle.this.parent
                     .getKeys();
 
-            private Object nextElement;
+            private String nextElement;
 
             private boolean findNext() {
                 if (this.nextElement != null) {
                     return true;
                 }
                 while (this.pEnum.hasMoreElements()) {
-                    final Object next = this.pEnum.nextElement();
+                    final String next = this.pEnum.nextElement();
                     if (!XMLResourceBundle.this.resources.containsKey(next)) {
                         this.nextElement = next;
                         return true;
@@ -330,12 +327,12 @@ public class XMLResourceBundle extends ResourceBundle {
             }
 
             @Override
-            public Object nextElement() {
+            public String nextElement() {
                 if (this.local.hasMoreElements()) {
                     return this.local.nextElement();
                 }
                 if (findNext()) {
-                    final Object result = this.nextElement;
+                    final String result = this.nextElement;
                     this.nextElement = null;
                     return result;
                 }
@@ -366,7 +363,7 @@ public class XMLResourceBundle extends ResourceBundle {
         private static final String MESSAGE = "message";
 
         private final StringBuilder valueBuffer = new StringBuilder();
-        private final Stack elementStack = new Stack();
+        private final Stack<QName> elementStack = new Stack<>();
         private String currentKey = null;
 
         private boolean isOwnNamespace(final String uri) {
@@ -374,7 +371,7 @@ public class XMLResourceBundle extends ResourceBundle {
         }
 
         private QName getParentElementName() {
-            return (QName) this.elementStack.peek();
+            return this.elementStack.peek();
         }
 
         /** {@inheritDoc} */

@@ -103,7 +103,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
 
     /**
      * Formats and writes a List of PSSetupCode instances to the output stream.
-     * 
+     *
      * @param gen
      *            the PS generator
      * @param setupCodeList
@@ -114,11 +114,12 @@ public class PSRenderingUtil implements PSConfigurationConstants {
      *             if an I/O error occurs.
      */
     public static void writeSetupCodeList(final PSGenerator gen,
-            final List setupCodeList, final String type) throws IOException {
+            final List<PSSetupCode> setupCodeList, final String type)
+            throws IOException {
         if (setupCodeList != null) {
-            final Iterator i = setupCodeList.iterator();
+            final Iterator<PSSetupCode> i = setupCodeList.iterator();
             while (i.hasNext()) {
-                final PSSetupCode setupCode = (PSSetupCode) i.next();
+                final PSSetupCode setupCode = i.next();
                 gen.commentln("%FOPBegin"
                         + type
                         + ": ("
@@ -151,12 +152,14 @@ public class PSRenderingUtil implements PSConfigurationConstants {
      * @throws IOException
      *             if an I/O error occurs.
      */
-    public static void writeEnclosedExtensionAttachments(final PSGenerator gen,
-            final Collection attachmentCollection) throws IOException {
-        final Iterator iter = attachmentCollection.iterator();
+    public static void writeEnclosedExtensionAttachments(
+            final PSGenerator gen,
+            final Collection<? extends PSExtensionAttachment> attachmentCollection)
+                    throws IOException {
+        final Iterator<PSExtensionAttachment> iter = (Iterator<PSExtensionAttachment>) attachmentCollection
+                .iterator();
         while (iter.hasNext()) {
-            final PSExtensionAttachment attachment = (PSExtensionAttachment) iter
-                    .next();
+            final PSExtensionAttachment attachment = iter.next();
             if (attachment != null) {
                 writeEnclosedExtensionAttachment(gen, attachment);
             }
@@ -216,7 +219,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
      * <p>
      * Set this value to false if you experience unwanted blank pages in your
      * PostScript output.
-     * 
+     *
      * @param value
      *            boolean value (default is true)
      */
@@ -227,7 +230,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
     /**
      * Indicates whether the "safe setpagedevice" mode is active. See
      * {@link #setSafeSetPageDevice(boolean)} for more information.
-     * 
+     *
      * @return true if active
      */
     public boolean isSafeSetPageDevice() {
@@ -243,7 +246,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
      * possibility of invalid/unsupported PostScript key/values being placed in
      * the page device.
      * <p>
-     * 
+     *
      * @param value
      *            setting to false and the renderer will make a standard
      *            "setpagedevice" call, setting to true will make a safe set
@@ -259,7 +262,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
 
     /**
      * Controls whether landscape pages should be rotated.
-     * 
+     *
      * @param value
      *            true to enable the rotation
      */
@@ -269,7 +272,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
 
     /**
      * Indicates whether landscape pages are rotated.
-     * 
+     *
      * @return true if landscape pages are to be rotated
      */
     public boolean isAutoRotateLandscape() {
@@ -278,7 +281,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
 
     /**
      * Sets the PostScript language level.
-     * 
+     *
      * @param level
      *            the PostScript language level (Only 2 and 3 are currently
      *            supported)
@@ -294,7 +297,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
 
     /**
      * Indicates the selected PostScript language level.
-     * 
+     *
      * @return the PostScript language level
      */
     public int getLanguageLevel() {
@@ -304,7 +307,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
     /**
      * Controls whether PostScript resources are optimized in a second pass over
      * the document. Enable this to obtain smaller PostScript files.
-     * 
+     *
      * @param value
      *            true to enable resource optimization
      */
@@ -315,7 +318,7 @@ public class PSRenderingUtil implements PSConfigurationConstants {
     /**
      * Indicates whether PostScript resources are optimized in a second pass
      * over the document.
-     * 
+     *
      * @return true if resource optimization is enabled
      */
     public boolean isOptimizeResources() {

@@ -57,13 +57,13 @@ public class PFMReader extends AbstractFontReader {
         log.info("-q  Quiet mode");
         log.info("-fn <fontname>");
         System.out
-        .println("    default is to use the fontname in the .pfm file, but");
+                .println("    default is to use the fontname in the .pfm file, but");
         System.out
-        .println("    you can override that name to make sure that the");
+                .println("    you can override that name to make sure that the");
         System.out
-        .println("    embedded font is used (if you're embedding fonts)");
+                .println("    embedded font is used (if you're embedding fonts)");
         System.out
-        .println("    instead of installed fonts when viewing documents ");
+                .println("    instead of installed fonts when viewing documents ");
         log.info("    with Acrobat Reader.");
     }
 

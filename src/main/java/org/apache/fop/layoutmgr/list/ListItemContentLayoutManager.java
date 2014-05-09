@@ -50,19 +50,19 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
     private int xoffset;
     private int itemIPD;
 
-    private static class StackingIter extends PositionIterator {
+    private static class StackingIter extends PositionIterator<Position> {
         StackingIter(final Iterator<Position> parentIter) {
             super(parentIter);
         }
 
         @Override
-        protected LayoutManager getLM(final Object nextObj) {
-            return ((Position) nextObj).getLM();
+        protected LayoutManager getLM(final Position nextObj) {
+            return nextObj.getLM();
         }
 
         @Override
-        protected Position getPos(final Object nextObj) {
-            return (Position) nextObj;
+        protected Position getPos(final Position nextObj) {
+            return nextObj;
         }
     }
 
@@ -142,7 +142,7 @@ public class ListItemContentLayoutManager extends BlockStackingLayoutManager {
         final LinkedList<Position> positionList = new LinkedList<>();
         Position pos;
         while (parentIter.hasNext()) {
-            pos = (Position) parentIter.next();
+            pos = parentIter.next();
             if (pos == null) {
                 continue;
             }

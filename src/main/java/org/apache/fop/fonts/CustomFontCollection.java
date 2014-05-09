@@ -27,18 +27,18 @@ import java.util.List;
 public class CustomFontCollection implements FontCollection {
 
     private FontResolver fontResolver;
-    private final List/* <EmbedFontInfo> */embedFontInfoList;
+    private final List<EmbedFontInfo> embedFontInfoList;
 
     /**
      * Main constructor.
-     * 
+     *
      * @param fontResolver
      *            a font resolver
      * @param customFonts
      *            the list of custom fonts
      */
     public CustomFontCollection(final FontResolver fontResolver,
-            final List/* <EmbedFontInfo> */customFonts) {
+            final List<EmbedFontInfo> customFonts) {
         this.fontResolver = fontResolver;
         if (this.fontResolver == null) {
             // Ensure that we have minimal font resolution capabilities
@@ -49,7 +49,8 @@ public class CustomFontCollection implements FontCollection {
 
     /** {@inheritDoc} */
     @Override
-    public int setup(int num, final FontInfo fontInfo) {
+    public int setup(final int inNum, final FontInfo fontInfo) {
+        int num = inNum;
         if (this.embedFontInfoList == null) {
             return num; // No fonts to process
         }
@@ -58,12 +59,11 @@ public class CustomFontCollection implements FontCollection {
         // FontReader reader = null;
 
         for (int i = 0; i < this.embedFontInfoList.size(); ++i) {
-            final EmbedFontInfo embedFontInfo = (EmbedFontInfo) this.embedFontInfoList
-                    .get(i);
+            final EmbedFontInfo embedFontInfo = this.embedFontInfoList.get(i);
 
             // String metricsFile = configFontInfo.getMetricsFile();
             internalName = "F" + num;
-            num++;
+            ++num;
             /*
              * reader = new FontReader(metricsFile);
              * reader.useKerning(configFontInfo.getKerning());
@@ -74,10 +74,8 @@ public class CustomFontCollection implements FontCollection {
             final LazyFont font = new LazyFont(embedFontInfo, this.fontResolver);
             fontInfo.addMetrics(internalName, font);
 
-            final List triplets = embedFontInfo.getFontTriplets();
-            for (int tripletIndex = 0; tripletIndex < triplets.size(); tripletIndex++) {
-                final FontTriplet triplet = (FontTriplet) triplets
-                        .get(tripletIndex);
+            final List<FontTriplet> triplets = embedFontInfo.getFontTriplets();
+            for (final FontTriplet triplet : triplets) {
                 fontInfo.addFontProperties(internalName, triplet);
             }
         }

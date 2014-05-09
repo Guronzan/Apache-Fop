@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-/* $Id: PDFColor.java 959945 2010-07-02 10:44:18Z jeremias $ */
+/* $Id: PDFColor.java 1357883 2012-07-05 20:29:53Z gadams $ */
 
 package org.apache.fop.pdf;
 
-import java.awt.Color;
 import java.awt.color.ColorSpace;
-import java.awt.color.ICC_ColorSpace;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.apache.fop.util.ColorExt;
 import org.apache.xmlgraphics.java2d.color.DeviceCMYKColorSpace;
 
 /**
- * PDF Color object. This is used to output color to a PDF content stream.
+ * PDF Color object. It is currently only used to hold the transparent color of a masked bitmap
+ * image. And in this context, only RGB and Gray values are used.
+ * <p>
+ * Use of this class is discouraged. {@link PDFColorHandler} is now used for in-content color
+ * selection. For masked bitmaps, it may be wiser to switch to {@link java.awt.Color} in the long run.
  */
-@Slf4j
 public class PDFColor extends PDFPathPaint {
     // could be 3.0 as well.
     private static double blackFactor = 2.0;
@@ -47,30 +44,16 @@ public class PDFColor extends PDFPathPaint {
     private double yellow = -1.0;
     private double black = -1.0;
 
-    // TODO - It would probably be better to reorganize
-    // PDFPathPaint/PDFColor/PDFColorSpace
-    // class hierarchy. However, at this early stages of my FOP understanding, I
-    // can
-    // not really oversee the consequences of such a switch (nor whether it
-    // would be
-    // appropriate).
-    private ColorExt colorExt = null;
-
     /**
-     * Create a PDF color with double values ranging from 0 to 1
+     * Create a PDF color with double values ranging from 0 to 1.
      *
-     * @param theRed
-     *            the red double value
-     * @param theGreen
-     *            the green double value
-     * @param theBlue
-     *            the blue double value
+     * @param theRed the red double value
+     * @param theGreen the green double value
+     * @param theBlue the blue double value
      */
-    public PDFColor(final double theRed, final double theGreen,
-            final double theBlue) {
+    public PDFColor(double theRed, double theGreen, double theBlue) {
         // super(theNumber);
-        this.colorSpace = new PDFDeviceColorSpace(
-                PDFDeviceColorSpace.DEVICE_RGB);
+        this.colorSpace = new PDFDeviceColorSpace(PDFDeviceColorSpace.DEVICE_RGB);
 
         this.red = theRed;
         this.green = theGreen;
@@ -78,94 +61,28 @@ public class PDFColor extends PDFPathPaint {
     }
 
     /**
-     * Create PDFColor for the given document and based on the java.awt.Color
-     * object
-     *
-     * In case the java.awt.Color is an instance of the ColorExt class a
-     * PDFICCStream is added to the PDFDocument that is being created
-     *
-     * @param pdfDoc
-     *            PDFDocument that is being created
-     * @param col
-     *            Color object from which to create this PDFColor
-     */
-    public PDFColor(final PDFDocument pdfDoc, final Color col) {
-        this(col);
-        // TODO - 1) There is a potential conflict when FOP and Batik elements
-        // use the same color
-        // profile name for different profiles.
-        // 2) In case the same color profile is used with different names it
-        // will be
-        // included multiple times in the PDF
-        //
-        if (this.colorExt != null
-                && pdfDoc.getResources().getColorSpace(
-                        this.colorExt.getIccProfileName()) == null) {
-            final PDFICCStream pdfIccStream = new PDFICCStream();
-            final ColorSpace ceCs = this.colorExt.getOrigColorSpace();
-            try {
-                pdfIccStream.setColorSpace(
-                        ((ICC_ColorSpace) ceCs).getProfile(), null);
-                pdfIccStream.setData(((ICC_ColorSpace) this.colorExt
-                        .getColorSpace()).getProfile().getData());
-            } catch (final IOException ioe) {
-                log.error("Failed to set profile data for "
-                        + this.colorExt.getIccProfileName());
-            }
-            pdfDoc.registerObject(pdfIccStream);
-            pdfDoc.getFactory().makeICCBasedColorSpace(null,
-                    this.colorExt.getIccProfileName(), pdfIccStream);
-            if (log.isInfoEnabled()) {
-                log.info("Adding PDFICCStream "
-                        + this.colorExt.getIccProfileName() + " for "
-                        + this.colorExt.getIccProfileSrc());
-            }
-        }
-    }
-
-    /**
      * Create a PDF color from a java.awt.Color object.
      *
      * Different Color objects are handled differently. Cases recognized are.
      *
-     * 1. CMYK color 2. ColorExt color 3. 'Normal' java.awt.Color (RGB case
-     * assumed)
+     * 1. CMYK color
+     * 3. 'Normal' java.awt.Color (RGB case assumed or implicit conversion to sRGB)
      *
-     * @param col
-     *            the java.awt.Color object for which to create a PDFColor
-     *            object
+     * @param col the java.awt.Color object for which to create a PDFColor object
      */
-    public PDFColor(final java.awt.Color col) {
+    public PDFColor(java.awt.Color col) {
         ColorSpace cs = col.getColorSpace();
-        ColorExt ce = null;
-        if (col instanceof ColorExt) {
-            ce = (ColorExt) col;
-            cs = ce.getOrigColorSpace();
-        }
         if (cs != null && cs instanceof DeviceCMYKColorSpace) {
             // CMYK case
-            this.colorSpace = new PDFDeviceColorSpace(
-                    PDFDeviceColorSpace.DEVICE_CMYK);
-            final float[] cmyk = ce == null ? col.getColorComponents(null) : ce
-                    .getOriginalColorComponents();
+            this.colorSpace = new PDFDeviceColorSpace(PDFDeviceColorSpace.DEVICE_CMYK);
+            float[] cmyk = col.getColorComponents(null);
             this.cyan = cmyk[0];
             this.magenta = cmyk[1];
             this.yellow = cmyk[2];
             this.black = cmyk[3];
-        } else if (ce != null) {
-            // ColorExt (ICC) case
-            this.colorExt = ce;
-            final float[] rgb = col.getRGBColorComponents(null);
-            this.red = rgb[0];
-            this.green = rgb[1];
-            this.blue = rgb[2];
-            // TODO - See earlier todo
-            this.colorSpace = new PDFDeviceColorSpace(
-                    PDFDeviceColorSpace.DEVICE_RGB);
         } else {
-            // Default (RGB) Color
-            this.colorSpace = new PDFDeviceColorSpace(
-                    PDFDeviceColorSpace.DEVICE_RGB);
+            // Default (RGB) Color (ICC Colors are converted to sRGB, too)
+            this.colorSpace = new PDFDeviceColorSpace(PDFDeviceColorSpace.DEVICE_RGB);
             float[] comps = new float[3];
             comps = col.getColorComponents(comps);
             this.red = comps[0];
@@ -177,36 +94,26 @@ public class PDFColor extends PDFPathPaint {
     /**
      * Create a PDF color with int values ranging from 0 to 255
      *
-     * @param theRed
-     *            the red integer value
-     * @param theGreen
-     *            the green integer value
-     * @param theBlue
-     *            the blue integer value
+     * @param theRed the red integer value
+     * @param theGreen the green integer value
+     * @param theBlue the blue integer value
      */
-    public PDFColor(final int theRed, final int theGreen, final int theBlue) {
-        this(theRed / 255d, theGreen / 255d, theBlue / 255d);
-
+    public PDFColor(int theRed, int theGreen, int theBlue) {
+        this(((double)theRed) / 255d, ((double)theGreen) / 255d,
+             ((double)theBlue) / 255d);
     }
 
     /**
      * Create a PDF color with CMYK values.
      *
-     * @param theCyan
-     *            the cyan value
-     * @param theMagenta
-     *            the magenta value
-     * @param theYellow
-     *            the yellow value
-     * @param theBlack
-     *            the black value
+     * @param theCyan the cyan value
+     * @param theMagenta the magenta value
+     * @param theYellow the yellow value
+     * @param theBlack the black value
      */
-    public PDFColor(final double theCyan, final double theMagenta,
-            final double theYellow, final double theBlack) {
-        // super(theNumber);//?
-
-        this.colorSpace = new PDFDeviceColorSpace(
-                PDFDeviceColorSpace.DEVICE_CMYK);
+    public PDFColor(double theCyan, double theMagenta, double theYellow,
+                    double theBlack) {
+        this.colorSpace = new PDFDeviceColorSpace(PDFDeviceColorSpace.DEVICE_CMYK);
 
         this.cyan = theCyan;
         this.magenta = theMagenta;
@@ -215,29 +122,30 @@ public class PDFColor extends PDFPathPaint {
     }
 
     /**
-     * Return a vector representation of the color in the appropriate
-     * colorspace.
+     * Return a vector representation of the color
+     * in the appropriate colorspace.
      *
      * @return a list containing the Double values of the color
      */
-    public List<Double> getList() {
-        final List<Double> theColorList = new ArrayList<>();
+    public List getVector() {
+        List theColorVector = new ArrayList();
         if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_RGB) {
             // RGB
-            theColorList.add(new Double(this.red));
-            theColorList.add(new Double(this.green));
-            theColorList.add(new Double(this.blue));
-        } else if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_CMYK) {
+            theColorVector.add(new Double(this.red));
+            theColorVector.add(new Double(this.green));
+            theColorVector.add(new Double(this.blue));
+        } else if (this.colorSpace.getColorSpace()
+                   == PDFDeviceColorSpace.DEVICE_CMYK) {
             // CMYK
-            theColorList.add(new Double(this.cyan));
-            theColorList.add(new Double(this.magenta));
-            theColorList.add(new Double(this.yellow));
-            theColorList.add(new Double(this.black));
+            theColorVector.add(new Double(this.cyan));
+            theColorVector.add(new Double(this.magenta));
+            theColorVector.add(new Double(this.yellow));
+            theColorVector.add(new Double(this.black));
         } else {
             // GRAY
-            theColorList.add(new Double(this.black));
+            theColorVector.add(new Double(this.black));
         }
-        return theColorList;
+        return (theColorVector);
     }
 
     /**
@@ -246,7 +154,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the red double value
      */
     public double red() {
-        return this.red;
+        return (this.red);
     }
 
     /**
@@ -255,7 +163,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the green double value
      */
     public double green() {
-        return this.green;
+        return (this.green);
     }
 
     /**
@@ -264,7 +172,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the blue double value
      */
     public double blue() {
-        return this.blue;
+        return (this.blue);
     }
 
     /**
@@ -273,7 +181,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the red integer value
      */
     public int red255() {
-        return (int) (this.red * 255d);
+        return (int)(this.red * 255d);
     }
 
     /**
@@ -282,7 +190,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the green integer value
      */
     public int green255() {
-        return (int) (this.green * 255d);
+        return (int)(this.green * 255d);
     }
 
     /**
@@ -291,7 +199,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the blue integer value
      */
     public int blue255() {
-        return (int) (this.blue * 255d);
+        return (int)(this.blue * 255d);
     }
 
     /**
@@ -300,7 +208,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the cyan double value
      */
     public double cyan() {
-        return this.cyan;
+        return (this.cyan);
     }
 
     /**
@@ -309,7 +217,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the magenta double value
      */
     public double magenta() {
-        return this.magenta;
+        return (this.magenta);
     }
 
     /**
@@ -318,7 +226,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the yellow double value
      */
     public double yellow() {
-        return this.yellow;
+        return (this.yellow);
     }
 
     /**
@@ -327,41 +235,40 @@ public class PDFColor extends PDFPathPaint {
      * @return the black double value
      */
     public double black() {
-        return this.black;
+        return (this.black);
     }
 
     /**
-     * Set the color space for this color. If the new color space is different
-     * the values are converted to the new color space.
+     * Set the color space for this color.
+     * If the new color space is different the values are converted
+     * to the new color space.
      *
-     * @param theColorSpace
-     *            the new color space
+     * @param theColorSpace the new color space
      */
-    @Override
-    public void setColorSpace(final int theColorSpace) {
-        final int theOldColorSpace = this.colorSpace.getColorSpace();
+    public void setColorSpace(int theColorSpace) {
+        int theOldColorSpace = this.colorSpace.getColorSpace();
         if (theOldColorSpace != theColorSpace) {
             if (theOldColorSpace == PDFDeviceColorSpace.DEVICE_RGB) {
                 if (theColorSpace == PDFDeviceColorSpace.DEVICE_CMYK) {
-                    convertRGBtoCMYK();
-                } else {
+                    this.convertRGBtoCMYK();
+                } else  {
                     // convert to Gray?
-                    convertRGBtoGRAY();
+                    this.convertRGBtoGRAY();
                 }
             } else if (theOldColorSpace == PDFDeviceColorSpace.DEVICE_CMYK) {
                 if (theColorSpace == PDFDeviceColorSpace.DEVICE_RGB) {
-                    convertCMYKtoRGB();
+                    this.convertCMYKtoRGB();
                 } else {
                     // convert to Gray?
-                    convertCMYKtoGRAY();
+                    this.convertCMYKtoGRAY();
                 }
             } else {
                 // used to be Gray
                 if (theColorSpace == PDFDeviceColorSpace.DEVICE_RGB) {
-                    convertGRAYtoRGB();
+                    this.convertGRAYtoRGB();
                 } else {
                     // convert to CMYK?
-                    convertGRAYtoCMYK();
+                    this.convertGRAYtoCMYK();
                 }
             }
             this.colorSpace.setColorSpace(theColorSpace);
@@ -369,39 +276,18 @@ public class PDFColor extends PDFPathPaint {
     }
 
     /**
-     * Get the PDF output string for this color. This returns the string to be
-     * inserted into PDF for setting the current color.
+     * Get the PDF output string for this color.
+     * This returns the string to be inserted into PDF for setting
+     * the current color.
      *
-     * @param fillNotStroke
-     *            whether to return fill or stroke command
+     * @param fillNotStroke whether to return fill or stroke command
      * @return the PDF string for setting the fill/stroke color
      */
-    @Override
-    public String getColorSpaceOut(final boolean fillNotStroke) {
-        final StringBuilder p = new StringBuilder("");
+    public String getColorSpaceOut(boolean fillNotStroke) {
+        StringBuffer p = new StringBuffer("");
 
-        if (this.colorExt != null) {
-            if (fillNotStroke) {
-                p.append("/" + this.colorExt.getIccProfileName() + " cs ");
-            } else {
-                p.append("/" + this.colorExt.getIccProfileName() + " CS ");
-            }
-            float[] colorArgs;
-            colorArgs = this.colorExt.getOriginalColorComponents();
-            if (colorArgs == null) {
-                colorArgs = this.colorExt.getColorComponents(null);
-            }
-            for (final float colorArg : colorArgs) {
-                p.append(colorArg + " ");
-            }
-            if (fillNotStroke) {
-                p.append("sc\n");
-            } else {
-                p.append("SC\n");
-            }
-        } else if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_RGB) { // colorspace
-            // is
-            // RGB
+        if (this.colorSpace.getColorSpace()
+                == PDFDeviceColorSpace.DEVICE_RGB) {       // colorspace is RGB
             // according to pdfspec 12.1 p.399
             // if the colors are the same then just use the g or G operator
             boolean same = false;
@@ -415,8 +301,9 @@ public class PDFColor extends PDFPathPaint {
                     p.append(PDFNumber.doubleOut(this.red) + " g\n");
                 } else {
                     p.append(PDFNumber.doubleOut(this.red) + " "
-                            + PDFNumber.doubleOut(this.green) + " "
-                            + PDFNumber.doubleOut(this.blue) + " rg\n");
+                             + PDFNumber.doubleOut(this.green) + " "
+                             + PDFNumber.doubleOut(this.blue)
+                             + " rg\n");
                 }
             } else {
                 // stroke/border
@@ -424,25 +311,27 @@ public class PDFColor extends PDFPathPaint {
                     p.append(PDFNumber.doubleOut(this.red) + " G\n");
                 } else {
                     p.append(PDFNumber.doubleOut(this.red) + " "
-                            + PDFNumber.doubleOut(this.green) + " "
-                            + PDFNumber.doubleOut(this.blue) + " RG\n");
+                             + PDFNumber.doubleOut(this.green) + " "
+                             + PDFNumber.doubleOut(this.blue)
+                             + " RG\n");
                 }
             }
-        } else if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_CMYK) {
+        } else if (this.colorSpace.getColorSpace()
+                  == PDFDeviceColorSpace.DEVICE_CMYK) {
             // colorspace is CMYK
 
             if (fillNotStroke) {
                 // fill
                 p.append(PDFNumber.doubleOut(this.cyan) + " "
-                        + PDFNumber.doubleOut(this.magenta) + " "
-                        + PDFNumber.doubleOut(this.yellow) + " "
-                        + PDFNumber.doubleOut(this.black) + " k\n");
+                         + PDFNumber.doubleOut(this.magenta) + " "
+                         + PDFNumber.doubleOut(this.yellow) + " "
+                         + PDFNumber.doubleOut(this.black) + " k\n");
             } else {
                 // stroke
                 p.append(PDFNumber.doubleOut(this.cyan) + " "
-                        + PDFNumber.doubleOut(this.magenta) + " "
-                        + PDFNumber.doubleOut(this.yellow) + " "
-                        + PDFNumber.doubleOut(this.black) + " K\n");
+                         + PDFNumber.doubleOut(this.magenta) + " "
+                         + PDFNumber.doubleOut(this.yellow) + " "
+                         + PDFNumber.doubleOut(this.black) + " K\n");
             }
 
         } else {
@@ -456,7 +345,7 @@ public class PDFColor extends PDFPathPaint {
             }
 
         }
-        return p.toString();
+        return (p.toString());
     }
 
     /**
@@ -468,9 +357,9 @@ public class PDFColor extends PDFPathPaint {
         this.green = 1.0 - this.green;
         this.blue = 1.0 - this.yellow;
 
-        this.red = this.black / PDFColor.blackFactor + this.red;
-        this.green = this.black / PDFColor.blackFactor + this.green;
-        this.blue = this.black / PDFColor.blackFactor + this.blue;
+        this.red = (this.black / PDFColor.blackFactor) + this.red;
+        this.green = (this.black / PDFColor.blackFactor) + this.green;
+        this.blue = (this.black / PDFColor.blackFactor) + this.blue;
 
     }
 
@@ -485,13 +374,16 @@ public class PDFColor extends PDFPathPaint {
 
         this.black = 0.0;
         /*
-         * If you want to calculate black, uncomment this //pick the lowest
-         * color tempDouble = this.red;
-         * 
-         * if (this.green < tempDouble) tempDouble = this.green;
-         * 
-         * if (this.blue < tempDouble) tempDouble = this.blue;
-         * 
+         * If you want to calculate black, uncomment this
+         * //pick the lowest color
+         * tempDouble = this.red;
+         *
+         * if (this.green < tempDouble)
+         * tempDouble = this.green;
+         *
+         * if (this.blue < tempDouble)
+         * tempDouble = this.blue;
+         *
          * this.black = tempDouble / this.blackFactor;
          */
     }
@@ -532,7 +424,7 @@ public class PDFColor extends PDFPathPaint {
             tempDouble = this.yellow;
         }
 
-        this.black = tempDouble / PDFColor.blackFactor;
+        this.black = (tempDouble / PDFColor.blackFactor);
 
     }
 
@@ -553,28 +445,28 @@ public class PDFColor extends PDFPathPaint {
             tempDouble = this.blue;
         }
 
-        this.black = 1.0 - tempDouble / PDFColor.blackFactor;
+        this.black = 1.0 - (tempDouble / PDFColor.blackFactor);
     }
 
     /**
-     * Create pdf. Not used for this object.
+     * Create pdf.
+     * Not used for this object.
      *
      * @return the bytes for the pdf
      */
-    @Override
     public byte[] toPDF() {
-        return new byte[0];
+        return (new byte[0]);
     }
 
     /** {@inheritDoc} */
-    @Override
-    protected boolean contentEquals(final PDFObject obj) {
+    protected boolean contentEquals(PDFObject obj) {
         if (!(obj instanceof PDFColor)) {
             return false;
         }
-        final PDFColor color = (PDFColor) obj;
+        PDFColor color = (PDFColor)obj;
 
-        if (color.red == this.red && color.green == this.green
+        if (color.red == this.red
+                && color.green == this.green
                 && color.blue == this.blue) {
             return true;
         }
@@ -582,3 +474,4 @@ public class PDFColor extends PDFPathPaint {
     }
 
 }
+

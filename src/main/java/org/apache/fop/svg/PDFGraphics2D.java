@@ -55,6 +55,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.batik.ext.awt.LinearGradientPaint;
 import org.apache.batik.ext.awt.MultipleGradientPaint;
 import org.apache.batik.ext.awt.RadialGradientPaint;
@@ -101,8 +103,9 @@ import org.apache.xmlgraphics.java2d.GraphicContext;
  * @version $Id: PDFGraphics2D.java 959945 2010-07-02 10:44:18Z jeremias $
  * @see org.apache.batik.ext.awt.g2d.AbstractGraphics2D
  */
+@Slf4j
 public class PDFGraphics2D extends AbstractGraphics2D implements
-        NativeImageHandler {
+NativeImageHandler {
     private static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
 
     /** The number of decimal places. */
@@ -258,7 +261,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      */
     protected void handleIOException(final IOException ioe) {
         // TODO Surely, there's a better way to do this.
-        ioe.printStackTrace();
+        log.error("IOEXception", ioe);
     }
 
     /**
@@ -695,15 +698,15 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     /*
      * // in theory we could set the clip using these methods // it doesn't seem
      * to improve the file sizes much // and makes everything more complicated
-     * 
+     *
      * Shape lastClip = null;
-     * 
+     *
      * public void clip(Shape cl) { super.clip(cl); Shape newClip = getClip();
      * if (newClip == null || lastClip == null || !(new Area(newClip).equals(new
      * Area(lastClip)))) { graphicsState.setClip(newClip); writeClip(newClip); }
-     * 
+     *
      * lastClip = newClip; }
-     * 
+     *
      * public void setClip(Shape cl) { super.setClip(cl); Shape newClip =
      * getClip(); if (newClip == null || lastClip == null || !(new
      * Area(newClip).equals(new Area(lastClip)))) { for (int count =
@@ -711,7 +714,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * currentStream.write("Q\n"); } graphicsState.restoreLevel(baseLevel);
      * currentStream.write("q\n"); graphicsState.push(); if (newClip != null) {
      * graphicsState.setClip(newClip); } writeClip(newClip); }
-     * 
+     *
      * lastClip = newClip; }
      */
 
@@ -811,9 +814,9 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             final GradientPaint gpaint = (GradientPaint) paint;
             paint = new LinearGradientPaint((float) gpaint.getPoint1().getX(),
                     (float) gpaint.getPoint1().getY(), (float) gpaint
-                            .getPoint2().getX(), (float) gpaint.getPoint2()
-                            .getY(), new float[] { 0, 1 }, new Color[] {
-                            gpaint.getColor1(), gpaint.getColor2() },
+                    .getPoint2().getX(), (float) gpaint.getPoint2()
+                    .getY(), new float[] { 0, 1 }, new Color[] {
+                    gpaint.getColor1(), gpaint.getColor2() },
                     gpaint.isCyclic() ? MultipleGradientPaint.REPEAT
                             : MultipleGradientPaint.NO_CYCLE);
         }
@@ -1217,28 +1220,28 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             }
             final int ec = bs.getEndCap();
             switch (ec) {
-            case BasicStroke.CAP_BUTT:
-                this.currentStream.write(0 + " J\n");
-                break;
-            case BasicStroke.CAP_ROUND:
-                this.currentStream.write(1 + " J\n");
-                break;
-            case BasicStroke.CAP_SQUARE:
-                this.currentStream.write(2 + " J\n");
-                break;
+                case BasicStroke.CAP_BUTT:
+                    this.currentStream.write(0 + " J\n");
+                    break;
+                case BasicStroke.CAP_ROUND:
+                    this.currentStream.write(1 + " J\n");
+                    break;
+                case BasicStroke.CAP_SQUARE:
+                    this.currentStream.write(2 + " J\n");
+                    break;
             }
 
             final int lj = bs.getLineJoin();
             switch (lj) {
-            case BasicStroke.JOIN_MITER:
-                this.currentStream.write(0 + " j\n");
-                break;
-            case BasicStroke.JOIN_ROUND:
-                this.currentStream.write(1 + " j\n");
-                break;
-            case BasicStroke.JOIN_BEVEL:
-                this.currentStream.write(2 + " j\n");
-                break;
+                case BasicStroke.JOIN_MITER:
+                    this.currentStream.write(0 + " j\n");
+                    break;
+                case BasicStroke.JOIN_ROUND:
+                    this.currentStream.write(1 + " j\n");
+                    break;
+                case BasicStroke.JOIN_BEVEL:
+                    this.currentStream.write(2 + " j\n");
+                    break;
             }
             final float lw = bs.getLineWidth();
             this.currentStream.write(PDFNumber.doubleOut(lw) + " w\n");
@@ -1406,12 +1409,12 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
                     this.currentStream.write(Integer.toOctalString(ch));
                 } else {
                     switch (ch) {
-                    case '(':
-                    case ')':
-                    case '\\':
-                        this.currentStream.write("\\");
-                        break;
-                    default:
+                        case '(':
+                        case ')':
+                        case '\\':
+                            this.currentStream.write("\\");
+                            break;
+                        default:
                     }
                     this.currentStream.write(ch);
                 }
@@ -1548,42 +1551,42 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * TODO Reimplement for higher efficiency similar to the way it was done in
      * PDFTextPainter public void drawString(AttributedCharacterIterator
      * iterator, float x, float y) { preparePainting();
-     * 
+     *
      * Font fontState = null;
-     * 
+     *
      * Shape imclip = getClip(); writeClip(imclip); Color c = getColor();
      * applyColor(c, true); applyPaint(getPaint(), true);
-     * 
+     *
      * boolean fill = true; boolean stroke = false; if (true) { Stroke
      * currentStroke = getStroke(); stroke = true; applyStroke(currentStroke);
      * applyColor(c, false); applyPaint(getPaint(), false); }
-     * 
+     *
      * currentStream.write("BT\n");
-     * 
+     *
      * // set text rendering mode: // 0 - fill, 1 - stroke, 2 - fill then stroke
      * int textr = 0; if (fill && stroke) { textr = 2; } else if (stroke) {
      * textr = 1; } currentStream.write(textr + " Tr\n");
-     * 
+     *
      * AffineTransform trans = getTransform(); trans.translate(x, y); double[]
      * vals = new double[6]; trans.getMatrix(vals);
-     * 
+     *
      * for (char ch = iterator.first(); ch != CharacterIterator.DONE; ch =
      * iterator.next()) { //Map attr = iterator.getAttributes();
-     * 
+     *
      * String name = fontState.getFontName(); int size =
      * fontState.getFontSize(); if ((!name.equals(this.currentFontName)) ||
      * (size != this.currentFontSize)) { this.currentFontName = name;
      * this.currentFontSize = size; currentStream.write("/" + name + " " + (size
      * / 1000) + " Tf\n");
-     * 
+     *
      * }
-     * 
+     *
      * currentStream.write(PDFNumber.doubleOut(vals[0], DEC) + " " +
      * PDFNumber.doubleOut(vals[1], DEC) + " " + PDFNumber.doubleOut(vals[2],
      * DEC) + " " + PDFNumber.doubleOut(vals[3], DEC) + " " +
      * PDFNumber.doubleOut(vals[4], DEC) + " " + PDFNumber.doubleOut(vals[5],
      * DEC) + " Tm (" + ch + ") Tj\n"); }
-     * 
+     *
      * currentStream.write("ET\n"); }
      */
 
@@ -1685,33 +1688,33 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             final double[] vals = new double[6];
             final int type = iter.currentSegment(vals);
             switch (type) {
-            case PathIterator.SEG_CUBICTO:
-                this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
-                        + " " + PDFNumber.doubleOut(vals[1], DEC) + " "
-                        + PDFNumber.doubleOut(vals[2], DEC) + " "
-                        + PDFNumber.doubleOut(vals[3], DEC) + " "
-                        + PDFNumber.doubleOut(vals[4], DEC) + " "
-                        + PDFNumber.doubleOut(vals[5], DEC) + " c\n");
-                break;
-            case PathIterator.SEG_LINETO:
-                this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
-                        + " " + PDFNumber.doubleOut(vals[1], DEC) + " l\n");
-                break;
-            case PathIterator.SEG_MOVETO:
-                this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
-                        + " " + PDFNumber.doubleOut(vals[1], DEC) + " m\n");
-                break;
-            case PathIterator.SEG_QUADTO:
-                this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
-                        + " " + PDFNumber.doubleOut(vals[1], DEC) + " "
-                        + PDFNumber.doubleOut(vals[2], DEC) + " "
-                        + PDFNumber.doubleOut(vals[3], DEC) + " y\n");
-                break;
-            case PathIterator.SEG_CLOSE:
-                this.currentStream.write("h\n");
-                break;
-            default:
-                break;
+                case PathIterator.SEG_CUBICTO:
+                    this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
+                            + " " + PDFNumber.doubleOut(vals[1], DEC) + " "
+                            + PDFNumber.doubleOut(vals[2], DEC) + " "
+                            + PDFNumber.doubleOut(vals[3], DEC) + " "
+                            + PDFNumber.doubleOut(vals[4], DEC) + " "
+                            + PDFNumber.doubleOut(vals[5], DEC) + " c\n");
+                    break;
+                case PathIterator.SEG_LINETO:
+                    this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
+                            + " " + PDFNumber.doubleOut(vals[1], DEC) + " l\n");
+                    break;
+                case PathIterator.SEG_MOVETO:
+                    this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
+                            + " " + PDFNumber.doubleOut(vals[1], DEC) + " m\n");
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    this.currentStream.write(PDFNumber.doubleOut(vals[0], DEC)
+                            + " " + PDFNumber.doubleOut(vals[1], DEC) + " "
+                            + PDFNumber.doubleOut(vals[2], DEC) + " "
+                            + PDFNumber.doubleOut(vals[3], DEC) + " y\n");
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    this.currentStream.write("h\n");
+                    break;
+                default:
+                    break;
             }
             iter.next();
         }

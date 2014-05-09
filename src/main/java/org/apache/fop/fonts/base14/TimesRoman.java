@@ -1,7 +1,9 @@
 package org.apache.fop.fonts.base14;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.fop.fonts.Base14Font;
 import org.apache.fop.fonts.CodePointMapping;
@@ -11,7 +13,7 @@ import org.apache.fop.fonts.Typeface;
 public class TimesRoman extends Base14Font {
     private final static String fontName = "Times-Roman";
     private final static String fullName = "Times Roman";
-    private final static Set familyNames;
+    private final static Collection<String> familyNames;
     private final static String encoding = "WinAnsiEncoding";
     private final static int capHeight = 662;
     private final static int xHeight = 450;
@@ -23,7 +25,7 @@ public class TimesRoman extends Base14Font {
     private final CodePointMapping mapping = CodePointMapping
             .getMapping("WinAnsiEncoding");
 
-    private final static Map kerning;
+    private final static Map<Integer, Map<Integer, Integer>> kerning;
 
     private boolean enableKerning = false;
 
@@ -260,1200 +262,1200 @@ public class TimesRoman extends Base14Font {
         width[0x9e] = 444;
         width[0x30] = 500;
 
-        kerning = new java.util.HashMap();
+        kerning = new HashMap<>();
         Integer first, second;
-        Map pairs;
+        Map<Integer, Integer> pairs;
 
-        first = (79);
-        pairs = (Map) kerning.get(first);
+        first = 79;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-35));
+        second = 65;
+        pairs.put(second, -35);
 
-        second = (87);
-        pairs.put(second, (-35));
+        second = 87;
+        pairs.put(second, -35);
 
-        second = (89);
-        pairs.put(second, (-50));
+        second = 89;
+        pairs.put(second, -50);
 
-        second = (84);
-        pairs.put(second, (-40));
+        second = 84;
+        pairs.put(second, -40);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (86);
-        pairs.put(second, (-50));
+        second = 86;
+        pairs.put(second, -50);
 
-        second = (88);
-        pairs.put(second, (-40));
+        second = 88;
+        pairs.put(second, -40);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (107);
-        pairs = (Map) kerning.get(first);
+        first = 107;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-10));
+        second = 111;
+        pairs.put(second, -10);
 
-        second = (121);
-        pairs.put(second, (-15));
+        second = 121;
+        pairs.put(second, -15);
 
-        second = (101);
-        pairs.put(second, (-10));
+        second = 101;
+        pairs.put(second, -10);
 
-        first = (112);
-        pairs = (Map) kerning.get(first);
+        first = 112;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (121);
-        pairs.put(second, (-10));
+        second = 121;
+        pairs.put(second, -10);
 
-        first = (80);
-        pairs = (Map) kerning.get(first);
+        first = 80;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (-15));
+        second = 97;
+        pairs.put(second, -15);
 
-        second = (65);
-        pairs.put(second, (-92));
+        second = 65;
+        pairs.put(second, -92);
 
-        second = (46);
-        pairs.put(second, (-111));
+        second = 46;
+        pairs.put(second, -111);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-111));
+        second = 44;
+        pairs.put(second, -111);
 
-        first = (86);
-        pairs = (Map) kerning.get(first);
+        first = 86;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-129));
+        second = 111;
+        pairs.put(second, -129);
 
-        second = (79);
-        pairs.put(second, (-40));
+        second = 79;
+        pairs.put(second, -40);
 
-        second = (58);
-        pairs.put(second, (-74));
+        second = 58;
+        pairs.put(second, -74);
 
-        second = (71);
-        pairs.put(second, (-15));
+        second = 71;
+        pairs.put(second, -15);
 
-        second = (44);
-        pairs.put(second, (-129));
+        second = 44;
+        pairs.put(second, -129);
 
-        second = (59);
-        pairs.put(second, (-74));
+        second = 59;
+        pairs.put(second, -74);
 
-        second = (45);
-        pairs.put(second, (-100));
+        second = 45;
+        pairs.put(second, -100);
 
-        second = (105);
-        pairs.put(second, (-60));
+        second = 105;
+        pairs.put(second, -60);
 
-        second = (65);
-        pairs.put(second, (-135));
+        second = 65;
+        pairs.put(second, -135);
 
-        second = (97);
-        pairs.put(second, (-111));
+        second = 97;
+        pairs.put(second, -111);
 
-        second = (117);
-        pairs.put(second, (-75));
+        second = 117;
+        pairs.put(second, -75);
 
-        second = (46);
-        pairs.put(second, (-129));
+        second = 46;
+        pairs.put(second, -129);
 
-        second = (101);
-        pairs.put(second, (-111));
+        second = 101;
+        pairs.put(second, -111);
 
-        first = (118);
-        pairs = (Map) kerning.get(first);
+        first = 118;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-20));
+        second = 111;
+        pairs.put(second, -20);
 
-        second = (97);
-        pairs.put(second, (-25));
+        second = 97;
+        pairs.put(second, -25);
 
-        second = (46);
-        pairs.put(second, (-65));
+        second = 46;
+        pairs.put(second, -65);
 
-        second = (101);
-        pairs.put(second, (-15));
+        second = 101;
+        pairs.put(second, -15);
 
-        second = (44);
-        pairs.put(second, (-65));
+        second = 44;
+        pairs.put(second, -65);
 
-        first = (32);
-        pairs = (Map) kerning.get(first);
+        first = 32;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-55));
+        second = 65;
+        pairs.put(second, -55);
 
-        second = (87);
-        pairs.put(second, (-30));
+        second = 87;
+        pairs.put(second, -30);
 
-        second = (147);
-        pairs.put(second, (0));
+        second = 147;
+        pairs.put(second, 0);
 
-        second = (89);
-        pairs.put(second, (-90));
+        second = 89;
+        pairs.put(second, -90);
 
-        second = (84);
-        pairs.put(second, (-18));
+        second = 84;
+        pairs.put(second, -18);
 
-        second = (145);
-        pairs.put(second, (0));
+        second = 145;
+        pairs.put(second, 0);
 
-        second = (86);
-        pairs.put(second, (-50));
+        second = 86;
+        pairs.put(second, -50);
 
-        first = (97);
-        pairs = (Map) kerning.get(first);
+        first = 97;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (119);
-        pairs.put(second, (-15));
+        second = 119;
+        pairs.put(second, -15);
 
-        second = (116);
-        pairs.put(second, (0));
+        second = 116;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        second = (112);
-        pairs.put(second, (0));
+        second = 112;
+        pairs.put(second, 0);
 
-        second = (103);
-        pairs.put(second, (0));
+        second = 103;
+        pairs.put(second, 0);
 
-        second = (98);
-        pairs.put(second, (0));
+        second = 98;
+        pairs.put(second, 0);
 
-        second = (118);
-        pairs.put(second, (-20));
+        second = 118;
+        pairs.put(second, -20);
 
-        first = (70);
-        pairs = (Map) kerning.get(first);
+        first = 70;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-15));
+        second = 111;
+        pairs.put(second, -15);
 
-        second = (105);
-        pairs.put(second, (0));
+        second = 105;
+        pairs.put(second, 0);
 
-        second = (114);
-        pairs.put(second, (0));
+        second = 114;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (-15));
+        second = 97;
+        pairs.put(second, -15);
 
-        second = (65);
-        pairs.put(second, (-74));
+        second = 65;
+        pairs.put(second, -74);
 
-        second = (46);
-        pairs.put(second, (-80));
+        second = 46;
+        pairs.put(second, -80);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-80));
+        second = 44;
+        pairs.put(second, -80);
 
-        first = (85);
-        pairs = (Map) kerning.get(first);
+        first = 85;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-40));
+        second = 65;
+        pairs.put(second, -40);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (100);
-        pairs = (Map) kerning.get(first);
+        first = 100;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (100);
-        pairs.put(second, (0));
+        second = 100;
+        pairs.put(second, 0);
 
-        second = (119);
-        pairs.put(second, (0));
+        second = 119;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (118);
-        pairs.put(second, (0));
+        second = 118;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (83);
-        pairs = (Map) kerning.get(first);
+        first = 83;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (122);
-        pairs = (Map) kerning.get(first);
+        first = 122;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        first = (68);
-        pairs = (Map) kerning.get(first);
+        first = 68;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-40));
+        second = 65;
+        pairs.put(second, -40);
 
-        second = (87);
-        pairs.put(second, (-30));
+        second = 87;
+        pairs.put(second, -30);
 
-        second = (89);
-        pairs.put(second, (-55));
+        second = 89;
+        pairs.put(second, -55);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (86);
-        pairs.put(second, (-40));
+        second = 86;
+        pairs.put(second, -40);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (146);
-        pairs = (Map) kerning.get(first);
+        first = 146;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (148);
-        pairs.put(second, (0));
+        second = 148;
+        pairs.put(second, 0);
 
-        second = (100);
-        pairs.put(second, (-50));
+        second = 100;
+        pairs.put(second, -50);
 
-        second = (32);
-        pairs.put(second, (-74));
+        second = 32;
+        pairs.put(second, -74);
 
-        second = (146);
-        pairs.put(second, (-74));
+        second = 146;
+        pairs.put(second, -74);
 
-        second = (114);
-        pairs.put(second, (-50));
+        second = 114;
+        pairs.put(second, -50);
 
-        second = (116);
-        pairs.put(second, (-18));
+        second = 116;
+        pairs.put(second, -18);
 
-        second = (108);
-        pairs.put(second, (-10));
+        second = 108;
+        pairs.put(second, -10);
 
-        second = (115);
-        pairs.put(second, (-55));
+        second = 115;
+        pairs.put(second, -55);
 
-        second = (118);
-        pairs.put(second, (-50));
+        second = 118;
+        pairs.put(second, -50);
 
-        first = (58);
-        pairs = (Map) kerning.get(first);
+        first = 58;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (32);
-        pairs.put(second, (0));
+        second = 32;
+        pairs.put(second, 0);
 
-        first = (119);
-        pairs = (Map) kerning.get(first);
+        first = 119;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-10));
+        second = 111;
+        pairs.put(second, -10);
 
-        second = (97);
-        pairs.put(second, (-10));
+        second = 97;
+        pairs.put(second, -10);
 
-        second = (104);
-        pairs.put(second, (0));
+        second = 104;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (-65));
+        second = 46;
+        pairs.put(second, -65);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-65));
+        second = 44;
+        pairs.put(second, -65);
 
-        first = (75);
-        pairs = (Map) kerning.get(first);
+        first = 75;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-35));
+        second = 111;
+        pairs.put(second, -35);
 
-        second = (79);
-        pairs.put(second, (-30));
+        second = 79;
+        pairs.put(second, -30);
 
-        second = (117);
-        pairs.put(second, (-15));
+        second = 117;
+        pairs.put(second, -15);
 
-        second = (121);
-        pairs.put(second, (-25));
+        second = 121;
+        pairs.put(second, -25);
 
-        second = (101);
-        pairs.put(second, (-25));
+        second = 101;
+        pairs.put(second, -25);
 
-        first = (82);
-        pairs = (Map) kerning.get(first);
+        first = 82;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (79);
-        pairs.put(second, (-40));
+        second = 79;
+        pairs.put(second, -40);
 
-        second = (87);
-        pairs.put(second, (-55));
+        second = 87;
+        pairs.put(second, -55);
 
-        second = (85);
-        pairs.put(second, (-40));
+        second = 85;
+        pairs.put(second, -40);
 
-        second = (89);
-        pairs.put(second, (-65));
+        second = 89;
+        pairs.put(second, -65);
 
-        second = (84);
-        pairs.put(second, (-60));
+        second = 84;
+        pairs.put(second, -60);
 
-        second = (86);
-        pairs.put(second, (-80));
+        second = 86;
+        pairs.put(second, -80);
 
-        first = (145);
-        pairs = (Map) kerning.get(first);
+        first = 145;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-80));
+        second = 65;
+        pairs.put(second, -80);
 
-        second = (145);
-        pairs.put(second, (-74));
+        second = 145;
+        pairs.put(second, -74);
 
-        first = (103);
-        pairs = (Map) kerning.get(first);
+        first = 103;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (105);
-        pairs.put(second, (0));
+        second = 105;
+        pairs.put(second, 0);
 
-        second = (114);
-        pairs.put(second, (0));
+        second = 114;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (-5));
+        second = 97;
+        pairs.put(second, -5);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (103);
-        pairs.put(second, (0));
+        second = 103;
+        pairs.put(second, 0);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (66);
-        pairs = (Map) kerning.get(first);
+        first = 66;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-35));
+        second = 65;
+        pairs.put(second, -35);
 
-        second = (85);
-        pairs.put(second, (-10));
+        second = 85;
+        pairs.put(second, -10);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (98);
-        pairs = (Map) kerning.get(first);
+        first = 98;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (117);
-        pairs.put(second, (-20));
+        second = 117;
+        pairs.put(second, -20);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (-40));
+        second = 46;
+        pairs.put(second, -40);
 
-        second = (108);
-        pairs.put(second, (0));
+        second = 108;
+        pairs.put(second, 0);
 
-        second = (98);
-        pairs.put(second, (0));
+        second = 98;
+        pairs.put(second, 0);
 
-        second = (118);
-        pairs.put(second, (-15));
+        second = 118;
+        pairs.put(second, -15);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (81);
-        pairs = (Map) kerning.get(first);
+        first = 81;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (85);
-        pairs.put(second, (-10));
+        second = 85;
+        pairs.put(second, -10);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (44);
-        pairs = (Map) kerning.get(first);
+        first = 44;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (148);
-        pairs.put(second, (-70));
+        second = 148;
+        pairs.put(second, -70);
 
-        second = (32);
-        pairs.put(second, (0));
+        second = 32;
+        pairs.put(second, 0);
 
-        second = (146);
-        pairs.put(second, (-70));
+        second = 146;
+        pairs.put(second, -70);
 
-        first = (102);
-        pairs = (Map) kerning.get(first);
+        first = 102;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (148);
-        pairs.put(second, (0));
+        second = 148;
+        pairs.put(second, 0);
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (105);
-        pairs.put(second, (-20));
+        second = 105;
+        pairs.put(second, -20);
 
-        second = (146);
-        pairs.put(second, (55));
+        second = 146;
+        pairs.put(second, 55);
 
-        second = (97);
-        pairs.put(second, (-10));
+        second = 97;
+        pairs.put(second, -10);
 
-        second = (102);
-        pairs.put(second, (-25));
+        second = 102;
+        pairs.put(second, -25);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (108);
-        pairs.put(second, (0));
+        second = 108;
+        pairs.put(second, 0);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (84);
-        pairs = (Map) kerning.get(first);
+        first = 84;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-80));
+        second = 111;
+        pairs.put(second, -80);
 
-        second = (79);
-        pairs.put(second, (-18));
+        second = 79;
+        pairs.put(second, -18);
 
-        second = (119);
-        pairs.put(second, (-80));
+        second = 119;
+        pairs.put(second, -80);
 
-        second = (58);
-        pairs.put(second, (-50));
+        second = 58;
+        pairs.put(second, -50);
 
-        second = (114);
-        pairs.put(second, (-35));
+        second = 114;
+        pairs.put(second, -35);
 
-        second = (104);
-        pairs.put(second, (0));
+        second = 104;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-74));
+        second = 44;
+        pairs.put(second, -74);
 
-        second = (59);
-        pairs.put(second, (-55));
+        second = 59;
+        pairs.put(second, -55);
 
-        second = (45);
-        pairs.put(second, (-92));
+        second = 45;
+        pairs.put(second, -92);
 
-        second = (105);
-        pairs.put(second, (-35));
+        second = 105;
+        pairs.put(second, -35);
 
-        second = (65);
-        pairs.put(second, (-93));
+        second = 65;
+        pairs.put(second, -93);
 
-        second = (97);
-        pairs.put(second, (-80));
+        second = 97;
+        pairs.put(second, -80);
 
-        second = (117);
-        pairs.put(second, (-45));
+        second = 117;
+        pairs.put(second, -45);
 
-        second = (121);
-        pairs.put(second, (-80));
+        second = 121;
+        pairs.put(second, -80);
 
-        second = (46);
-        pairs.put(second, (-74));
+        second = 46;
+        pairs.put(second, -74);
 
-        second = (101);
-        pairs.put(second, (-70));
+        second = 101;
+        pairs.put(second, -70);
 
-        first = (121);
-        pairs = (Map) kerning.get(first);
+        first = 121;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (0));
+        second = 97;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (-65));
+        second = 46;
+        pairs.put(second, -65);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-65));
+        second = 44;
+        pairs.put(second, -65);
 
-        first = (120);
-        pairs = (Map) kerning.get(first);
+        first = 120;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (101);
-        pairs.put(second, (-15));
+        second = 101;
+        pairs.put(second, -15);
 
-        first = (101);
-        pairs = (Map) kerning.get(first);
+        first = 101;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (119);
-        pairs.put(second, (-25));
+        second = 119;
+        pairs.put(second, -25);
 
-        second = (121);
-        pairs.put(second, (-15));
+        second = 121;
+        pairs.put(second, -15);
 
-        second = (112);
-        pairs.put(second, (0));
+        second = 112;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (103);
-        pairs.put(second, (-15));
+        second = 103;
+        pairs.put(second, -15);
 
-        second = (98);
-        pairs.put(second, (0));
+        second = 98;
+        pairs.put(second, 0);
 
-        second = (120);
-        pairs.put(second, (-15));
+        second = 120;
+        pairs.put(second, -15);
 
-        second = (118);
-        pairs.put(second, (-25));
+        second = 118;
+        pairs.put(second, -25);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (99);
-        pairs = (Map) kerning.get(first);
+        first = 99;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (107);
-        pairs.put(second, (0));
+        second = 107;
+        pairs.put(second, 0);
 
-        second = (104);
-        pairs.put(second, (0));
+        second = 104;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (-15));
+        second = 121;
+        pairs.put(second, -15);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (108);
-        pairs.put(second, (0));
+        second = 108;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (87);
-        pairs = (Map) kerning.get(first);
+        first = 87;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-80));
+        second = 111;
+        pairs.put(second, -80);
 
-        second = (79);
-        pairs.put(second, (-10));
+        second = 79;
+        pairs.put(second, -10);
 
-        second = (58);
-        pairs.put(second, (-37));
+        second = 58;
+        pairs.put(second, -37);
 
-        second = (104);
-        pairs.put(second, (0));
+        second = 104;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-92));
+        second = 44;
+        pairs.put(second, -92);
 
-        second = (59);
-        pairs.put(second, (-37));
+        second = 59;
+        pairs.put(second, -37);
 
-        second = (45);
-        pairs.put(second, (-65));
+        second = 45;
+        pairs.put(second, -65);
 
-        second = (105);
-        pairs.put(second, (-40));
+        second = 105;
+        pairs.put(second, -40);
 
-        second = (65);
-        pairs.put(second, (-120));
+        second = 65;
+        pairs.put(second, -120);
 
-        second = (97);
-        pairs.put(second, (-80));
+        second = 97;
+        pairs.put(second, -80);
 
-        second = (117);
-        pairs.put(second, (-50));
+        second = 117;
+        pairs.put(second, -50);
 
-        second = (121);
-        pairs.put(second, (-73));
+        second = 121;
+        pairs.put(second, -73);
 
-        second = (46);
-        pairs.put(second, (-92));
+        second = 46;
+        pairs.put(second, -92);
 
-        second = (101);
-        pairs.put(second, (-80));
+        second = 101;
+        pairs.put(second, -80);
 
-        first = (104);
-        pairs = (Map) kerning.get(first);
+        first = 104;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (121);
-        pairs.put(second, (-5));
+        second = 121;
+        pairs.put(second, -5);
 
-        first = (71);
-        pairs = (Map) kerning.get(first);
+        first = 71;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (105);
-        pairs = (Map) kerning.get(first);
+        first = 105;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (118);
-        pairs.put(second, (-25));
+        second = 118;
+        pairs.put(second, -25);
 
-        first = (65);
-        pairs = (Map) kerning.get(first);
+        first = 65;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (79);
-        pairs.put(second, (-55));
+        second = 79;
+        pairs.put(second, -55);
 
-        second = (146);
-        pairs.put(second, (-111));
+        second = 146;
+        pairs.put(second, -111);
 
-        second = (119);
-        pairs.put(second, (-92));
+        second = 119;
+        pairs.put(second, -92);
 
-        second = (87);
-        pairs.put(second, (-90));
+        second = 87;
+        pairs.put(second, -90);
 
-        second = (67);
-        pairs.put(second, (-40));
+        second = 67;
+        pairs.put(second, -40);
 
-        second = (112);
-        pairs.put(second, (0));
+        second = 112;
+        pairs.put(second, 0);
 
-        second = (81);
-        pairs.put(second, (-55));
+        second = 81;
+        pairs.put(second, -55);
 
-        second = (71);
-        pairs.put(second, (-40));
+        second = 71;
+        pairs.put(second, -40);
 
-        second = (86);
-        pairs.put(second, (-135));
+        second = 86;
+        pairs.put(second, -135);
 
-        second = (118);
-        pairs.put(second, (-74));
+        second = 118;
+        pairs.put(second, -74);
 
-        second = (148);
-        pairs.put(second, (0));
+        second = 148;
+        pairs.put(second, 0);
 
-        second = (85);
-        pairs.put(second, (-55));
+        second = 85;
+        pairs.put(second, -55);
 
-        second = (117);
-        pairs.put(second, (0));
+        second = 117;
+        pairs.put(second, 0);
 
-        second = (89);
-        pairs.put(second, (-105));
+        second = 89;
+        pairs.put(second, -105);
 
-        second = (121);
-        pairs.put(second, (-92));
+        second = 121;
+        pairs.put(second, -92);
 
-        second = (84);
-        pairs.put(second, (-111));
+        second = 84;
+        pairs.put(second, -111);
 
-        first = (147);
-        pairs = (Map) kerning.get(first);
+        first = 147;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-80));
+        second = 65;
+        pairs.put(second, -80);
 
-        second = (145);
-        pairs.put(second, (0));
+        second = 145;
+        pairs.put(second, 0);
 
-        first = (78);
-        pairs = (Map) kerning.get(first);
+        first = 78;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (65);
-        pairs.put(second, (-35));
+        second = 65;
+        pairs.put(second, -35);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (115);
-        pairs = (Map) kerning.get(first);
+        first = 115;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (119);
-        pairs.put(second, (0));
+        second = 119;
+        pairs.put(second, 0);
 
-        first = (111);
-        pairs = (Map) kerning.get(first);
+        first = 111;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (119);
-        pairs.put(second, (-25));
+        second = 119;
+        pairs.put(second, -25);
 
-        second = (121);
-        pairs.put(second, (-10));
+        second = 121;
+        pairs.put(second, -10);
 
-        second = (103);
-        pairs.put(second, (0));
+        second = 103;
+        pairs.put(second, 0);
 
-        second = (120);
-        pairs.put(second, (0));
+        second = 120;
+        pairs.put(second, 0);
 
-        second = (118);
-        pairs.put(second, (-15));
+        second = 118;
+        pairs.put(second, -15);
 
-        first = (114);
-        pairs = (Map) kerning.get(first);
+        first = 114;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (100);
-        pairs.put(second, (0));
+        second = 100;
+        pairs.put(second, 0);
 
-        second = (107);
-        pairs.put(second, (0));
+        second = 107;
+        pairs.put(second, 0);
 
-        second = (114);
-        pairs.put(second, (0));
+        second = 114;
+        pairs.put(second, 0);
 
-        second = (99);
-        pairs.put(second, (0));
+        second = 99;
+        pairs.put(second, 0);
 
-        second = (112);
-        pairs.put(second, (0));
+        second = 112;
+        pairs.put(second, 0);
 
-        second = (103);
-        pairs.put(second, (-18));
+        second = 103;
+        pairs.put(second, -18);
 
-        second = (108);
-        pairs.put(second, (0));
+        second = 108;
+        pairs.put(second, 0);
 
-        second = (113);
-        pairs.put(second, (0));
+        second = 113;
+        pairs.put(second, 0);
 
-        second = (118);
-        pairs.put(second, (0));
+        second = 118;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (-40));
+        second = 44;
+        pairs.put(second, -40);
 
-        second = (45);
-        pairs.put(second, (-20));
+        second = 45;
+        pairs.put(second, -20);
 
-        second = (105);
-        pairs.put(second, (0));
+        second = 105;
+        pairs.put(second, 0);
 
-        second = (109);
-        pairs.put(second, (0));
+        second = 109;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (0));
+        second = 97;
+        pairs.put(second, 0);
 
-        second = (117);
-        pairs.put(second, (0));
+        second = 117;
+        pairs.put(second, 0);
 
-        second = (116);
-        pairs.put(second, (0));
+        second = 116;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (-55));
+        second = 46;
+        pairs.put(second, -55);
 
-        second = (110);
-        pairs.put(second, (0));
+        second = 110;
+        pairs.put(second, 0);
 
-        second = (115);
-        pairs.put(second, (0));
+        second = 115;
+        pairs.put(second, 0);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        first = (108);
-        pairs = (Map) kerning.get(first);
+        first = 108;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (119);
-        pairs.put(second, (-10));
+        second = 119;
+        pairs.put(second, -10);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        first = (76);
-        pairs = (Map) kerning.get(first);
+        first = 76;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (148);
-        pairs.put(second, (0));
+        second = 148;
+        pairs.put(second, 0);
 
-        second = (146);
-        pairs.put(second, (-92));
+        second = 146;
+        pairs.put(second, -92);
 
-        second = (87);
-        pairs.put(second, (-74));
+        second = 87;
+        pairs.put(second, -74);
 
-        second = (89);
-        pairs.put(second, (-100));
+        second = 89;
+        pairs.put(second, -100);
 
-        second = (121);
-        pairs.put(second, (-55));
+        second = 121;
+        pairs.put(second, -55);
 
-        second = (84);
-        pairs.put(second, (-92));
+        second = 84;
+        pairs.put(second, -92);
 
-        second = (86);
-        pairs.put(second, (-100));
+        second = 86;
+        pairs.put(second, -100);
 
-        first = (148);
-        pairs = (Map) kerning.get(first);
+        first = 148;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (32);
-        pairs.put(second, (0));
+        second = 32;
+        pairs.put(second, 0);
 
-        first = (109);
-        pairs = (Map) kerning.get(first);
+        first = 109;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (117);
-        pairs.put(second, (0));
+        second = 117;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (0));
+        second = 121;
+        pairs.put(second, 0);
 
-        first = (89);
-        pairs = (Map) kerning.get(first);
+        first = 89;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (-110));
+        second = 111;
+        pairs.put(second, -110);
 
-        second = (45);
-        pairs.put(second, (-111));
+        second = 45;
+        pairs.put(second, -111);
 
-        second = (105);
-        pairs.put(second, (-55));
+        second = 105;
+        pairs.put(second, -55);
 
-        second = (79);
-        pairs.put(second, (-30));
+        second = 79;
+        pairs.put(second, -30);
 
-        second = (58);
-        pairs.put(second, (-92));
+        second = 58;
+        pairs.put(second, -92);
 
-        second = (97);
-        pairs.put(second, (-100));
+        second = 97;
+        pairs.put(second, -100);
 
-        second = (65);
-        pairs.put(second, (-120));
+        second = 65;
+        pairs.put(second, -120);
 
-        second = (117);
-        pairs.put(second, (-111));
+        second = 117;
+        pairs.put(second, -111);
 
-        second = (46);
-        pairs.put(second, (-129));
+        second = 46;
+        pairs.put(second, -129);
 
-        second = (101);
-        pairs.put(second, (-100));
+        second = 101;
+        pairs.put(second, -100);
 
-        second = (59);
-        pairs.put(second, (-92));
+        second = 59;
+        pairs.put(second, -92);
 
-        second = (44);
-        pairs.put(second, (-129));
+        second = 44;
+        pairs.put(second, -129);
 
-        first = (74);
-        pairs = (Map) kerning.get(first);
+        first = 74;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (111);
-        pairs.put(second, (0));
+        second = 111;
+        pairs.put(second, 0);
 
-        second = (97);
-        pairs.put(second, (0));
+        second = 97;
+        pairs.put(second, 0);
 
-        second = (65);
-        pairs.put(second, (-60));
+        second = 65;
+        pairs.put(second, -60);
 
-        second = (117);
-        pairs.put(second, (0));
+        second = 117;
+        pairs.put(second, 0);
 
-        second = (46);
-        pairs.put(second, (0));
+        second = 46;
+        pairs.put(second, 0);
 
-        second = (101);
-        pairs.put(second, (0));
+        second = 101;
+        pairs.put(second, 0);
 
-        second = (44);
-        pairs.put(second, (0));
+        second = 44;
+        pairs.put(second, 0);
 
-        first = (46);
-        pairs = (Map) kerning.get(first);
+        first = 46;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (148);
-        pairs.put(second, (-70));
+        second = 148;
+        pairs.put(second, -70);
 
-        second = (146);
-        pairs.put(second, (-70));
+        second = 146;
+        pairs.put(second, -70);
 
-        first = (110);
-        pairs = (Map) kerning.get(first);
+        first = 110;
+        pairs = kerning.get(first);
         if (pairs == null) {
-            pairs = new java.util.HashMap();
+            pairs = new HashMap<>();
             kerning.put(first, pairs);
         }
 
-        second = (117);
-        pairs.put(second, (0));
+        second = 117;
+        pairs.put(second, 0);
 
-        second = (121);
-        pairs.put(second, (-15));
+        second = 121;
+        pairs.put(second, -15);
 
-        second = (118);
-        pairs.put(second, (-40));
+        second = 118;
+        pairs.put(second, -40);
 
-        familyNames = new java.util.HashSet();
+        familyNames = new HashSet<>();
         familyNames.add("Times");
     }
 
@@ -1486,7 +1488,7 @@ public class TimesRoman extends Base14Font {
     }
 
     @Override
-    public Set getFamilyNames() {
+    public Collection<String> getFamilyNames() {
         return familyNames;
     }
 
@@ -1542,7 +1544,7 @@ public class TimesRoman extends Base14Font {
     }
 
     @Override
-    public java.util.Map getKerningInfo() {
+    public Map<Integer, Map<Integer, Integer>> getKerningInfo() {
         return kerning;
     }
 

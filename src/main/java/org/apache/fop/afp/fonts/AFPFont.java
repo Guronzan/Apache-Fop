@@ -19,8 +19,9 @@
 
 package org.apache.fop.afp.fonts;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.fop.fonts.FontType;
 import org.apache.fop.fonts.Typeface;
@@ -39,7 +40,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Constructor for the base font requires the name.
-     * 
+     *
      * @param name
      *            the name of the font
      */
@@ -67,15 +68,15 @@ public abstract class AFPFont extends Typeface {
 
     /** {@inheritDoc} */
     @Override
-    public Set getFamilyNames() {
-        final Set s = new java.util.HashSet();
+    public Collection<String> getFamilyNames() {
+        final Collection<String> s = new HashSet<>();
         s.add(this.name);
         return s;
     }
 
     /**
      * Returns the type of the font.
-     * 
+     *
      * @return the font type
      */
     @Override
@@ -85,7 +86,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Indicates if the font has kerning information.
-     * 
+     *
      * @return True, if kerning is available.
      */
     @Override
@@ -95,7 +96,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Returns the kerning map for the font.
-     * 
+     *
      * @return the kerning map
      */
     @Override
@@ -105,7 +106,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Returns the character set for a given size
-     * 
+     *
      * @param size
      *            the font size
      * @return the character set object
@@ -114,7 +115,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Controls whether this font is embeddable or not.
-     * 
+     *
      * @param value
      *            true to enable embedding, false otherwise.
      */
@@ -124,7 +125,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Indicates if this font may be embedded.
-     * 
+     *
      * @return True, if embedding is possible/permitted
      */
     public boolean isEmbeddable() {
@@ -133,7 +134,7 @@ public abstract class AFPFont extends Typeface {
 
     /**
      * Maps mapped code points to Unicode code points.
-     * 
+     *
      * @param character
      *            the mapped code point
      * @return the corresponding Unicode code point

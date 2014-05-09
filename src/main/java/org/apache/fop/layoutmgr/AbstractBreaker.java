@@ -71,26 +71,26 @@ public abstract class AbstractBreaker {
      */
     static String getBreakClassName(final int breakClassId) {
         switch (breakClassId) {
-        case Constants.EN_ALL:
-            return "ALL";
-        case Constants.EN_ANY:
-            return "ANY";
-        case Constants.EN_AUTO:
-            return "AUTO";
-        case Constants.EN_COLUMN:
-            return "COLUMN";
-        case Constants.EN_EVEN_PAGE:
-            return "EVEN PAGE";
-        case Constants.EN_LINE:
-            return "LINE";
-        case Constants.EN_NONE:
-            return "NONE";
-        case Constants.EN_ODD_PAGE:
-            return "ODD PAGE";
-        case Constants.EN_PAGE:
-            return "PAGE";
-        default:
-            return "??? (" + String.valueOf(breakClassId) + ")";
+            case Constants.EN_ALL:
+                return "ALL";
+            case Constants.EN_ANY:
+                return "ANY";
+            case Constants.EN_AUTO:
+                return "AUTO";
+            case Constants.EN_COLUMN:
+                return "COLUMN";
+            case Constants.EN_EVEN_PAGE:
+                return "EVEN PAGE";
+            case Constants.EN_LINE:
+                return "LINE";
+            case Constants.EN_NONE:
+                return "NONE";
+            case Constants.EN_ODD_PAGE:
+                return "ODD PAGE";
+            case Constants.EN_PAGE:
+                return "PAGE";
+            default:
+                return "??? (" + String.valueOf(breakClassId) + ")";
         }
     }
 
@@ -291,7 +291,7 @@ public abstract class AbstractBreaker {
     protected abstract <T> List<T> getNextKnuthElements(
             final LayoutContext context, final int alignment);
 
-    protected List<KnuthElement> getNextKnuthElements(
+    protected List<ListElement> getNextKnuthElements(
             final LayoutContext context, final int alignment,
             final Position positionAtIPDChange, final LayoutManager restartAtLM) {
         throw new UnsupportedOperationException(
@@ -447,7 +447,7 @@ public abstract class AbstractBreaker {
                      */
                     positionAtBreak = positionAtBreak.getPosition();
                     LayoutManager restartAtLM = null;
-                    List<KnuthElement> firstElements = Collections.emptyList();
+                    List<ListElement> firstElements = Collections.emptyList();
                     if (containsNonRestartableLM(positionAtBreak)) {
                         if (alg.getIPDdifference() > 0) {
                             final EventBroadcaster eventBroadcaster = getCurrentChildLM()
@@ -804,13 +804,13 @@ public abstract class AbstractBreaker {
     protected int getNextBlockList(final LayoutContext childLC,
             int nextSequenceStartsOn, final Position positionAtIPDChange,
             final LayoutManager restartAtLM,
-            final List<KnuthElement> firstElements) {
+            final List<ListElement> firstElements) {
         updateLayoutContext(childLC);
         // Make sure the span change signal is reset
         childLC.signalSpanChange(Constants.NOT_SET);
 
         BlockSequence blockList;
-        List<KnuthElement> returnedList;
+        List<ListElement> returnedList;
         if (firstElements == null) {
             returnedList = getNextKnuthElements(childLC, this.alignment);
         } else if (positionAtIPDChange == null) {
@@ -823,7 +823,7 @@ public abstract class AbstractBreaker {
              * Remove the last 3 penalty-filler-forced break elements that were
              * added by the Knuth algorithm. They will be re-added later on.
              */
-            final ListIterator<KnuthElement> iter = returnedList
+            final ListIterator<ListElement> iter = returnedList
                     .listIterator(returnedList.size());
             for (int i = 0; i < 3; ++i) {
                 iter.previous();
@@ -855,22 +855,22 @@ public abstract class AbstractBreaker {
                 log.debug("PLM> break - "
                         + getBreakClassName(breakPenalty.getBreakClass()));
                 switch (breakPenalty.getBreakClass()) {
-                case Constants.EN_PAGE:
-                    nextSequenceStartsOn = Constants.EN_ANY;
-                    break;
-                case Constants.EN_COLUMN:
-                    // TODO Fix this when implementing multi-column layout
-                    nextSequenceStartsOn = Constants.EN_COLUMN;
-                    break;
-                case Constants.EN_ODD_PAGE:
-                    nextSequenceStartsOn = Constants.EN_ODD_PAGE;
-                    break;
-                case Constants.EN_EVEN_PAGE:
-                    nextSequenceStartsOn = Constants.EN_EVEN_PAGE;
-                    break;
-                default:
-                    throw new IllegalStateException("Invalid break class: "
-                            + breakPenalty.getBreakClass());
+                    case Constants.EN_PAGE:
+                        nextSequenceStartsOn = Constants.EN_ANY;
+                        break;
+                    case Constants.EN_COLUMN:
+                        // TODO Fix this when implementing multi-column layout
+                        nextSequenceStartsOn = Constants.EN_COLUMN;
+                        break;
+                    case Constants.EN_ODD_PAGE:
+                        nextSequenceStartsOn = Constants.EN_ODD_PAGE;
+                        break;
+                    case Constants.EN_EVEN_PAGE:
+                        nextSequenceStartsOn = Constants.EN_EVEN_PAGE;
+                        break;
+                    default:
+                        throw new IllegalStateException("Invalid break class: "
+                                + breakPenalty.getBreakClass());
                 }
             }
             blockList.addAll(returnedList);

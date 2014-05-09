@@ -15,32 +15,27 @@
  * limitations under the License.
  */
 
-/* $Id: PDFOutline.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFOutline.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
-
 /**
- * This represents a single Outline object in a PDF, including the root Outlines
- * object. Outlines provide the bookmark bar, usually rendered to the right of a
- * PDF document in user agents such as Acrobat Reader
+ * <p>This represents a single Outline object in a PDF, including the root Outlines
+ * object. Outlines provide the bookmark bar, usually rendered to the right of
+ * a PDF document in user agents such as Acrobat Reader.</p>
  *
- * @author Kelly A. Campbell
- *
+ * <p>This work was authored by Kelly A. Campbell.</p>
  */
-@Slf4j
 public class PDFOutline extends PDFObject {
 
     /**
      * list of sub-entries (outline objects)
      */
-    private final List<PDFOutline> subentries;
+    private List subentries;
 
     /**
      * parent outline object. Root Outlines parent is null
@@ -63,65 +58,59 @@ public class PDFOutline extends PDFObject {
      */
     private String title;
 
-    private final String actionRef;
+    private String actionRef;
 
     /**
      * Create a PDF outline with the title and action.
      *
-     * @param title
-     *            the title of the outline entry (can only be null for root
-     *            Outlines obj)
-     * @param action
-     *            the action for this outline
-     * @param openItem
-     *            indicator of whether child items are visible or not
+     * @param title the title of the outline entry (can only be null for root Outlines obj)
+     * @param action the action for this outline
+     * @param openItem indicator of whether child items are visible or not
      */
-    public PDFOutline(final String title, final String action,
-            final boolean openItem) {
+    public PDFOutline(String title, String action, boolean openItem) {
         super();
-        this.subentries = new ArrayList<>();
-        this.count = 0;
-        this.parent = null;
-        this.prev = null;
-        this.next = null;
-        this.first = null;
-        this.last = null;
+        subentries = new java.util.ArrayList();
+        count = 0;
+        parent = null;
+        prev = null;
+        next = null;
+        first = null;
+        last = null;
         this.title = title;
-        this.actionRef = action;
+        actionRef = action;
         this.openItem = openItem;
     }
 
     /**
      * Set the title of this Outline object.
      *
-     * @param t
-     *            the title of the outline
+     * @param t the title of the outline
      */
-    public void setTitle(final String t) {
-        this.title = t;
+    public void setTitle(String t) {
+        title = t;
     }
 
     /**
      * Add a sub element to this outline.
      *
-     * @param outline
-     *            a sub outline
+     * @param outline a sub outline
      */
-    public void addOutline(final PDFOutline outline) {
-        if (!this.subentries.isEmpty()) {
-            outline.prev = this.subentries.get(this.subentries.size() - 1);
+    public void addOutline(PDFOutline outline) {
+        if (subentries.size() > 0) {
+            outline.prev
+                = (PDFOutline)subentries.get(subentries.size() - 1);
             outline.prev.next = outline;
         } else {
-            this.first = outline;
+            first = outline;
         }
 
-        this.subentries.add(outline);
+        subentries.add(outline);
         outline.parent = this;
 
         // note: count is not just the immediate children
         incrementCount();
 
-        this.last = outline;
+        last = outline;
     }
 
     /**
@@ -130,62 +119,52 @@ public class PDFOutline extends PDFObject {
     private void incrementCount() {
         // count is a total of our immediate subentries
         // and all descendent subentries
-        this.count++;
-        if (this.parent != null) {
-            this.parent.incrementCount();
+        count++;
+        if (parent != null) {
+            parent.incrementCount();
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    @Override
     protected byte[] toPDF() {
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
+        ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
         try {
-            bout.write(encode(getObjectID()));
             bout.write(encode("<<"));
-            if (this.parent == null) {
+            if (parent == null) {
                 // root Outlines object
-                if (this.first != null && this.last != null) {
-                    bout.write(encode(" /First " + this.first.referencePDF()
-                            + "\n"));
-                    bout.write(encode(" /Last " + this.last.referencePDF()
-                            + "\n"));
-                    // no count... we start with the outline completely closed
-                    // for now
+                if (first != null && last != null) {
+                    bout.write(encode(" /First " + first.referencePDF() + "\n"));
+                    bout.write(encode(" /Last " + last.referencePDF() + "\n"));
+                    // no count... we start with the outline completely closed for now
                 }
             } else {
                 // subentry Outline item object
                 bout.write(encode(" /Title "));
                 bout.write(encodeText(this.title));
                 bout.write(encode("\n"));
-                bout.write(encode(" /Parent " + this.parent.referencePDF()
-                        + "\n"));
-                if (this.prev != null) {
-                    bout.write(encode(" /Prev " + this.prev.referencePDF()
-                            + "\n"));
+                bout.write(encode(" /Parent " + parent.referencePDF() + "\n"));
+                if (prev != null) {
+                    bout.write(encode(" /Prev " + prev.referencePDF() + "\n"));
                 }
-                if (this.next != null) {
-                    bout.write(encode(" /Next " + this.next.referencePDF()
-                            + "\n"));
+                if (next != null) {
+                    bout.write(encode(" /Next " + next.referencePDF() + "\n"));
                 }
-                if (this.first != null && this.last != null) {
-                    bout.write(encode(" /First " + this.first.referencePDF()
-                            + "\n"));
-                    bout.write(encode(" /Last " + this.last.referencePDF()
-                            + "\n"));
+                if (first != null && last != null) {
+                    bout.write(encode(" /First " + first.referencePDF() + "\n"));
+                    bout.write(encode(" /Last " + last.referencePDF() + "\n"));
                 }
-                if (this.count > 0) {
-                    bout.write(encode(" /Count " + (this.openItem ? "" : "-")
-                            + this.count + "\n"));
+                if (count > 0) {
+                    bout.write(encode(" /Count " + (openItem ? "" : "-")
+                        + count + "\n"));
                 }
-                if (this.actionRef != null) {
-                    bout.write(encode(" /A " + this.actionRef + "\n"));
+                if (actionRef != null) {
+                    bout.write(encode(" /A " + actionRef + "\n"));
                 }
             }
-            bout.write(encode(">> endobj\n"));
-        } catch (final IOException ioe) {
+            bout.write(encode(">>"));
+        } catch (IOException ioe) {
             log.error("Ignored I/O exception", ioe);
         }
         return bout.toByteArray();

@@ -21,6 +21,7 @@ package org.apache.fop.fonts.truetype;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  * This class represents an entry to a TrueType font's Dir Tab.
@@ -55,12 +56,12 @@ class TTFDirTabEntry {
         return "Read dir tab [" + this.tag[0] + " " + this.tag[1] + " "
                 + this.tag[2] + " " + this.tag[3] + "]" + " offset: "
                 + this.offset + " length: " + this.length + " name: "
-                + this.tag;
+                + Arrays.toString(this.tag);
     }
 
     /**
      * Returns the checksum.
-     * 
+     *
      * @return int
      */
     public int getChecksum() {
@@ -69,7 +70,7 @@ class TTFDirTabEntry {
 
     /**
      * Returns the length.
-     * 
+     *
      * @return long
      */
     public long getLength() {
@@ -78,7 +79,7 @@ class TTFDirTabEntry {
 
     /**
      * Returns the offset.
-     * 
+     *
      * @return long
      */
     public long getOffset() {
@@ -87,7 +88,7 @@ class TTFDirTabEntry {
 
     /**
      * Returns the tag bytes.
-     * 
+     *
      * @return byte[]
      */
     public byte[] getTag() {
@@ -96,7 +97,7 @@ class TTFDirTabEntry {
 
     /**
      * Returns the tag bytes.
-     * 
+     *
      * @return byte[]
      */
     public String getTagString() {

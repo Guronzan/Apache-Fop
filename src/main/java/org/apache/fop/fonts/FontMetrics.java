@@ -19,12 +19,12 @@
 
 package org.apache.fop.fonts;
 
+import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Main interface for access to font metrics.
- * 
+ *
  * @param <U>
  * @param <T>
  */
@@ -50,7 +50,7 @@ public interface FontMetrics<U, T> {
      *
      * @return the font's family names (a Set of Strings)
      */
-    Set<String> getFamilyNames();
+    Collection<String> getFamilyNames();
 
     /**
      * Returns the font name for font embedding (may include a prefix, Example:

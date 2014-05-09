@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-/* $Id: PDFAnnotList.java 679326 2008-07-24 09:35:34Z vhennebert $ */
+/* $Id: PDFAnnotList.java 1305467 2012-03-26 17:39:20Z vhennebert $ */
 
 package org.apache.fop.pdf;
 
@@ -33,7 +33,7 @@ public class PDFAnnotList extends PDFObject {
     /**
      * the /Annot objects
      */
-    private final List<PDFObject> links = new java.util.ArrayList<>();
+    private final List links = new java.util.Vector();
 
     /**
      * add an /Annot object of /Subtype /Link.
@@ -59,18 +59,17 @@ public class PDFAnnotList extends PDFObject {
      */
     @Override
     public String toPDFString() {
-        final StringBuilder p = new StringBuilder(128);
-        p.append(getObjectID());
+        final StringBuffer p = new StringBuffer(128);
         p.append("[\n");
-        for (int i = 0; i < getCount(); ++i) {
-            p.append(this.links.get(i).referencePDF());
+        for (int i = 0; i < getCount(); i++) {
+            p.append(((PDFObject) this.links.get(i)).referencePDF());
             p.append("\n");
         }
-        p.append("]\nendobj\n");
+        p.append("]");
         return p.toString();
     }
 
     /*
-     * example 20 0 obj [ 19 0 R ] endobj
+     * example [ 19 0 R ]
      */
 }

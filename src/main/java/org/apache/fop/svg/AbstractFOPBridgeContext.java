@@ -22,6 +22,8 @@ package org.apache.fop.svg;
 import java.awt.geom.AffineTransform;
 import java.lang.reflect.Constructor;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.batik.bridge.Bridge;
 import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
@@ -33,6 +35,7 @@ import org.apache.xmlgraphics.image.loader.ImageSessionContext;
 /**
  * A FOP base implementation of a Batik BridgeContext.
  */
+@Slf4j
 public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /** The font list. */
@@ -45,7 +48,7 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Constructs a new bridge context.
-     * 
+     *
      * @param userAgent
      *            the user agent
      * @param loader
@@ -74,7 +77,7 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Constructs a new bridge context.
-     * 
+     *
      * @param userAgent
      *            the user agent
      * @param fontInfo
@@ -100,7 +103,7 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Constructs a new bridge context.
-     * 
+     *
      * @param userAgent
      *            the user agent
      * @param fontInfo
@@ -119,7 +122,7 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Returns the ImageManager to be used by the ImageElementBridge.
-     * 
+     *
      * @return the image manager
      */
     public ImageManager getImageManager() {
@@ -128,7 +131,7 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
 
     /**
      * Returns the ImageSessionContext to be used by the ImageElementBridge.
-     * 
+     *
      * @return the image session context
      */
     public ImageSessionContext getImageSessionContext() {
@@ -146,9 +149,10 @@ public abstract class AbstractFOPBridgeContext extends BridgeContext {
                     .getConstructor(new Class[] { FontInfo.class });
             putBridge((Bridge) constructor
                     .newInstance(new Object[] { this.fontInfo }));
-        } catch (final Throwable t) {
+        } catch (final Exception e) {
             // simply ignore (bridges instantiated over this method are
             // optional)
+            log.error("Exception", e);
         }
     }
 

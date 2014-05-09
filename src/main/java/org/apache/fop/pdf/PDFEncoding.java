@@ -26,8 +26,8 @@ import java.util.Set;
 /**
  * Class representing an /Encoding object.
  *
- * A small object expressing the base encoding name and the differences from the
- * base encoding.
+ * A small object expressing the base encoding name and
+ * the differences from the base encoding.
  *
  * The three base encodings are given by their name.
  *
@@ -46,14 +46,11 @@ public class PDFEncoding extends PDFDictionary {
     /** the name for the PDF document encoding scheme */
     public static final String PDF_DOC_ENCODING = "PDFDocEncoding";
 
-    /**
-     * the set of predefined encodings that can be assumed present in a PDF
-     * viewer
-     */
+    /** the set of predefined encodings that can be assumed present in a PDF viewer */
     private static final Set PREDEFINED_ENCODINGS;
 
     static {
-        final Set encodings = new java.util.HashSet();
+        Set encodings = new java.util.HashSet();
         encodings.add(STANDARD_ENCODING);
         encodings.add(MAC_ROMAN_ENCODING);
         encodings.add(MAC_EXPERT_ENCODING);
@@ -65,10 +62,9 @@ public class PDFEncoding extends PDFDictionary {
     /**
      * Create a new /Encoding object.
      *
-     * @param basename
-     *            the name of the character encoding schema
+     * @param basename the name of the character encoding schema
      */
-    public PDFEncoding(final String basename) {
+    public PDFEncoding(String basename) {
         super();
 
         put("Type", new PDFName("Encoding"));
@@ -79,19 +75,16 @@ public class PDFEncoding extends PDFDictionary {
 
     /**
      * Indicates whether a given encoding is one of the predefined encodings.
-     * 
-     * @param name
-     *            the encoding name (ex. "StandardEncoding")
+     * @param name the encoding name (ex. "StandardEncoding")
      * @return true if it is a predefined encoding
      */
-    public static boolean isPredefinedEncoding(final String name) {
+    public static boolean isPredefinedEncoding(String name) {
         return PREDEFINED_ENCODINGS.contains(name);
     }
 
     /**
-     * Creates and returns a new DifferencesBuilder instance for constructing
-     * the Differences array.
-     * 
+     * Creates and returns a new DifferencesBuilder instance for constructing the Differences
+     * array.
      * @return the DifferencesBuilder
      */
     public DifferencesBuilder createDifferencesBuilder() {
@@ -100,11 +93,9 @@ public class PDFEncoding extends PDFDictionary {
 
     /**
      * Sets the Differences value.
-     * 
-     * @param differences
-     *            the differences.
+     * @param differences the differences.
      */
-    public void setDifferences(final PDFArray differences) {
+    public void setDifferences(PDFArray differences) {
         put("Differences", differences);
     }
 
@@ -113,33 +104,28 @@ public class PDFEncoding extends PDFDictionary {
      */
     public class DifferencesBuilder {
 
-        private final PDFArray differences = new PDFArray();
+        private PDFArray differences = new PDFArray();
         private int currentCode = -1;
 
         /**
          * Start a new difference.
-         * 
-         * @param code
-         *            the starting code index inside the encoding
+         * @param code the starting code index inside the encoding
          * @return this builder instance
          */
-        public DifferencesBuilder addDifference(final int code) {
+        public DifferencesBuilder addDifference(int code) {
             this.currentCode = code;
-            this.differences.add((code));
+            this.differences.add(new Integer(code));
             return this;
         }
 
         /**
          * Adds a character name to the current difference.
-         * 
-         * @param name
-         *            the character name
+         * @param name the character name
          * @return this builder instance
          */
-        public DifferencesBuilder addName(final String name) {
+        public DifferencesBuilder addName(String name) {
             if (this.currentCode < 0) {
-                throw new IllegalStateException(
-                        "addDifference(int) must be called first");
+                throw new IllegalStateException("addDifference(int) must be called first");
             }
             this.differences.add(new PDFName(name));
             return this;
@@ -147,16 +133,14 @@ public class PDFEncoding extends PDFDictionary {
 
         /**
          * Indicates whether any differences have been recorded.
-         * 
          * @return true if there are differences.
          */
         public boolean hasDifferences() {
-            return this.differences.length() > 0;
+            return (this.differences.length() > 0);
         }
 
         /**
          * Creates and returns the PDFArray representing the Differences entry.
-         * 
          * @return the Differences entry
          */
         public PDFArray toPDFArray() {
@@ -165,8 +149,14 @@ public class PDFEncoding extends PDFDictionary {
     }
 
     /*
-     * example (p. 214) 25 0 obj << /Type /Encoding /Differences [39
-     * /quotesingle 96 /grave 128 /Adieresis /Aring /Ccedilla /Eacute /Ntilde
-     * /Odieresis /Udieresis /aacute /agrave] >> endobj
+     * example (p. 214)
+     * 25 0 obj
+     * <<
+     * /Type /Encoding
+     * /Differences [39 /quotesingle 96 /grave 128
+     * /Adieresis /Aring /Ccedilla /Eacute /Ntilde
+     * /Odieresis /Udieresis /aacute /agrave]
+     * >>
+     * endobj
      */
 }

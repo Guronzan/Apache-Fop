@@ -27,15 +27,13 @@ public final class PDFXMode {
     /** PDF/X-3:2003 enabled */
     public static final PDFXMode PDFX_3_2003 = new PDFXMode("PDF/X-3:2003");
 
-    private final String name;
+    private String name;
 
     /**
      * Constructor to add a new named item.
-     *
-     * @param name
-     *            Name of the item.
+     * @param name Name of the item.
      */
-    private PDFXMode(final String name) {
+    private PDFXMode(String name) {
         this.name = name;
     }
 
@@ -46,13 +44,10 @@ public final class PDFXMode {
 
     /**
      * Returns the mode enum object given a String.
-     *
-     * @param s
-     *            the string
-     * @return the PDFAMode enum object (DISABLED will be returned if no match
-     *         is found)
+     * @param s the string
+     * @return the PDFAMode enum object (DISABLED will be returned if no match is found)
      */
-    public static PDFXMode valueOf(final String s) {
+    public static PDFXMode valueOf(String s) {
         if (PDFX_3_2003.getName().equalsIgnoreCase(s)) {
             return PDFX_3_2003;
         } else {
@@ -61,9 +56,8 @@ public final class PDFXMode {
     }
 
     /** {@inheritDoc} */
-    @Override
     public String toString() {
-        return this.name;
+        return name;
     }
 
 }

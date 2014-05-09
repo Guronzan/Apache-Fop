@@ -52,7 +52,7 @@ final class FoUnitsConverter {
     public static final float CM_TO_TWIPS = 10 * MM_TO_TWIPS;
 
     /** conversion factors keyed by xsl:fo units names */
-    private static final Map TWIP_FACTORS = new HashMap();
+    private static final Map TWIP_FACTORS = new HashMap<>();
     static {
         TWIP_FACTORS.put(FixedLength.MM, new Float(MM_TO_TWIPS));
         TWIP_FACTORS.put(FixedLength.CM, new Float(CM_TO_TWIPS));

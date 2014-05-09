@@ -74,7 +74,7 @@ public abstract class FOEventHandler {
 
     /**
      * Main constructor
-     * 
+     *
      * @param foUserAgent
      *            the apps.FOUserAgent instance for this process
      */
@@ -87,7 +87,7 @@ public abstract class FOEventHandler {
 
     /**
      * Returns the User Agent object associated with this FOEventHandler.
-     * 
+     *
      * @return the User Agent object
      */
     public FOUserAgent getUserAgent() {
@@ -96,7 +96,7 @@ public abstract class FOEventHandler {
 
     /**
      * Retrieve the font information for this document
-     * 
+     *
      * @return the FontInfo instance for this document
      */
     public FontInfo getFontInfo() {
@@ -107,16 +107,14 @@ public abstract class FOEventHandler {
      * This method is called to indicate the start of a new document run.
      * 
      * @throws SAXException
-     *             In case of a problem
      */
     public void startDocument() throws SAXException {
     }
 
     /**
      * This method is called to indicate the end of a document run.
-     * 
+     *
      * @throws SAXException
-     *             In case of a problem
      */
     public void endDocument() throws SAXException {
     }
@@ -449,7 +447,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process start of a Link.
-     * 
+     *
      * @param basicLink
      *            BasicLink that is ending
      */
@@ -464,7 +462,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process an ExternalGraphic.
-     * 
+     *
      * @param eg
      *            ExternalGraphic to process.
      */
@@ -479,7 +477,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process an InstreamForeignObject.
-     * 
+     *
      * @param ifo
      *            InstreamForeignObject to process.
      */
@@ -488,7 +486,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the start of a footnote.
-     * 
+     *
      * @param footnote
      *            Footnote that is starting
      */
@@ -497,7 +495,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the ending of a footnote.
-     * 
+     *
      * @param footnote
      *            Footnote that is ending
      */
@@ -506,7 +504,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the start of a footnote body.
-     * 
+     *
      * @param body
      *            FootnoteBody that is starting
      */
@@ -515,7 +513,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the ending of a footnote body.
-     * 
+     *
      * @param body
      *            FootnoteBody that is ending
      */
@@ -524,7 +522,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process a Leader.
-     * 
+     *
      * @param l
      *            Leader to process.
      */
@@ -533,7 +531,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process a Character.
-     * 
+     *
      * @param c
      *            Character to process.
      */
@@ -542,7 +540,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process character data.
-     * 
+     *
      * @param data
      *            Array of characters to process.
      * @param start
@@ -555,7 +553,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the start of the external-document extension.
-     * 
+     *
      * @param document
      *            the external-document node
      */
@@ -564,7 +562,7 @@ public abstract class FOEventHandler {
 
     /**
      * Process the end of the external-document extension.
-     * 
+     *
      * @param document
      *            the external-document node
      */

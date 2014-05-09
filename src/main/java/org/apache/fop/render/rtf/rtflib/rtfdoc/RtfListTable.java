@@ -110,7 +110,7 @@ public class RtfListTable extends RtfContainer {
             final Integer num, final RtfAttributes attrs) throws IOException {
         super(parent, w, attrs);
 
-        this.styles = new LinkedList();
+        this.styles = new LinkedList<>();
     }
 
     /**
@@ -122,7 +122,7 @@ public class RtfListTable extends RtfContainer {
      */
     public int addList(final RtfList list) {
         if (this.lists == null) {
-            this.lists = new LinkedList();
+            this.lists = new LinkedList<>();
         }
 
         this.lists.add(list);

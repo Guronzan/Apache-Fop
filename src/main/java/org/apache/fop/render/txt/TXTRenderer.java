@@ -50,7 +50,7 @@ import org.apache.xmlgraphics.util.UnitConv;
  *         new Renderer interface)
  */
 @Slf4j
-public class TXTRenderer extends AbstractPathOrientedRenderer<PSState> {
+public class TXTRenderer extends AbstractPathOrientedRenderer {
 
     private static final char LIGHT_SHADE = '\u2591';
 
@@ -338,8 +338,7 @@ public class TXTRenderer extends AbstractPathOrientedRenderer<PSState> {
      * Does nothing. {@inheritDoc}
      */
     @Override
-    protected void restoreStateStackAfterBreakOut(
-            final List<PSState> breakOutList) {
+    protected void restoreStateStackAfterBreakOut(final List breakOutList) {
     }
 
     /**

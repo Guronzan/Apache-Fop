@@ -172,7 +172,7 @@ public class RTFHandler extends FOEventHandler {
         this.bDefer = true;
 
         FontSetup
-                .setup(this.fontInfo, null, new DefaultFontResolver(userAgent));
+        .setup(this.fontInfo, null, new DefaultFontResolver(userAgent));
     }
 
     /**
@@ -187,7 +187,11 @@ public class RTFHandler extends FOEventHandler {
         eventProducer.ioError(this, ioe);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     *
+     * @throws SAXException
+     */
     @Override
     public void startDocument() throws SAXException {
         // TODO sections should be created
@@ -244,7 +248,7 @@ public class RTFHandler extends FOEventHandler {
             if (this.pagemaster != null) {
                 this.sect.getRtfAttributes().set(
                         PageAttributesConverter
-                                .convertPageAttributes(this.pagemaster));
+                        .convertPageAttributes(this.pagemaster));
             } else {
                 final RTFEventProducer eventProducer = RTFEventProducer.Provider
                         .get(getUserAgent().getEventBroadcaster());
@@ -257,13 +261,13 @@ public class RTFHandler extends FOEventHandler {
             final int useAblePageWidth = this.pagemaster.getPageWidth()
                     .getValue()
                     - this.pagemaster.getCommonMarginBlock().marginLeft
-                            .getValue()
+                    .getValue()
                     - this.pagemaster.getCommonMarginBlock().marginRight
-                            .getValue()
+                    .getValue()
                     - this.sect.getRtfAttributes()
-                            .getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
+                    .getValueAsInteger(RtfPage.MARGIN_LEFT).intValue()
                     - this.sect.getRtfAttributes()
-                            .getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
+                    .getValueAsInteger(RtfPage.MARGIN_RIGHT).intValue();
             this.percentManager.setDimension(pageSeq, useAblePageWidth);
 
             this.bHeaderSpecified = false;
@@ -597,7 +601,7 @@ public class RTFHandler extends FOEventHandler {
             this.builderContext.getTableContext().setNextColumnRowSpanning(0,
                     null);
             this.builderContext.getTableContext()
-                    .setNextFirstSpanningCol(false);
+            .setNextFirstSpanningCol(false);
         } catch (final Exception e) {
             log.error("startColumn: " + e.getMessage());
             throw new RuntimeException(e.getMessage());
@@ -1170,7 +1174,7 @@ public class RTFHandler extends FOEventHandler {
             final FOUserAgent userAgent = ifo.getUserAgent();
             final ImageManager manager = userAgent.getFactory()
                     .getImageManager();
-            final Map hints = ImageUtil.getDefaultHints(ua
+            final Map<Object, Object> hints = ImageUtil.getDefaultHints(ua
                     .getImageSessionContext());
             final Image converted = manager.convertImage(image, FLAVORS, hints);
             putGraphic(ifo, converted);
@@ -1187,7 +1191,7 @@ public class RTFHandler extends FOEventHandler {
     }
 
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-            ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG };
+        ImageFlavor.RAW_EMF, ImageFlavor.RAW_PNG, ImageFlavor.RAW_JPEG };
 
     /**
      * Puts a graphic/image into the generated RTF file.
@@ -1207,7 +1211,8 @@ public class RTFHandler extends FOEventHandler {
                     .getImageManager();
             final ImageSessionContext sessionContext = userAgent
                     .getImageSessionContext();
-            final Map hints = ImageUtil.getDefaultHints(sessionContext);
+            final Map<Object, Object> hints = ImageUtil
+                    .getDefaultHints(sessionContext);
             final Image image = manager.getImage(info, FLAVORS, hints,
                     sessionContext);
 
@@ -1259,13 +1264,13 @@ public class RTFHandler extends FOEventHandler {
             @Override
             public int getBaseLength(final int lengthBase, final FObj fobj) {
                 switch (lengthBase) {
-                case LengthBase.IMAGE_INTRINSIC_WIDTH:
-                    return info.getSize().getWidthMpt();
-                case LengthBase.IMAGE_INTRINSIC_HEIGHT:
-                    return info.getSize().getHeightMpt();
-                default:
-                    return RTFHandler.this.percentManager.getBaseLength(
-                            lengthBase, fobj);
+                    case LengthBase.IMAGE_INTRINSIC_WIDTH:
+                        return info.getSize().getWidthMpt();
+                    case LengthBase.IMAGE_INTRINSIC_HEIGHT:
+                        return info.getSize().getHeightMpt();
+                    default:
+                        return RTFHandler.this.percentManager.getBaseLength(
+                                lengthBase, fobj);
                 }
             }
 
@@ -1731,8 +1736,8 @@ public class RTFHandler extends FOEventHandler {
             final Region regionBefore = this.pagemaster
                     .getRegion(Constants.FO_REGION_BEFORE);
             if (regionBefore != null) {
-                final FONode staticBefore = (FONode) pageSequence.getFlowMap()
-                        .get(regionBefore.getRegionName());
+                final FONode staticBefore = pageSequence.getFlowMap().get(
+                        regionBefore.getRegionName());
                 if (staticBefore != null) {
                     recurseFONode(staticBefore);
                 }
@@ -1740,8 +1745,8 @@ public class RTFHandler extends FOEventHandler {
             final Region regionAfter = this.pagemaster
                     .getRegion(Constants.FO_REGION_AFTER);
             if (regionAfter != null) {
-                final FONode staticAfter = (FONode) pageSequence.getFlowMap()
-                        .get(regionAfter.getRegionName());
+                final FONode staticAfter = pageSequence.getFlowMap().get(
+                        regionAfter.getRegionName());
                 if (staticAfter != null) {
                     recurseFONode(staticAfter);
                 }
@@ -1778,8 +1783,9 @@ public class RTFHandler extends FOEventHandler {
             }
 
             if (foNode.getChildNodes() != null) {
-                for (final Iterator it = foNode.getChildNodes(); it.hasNext();) {
-                    recurseFONode((FONode) it.next());
+                for (final Iterator<FONode> it = foNode.getChildNodes(); it
+                        .hasNext();) {
+                    recurseFONode(it.next());
                 }
             }
         } else if (foNode instanceof ListItem) {
@@ -1795,12 +1801,10 @@ public class RTFHandler extends FOEventHandler {
         } else {
             // Any other FO-Object: Simply recurse through all childNodes.
             if (foNode.getChildNodes() != null) {
-                for (final Iterator it = foNode.getChildNodes(); it.hasNext();) {
-                    final FONode fn = (FONode) it.next();
-                    if (log.isTraceEnabled()) {
-                        log.trace("  ChildNode for " + fn + " (" + fn.getName()
-                                + ")");
-                    }
+                for (final Iterator<FONode> it = foNode.getChildNodes(); it
+                        .hasNext();) {
+                    final FONode fn = it.next();
+                    log.trace("  ChildNode for {} ({})", fn, fn.getName());
                     recurseFONode(fn);
                 }
             }

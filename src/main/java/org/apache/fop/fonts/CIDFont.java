@@ -24,7 +24,7 @@ package org.apache.fop.fonts;
 /**
  * Abstract base class for CID fonts.
  */
-public abstract class CIDFont extends CustomFont {
+public abstract class CIDFont extends CustomFont<String, String> {
 
     /** Contains the character widths for all characters in the font */
     protected int[] width = null;
@@ -32,14 +32,14 @@ public abstract class CIDFont extends CustomFont {
     // ---- Required ----
     /**
      * Returns the type of the CID font.
-     * 
+     *
      * @return the type of the CID font
      */
     public abstract CIDFontType getCIDType();
 
     /**
      * Returns the name of the issuer of the font.
-     * 
+     *
      * @return a String identifying an issuer of character collections - for
      *         example, Adobe
      */
@@ -47,7 +47,7 @@ public abstract class CIDFont extends CustomFont {
 
     /**
      * Returns a font name for use within a registry.
-     * 
+     *
      * @return a String that uniquely names a character collection issued by a
      *         specific registry - for example, Japan1.
      */
@@ -55,14 +55,14 @@ public abstract class CIDFont extends CustomFont {
 
     /**
      * Returns the supplement number of the character collection.
-     * 
+     *
      * @return the supplement number
      */
     public abstract int getSupplement();
 
     /**
      * Returns the subset information for this font.
-     * 
+     *
      * @return the subset information
      */
     public abstract CIDSubset getCIDSubset();
@@ -70,7 +70,7 @@ public abstract class CIDFont extends CustomFont {
     // ---- Optional ----
     /**
      * Returns the default width for this font.
-     * 
+     *
      * @return the default width
      */
     public int getDefaultWidth() {
