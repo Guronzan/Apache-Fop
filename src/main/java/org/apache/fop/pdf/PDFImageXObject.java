@@ -109,7 +109,7 @@ public class PDFImageXObject extends PDFXObject {
             final Float zero = new Float(0.0f);
             final Float one = new Float(1.0f);
             PDFArray decode = new PDFArray(this);
-            for (int i = 0, c = pdfimage.getColorSpace().getNumComponents(); i < c; i++) {
+            for (int i = 0, c = pdfimage.getColorSpace().getNumComponents(); i < c; ++i) {
                 decode.add(one);
                 decode.add(zero);
             }

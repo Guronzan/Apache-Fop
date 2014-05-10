@@ -258,7 +258,7 @@ import org.apache.xmlgraphics.util.UnitConv;
          // init buffers
          this.charData = new StringBuilder[this.pageHeight];
          this.decoData = new StringBuilder[this.pageHeight];
-         for (int i = 0; i < this.pageHeight; i++) {
+         for (int i = 0; i < this.pageHeight; ++i) {
              this.charData[i] = new StringBuilder();
              this.decoData[i] = new StringBuilder();
          }
@@ -604,7 +604,7 @@ import org.apache.xmlgraphics.util.UnitConv;
          }
 
          addBitOfBorder(x, y, style, startType);
-         for (int i = 0; i < length - 2; i++) {
+         for (int i = 0; i < length - 2; ++i) {
              x += dx;
              y += dy;
              addBitOfBorder(x, y, style, startType + endType);

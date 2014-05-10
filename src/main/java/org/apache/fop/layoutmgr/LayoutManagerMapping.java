@@ -92,7 +92,7 @@ import org.apache.fop.util.CharUtilities;
  public class LayoutManagerMapping implements LayoutManagerMaker {
 
     /** The map of LayoutManagerMakers */
-     private final Map makers = new HashMap();
+     private final Map makers = new HashMap<>();
 
      /** default constructor */
      public LayoutManagerMapping() {
@@ -175,7 +175,7 @@ import org.apache.fop.util.CharUtilities;
      /** {@inheritDoc} */
      @Override
      public LayoutManager makeLayoutManager(final FONode node) {
-         final List lms = new ArrayList();
+         final List lms = new ArrayList<>();
          makeLayoutManagers(node, lms);
          if (lms.size() == 0) {
              throw new IllegalStateException("LayoutManager for class "
@@ -294,7 +294,7 @@ import org.apache.fop.util.CharUtilities;
          /** {@inheritDoc} */
          @Override
          public void make(final FONode node, final List lms) {
-             final ArrayList childList = new ArrayList();
+             final ArrayList childList = new ArrayList<>();
              super.make(node, childList);
              lms.add(new ICLayoutManager((InlineContainer) node, childList));
          }

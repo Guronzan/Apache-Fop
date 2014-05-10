@@ -20,6 +20,7 @@
 package org.apache.fop.fonts.apps;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -113,7 +114,7 @@ public class TTFReader extends AbstractFontReader {
         String ttcName = null;
         boolean isCid = true;
 
-        final Map options = new java.util.HashMap();
+        final Map<String, String> options = new HashMap<>();
         final String[] arguments = parseArguments(options, args);
 
         final TTFReader app = new TTFReader();
@@ -121,30 +122,30 @@ public class TTFReader extends AbstractFontReader {
         log.info("TTF Reader for Apache FOP " + Version.getVersion() + "\n");
 
         if (options.get("-enc") != null) {
-            final String enc = (String) options.get("-enc");
+            final String enc = options.get("-enc");
             if ("ansi".equals(enc)) {
                 isCid = false;
             }
         }
 
         if (options.get("-ttcname") != null) {
-            ttcName = (String) options.get("-ttcname");
+            ttcName = options.get("-ttcname");
         }
 
         if (options.get("-ef") != null) {
-            embFile = (String) options.get("-ef");
+            embFile = options.get("-ef");
         }
 
         if (options.get("-er") != null) {
-            embResource = (String) options.get("-er");
+            embResource = options.get("-er");
         }
 
         if (options.get("-fn") != null) {
-            fontName = (String) options.get("-fn");
+            fontName = options.get("-fn");
         }
 
         if (options.get("-cn") != null) {
-            className = (String) options.get("-cn");
+            className = options.get("-cn");
         }
 
         final boolean useKerning = true;
@@ -210,7 +211,7 @@ public class TTFReader extends AbstractFontReader {
      */
     public TTFFile loadTTF(final String fileName, final String fontName,
             final boolean useKerning, final boolean useAdvanced)
-            throws IOException {
+                    throws IOException {
         final TTFFile ttfFile = new TTFFile(useKerning, useAdvanced);
         log.info("Reading " + fileName + "...");
 
@@ -329,7 +330,7 @@ public class TTFReader extends AbstractFontReader {
         root.appendChild(bbox);
         final int[] bb = ttf.getFontBBox();
         final String[] names = { "left", "bottom", "right", "top" };
-        for (int i = 0; i < names.length; i++) {
+        for (int i = 0; i < names.length; ++i) {
             el = doc.createElement(names[i]);
             bbox.appendChild(el);
             el.appendChild(doc.createTextNode(String.valueOf(bb[i])));
@@ -434,7 +435,7 @@ public class TTFReader extends AbstractFontReader {
         final Element widths = doc.createElement("widths");
         sel.appendChild(widths);
 
-        for (short i = ttf.getFirstChar(); i <= ttf.getLastChar(); i++) {
+        for (short i = ttf.getFirstChar(); i <= ttf.getLastChar(); ++i) {
             el = doc.createElement("char");
             widths.appendChild(el);
             el.setAttribute("idx", String.valueOf(i));
@@ -484,7 +485,7 @@ public class TTFReader extends AbstractFontReader {
     /**
      * Bugzilla 40739, check that attr has a metrics-version attribute
      * compatible with ours.
-     * 
+     *
      * @param attr
      *            attributes read from the root element of a metrics XML file
      * @throws SAXException

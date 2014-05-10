@@ -36,7 +36,7 @@ import org.apache.fop.fo.pagination.Root;
  * XSL 1.1 WD.
  */
 public class BookmarkTree extends FObj {
-    private ArrayList bookmarks = new ArrayList();
+    private ArrayList bookmarks = new ArrayList<>();
 
     /**
      * Create a new BookmarkTree object that is a child

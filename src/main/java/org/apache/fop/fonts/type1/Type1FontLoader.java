@@ -192,7 +192,7 @@ import org.apache.fop.fonts.SingleByteFont;
      }
 
      private Set<String> toGlyphSet(final String[] glyphNames) {
-         final Set<String> glyphSet = new java.util.HashSet<String>();
+         final Set<String> glyphSet = new HashSet<String>();
          for (final String name : glyphNames) {
              glyphSet.add(name);
          }
@@ -230,7 +230,7 @@ import org.apache.fop.fonts.SingleByteFont;
       */
      private void addUnencodedBasedOnAFM(final AFMFile afm) {
          final List charMetrics = afm.getCharMetrics();
-         for (int i = 0, c = afm.getCharCount(); i < c; i++) {
+         for (int i = 0, c = afm.getCharCount(); i < c; ++i) {
              final AFMCharMetrics metrics = (AFMCharMetrics) charMetrics.get(i);
              if (!metrics.hasCharCode() && metrics.getCharacter() != null) {
                  this.singleFont.addUnencodedCharacter(metrics.getCharacter(),
@@ -398,7 +398,7 @@ import org.apache.fop.fonts.SingleByteFont;
              this.returnFont.setFlags(pfm.getFlags());
              this.returnFont.setFirstChar(pfm.getFirstChar());
              this.returnFont.setLastChar(pfm.getLastChar());
-             for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); i++) {
+             for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); ++i) {
                  this.singleFont.setWidth(i, pfm.getCharWidth(i));
              }
              if (this.useKerning) {

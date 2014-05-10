@@ -142,7 +142,7 @@ public class CIDSubset {
      */
     public char[] getSubsetChars() {
         char[] charArray = new char[usedGlyphsCount];
-        for (int i = 0; i < usedGlyphsCount; i++) {
+        for (int i = 0; i < usedGlyphsCount; ++i) {
             charArray[i] = getUnicodeForSubsetIndex(i);
         }
         return charArray;

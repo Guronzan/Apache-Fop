@@ -19,6 +19,7 @@
 
 package org.apache.fop.fonts.substitute;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,303 +36,294 @@ import org.apache.fop.fonts.FontUtil;
  * Encapsulates a font substitution qualifier
  */
 @Slf4j
- public class FontQualifier {
+public class FontQualifier {
 
     /** font family attribute value */
-     private AttributeValue fontFamilyAttributeValue = null;
+    private AttributeValue fontFamilyAttributeValue = null;
 
-     /** font style attribute value */
-     private AttributeValue fontStyleAttributeValue = null;
+    /** font style attribute value */
+    private AttributeValue fontStyleAttributeValue = null;
 
-     /** font weight attribute value */
-     private AttributeValue fontWeightAttributeValue = null;
+    /** font weight attribute value */
+    private AttributeValue fontWeightAttributeValue = null;
 
-     /**
-      * Default constructor
-      */
-     public FontQualifier() {
-     }
+    /**
+     * Default constructor
+     */
+    public FontQualifier() {
+    }
 
-     /**
-      * Sets the font family
-      * 
+    /**
+     * Sets the font family
+     *
      * @param fontFamily
      *            the font family
-      */
-     public void setFontFamily(final String fontFamily) {
-         final AttributeValue fontFamilyAttribute = AttributeValue
+     */
+    public void setFontFamily(final String fontFamily) {
+        final AttributeValue fontFamilyAttribute = AttributeValue
                 .valueOf(fontFamily);
-         if (fontFamilyAttribute == null) {
-             log.error("Invalid font-family value '" + fontFamily + "'");
-             return;
-         }
-         this.fontFamilyAttributeValue = fontFamilyAttribute;
-     }
+        if (fontFamilyAttribute == null) {
+            log.error("Invalid font-family value '" + fontFamily + "'");
+            return;
+        }
+        this.fontFamilyAttributeValue = fontFamilyAttribute;
+    }
 
-     /**
-      * Sets the font style
-      * 
+    /**
+     * Sets the font style
+     *
      * @param fontStyle
      *            the font style
-      */
-     public void setFontStyle(final String fontStyle) {
-         final AttributeValue fontStyleAttribute = AttributeValue
+     */
+    public void setFontStyle(final String fontStyle) {
+        final AttributeValue fontStyleAttribute = AttributeValue
                 .valueOf(fontStyle);
-         if (fontStyleAttribute != null) {
-             this.fontStyleAttributeValue = fontStyleAttribute;
-         }
-     }
+        if (fontStyleAttribute != null) {
+            this.fontStyleAttributeValue = fontStyleAttribute;
+        }
+    }
 
-     /**
-      * Sets the font weight
-      * 
+    /**
+     * Sets the font weight
+     *
      * @param fontWeight
      *            the font weight
-      */
-     public void setFontWeight(final String fontWeight) {
-         final AttributeValue fontWeightAttribute = AttributeValue
+     */
+    public void setFontWeight(final String fontWeight) {
+        final AttributeValue fontWeightAttribute = AttributeValue
                 .valueOf(fontWeight);
-         if (fontWeightAttribute != null) {
-             for (final Iterator it = fontWeightAttribute.iterator(); it
+        if (fontWeightAttribute != null) {
+            for (final Iterator it = fontWeightAttribute.iterator(); it
                     .hasNext();) {
-                 final Object weightObj = it.next();
-                 if (weightObj instanceof String) {
-                     final String weightString = ((String) weightObj).trim();
-                     try {
-                         FontUtil.parseCSS2FontWeight(weightString);
-                     } catch (final IllegalArgumentException ex) {
-                         log.error("Invalid font-weight value '" + weightString
+                final Object weightObj = it.next();
+                if (weightObj instanceof String) {
+                    final String weightString = ((String) weightObj).trim();
+                    try {
+                        FontUtil.parseCSS2FontWeight(weightString);
+                    } catch (final IllegalArgumentException ex) {
+                        log.error("Invalid font-weight value '" + weightString
                                 + "'");
-                         return;
-                     }
-                 }
-             }
-             this.fontWeightAttributeValue = fontWeightAttribute;
-         }
-     }
+                        return;
+                    }
+                }
+            }
+            this.fontWeightAttributeValue = fontWeightAttribute;
+        }
+    }
 
-     /**
-      * @return the font family attribute
-      */
-     public AttributeValue getFontFamily() {
-         return this.fontFamilyAttributeValue;
-     }
+    /**
+     * @return the font family attribute
+     */
+    public AttributeValue getFontFamily() {
+        return this.fontFamilyAttributeValue;
+    }
 
-     /**
-      * @return the font style attribute
-      */
-     public AttributeValue getFontStyle() {
-         if (this.fontStyleAttributeValue == null) {
-             return AttributeValue.valueOf(Font.STYLE_NORMAL);
-         }
-         return this.fontStyleAttributeValue;
-     }
+    /**
+     * @return the font style attribute
+     */
+    public AttributeValue getFontStyle() {
+        if (this.fontStyleAttributeValue == null) {
+            return AttributeValue.valueOf(Font.STYLE_NORMAL);
+        }
+        return this.fontStyleAttributeValue;
+    }
 
-     /**
-      * @return the font weight attribute
-      */
-     public AttributeValue getFontWeight() {
-         if (this.fontWeightAttributeValue == null) {
-             return AttributeValue.valueOf(Integer.toString(Font.WEIGHT_NORMAL));
-         }
-         return this.fontWeightAttributeValue;
-     }
+    /**
+     * @return the font weight attribute
+     */
+    public AttributeValue getFontWeight() {
+        if (this.fontWeightAttributeValue == null) {
+            return AttributeValue.valueOf(Integer.toString(Font.WEIGHT_NORMAL));
+        }
+        return this.fontWeightAttributeValue;
+    }
 
-     /**
-      * @return true if this rule has a font weight
-      */
-     public boolean hasFontWeight() {
-         return this.fontWeightAttributeValue != null;
-     }
+    /**
+     * @return true if this rule has a font weight
+     */
+    public boolean hasFontWeight() {
+        return this.fontWeightAttributeValue != null;
+    }
 
-     /**
-      * @return true if this rule has a font style
-      */
-     public boolean hasFontStyle() {
-         return this.fontStyleAttributeValue != null;
-     }
+    /**
+     * @return true if this rule has a font style
+     */
+    public boolean hasFontStyle() {
+        return this.fontStyleAttributeValue != null;
+    }
 
-     /**
-      * Returns a list of matching font triplet found in a given font info
-      *
-      * @param fontInfo
+    /**
+     * Returns a list of matching font triplet found in a given font info
+     *
+     * @param fontInfo
      *            the font info
      * @return a list of matching font triplets
-      */
-     protected List/* <FontTriplet> */match(final FontInfo fontInfo) {
-         final AttributeValue fontFamilyValue = getFontFamily();
-         final AttributeValue weightValue = getFontWeight();
-         final AttributeValue styleValue = getFontStyle();
+     */
+    protected List<FontTriplet> match(final FontInfo fontInfo) {
+        final AttributeValue fontFamilyValue = getFontFamily();
+        final AttributeValue weightValue = getFontWeight();
+        final AttributeValue styleValue = getFontStyle();
 
-         final List/* <FontTriplet> */matchingTriplets = new java.util.ArrayList/*
-                                                                                * <
-                                                                                * FontTriplet
-                                                                                * >
-                                                                                */();
+        final List<FontTriplet> matchingTriplets = new ArrayList<>();
 
-         // try to find matching destination font triplet
-         for (final Iterator attrIt = fontFamilyValue.iterator(); attrIt
+        // try to find matching destination font triplet
+        for (final Iterator attrIt = fontFamilyValue.iterator(); attrIt
                 .hasNext();) {
-             final String fontFamilyString = (String) attrIt.next();
-             final Map/* <FontTriplet> */triplets = fontInfo.getFontTriplets();
-             if (triplets != null) {
-                 final Set/* <FontTriplet> */tripletSet = triplets.keySet();
-                 for (final Iterator/* <FontTriplet> */tripletIt = tripletSet
-                        .iterator(); tripletIt.hasNext();) {
-                     final FontTriplet triplet = (FontTriplet) tripletIt.next();
-                     final String fontName = triplet.getName();
+            final String fontFamilyString = (String) attrIt.next();
+            final Map<FontTriplet, String> triplets = fontInfo
+                    .getFontTriplets();
+            if (triplets != null) {
+                final Set<FontTriplet> tripletSet = triplets.keySet();
+                for (final FontTriplet fontTriplet : tripletSet) {
+                    final FontTriplet triplet = fontTriplet;
+                    final String fontName = triplet.getName();
 
-                     // matched font family name
-                     if (fontFamilyString.toLowerCase().equals(
+                    // matched font family name
+                    if (fontFamilyString.toLowerCase().equals(
                             fontName.toLowerCase())) {
 
-                         // try and match font weight
-                         boolean weightMatched = false;
-                         final int fontWeight = triplet.getWeight();
-                         for (final Iterator weightIt = weightValue.iterator(); weightIt
+                        // try and match font weight
+                        boolean weightMatched = false;
+                        final int fontWeight = triplet.getWeight();
+                        for (final Iterator weightIt = weightValue.iterator(); weightIt
                                 .hasNext();) {
-                             final Object weightObj = weightIt.next();
-                             if (weightObj instanceof FontWeightRange) {
-                                 final FontWeightRange intRange = (FontWeightRange) weightObj;
-                                 if (intRange.isWithinRange(fontWeight)) {
-                                     weightMatched = true;
-                                 }
-                             } else if (weightObj instanceof String) {
-                                 final String fontWeightString = (String) weightObj;
-                                 final int fontWeightValue = FontUtil
+                            final Object weightObj = weightIt.next();
+                            if (weightObj instanceof FontWeightRange) {
+                                final FontWeightRange intRange = (FontWeightRange) weightObj;
+                                if (intRange.isWithinRange(fontWeight)) {
+                                    weightMatched = true;
+                                }
+                            } else if (weightObj instanceof String) {
+                                final String fontWeightString = (String) weightObj;
+                                final int fontWeightValue = FontUtil
                                         .parseCSS2FontWeight(fontWeightString);
-                                 if (fontWeightValue == fontWeight) {
-                                     weightMatched = true;
-                                 }
-                             } else if (weightObj instanceof Integer) {
-                                 final Integer fontWeightInteger = (Integer) weightObj;
-                                 final int fontWeightValue = fontWeightInteger
+                                if (fontWeightValue == fontWeight) {
+                                    weightMatched = true;
+                                }
+                            } else if (weightObj instanceof Integer) {
+                                final Integer fontWeightInteger = (Integer) weightObj;
+                                final int fontWeightValue = fontWeightInteger
                                         .intValue();
-                                 if (fontWeightValue == fontWeight) {
-                                     weightMatched = true;
-                                 }
-                             }
-                         }
+                                if (fontWeightValue == fontWeight) {
+                                    weightMatched = true;
+                                }
+                            }
+                        }
 
-                         // try and match font style
-                         boolean styleMatched = false;
-                         final String fontStyleString = triplet.getStyle();
-                         for (final Iterator styleIt = styleValue.iterator(); styleIt
+                        // try and match font style
+                        boolean styleMatched = false;
+                        final String fontStyleString = triplet.getStyle();
+                        for (final Iterator styleIt = styleValue.iterator(); styleIt
                                 .hasNext();) {
-                             final String style = (String) styleIt.next();
-                             if (fontStyleString.equals(style)) {
-                                 styleMatched = true;
-                             }
-                         }
+                            final String style = (String) styleIt.next();
+                            if (fontStyleString.equals(style)) {
+                                styleMatched = true;
+                            }
+                        }
 
-                         if (weightMatched && styleMatched) {
-                             matchingTriplets.add(triplet);
-                         }
-                     }
-                 }
-             }
-         }
-         return matchingTriplets;
-     }
+                        if (weightMatched && styleMatched) {
+                            matchingTriplets.add(triplet);
+                        }
+                    }
+                }
+            }
+        }
+        return matchingTriplets;
+    }
 
-     /**
-      * Returns the highest priority matching font triplet found in a given font
+    /**
+     * Returns the highest priority matching font triplet found in a given font
      * info
-     * 
+     *
      * @param fontInfo
      *            the font info
      * @return the highest priority matching font triplet
-      */
-     protected FontTriplet bestMatch(final FontInfo fontInfo) {
-         final List/* <FontTriplet> */matchingTriplets = match(fontInfo);
-         FontTriplet bestTriplet = null;
-         if (matchingTriplets.size() == 1) {
-             bestTriplet = (FontTriplet) matchingTriplets.get(0);
-         } else {
-             for (final Iterator iterator = matchingTriplets.iterator(); iterator
-                    .hasNext();) {
-                 final FontTriplet triplet = (FontTriplet) iterator.next();
-                 if (bestTriplet == null) {
-                     bestTriplet = triplet;
-                 } else {
-                     final int priority = triplet.getPriority();
-                     if (priority < bestTriplet.getPriority()) {
-                         bestTriplet = triplet;
-                     }
-                 }
-             }
-         }
-         return bestTriplet;
-     }
+     */
+    protected FontTriplet bestMatch(final FontInfo fontInfo) {
+        final List<FontTriplet> matchingTriplets = match(fontInfo);
+        FontTriplet bestTriplet = null;
+        if (matchingTriplets.size() == 1) {
+            bestTriplet = matchingTriplets.get(0);
+        } else {
+            for (final Object element : matchingTriplets) {
+                final FontTriplet triplet = (FontTriplet) element;
+                if (bestTriplet == null) {
+                    bestTriplet = triplet;
+                } else {
+                    final int priority = triplet.getPriority();
+                    if (priority < bestTriplet.getPriority()) {
+                        bestTriplet = triplet;
+                    }
+                }
+            }
+        }
+        return bestTriplet;
+    }
 
-     /**
-      * @return a list of font triplets matching this qualifier
-      */
-     public List/* <FontTriplet> */getTriplets() {
-         final List/* <FontTriplet> */triplets = new java.util.ArrayList/*
-                                                                        * <
-                                                                        * FontTriplet
-                                                                        * >
-                                                                        */();
+    /**
+     * @return a list of font triplets matching this qualifier
+     */
+    public List<FontTriplet> getTriplets() {
+        final List<FontTriplet> triplets = new ArrayList<>();
 
-         final AttributeValue fontFamilyValue = getFontFamily();
-         for (final Iterator fontFamilyIt = fontFamilyValue.iterator(); fontFamilyIt
+        final AttributeValue fontFamilyValue = getFontFamily();
+        for (final Iterator fontFamilyIt = fontFamilyValue.iterator(); fontFamilyIt
                 .hasNext();) {
-             final String name = (String) fontFamilyIt.next();
+            final String name = (String) fontFamilyIt.next();
 
-             final AttributeValue styleValue = getFontStyle();
-             for (final Iterator styleIt = styleValue.iterator(); styleIt
+            final AttributeValue styleValue = getFontStyle();
+            for (final Iterator styleIt = styleValue.iterator(); styleIt
                     .hasNext();) {
-                 final String style = (String) styleIt.next();
+                final String style = (String) styleIt.next();
 
-                 final AttributeValue weightValue = getFontWeight();
-                 for (final Iterator weightIt = weightValue.iterator(); weightIt
+                final AttributeValue weightValue = getFontWeight();
+                for (final Iterator weightIt = weightValue.iterator(); weightIt
                         .hasNext();) {
-                     final Object weightObj = weightIt.next();
+                    final Object weightObj = weightIt.next();
 
-                     if (weightObj instanceof FontWeightRange) {
-                         final FontWeightRange fontWeightRange = (FontWeightRange) weightObj;
-                         final int[] weightRange = fontWeightRange.toArray();
-                         for (final int element : weightRange) {
-                             triplets.add(new FontTriplet(name, style, element));
-                         }
-                     } else if (weightObj instanceof String) {
-                         final String weightString = (String) weightObj;
-                         final int weight = FontUtil
+                    if (weightObj instanceof FontWeightRange) {
+                        final FontWeightRange fontWeightRange = (FontWeightRange) weightObj;
+                        final int[] weightRange = fontWeightRange.toArray();
+                        for (final int element : weightRange) {
+                            triplets.add(new FontTriplet(name, style, element));
+                        }
+                    } else if (weightObj instanceof String) {
+                        final String weightString = (String) weightObj;
+                        final int weight = FontUtil
                                 .parseCSS2FontWeight(weightString);
-                         triplets.add(new FontTriplet(name, style, weight));
-                     } else if (weightObj instanceof Integer) {
-                         final Integer weightInteger = (Integer) weightObj;
-                         final int weight = weightInteger.intValue();
-                         triplets.add(new FontTriplet(name, style, weight));
-                     }
-                 }
-             }
-         }
-         return triplets;
-     }
+                        triplets.add(new FontTriplet(name, style, weight));
+                    } else if (weightObj instanceof Integer) {
+                        final Integer weightInteger = (Integer) weightObj;
+                        final int weight = weightInteger.intValue();
+                        triplets.add(new FontTriplet(name, style, weight));
+                    }
+                }
+            }
+        }
+        return triplets;
+    }
 
-     /**
-      * {@inheritDoc}
-      */
-     @Override
-     public String toString() {
-         String str = new String();
-         if (this.fontFamilyAttributeValue != null) {
-             str += "font-family=" + this.fontFamilyAttributeValue;
-         }
-         if (this.fontStyleAttributeValue != null) {
-             if (str.length() > 0) {
-                 str += ", ";
-             }
-             str += "font-style=" + this.fontStyleAttributeValue;
-         }
-         if (this.fontWeightAttributeValue != null) {
-             if (str.length() > 0) {
-                 str += ", ";
-             }
-             str += "font-weight=" + this.fontWeightAttributeValue;
-         }
-         return str;
-     }
- }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        String str = new String();
+        if (this.fontFamilyAttributeValue != null) {
+            str += "font-family=" + this.fontFamilyAttributeValue;
+        }
+        if (this.fontStyleAttributeValue != null) {
+            if (str.length() > 0) {
+                str += ", ";
+            }
+            str += "font-style=" + this.fontStyleAttributeValue;
+        }
+        if (this.fontWeightAttributeValue != null) {
+            if (str.length() > 0) {
+                str += ", ";
+            }
+            str += "font-weight=" + this.fontWeightAttributeValue;
+        }
+        return str;
+    }
+}

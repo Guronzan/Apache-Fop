@@ -20,6 +20,7 @@
 package org.apache.fop.render;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.fop.apps.FOUserAgent;
@@ -29,43 +30,49 @@ import org.apache.fop.apps.FOUserAgent;
  */
 public abstract class AbstractRenderingContext implements RenderingContext {
 
-    private FOUserAgent userAgent;
+    private final FOUserAgent userAgent;
     private Map hints;
 
     /**
      * Main constructor.
-     * @param userAgent the user agent
+     *
+     * @param userAgent
+     *            the user agent
      */
-    public AbstractRenderingContext(FOUserAgent userAgent) {
+    public AbstractRenderingContext(final FOUserAgent userAgent) {
         this.userAgent = userAgent;
     }
 
     /**
      * Returns the user agent.
      *
-     * @return   The user agent
+     * @return The user agent
      */
+    @Override
     public FOUserAgent getUserAgent() {
-        return userAgent;
+        return this.userAgent;
     }
 
     /** {@inheritDoc} */
-    public void putHints(Map additionalHints) {
+    @Override
+    public void putHints(final Map additionalHints) {
         if (additionalHints == null) {
             return;
         }
         if (this.hints == null) {
-            this.hints = new java.util.HashMap();
+            this.hints = new HashMap<>();
         }
         this.hints.putAll(additionalHints);
     }
 
     /** {@inheritDoc} */
-    public void putHint(Object key, Object value) {
+    @Override
+    public void putHint(final Object key, final Object value) {
         this.hints.put(key, value);
     }
 
     /** {@inheritDoc} */
+    @Override
     public Map getHints() {
         if (this.hints == null) {
             return Collections.EMPTY_MAP;
@@ -75,7 +82,8 @@ public abstract class AbstractRenderingContext implements RenderingContext {
     }
 
     /** {@inheritDoc} */
-    public Object getHint(Object key) {
+    @Override
+    public Object getHint(final Object key) {
         if (this.hints == null) {
             return null;
         } else {
@@ -83,4 +91,3 @@ public abstract class AbstractRenderingContext implements RenderingContext {
         }
     }
 }
-

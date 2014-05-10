@@ -92,7 +92,7 @@ class CollapsingBorderResolver implements BorderResolver {
         void resolveBordersFirstRowInTable(List/*<GridUnit>*/ row, boolean withNormal,
                 boolean withLeadingTrailing, boolean withRest) {
             assert firstInTable;
-            for (int i = 0; i < row.size(); i++) {
+            for (int i = 0; i < row.size(); ++i) {
                 TableColumn column = table.getColumn(i);
                 ((GridUnit) row.get(i)).integrateBorderSegment(
                         CommonBorderPaddingBackground.BEFORE, column, withNormal,
@@ -109,7 +109,7 @@ class CollapsingBorderResolver implements BorderResolver {
          */
         void resolveBordersBetweenRows(List/*<GridUnit>*/ rowBefore, List/*<GridUnit>*/ rowAfter) {
             assert rowBefore != null && rowAfter != null;
-            for (int i = 0; i < rowAfter.size(); i++) {
+            for (int i = 0; i < rowAfter.size(); ++i) {
                 GridUnit gu = (GridUnit) rowAfter.get(i);
                 if (gu.getRowSpanIndex() == 0) {
                     GridUnit beforeGU = (GridUnit) rowBefore.get(i);
@@ -121,7 +121,7 @@ class CollapsingBorderResolver implements BorderResolver {
         /** Integrates the border-after of the part. */
         void resolveBordersLastRowInPart(List/*<GridUnit>*/ row, boolean withNormal,
                 boolean withLeadingTrailing, boolean withRest) {
-            for (int i = 0; i < row.size(); i++) {
+            for (int i = 0; i < row.size(); ++i) {
                 ((GridUnit) row.get(i)).integrateBorderSegment(CommonBorderPaddingBackground.AFTER,
                         tablePart, withNormal, withLeadingTrailing, withRest);
             }
@@ -138,7 +138,7 @@ class CollapsingBorderResolver implements BorderResolver {
          */
         void resolveBordersLastRowInTable(List/*<GridUnit>*/ row, boolean withNormal,
                 boolean withLeadingTrailing, boolean withRest) {
-            for (int i = 0; i < row.size(); i++) {
+            for (int i = 0; i < row.size(); ++i) {
                 TableColumn column = table.getColumn(i);
                 ((GridUnit) row.get(i)).integrateBorderSegment(CommonBorderPaddingBackground.AFTER,
                         column, withNormal, withLeadingTrailing, withRest);
@@ -153,7 +153,7 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param row
          */
         void integrateLeadingBorders(List/*<GridUnit>*/ row) {
-            for (int i = 0; i < table.getNumberOfColumns(); i++) {
+            for (int i = 0; i < table.getNumberOfColumns(); ++i) {
                 GridUnit gu = (GridUnit) row.get(i);
                 ConditionalBorder border = (ConditionalBorder) leadingBorders.get(i);
                 gu.integrateCompetingBorder(CommonBorderPaddingBackground.BEFORE, border,
@@ -169,7 +169,7 @@ class CollapsingBorderResolver implements BorderResolver {
          * @param row
          */
         void integrateTrailingBorders(List/*<GridUnit>*/ row) {
-            for (int i = 0; i < table.getNumberOfColumns(); i++) {
+            for (int i = 0; i < table.getNumberOfColumns(); ++i) {
                 GridUnit gu = (GridUnit) row.get(i);
                 ConditionalBorder border = (ConditionalBorder) trailingBorders.get(i);
                 gu.integrateCompetingBorder(CommonBorderPaddingBackground.AFTER, border,
@@ -219,7 +219,7 @@ class CollapsingBorderResolver implements BorderResolver {
             }
             if (firstInPart) {
                 // Integrate the border-before of the part
-                for (int i = 0; i < row.size(); i++) {
+                for (int i = 0; i < row.size(); ++i) {
                     ((GridUnit) row.get(i)).integrateBorderSegment(
                             CommonBorderPaddingBackground.BEFORE, tablePart, true, true, true);
                 }

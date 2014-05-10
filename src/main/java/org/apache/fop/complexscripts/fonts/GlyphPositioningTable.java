@@ -913,7 +913,7 @@ public class GlyphPositioningTable extends GlyphTable {
             if ((ciMark = getCoverageIndex(giMark)) >= 0) {
                 final MarkAnchor ma = getMarkAnchor(ciMark, giMark);
                 if (ma != null) {
-                    for (int i = 0, n = ps.getPosition(); i < n; i++) {
+                    for (int i = 0, n = ps.getPosition(); i < n; ++i) {
                         final int gi = ps.getGlyph(-(i + 1));
                         if (ps.isMark(gi)) {
                             continue;
@@ -1111,7 +1111,7 @@ public class GlyphPositioningTable extends GlyphTable {
                 final MarkAnchor ma = getMarkAnchor(ciMark, giMark);
                 final int mxc = getMaxComponentCount();
                 if (ma != null) {
-                    for (int i = 0, n = ps.getPosition(); i < n; i++) {
+                    for (int i = 0, n = ps.getPosition(); i < n; ++i) {
                         final int gi = ps.getGlyph(-(i + 1));
                         if (ps.isMark(gi)) {
                             continue;

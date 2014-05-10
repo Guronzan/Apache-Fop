@@ -66,7 +66,7 @@ public final class IFUtil {
             }
         } else {
             sb.append("matrix(");
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 6; ++i) {
                 if (i > 0) {
                     sb.append(',');
                 }
@@ -84,7 +84,7 @@ public final class IFUtil {
      * @return the StringBuilder passed to this method
      */
     public static StringBuilder toString(AffineTransform[] transforms, StringBuilder sb) {
-        for (int i = 0, c = transforms.length; i < c; i++) {
+        for (int i = 0, c = transforms.length; i < c; ++i) {
             if (i > 0) {
                 sb.append(' ');
             }
@@ -121,7 +121,7 @@ public final class IFUtil {
             return "";
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0, c = coordinates.length; i < c; i++) {
+        for (int i = 0, c = coordinates.length; i < c; ++i) {
             if (i > 0) {
                 sb.append(' ');
             }

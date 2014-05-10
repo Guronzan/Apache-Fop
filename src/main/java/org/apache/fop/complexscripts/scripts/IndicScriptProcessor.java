@@ -212,7 +212,7 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
         // 1. syllabize
         final GlyphSequence[] sa = syllabize(gs, script, language);
         // 2. process each syllable
-        for (int i = 0, n = sa.length; i < n; i++) {
+        for (int i = 0, n = sa.length; i < n; ++i) {
             GlyphSequence s = sa[i];
             // apply basic shaping subs
             for (final UseSpec us : usa) {
@@ -627,7 +627,7 @@ public class IndicScriptProcessor extends DefaultScriptProcessor {
         private static int[] toIntArray(final List<Integer> iv) {
             final int ni = iv.size();
             final int[] ia = new int[iv.size()];
-            for (int i = 0, n = ni; i < n; i++) {
+            for (int i = 0, n = ni; i < n; ++i) {
                 ia[i] = iv.get(i);
             }
             return ia;

@@ -77,7 +77,7 @@ import org.apache.fop.fonts.LazyFont;
          }
          String internalName = null;
 
-         for (int i = 0; i < this.embedFontInfoList.size(); i++) {
+         for (int i = 0; i < this.embedFontInfoList.size(); ++i) {
 
              final EmbedFontInfo configFontInfo = (EmbedFontInfo) this.embedFontInfoList
                     .get(i);

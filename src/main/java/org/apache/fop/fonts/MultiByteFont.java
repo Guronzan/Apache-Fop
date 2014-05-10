@@ -176,7 +176,7 @@ import org.apache.fop.util.CharUtilities;
          final int idx = c;
          int retIdx = SingleByteEncoding.NOT_FOUND_CODE_POINT;
 
-         for (int i = 0; i < this.cmap.length && retIdx == 0; i++) {
+         for (int i = 0; i < this.cmap.length && retIdx == 0; ++i) {
              if (this.cmap[i].getUnicodeStart() <= idx
                      && this.cmap[i].getUnicodeEnd() >= idx) {
 
@@ -527,7 +527,7 @@ import org.apache.fop.util.CharUtilities;
          final IntBuffer gb = IntBuffer.allocate(cs.length());
          int gi;
          final int giMissing = findGlyphIndex(Typeface.NOT_FOUND);
-         for (int i = 0, n = cs.length(); i < n; i++) {
+         for (int i = 0, n = cs.length(); i < n; ++i) {
              int cc = cs.charAt(i);
              if (cc >= 0xD800 && cc < 0xDC00) {
                  if (i + 1 < n) {
@@ -578,7 +578,7 @@ import org.apache.fop.util.CharUtilities;
          final int ng = gs.getGlyphCount();
          final CharBuffer cb = CharBuffer.allocate(ng);
          final int ccMissing = Typeface.NOT_FOUND;
-         for (int i = 0, n = ng; i < n; i++) {
+         for (int i = 0, n = ng; i < n; ++i) {
              final int gi = gs.getGlyph(i);
              int cc = findCharacterFromGlyphIndex(gi);
              if (cc == 0 || cc > 0x10FFFF) {

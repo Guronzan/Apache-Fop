@@ -47,7 +47,7 @@ public final class StringUtils {
         } else {
             StringBuilder result = new StringBuilder();
             int numChars = length - input.length();
-            for (int i = 0; i < numChars; i++) {
+            for (int i = 0; i < numChars; ++i) {
                 result.append(padding);
             }
             result.append(input);
@@ -74,7 +74,7 @@ public final class StringUtils {
         } else {
             StringBuilder result = new StringBuilder(input);
             int numChars = length - input.length();
-            for (int i = 0; i < numChars; i++) {
+            for (int i = 0; i < numChars; ++i) {
                 result.append(padding);
             }
             return result.toString();

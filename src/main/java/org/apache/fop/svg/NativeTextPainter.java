@@ -85,7 +85,7 @@ import org.apache.fop.util.CharUtilities;
              super.paintTextRuns(textRuns, g2d);
              return;
          }
-         for (int i = 0; i < textRuns.size(); i++) {
+         for (int i = 0; i < textRuns.size(); ++i) {
              final TextRun textRun = (TextRun) textRuns.get(i);
              try {
                  paintTextRun(textRun, g2d);

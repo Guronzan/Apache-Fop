@@ -110,7 +110,7 @@ public class FontPatternExtractor {
 
     private int countUSAsciiCharacters(String filename) {
         int count = 0;
-        for (int i = 0, c = filename.length(); i < c; i++) {
+        for (int i = 0, c = filename.length(); i < c; ++i) {
             if (filename.charAt(i) < 128) {
                 count++;
             }

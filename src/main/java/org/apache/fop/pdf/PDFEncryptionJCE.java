@@ -339,7 +339,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
 
         @Override
         protected byte[] computeOValueStep3(byte[] hash) {
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 50; ++i) {
                 hash = digest.digest(hash);
             }
             return hash;
@@ -352,7 +352,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
 
         @Override
         protected byte[] createEncryptionKeyStep6(byte[] hash) {
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 50; ++i) {
                 digest.update(hash, 0, encryptionLengthInBytes);
                 hash = digest.digest();
             }
@@ -382,7 +382,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
         private byte[] xorKeyAndEncrypt19Times(byte[] key, byte[] input) {
             byte[] result = input;
             byte[] encryptionKey = new byte[key.length];
-            for (int i = 1; i <= 19; i++) {
+            for (int i = 1; i <= 19; ++i) {
                 for (int j = 0; j < key.length; j++) {
                     encryptionKey[j] = (byte) (key[j] ^ i);
                 }

@@ -149,7 +149,7 @@ import org.apache.fop.traits.MinOptMax;
              this.penaltyValue = other.penaltyValue;
              if (other.footnoteList != null) {
                  if (this.footnoteList == null) {
-                     this.footnoteList = new ArrayList();
+                     this.footnoteList = new ArrayList<>();
                  }
                  this.footnoteList.addAll(other.footnoteList);
              }

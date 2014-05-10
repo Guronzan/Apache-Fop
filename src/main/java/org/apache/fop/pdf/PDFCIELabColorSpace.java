@@ -52,7 +52,7 @@ public class PDFCIELabColorSpace extends PDFArray implements PDFColorSpace {
         if (whitePoint == null || whitePoint.length != 3) {
             throw new IllegalArgumentException(name + " must be given an have 3 components");
         }
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; ++i) {
             wp.add(whitePoint[i]);
         }
         return wp;

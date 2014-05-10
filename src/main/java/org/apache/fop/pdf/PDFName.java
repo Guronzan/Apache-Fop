@@ -54,7 +54,7 @@ public class PDFName extends PDFObject {
         if (name.startsWith("/")) {
             skipFirst = true;
         }
-        for (int i = (skipFirst ? 1 : 0), c = name.length(); i < c; i++) {
+        for (int i = (skipFirst ? 1 : 0), c = name.length(); i < c; ++i) {
             char ch = name.charAt(i);
 
             if (ch < 33 || ch > 126 || ESCAPED_NAME_CHARS.indexOf(ch) >= 0) {

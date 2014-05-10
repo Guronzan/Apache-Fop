@@ -34,7 +34,7 @@ public class SpaceSpecifier implements Cloneable {
 
     private boolean startsReferenceArea;
     private boolean hasForcing = false;
-    private List spaceVals = new ArrayList();
+    private List spaceVals = new ArrayList<>();
 
     /**
      * Creates a new SpaceSpecifier.
@@ -53,7 +53,7 @@ public class SpaceSpecifier implements Cloneable {
             ss.startsReferenceArea = startsReferenceArea;
             ss.hasForcing = hasForcing;
             // Clone the vector, but share the objects in it!
-            ss.spaceVals = new ArrayList();
+            ss.spaceVals = new ArrayList<>();
             ss.spaceVals.addAll(spaceVals);
             return ss;
         } catch (CloneNotSupportedException cnse) {

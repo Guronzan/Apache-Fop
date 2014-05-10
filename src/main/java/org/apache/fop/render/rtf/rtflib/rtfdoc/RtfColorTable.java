@@ -204,7 +204,7 @@ public final class RtfColorTable {
 
         final int len = this.colorTable.size();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             final int identifier = ((Integer) this.colorTable.get(i))
                     .intValue();
 

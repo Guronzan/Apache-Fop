@@ -21,8 +21,9 @@ package org.apache.fop.fonts.apps;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -85,7 +86,7 @@ public class PFMReader extends AbstractFontReader {
         String className = null;
         String fontName = null;
 
-        final Map options = new java.util.HashMap();
+        final Map<String, String> options = new HashMap<>();
         final String[] arguments = parseArguments(options, args);
 
         final PFMReader app = new PFMReader();
@@ -93,19 +94,19 @@ public class PFMReader extends AbstractFontReader {
         log.info("PFM Reader for Apache FOP " + Version.getVersion() + "\n");
 
         if (options.get("-ef") != null) {
-            embFile = (String) options.get("-ef");
+            embFile = options.get("-ef");
         }
 
         if (options.get("-er") != null) {
-            embResource = (String) options.get("-er");
+            embResource = options.get("-er");
         }
 
         if (options.get("-fn") != null) {
-            fontName = (String) options.get("-fn");
+            fontName = options.get("-fn");
         }
 
         if (options.get("-cn") != null) {
-            className = (String) options.get("-cn");
+            className = options.get("-cn");
         }
 
         if (arguments.length != 2 || options.get("-h") != null
@@ -264,7 +265,7 @@ public class PFMReader extends AbstractFontReader {
         root.appendChild(bbox);
         final int[] bb = pfm.getFontBBox();
         final String[] names = { "left", "bottom", "right", "top" };
-        for (int i = 0; i < names.length; i++) {
+        for (int i = 0; i < names.length; ++i) {
             el = doc.createElement(names[i]);
             bbox.appendChild(el);
             value = new Integer(bb[i]);
@@ -299,7 +300,7 @@ public class PFMReader extends AbstractFontReader {
         final Element widths = doc.createElement("widths");
         root.appendChild(widths);
 
-        for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); i++) {
+        for (short i = pfm.getFirstChar(); i <= pfm.getLastChar(); ++i) {
             el = doc.createElement("char");
             widths.appendChild(el);
             el.setAttribute("idx", Integer.toString(i));
@@ -307,22 +308,19 @@ public class PFMReader extends AbstractFontReader {
         }
 
         // Get kerning
-        final Iterator iter = pfm.getKerning().keySet().iterator();
-        while (iter.hasNext()) {
-            final Integer kpx1 = (Integer) iter.next();
+        for (final Entry<Integer, Map<Integer, Integer>> entry1 : pfm
+                .getKerning().entrySet()) {
             el = doc.createElement("kerning");
-            el.setAttribute("kpx1", kpx1.toString());
+            el.setAttribute("kpx1", entry1.getKey().toString());
             root.appendChild(el);
             Element el2 = null;
 
-            final Map h2 = (Map) pfm.getKerning().get(kpx1);
-            final Iterator enum2 = h2.entrySet().iterator();
-            while (enum2.hasNext()) {
-                final Map.Entry entry = (Map.Entry) enum2.next();
-                final Integer kpx2 = (Integer) entry.getKey();
+            final Map<Integer, Integer> h2 = entry1.getValue();
+            for (final Entry<Integer, Integer> entry2 : h2.entrySet()) {
+                final Integer kpx2 = entry2.getKey();
                 el2 = doc.createElement("pair");
                 el2.setAttribute("kpx2", kpx2.toString());
-                final Integer val = (Integer) entry.getValue();
+                final Integer val = entry2.getValue();
                 el2.setAttribute("kern", val.toString());
                 el.appendChild(el2);
             }

@@ -416,7 +416,7 @@ import org.apache.fop.complexscripts.fonts.Substitutable;
          int width = 0;
          final char[] characters = new char[wordLength];
          word.getChars(0, wordLength, characters, 0);
-         for (int i = 0; i < wordLength; i++) {
+         for (int i = 0; i < wordLength; ++i) {
              width += getCharWidth(characters[i]);
          }
          return width;

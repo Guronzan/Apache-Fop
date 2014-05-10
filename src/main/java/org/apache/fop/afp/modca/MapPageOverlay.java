@@ -22,6 +22,7 @@ package org.apache.fop.afp.modca;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -35,114 +36,114 @@ import org.apache.fop.afp.util.BinaryUtils;
  * contain from one to 254 repeating groups.
  */
 @Slf4j
- public class MapPageOverlay extends AbstractAFPObject {
+public class MapPageOverlay extends AbstractAFPObject {
 
-     private static final int MAX_SIZE = 253;
+    private static final int MAX_SIZE = 253;
 
-     /**
-      * The collection of overlays (maximum of 254 stored as byte[])
-      */
-     private List overLays = null;
+    /**
+     * The collection of overlays (maximum of 254 stored as byte[])
+     */
+    private List<byte[]> overLays = null;
 
-     /**
-      * Constructor for the Map Page Overlay
-      */
-     public MapPageOverlay() {
-     }
+    /**
+     * Constructor for the Map Page Overlay
+     */
+    public MapPageOverlay() {
+    }
 
-     private List getOverlays() {
-         if (this.overLays == null) {
-             this.overLays = new java.util.ArrayList();
-         }
-         return this.overLays;
-     }
+    private List<byte[]> getOverlays() {
+        if (this.overLays == null) {
+            this.overLays = new ArrayList<>();
+        }
+        return this.overLays;
+    }
 
-     /**
-      * Add an overlay to to the map page overlay object.
-      *
-      * @param name
-      *            The name of the overlay.
-      * @throws MaximumSizeExceededException
+    /**
+     * Add an overlay to to the map page overlay object.
+     *
+     * @param name
+     *            The name of the overlay.
+     * @throws MaximumSizeExceededException
      *             if the maximum size is reached
-      */
-     public void addOverlay(final String name)
+     */
+    public void addOverlay(final String name)
             throws MaximumSizeExceededException {
-         if (getOverlays().size() > MAX_SIZE) {
-             throw new MaximumSizeExceededException();
-         }
-         if (name.length() != 8) {
-             throw new IllegalArgumentException("The name of overlay " + name
+        if (getOverlays().size() > MAX_SIZE) {
+            throw new MaximumSizeExceededException();
+        }
+        if (name.length() != 8) {
+            throw new IllegalArgumentException("The name of overlay " + name
                     + " must be 8 characters");
-         }
-         if (log.isDebugEnabled()) {
-             log.debug("addOverlay():: adding overlay " + name);
-         }
-         try {
-             final byte[] data = name.getBytes(AFPConstants.EBCIDIC_ENCODING);
-             getOverlays().add(data);
-         } catch (final UnsupportedEncodingException usee) {
-             log.error("addOverlay():: UnsupportedEncodingException translating the name "
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("addOverlay():: adding overlay " + name);
+        }
+        try {
+            final byte[] data = name.getBytes(AFPConstants.EBCIDIC_ENCODING);
+            getOverlays().add(data);
+        } catch (final UnsupportedEncodingException usee) {
+            log.error("addOverlay():: UnsupportedEncodingException translating the name "
                     + name);
-         }
-     }
+        }
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public void writeToStream(final OutputStream os) throws IOException {
-         final int oLayCount = getOverlays().size();
-         final int recordlength = oLayCount * 18;
+    /** {@inheritDoc} */
+    @Override
+    public void writeToStream(final OutputStream os) throws IOException {
+        final int oLayCount = getOverlays().size();
+        final int recordlength = oLayCount * 18;
 
-         final byte[] data = new byte[recordlength + 9];
+        final byte[] data = new byte[recordlength + 9];
 
-         data[0] = 0x5A;
+        data[0] = 0x5A;
 
-         // Set the total record length
-         final byte[] rl1 = BinaryUtils.convert(recordlength + 8, 2); // Ignore
-                                                                     // the
-         // first byte in
-         // the length
-         data[1] = rl1[0];
-         data[2] = rl1[1];
+        // Set the total record length
+        final byte[] rl1 = BinaryUtils.convert(recordlength + 8, 2); // Ignore
+        // the
+        // first byte in
+        // the length
+        data[1] = rl1[0];
+        data[2] = rl1[1];
 
-         // Structured field ID for a MPO
-         data[3] = (byte) 0xD3;
-         data[4] = Type.MAP;
-         data[5] = Category.PAGE_OVERLAY;
+        // Structured field ID for a MPO
+        data[3] = (byte) 0xD3;
+        data[4] = Type.MAP;
+        data[5] = Category.PAGE_OVERLAY;
 
-         data[6] = 0x00; // Reserved
-         data[7] = 0x00; // Reserved
-         data[8] = 0x00; // Reserved
+        data[6] = 0x00; // Reserved
+        data[7] = 0x00; // Reserved
+        data[8] = 0x00; // Reserved
 
-         int pos = 8;
+        int pos = 8;
 
-         // For each overlay
-         byte olayref = 0x00;
+        // For each overlay
+        byte olayref = 0x00;
 
-         for (int i = 0; i < oLayCount; i++) {
-             olayref = (byte) (olayref + 1);
+        for (int i = 0; i < oLayCount; ++i) {
+            olayref = (byte) (olayref + 1);
 
-             data[++pos] = 0x00;
-             data[++pos] = 0x12; // the length of repeating group
+            data[++pos] = 0x00;
+            data[++pos] = 0x12; // the length of repeating group
 
-             data[++pos] = 0x0C; // Fully Qualified Name
-             data[++pos] = 0x02;
-             data[++pos] = (byte) 0x84;
-             data[++pos] = 0x00;
+            data[++pos] = 0x0C; // Fully Qualified Name
+            data[++pos] = 0x02;
+            data[++pos] = (byte) 0x84;
+            data[++pos] = 0x00;
 
-             // now add the name
-             final byte[] name = (byte[]) this.overLays.get(i);
+            // now add the name
+            final byte[] name = this.overLays.get(i);
 
-             for (final byte element : name) {
-                 data[++pos] = element;
-             }
+            for (final byte element : name) {
+                data[++pos] = element;
+            }
 
-             data[++pos] = 0x04; // Resource Local Identifier (RLI)
-             data[++pos] = 0x24;
-             data[++pos] = 0x02;
+            data[++pos] = 0x04; // Resource Local Identifier (RLI)
+            data[++pos] = 0x24;
+            data[++pos] = 0x02;
 
-             // now add the unique id to the RLI
-             data[++pos] = olayref;
-         }
-         os.write(data);
-     }
- }
+            // now add the unique id to the RLI
+            data[++pos] = olayref;
+        }
+        os.write(data);
+    }
+}

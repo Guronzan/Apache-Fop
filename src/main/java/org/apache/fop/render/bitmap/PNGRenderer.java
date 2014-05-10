@@ -85,7 +85,7 @@ import org.apache.xmlgraphics.image.writer.ImageWriterRegistry;
 
          super.stopRenderer();
 
-         for (int i = 0; i < this.pageViewportList.size(); i++) {
+         for (int i = 0; i < this.pageViewportList.size(); ++i) {
 
              final OutputStream os = getCurrentOutputStream(i);
              if (os == null) {

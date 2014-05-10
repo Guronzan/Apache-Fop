@@ -129,7 +129,7 @@ public abstract class PDFTextUtil extends org.apache.fop.pdf.PDFTextUtil {
      * @return the recommended Font to use
      */
     public Font selectFontForChar(char ch) {
-        for (int i = 0, c = fonts.length; i < c; i++) {
+        for (int i = 0, c = fonts.length; i < c; ++i) {
             if (fonts[i].hasChar(ch)) {
                 return fonts[i];
             }

@@ -155,7 +155,7 @@ public class AFMCharMetrics {
         sb.append(getCharCode());
         sb.append(" (");
         if (getUnicodeSequence() != null) {
-            for (int i = 0, c = getUnicodeSequence().length(); i < c; i++) {
+            for (int i = 0, c = getUnicodeSequence().length(); i < c; ++i) {
                 sb.append("0x").append(Integer.toHexString(getUnicodeSequence().charAt(i)));
                 sb.append(", ");
             }

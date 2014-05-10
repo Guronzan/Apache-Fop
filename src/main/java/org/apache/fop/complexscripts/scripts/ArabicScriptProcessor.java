@@ -321,7 +321,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int s, final int e) {
         int chl = 0;
         int cll = 0;
-        for (int i = 0, n = e - s; i < n; i++) {
+        for (int i = 0, n = e - s; i < n; ++i) {
             final int k = n - i - 1;
             final int j = s + k;
             if (j >= 0 && j < nc) {
@@ -346,7 +346,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int nc, final int s, final int e) {
         int chf = 0;
         int clf = 0;
-        for (int i = e, n = nc; i < n; i++) {
+        for (int i = e, n = nc; i < n; ++i) {
             chf = ca[i];
             clf = BidiClass.getBidiClass(chf);
             if (clf != BidiConstants.NSM) {
@@ -389,7 +389,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int nc, final int s, final int e) {
         int chf = 0;
         int clf = 0;
-        for (int i = e, n = nc; i < n; i++) {
+        for (int i = e, n = nc; i < n; ++i) {
             chf = ca[i];
             clf = BidiClass.getBidiClass(chf);
             if (clf != BidiConstants.NSM) {
@@ -432,7 +432,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int s, final int e) {
         int chf = 0; // first non-NSM char in [s,e)
         int clf = 0;
-        for (int i = 0, n = e - s; i < n; i++) {
+        for (int i = 0, n = e - s; i < n; ++i) {
             final int k = s + i;
             if (k >= 0 && k < nc) {
                 chf = ca[s + i];
@@ -447,7 +447,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
         }
         int chl = 0; // last non-NSM char in [s,e)
         int cll = 0;
-        for (int i = 0, n = e - s; i < n; i++) {
+        for (int i = 0, n = e - s; i < n; ++i) {
             final int k = n - i - 1;
             final int j = s + k;
             if (j >= 0 && j < nc) {
@@ -474,7 +474,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int nc, final int s, final int e) {
         int chf = 0;
         int clf = 0;
-        for (int i = e, n = nc; i < n; i++) {
+        for (int i = e, n = nc; i < n; ++i) {
             chf = ca[i];
             clf = BidiClass.getBidiClass(chf);
             if (clf != BidiConstants.NSM) {
@@ -499,7 +499,7 @@ public class ArabicScriptProcessor extends DefaultScriptProcessor {
             final int nc, final int s, final int e) {
         int chf = 0;
         int clf = 0;
-        for (int i = e, n = nc; i < n; i++) {
+        for (int i = e, n = nc; i < n; ++i) {
             chf = ca[i];
             clf = BidiClass.getBidiClass(chf);
             if (clf != BidiConstants.NSM) {

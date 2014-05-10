@@ -39,7 +39,7 @@ import org.apache.fop.fo.properties.CommonAccessibilityHolder;
  */
 public class Bookmark extends FObj implements CommonAccessibilityHolder {
     private BookmarkTitle bookmarkTitle;
-    private ArrayList childBookmarks = new ArrayList();
+    private ArrayList childBookmarks = new ArrayList<>();
 
     // The value of properties relevant for this FO
     private CommonAccessibility commonAccessibility;

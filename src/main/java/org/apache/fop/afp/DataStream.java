@@ -424,7 +424,7 @@ import org.apache.fop.util.CharUtilities;
 
                  boolean fixedSpaceMode = false;
 
-                 for (int i = 0; i < l; i++) {
+                 for (int i = 0; i < l; ++i) {
                      final char orgChar = textDataInfo.getString().charAt(i);
                      float glyphAdjust = 0;
                      if (CharUtilities.isFixedWidthSpace(orgChar)) {

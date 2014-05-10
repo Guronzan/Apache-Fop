@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +72,7 @@ public final class Main {
             throw new RuntimeException("fop.jar not found in directory: "
                     + baseDir.getAbsolutePath() + " (or below)");
         }
-        final List jars = new java.util.ArrayList<>();
+        final List<URL> jars = new ArrayList<>();
         jars.add(fopJar.toURI().toURL());
         File[] files;
         final FileFilter filter = new FileFilter() {
@@ -99,10 +100,12 @@ public final class Main {
                 }
             }
         }
-        final URL[] urls = (URL[]) jars.toArray(new URL[jars.size()]);
-        /*
-         * for (int i = 0, c = urls.length; i < c; i++) { log.info(urls[i]); }
-         */
+        final URL[] urls = jars.toArray(new URL[jars.size()]);
+
+        for (final URL url : urls) {
+            log.debug(url.toString());
+        }
+
         return urls;
     }
 
@@ -126,7 +129,7 @@ public final class Main {
 
     /**
      * Dynamically builds a ClassLoader and executes FOP.
-     * 
+     *
      * @param args
      *            command-line arguments
      */
@@ -212,7 +215,7 @@ public final class Main {
 
     /**
      * The main routine for the command line interface
-     * 
+     *
      * @param args
      *            the command line parameters
      */

@@ -217,7 +217,7 @@ import org.apache.fop.util.ListUtil;
      public TextLayoutManager(final FOText node) {
          this.foText = node;
          this.letterSpaceAdjustArray = new MinOptMax[node.length() + 1];
-         this.areaInfos = new ArrayList();
+         this.areaInfos = new ArrayList<>();
      }
 
      private KnuthPenalty makeZeroWidthPenalty(final int penaltyValue) {
@@ -352,7 +352,7 @@ import org.apache.fop.util.ListUtil;
              letterSpaceCount--;
          }
 
-         for (int i = areaInfo.startIndex; i < areaInfo.breakIndex; i++) {
+         for (int i = areaInfo.startIndex; i < areaInfo.breakIndex; ++i) {
              final MinOptMax letterSpaceAdjustment = this.letterSpaceAdjustArray[i + 1];
              if (letterSpaceAdjustment != null
                     && letterSpaceAdjustment.isElastic()) {
@@ -609,7 +609,7 @@ import org.apache.fop.util.ListUtil;
              initWord(wordLength);
              // iterate over word's fragments, adding word chars (with bidi
              // levels), letter space adjustments, and glyph position adjustments
-             for (int i = startIndex; i <= endIndex; i++) {
+             for (int i = startIndex; i <= endIndex; ++i) {
                  final AreaInfo wordAreaInfo = getAreaInfo(i);
                  addWordChars(wordAreaInfo);
                  addLetterAdjust(wordAreaInfo);
@@ -633,7 +633,7 @@ import org.apache.fop.util.ListUtil;
              if (this.wordLevels != null) {
                  assert this.wordLevelsIndex <= this.wordLevels.length;
                  boolean empty = true;
-                 for (int i = 0, n = this.wordLevelsIndex; i < n; i++) {
+                 for (int i = 0, n = this.wordLevelsIndex; i < n; ++i) {
                      if (this.wordLevels[i] >= 0) {
                          empty = false;
                          break;
@@ -696,7 +696,7 @@ import org.apache.fop.util.ListUtil;
                  addWordLevels(TextLayoutManager.this.foText
                         .getMappingBidiLevels(s, e));
              } else {
-                 for (int i = s; i < e; i++) {
+                 for (int i = s; i < e; ++i) {
                      this.wordChars.append(TextLayoutManager.this.foText
                             .charAt(i));
                  }
@@ -741,7 +741,7 @@ import org.apache.fop.util.ListUtil;
              int letterSpaceCount = wordAreaInfo.letterSpaceCount;
              final int wordLength = wordAreaInfo.getWordLength();
              final int taAdjust = this.textArea.getTextLetterSpaceAdjust();
-             for (int i = 0, n = wordLength; i < n; i++) {
+             for (int i = 0, n = wordLength; i < n; ++i) {
                  final int j = this.letterSpaceAdjustIndex + i;
                  if (j > 0) {
                      final int k = wordAreaInfo.startIndex + i;
@@ -773,7 +773,7 @@ import org.apache.fop.util.ListUtil;
              if (numAdjusts > 0) {
                  final int need = this.gposAdjustmentsIndex + numAdjusts;
                  if (need <= this.gposAdjustments.length) {
-                     for (int i = 0, n = wordLength, j = 0; i < n; i++) {
+                     for (int i = 0, n = wordLength, j = 0; i < n; ++i) {
                          if (i < numAdjusts) {
                              final int[] wpa1 = this.gposAdjustments[this.gposAdjustmentsIndex
                                     + i];
@@ -809,7 +809,7 @@ import org.apache.fop.util.ListUtil;
              // divide the area info's allocated IPD evenly among the
              // non-zero-width space characters
              int numZeroWidthSpaces = 0;
-             for (int i = this.areaInfo.startIndex; i < this.areaInfo.breakIndex; i++) {
+             for (int i = this.areaInfo.startIndex; i < this.areaInfo.breakIndex; ++i) {
                  final char spaceChar = TextLayoutManager.this.foText.charAt(i);
                  if (CharUtilities.isZeroWidthSpace(spaceChar)) {
                      numZeroWidthSpaces++;
@@ -821,7 +821,7 @@ import org.apache.fop.util.ListUtil;
                     / (numSpaces > 0 ? numSpaces : 1);
              // add space area children, one for each non-zero-width space
             // character
-             for (int i = this.areaInfo.startIndex; i < this.areaInfo.breakIndex; i++) {
+             for (int i = this.areaInfo.startIndex; i < this.areaInfo.breakIndex; ++i) {
                  final char spaceChar = TextLayoutManager.this.foText.charAt(i);
                  final int level = TextLayoutManager.this.foText.bidiLevelAt(i);
                  if (!CharUtilities.isZeroWidthSpace(spaceChar)) {
@@ -1117,7 +1117,7 @@ import org.apache.fop.util.ListUtil;
 
          // 7. compute word ipd based on final position adjustments
          MinOptMax ipd = MinOptMax.ZERO;
-         for (int i = 0, n = mcs.length(); i < n; i++) {
+         for (int i = 0, n = mcs.length(); i < n; ++i) {
              final int c = mcs.charAt(i);
              // TODO !BMP
              int w = font.getCharWidth(c);
@@ -1151,7 +1151,7 @@ import org.apache.fop.util.ListUtil;
          final int nc = mcs.length();
          // extract kerning array
          final int[] ka = new int[nc]; // kerning array
-         for (int i = 0, n = nc, cPrev = -1; i < n; i++) {
+         for (int i = 0, n = nc, cPrev = -1; i < n; ++i) {
              final int c = mcs.charAt(i);
              // TODO !BMP
              if (cPrev >= 0) {
@@ -1161,7 +1161,7 @@ import org.apache.fop.util.ListUtil;
          }
          // was there a non-zero kerning?
          boolean hasKerning = false;
-         for (int i = 0, n = nc; i < n; i++) {
+         for (int i = 0, n = nc; i < n; ++i) {
              if (ka[i] != 0) {
                  hasKerning = true;
                  break;
@@ -1171,7 +1171,7 @@ import org.apache.fop.util.ListUtil;
         // array
          if (hasKerning) {
              final int[][] gpa = new int[nc][4];
-             for (int i = 0, n = nc; i < n; i++) {
+             for (int i = 0, n = nc; i < n; ++i) {
                  if (i > 0) {
                      gpa[i - 1][GlyphPositioningTable.Value.IDX_X_ADVANCE] = ka[i];
                  }
@@ -1193,7 +1193,7 @@ import org.apache.fop.util.ListUtil;
                     + " -M" + ", level = " + level + " }");
          }
 
-         for (int i = this.thisStart; i < lastIndex; i++) {
+         for (int i = this.thisStart; i < lastIndex; ++i) {
              final char currentChar = this.foText.charAt(i);
 
              // character width
@@ -1367,7 +1367,7 @@ import org.apache.fop.util.ListUtil;
 
              // log.info("Word: " + new String(textArray, startIndex, stopIndex -
             // startIndex));
-             for (int i = startIndex; i < stopIndex; i++) {
+             for (int i = startIndex; i < stopIndex; ++i) {
                  final char ch = this.foText.charAt(i);
                  newIPD = newIPD.plus(font.getCharWidth(ch));
                  // if (i > startIndex) {
@@ -1528,7 +1528,7 @@ import org.apache.fop.util.ListUtil;
              final AreaInfo areaInfo = getAreaInfo(leafValue);
              final StringBuilder buffer = new StringBuilder(
                     areaInfo.getWordLength());
-             for (int i = areaInfo.startIndex; i < areaInfo.breakIndex; i++) {
+             for (int i = areaInfo.startIndex; i < areaInfo.breakIndex; ++i) {
                  buffer.append(this.foText.charAt(i));
              }
              return buffer.toString();
@@ -1576,7 +1576,7 @@ import org.apache.fop.util.ListUtil;
             final AreaInfo areaInfo, final Position pos2,
             final int p2WidthOffset, final Position pos3,
             final int p3WidthOffset, final boolean skipZeroCheck) {
-         final List elements = new ArrayList();
+         final List elements = new ArrayList<>();
 
          switch (alignment) {
          case EN_CENTER:
@@ -1654,7 +1654,7 @@ import org.apache.fop.util.ListUtil;
 
          final int stretchability = areaInfo.areaIPD.getStretch();
 
-         final List elements = new ArrayList();
+         final List elements = new ArrayList<>();
          if (skipZeroCheck || this.lineStartBAP != 0 || this.lineEndBAP != 0) {
              elements.add(new KnuthGlue(this.lineEndBAP, 0, 0,
                     this.auxiliaryPosition, false));

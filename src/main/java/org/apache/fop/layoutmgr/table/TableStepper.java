@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr.table;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,136 +44,137 @@ import org.apache.fop.util.BreakUtil;
  * This class processes row groups to create combined element lists for tables.
  */
 @Slf4j
- public class TableStepper {
+public class TableStepper {
 
     private final TableContentLayoutManager tclm;
 
-     private EffRow[] rowGroup;
-     /** Number of columns in the row group. */
-     private final int columnCount;
-     private int totalHeight;
-     private int previousRowsLength;
-     private int activeRowIndex;
+    private EffRow[] rowGroup;
+    /** Number of columns in the row group. */
+    private final int columnCount;
+    private int totalHeight;
+    private int previousRowsLength;
+    private int activeRowIndex;
 
-     private boolean rowFinished;
+    private boolean rowFinished;
 
-     /** Cells spanning the current row. */
-     private final List activeCells = new LinkedList<>();
+    /** Cells spanning the current row. */
+    private final List<ActiveCell> activeCells = new LinkedList<>();
 
-     /** Cells that will start the next row. */
-     private final List nextActiveCells = new LinkedList<>();
+    /** Cells that will start the next row. */
+    private final List<ActiveCell> nextActiveCells = new LinkedList<>();
 
-     /**
-      * True if the next row is being delayed, that is, if cells spanning the
+    /**
+     * True if the next row is being delayed, that is, if cells spanning the
      * current and the next row have steps smaller than the next row's first
      * step. In this case the next row may be extended to offer additional break
      * possibilities.
-      */
-     private boolean delayingNextRow;
+     */
+    private boolean delayingNextRow;
 
-     /**
-      * The first step for a row. This is the minimal step necessary to include
+    /**
+     * The first step for a row. This is the minimal step necessary to include
      * some content from all the cells starting the row.
-      */
-     private int rowFirstStep;
+     */
+    private int rowFirstStep;
 
-     /**
-      * Flag used to produce an infinite penalty if the height of the current row
+    /**
+     * Flag used to produce an infinite penalty if the height of the current row
      * is smaller than the first step for that row (may happen with row-spanning
      * cells).
      *
-      * @see #considerRowLastStep(int)
-      */
-     private boolean rowHeightSmallerThanFirstStep;
+     * @see #considerRowLastStep(int)
+     */
+    private boolean rowHeightSmallerThanFirstStep;
 
-     /**
-      * The class of the next break. One of {@link Constants#EN_AUTO},
-      * {@link Constants#EN_COLUMN}, {@link Constants#EN_PAGE},
-      * {@link Constants#EN_EVEN_PAGE}, {@link Constants#EN_ODD_PAGE}. Defaults
+    /**
+     * The class of the next break. One of {@link Constants#EN_AUTO},
+     * {@link Constants#EN_COLUMN}, {@link Constants#EN_PAGE},
+     * {@link Constants#EN_EVEN_PAGE}, {@link Constants#EN_ODD_PAGE}. Defaults
      * to EN_AUTO.
-      */
-     private int nextBreakClass;
+     */
+    private int nextBreakClass;
 
-     /**
-      * Main constructor
-      * 
+    /**
+     * Main constructor
+     *
      * @param tclm
      *            The parent TableContentLayoutManager
-      */
-     public TableStepper(final TableContentLayoutManager tclm) {
-         this.tclm = tclm;
-         this.columnCount = tclm.getTableLM().getTable().getNumberOfColumns();
-     }
+     */
+    public TableStepper(final TableContentLayoutManager tclm) {
+        this.tclm = tclm;
+        this.columnCount = tclm.getTableLM().getTable().getNumberOfColumns();
+    }
 
-     /**
-      * Initializes the fields of this instance to handle a new row group.
-      *
-      * @param rows
+    /**
+     * Initializes the fields of this instance to handle a new row group.
+     *
+     * @param rows
      *            the new row group to handle
-      */
-     private void setup(final EffRow[] rows) {
-         this.rowGroup = rows;
-         this.previousRowsLength = 0;
-         this.activeRowIndex = 0;
-         this.activeCells.clear();
-         this.nextActiveCells.clear();
-         this.delayingNextRow = false;
-         this.rowFirstStep = 0;
-         this.rowHeightSmallerThanFirstStep = false;
-     }
+     */
+    private void setup(final EffRow[] rows) {
+        this.rowGroup = rows;
+        this.previousRowsLength = 0;
+        this.activeRowIndex = 0;
+        this.activeCells.clear();
+        this.nextActiveCells.clear();
+        this.delayingNextRow = false;
+        this.rowFirstStep = 0;
+        this.rowHeightSmallerThanFirstStep = false;
+    }
 
-     private void calcTotalHeight() {
-         this.totalHeight = 0;
-         for (final EffRow element : this.rowGroup) {
-             this.totalHeight += element.getHeight().getOpt();
-         }
-         if (log.isDebugEnabled()) {
-             log.debug("totalHeight=" + this.totalHeight);
-         }
-     }
+    private void calcTotalHeight() {
+        this.totalHeight = 0;
+        for (final EffRow element : this.rowGroup) {
+            this.totalHeight += element.getHeight().getOpt();
+        }
+        if (log.isDebugEnabled()) {
+            log.debug("totalHeight=" + this.totalHeight);
+        }
+    }
 
-     private int getMaxRemainingHeight() {
-         int maxW = 0;
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             int remain = activeCell.getRemainingLength();
-             final PrimaryGridUnit pgu = activeCell.getPrimaryGridUnit();
-             for (int i = this.activeRowIndex + 1; i < pgu.getRowIndex()
+    private int getMaxRemainingHeight() {
+        int maxW = 0;
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            int remain = activeCell.getRemainingLength();
+            final PrimaryGridUnit pgu = activeCell.getPrimaryGridUnit();
+            for (int i = this.activeRowIndex + 1; i < pgu.getRowIndex()
                     - this.rowGroup[0].getIndex()
-                     + pgu.getCell().getNumberRowsSpanned(); i++) {
-                 remain -= this.rowGroup[i].getHeight().getOpt();
-             }
-             maxW = Math.max(maxW, remain);
-         }
-         for (int i = this.activeRowIndex + 1; i < this.rowGroup.length; i++) {
-             maxW += this.rowGroup[i].getHeight().getOpt();
-         }
-         return maxW;
-     }
+                    + pgu.getCell().getNumberRowsSpanned(); ++i) {
+                remain -= this.rowGroup[i].getHeight().getOpt();
+            }
+            maxW = Math.max(maxW, remain);
+        }
+        for (int i = this.activeRowIndex + 1; i < this.rowGroup.length; ++i) {
+            maxW += this.rowGroup[i].getHeight().getOpt();
+        }
+        return maxW;
+    }
 
-     /**
-      * Creates ActiveCell instances for cells starting on the row at the given
+    /**
+     * Creates ActiveCell instances for cells starting on the row at the given
      * index.
      *
-      * @param activeCellList
+     * @param activeCellList
      *            the list that will hold the active cells
      * @param rowIndex
      *            the index of the row from which cells must be activated
-      */
-     private void activateCells(final List activeCellList, final int rowIndex) {
-         final EffRow row = this.rowGroup[rowIndex];
-         for (int i = 0; i < this.columnCount; i++) {
-             final GridUnit gu = row.getGridUnit(i);
-             if (!gu.isEmpty() && gu.isPrimary()) {
-                 activeCellList.add(new ActiveCell((PrimaryGridUnit) gu, row,
+     */
+    private void activateCells(final List<ActiveCell> activeCellList,
+            final int rowIndex) {
+        final EffRow row = this.rowGroup[rowIndex];
+        for (int i = 0; i < this.columnCount; ++i) {
+            final GridUnit gu = row.getGridUnit(i);
+            if (!gu.isEmpty() && gu.isPrimary()) {
+                activeCellList.add(new ActiveCell((PrimaryGridUnit) gu, row,
                         rowIndex, this.previousRowsLength, getTableLM()));
-             }
-         }
-     }
+            }
+        }
+    }
 
-     /**
-      * Creates the combined element list for a row group.
-      * 
+    /**
+     * Creates the combined element list for a row group.
+     *
      * @param context
      *            Active LayoutContext
      * @param rows
@@ -181,267 +183,263 @@ import org.apache.fop.util.BreakUtil;
      *            Indicates what type of body is processed (body, header or
      *            footer)
      * @return the combined element list
-      */
-     public LinkedList getCombinedKnuthElementsForRowGroup(
+     */
+    public LinkedList getCombinedKnuthElementsForRowGroup(
             final LayoutContext context, final EffRow[] rows, final int bodyType) {
-         setup(rows);
-         activateCells(this.activeCells, 0);
-         calcTotalHeight();
+        setup(rows);
+        activateCells(this.activeCells, 0);
+        calcTotalHeight();
 
-         int cumulateLength = 0; // Length of the content accumulated before the
-                                // break
-         TableContentPosition lastTCPos = null;
-         final LinkedList returnList = new LinkedList();
-         int laststep = 0;
-         int step = getFirstStep();
-         do {
-             final int maxRemainingHeight = getMaxRemainingHeight();
-             final int penaltyOrGlueLen = step + maxRemainingHeight
+        int cumulateLength = 0; // Length of the content accumulated before the
+        // break
+        TableContentPosition lastTCPos = null;
+        final LinkedList returnList = new LinkedList<>();
+        int laststep = 0;
+        int step = getFirstStep();
+        do {
+            final int maxRemainingHeight = getMaxRemainingHeight();
+            final int penaltyOrGlueLen = step + maxRemainingHeight
                     - this.totalHeight;
-             final int boxLen = step - cumulateLength
+            final int boxLen = step - cumulateLength
                     - Math.max(0, penaltyOrGlueLen)/* penalty, if any */;
-             cumulateLength += boxLen + Math.max(0, -penaltyOrGlueLen)/*
-                                                                      * the
-                                                                      * glue, if
-                                                                      * any
-                                                                      */;
+            cumulateLength += boxLen + Math.max(0, -penaltyOrGlueLen)/*
+             * the
+             * glue, if
+             * any
+             */;
 
-             if (log.isDebugEnabled()) {
-                 log.debug("Next step: " + step + " (+" + (step - laststep)
+            if (log.isDebugEnabled()) {
+                log.debug("Next step: " + step + " (+" + (step - laststep)
                         + ")");
-                 log.debug("           max remaining height: "
+                log.debug("           max remaining height: "
                         + maxRemainingHeight);
-                 if (penaltyOrGlueLen >= 0) {
-                     log.debug("           box = " + boxLen + " penalty = "
+                if (penaltyOrGlueLen >= 0) {
+                    log.debug("           box = " + boxLen + " penalty = "
                             + penaltyOrGlueLen);
-                 } else {
-                     log.debug("           box = " + boxLen + " glue = "
+                } else {
+                    log.debug("           box = " + boxLen + " glue = "
                             + -penaltyOrGlueLen);
-                 }
-             }
+                }
+            }
 
-             final LinkedList footnoteList = new LinkedList();
-             // Put all involved grid units into a list
-             final List cellParts = new java.util.ArrayList(
-                    this.activeCells.size());
-             for (final Iterator iter = this.activeCells.iterator(); iter
-                    .hasNext();) {
-                 final ActiveCell activeCell = (ActiveCell) iter.next();
-                 final CellPart part = activeCell.createCellPart();
-                 cellParts.add(part);
-                 activeCell.addFootnotes(footnoteList);
-             }
+            final LinkedList footnoteList = new LinkedList();
+            // Put all involved grid units into a list
+            final List cellParts = new ArrayList<>(this.activeCells.size());
+            for (final Object element : this.activeCells) {
+                final ActiveCell activeCell = (ActiveCell) element;
+                final CellPart part = activeCell.createCellPart();
+                cellParts.add(part);
+                activeCell.addFootnotes(footnoteList);
+            }
 
-             // Create elements for step
-             final TableContentPosition tcpos = new TableContentPosition(
+            // Create elements for step
+            final TableContentPosition tcpos = new TableContentPosition(
                     getTableLM(), cellParts, this.rowGroup[this.activeRowIndex]);
-             if (this.delayingNextRow) {
-                 tcpos.setNewPageRow(this.rowGroup[this.activeRowIndex + 1]);
-             }
-             if (returnList.size() == 0) {
-                 tcpos.setFlag(TableContentPosition.FIRST_IN_ROWGROUP, true);
-             }
-             lastTCPos = tcpos;
+            if (this.delayingNextRow) {
+                tcpos.setNewPageRow(this.rowGroup[this.activeRowIndex + 1]);
+            }
+            if (returnList.size() == 0) {
+                tcpos.setFlag(TableContentPosition.FIRST_IN_ROWGROUP, true);
+            }
+            lastTCPos = tcpos;
 
-             // TODO TableStepper should remain as footnote-agnostic as possible
-             if (footnoteList.isEmpty()) {
-                 returnList.add(new KnuthBox(boxLen, tcpos, false));
-             } else {
-                 returnList.add(new KnuthBlockBox(boxLen, footnoteList, tcpos,
+            // TODO TableStepper should remain as footnote-agnostic as possible
+            if (footnoteList.isEmpty()) {
+                returnList.add(new KnuthBox(boxLen, tcpos, false));
+            } else {
+                returnList.add(new KnuthBlockBox(boxLen, footnoteList, tcpos,
                         false));
-             }
+            }
 
-             int effPenaltyLen = Math.max(0, penaltyOrGlueLen);
-             final TableHFPenaltyPosition penaltyPos = new TableHFPenaltyPosition(
+            int effPenaltyLen = Math.max(0, penaltyOrGlueLen);
+            final TableHFPenaltyPosition penaltyPos = new TableHFPenaltyPosition(
                     getTableLM());
-             if (bodyType == TableRowIterator.BODY) {
-                 if (!getTableLM().getTable().omitHeaderAtBreak()) {
-                     effPenaltyLen += this.tclm.getHeaderNetHeight();
-                     penaltyPos.headerElements = this.tclm.getHeaderElements();
-                 }
-                 if (!getTableLM().getTable().omitFooterAtBreak()) {
-                     effPenaltyLen += this.tclm.getFooterNetHeight();
-                     penaltyPos.footerElements = this.tclm.getFooterElements();
-                 }
-             }
+            if (bodyType == TableRowIterator.BODY) {
+                if (!getTableLM().getTable().omitHeaderAtBreak()) {
+                    effPenaltyLen += this.tclm.getHeaderNetHeight();
+                    penaltyPos.headerElements = this.tclm.getHeaderElements();
+                }
+                if (!getTableLM().getTable().omitFooterAtBreak()) {
+                    effPenaltyLen += this.tclm.getFooterNetHeight();
+                    penaltyPos.footerElements = this.tclm.getFooterElements();
+                }
+            }
 
-             Keep keep = getTableLM().getKeepTogether();
-             int stepPenalty = 0;
-             for (final Iterator iter = this.activeCells.iterator(); iter
-                    .hasNext();) {
-                 final ActiveCell activeCell = (ActiveCell) iter.next();
-                 keep = keep.compare(activeCell.getKeepWithNext());
-                 stepPenalty = Math.max(stepPenalty,
+            Keep keep = getTableLM().getKeepTogether();
+            int stepPenalty = 0;
+            for (final Object element : this.activeCells) {
+                final ActiveCell activeCell = (ActiveCell) element;
+                keep = keep.compare(activeCell.getKeepWithNext());
+                stepPenalty = Math.max(stepPenalty,
                         activeCell.getPenaltyValue());
-             }
-             if (!this.rowFinished) {
-                 keep = keep.compare(this.rowGroup[this.activeRowIndex]
+            }
+            if (!this.rowFinished) {
+                keep = keep.compare(this.rowGroup[this.activeRowIndex]
                         .getKeepTogether());
-             } else if (this.activeRowIndex < this.rowGroup.length - 1) {
-                 keep = keep.compare(this.rowGroup[this.activeRowIndex]
+            } else if (this.activeRowIndex < this.rowGroup.length - 1) {
+                keep = keep.compare(this.rowGroup[this.activeRowIndex]
                         .getKeepWithNext());
-                 keep = keep.compare(this.rowGroup[this.activeRowIndex + 1]
+                keep = keep.compare(this.rowGroup[this.activeRowIndex + 1]
                         .getKeepWithPrevious());
-                 this.nextBreakClass = BreakUtil.compareBreakClasses(
+                this.nextBreakClass = BreakUtil.compareBreakClasses(
                         this.nextBreakClass,
-                         this.rowGroup[this.activeRowIndex].getBreakAfter());
-                 this.nextBreakClass = BreakUtil
+                        this.rowGroup[this.activeRowIndex].getBreakAfter());
+                this.nextBreakClass = BreakUtil
                         .compareBreakClasses(this.nextBreakClass,
                                 this.rowGroup[this.activeRowIndex + 1]
                                         .getBreakBefore());
-             }
-             int p = keep.getPenalty();
-             if (this.rowHeightSmallerThanFirstStep) {
-                 this.rowHeightSmallerThanFirstStep = false;
-                 p = KnuthPenalty.INFINITE;
-             }
-             p = Math.max(p, stepPenalty);
-             int breakClass = keep.getContext();
-             if (this.nextBreakClass != Constants.EN_AUTO) {
-                 log.trace("Forced break encountered");
-                 p = -KnuthPenalty.INFINITE; // Overrides any keeps (see 4.8 in
-                                            // XSL 1.0)
-                 breakClass = this.nextBreakClass;
-             }
-             returnList.add(new BreakElement(penaltyPos, effPenaltyLen, p,
+            }
+            int p = keep.getPenalty();
+            if (this.rowHeightSmallerThanFirstStep) {
+                this.rowHeightSmallerThanFirstStep = false;
+                p = KnuthPenalty.INFINITE;
+            }
+            p = Math.max(p, stepPenalty);
+            int breakClass = keep.getContext();
+            if (this.nextBreakClass != Constants.EN_AUTO) {
+                log.trace("Forced break encountered");
+                p = -KnuthPenalty.INFINITE; // Overrides any keeps (see 4.8 in
+                // XSL 1.0)
+                breakClass = this.nextBreakClass;
+            }
+            returnList.add(new BreakElement(penaltyPos, effPenaltyLen, p,
                     breakClass, context));
-             if (penaltyOrGlueLen < 0) {
-                 returnList.add(new KnuthGlue(-penaltyOrGlueLen, 0, 0,
+            if (penaltyOrGlueLen < 0) {
+                returnList.add(new KnuthGlue(-penaltyOrGlueLen, 0, 0,
                         new Position(null), true));
-             }
+            }
 
-             laststep = step;
-             step = getNextStep();
-         } while (step >= 0);
-         assert !returnList.isEmpty();
-         lastTCPos.setFlag(TableContentPosition.LAST_IN_ROWGROUP, true);
-         return returnList;
-     }
+            laststep = step;
+            step = getNextStep();
+        } while (step >= 0);
+        assert !returnList.isEmpty();
+        lastTCPos.setFlag(TableContentPosition.LAST_IN_ROWGROUP, true);
+        return returnList;
+    }
 
-     /**
-      * Returns the first step for the current row group.
-      *
-      * @return the first step for the current row group
-      */
-     private int getFirstStep() {
-         computeRowFirstStep(this.activeCells);
-         signalRowFirstStep();
-         final int minStep = considerRowLastStep(this.rowFirstStep);
-         signalNextStep(minStep);
-         return minStep;
-     }
+    /**
+     * Returns the first step for the current row group.
+     *
+     * @return the first step for the current row group
+     */
+    private int getFirstStep() {
+        computeRowFirstStep(this.activeCells);
+        signalRowFirstStep();
+        final int minStep = considerRowLastStep(this.rowFirstStep);
+        signalNextStep(minStep);
+        return minStep;
+    }
 
-     /**
-      * Returns the next break possibility.
-      *
-      * @return the next step
-      */
-     private int getNextStep() {
-         if (this.rowFinished) {
-             if (this.activeRowIndex == this.rowGroup.length - 1) {
-                 // The row group is finished, no next step
-                 return -1;
-             }
-             this.rowFinished = false;
-             removeCellsEndingOnCurrentRow();
-             log.trace("Delaying next row");
-             this.delayingNextRow = true;
-         }
-         if (this.delayingNextRow) {
-             int minStep = computeMinStep();
-             if (minStep < 0
+    /**
+     * Returns the next break possibility.
+     *
+     * @return the next step
+     */
+    private int getNextStep() {
+        if (this.rowFinished) {
+            if (this.activeRowIndex == this.rowGroup.length - 1) {
+                // The row group is finished, no next step
+                return -1;
+            }
+            this.rowFinished = false;
+            removeCellsEndingOnCurrentRow();
+            log.trace("Delaying next row");
+            this.delayingNextRow = true;
+        }
+        if (this.delayingNextRow) {
+            int minStep = computeMinStep();
+            if (minStep < 0
                     || minStep >= this.rowFirstStep
-                     || minStep > this.rowGroup[this.activeRowIndex]
+                    || minStep > this.rowGroup[this.activeRowIndex]
                             .getExplicitHeight().getMax()) {
-                 if (log.isTraceEnabled()) {
-                     log.trace("Step = " + minStep);
-                 }
-                 this.delayingNextRow = false;
-                 minStep = this.rowFirstStep;
-                 switchToNextRow();
-                 signalRowFirstStep();
-                 minStep = considerRowLastStep(minStep);
-             }
-             signalNextStep(minStep);
-             return minStep;
-         } else {
-             int minStep = computeMinStep();
-             minStep = considerRowLastStep(minStep);
-             signalNextStep(minStep);
-             return minStep;
-         }
-     }
+                if (log.isTraceEnabled()) {
+                    log.trace("Step = " + minStep);
+                }
+                this.delayingNextRow = false;
+                minStep = this.rowFirstStep;
+                switchToNextRow();
+                signalRowFirstStep();
+                minStep = considerRowLastStep(minStep);
+            }
+            signalNextStep(minStep);
+            return minStep;
+        } else {
+            int minStep = computeMinStep();
+            minStep = considerRowLastStep(minStep);
+            signalNextStep(minStep);
+            return minStep;
+        }
+    }
 
-     /**
-      * Computes the minimal necessary step to make the next row fit. That is, so
+    /**
+     * Computes the minimal necessary step to make the next row fit. That is, so
      * such as cell on the next row can contribute some content.
      *
-      * @param cells
+     * @param cells
      *            the cells occupying the next row (may include cells starting
      *            on previous rows and spanning over this one)
-      */
-     private void computeRowFirstStep(final List cells) {
-         for (final Iterator iter = cells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             this.rowFirstStep = Math.max(this.rowFirstStep,
+     */
+    private void computeRowFirstStep(final List<ActiveCell> cells) {
+        for (final ActiveCell activeCell : cells) {
+            this.rowFirstStep = Math.max(this.rowFirstStep,
                     activeCell.getFirstStep());
-         }
-     }
+        }
+    }
 
-     /**
-      * Computes the next minimal step.
-      *
-      * @return the minimal step from the active cells, &lt; 0 if there is no
+    /**
+     * Computes the next minimal step.
+     *
+     * @return the minimal step from the active cells, &lt; 0 if there is no
      *         such step
-      */
-     private int computeMinStep() {
-         int minStep = Integer.MAX_VALUE;
-         boolean stepFound = false;
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             final int nextStep = activeCell.getNextStep();
-             if (nextStep >= 0) {
-                 stepFound = true;
-                 minStep = Math.min(minStep, nextStep);
-             }
-         }
-         if (stepFound) {
-             return minStep;
-         } else {
-             return -1;
-         }
-     }
+     */
+    private int computeMinStep() {
+        int minStep = Integer.MAX_VALUE;
+        boolean stepFound = false;
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            final int nextStep = activeCell.getNextStep();
+            if (nextStep >= 0) {
+                stepFound = true;
+                minStep = Math.min(minStep, nextStep);
+            }
+        }
+        if (stepFound) {
+            return minStep;
+        } else {
+            return -1;
+        }
+    }
 
-     /**
-      * Signals the first step to the active cells, to allow them to add more
+    /**
+     * Signals the first step to the active cells, to allow them to add more
      * content to the step if possible.
      *
-      * @see ActiveCell#signalRowFirstStep(int)
-      */
-     private void signalRowFirstStep() {
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             activeCell.signalRowFirstStep(this.rowFirstStep);
-         }
-     }
+     * @see ActiveCell#signalRowFirstStep(int)
+     */
+    private void signalRowFirstStep() {
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            activeCell.signalRowFirstStep(this.rowFirstStep);
+        }
+    }
 
-     /**
-      * Signals the next selected step to the active cells.
-      *
-      * @param step
+    /**
+     * Signals the next selected step to the active cells.
+     *
+     * @param step
      *            the next step
-      */
-     private void signalNextStep(final int step) {
-         this.nextBreakClass = Constants.EN_AUTO;
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             this.nextBreakClass = BreakUtil.compareBreakClasses(
+     */
+    private void signalNextStep(final int step) {
+        this.nextBreakClass = Constants.EN_AUTO;
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            this.nextBreakClass = BreakUtil.compareBreakClasses(
                     this.nextBreakClass, activeCell.signalNextStep(step));
-         }
-     }
+        }
+    }
 
-     /**
-      * Determines if the given step will finish the current row, and if so
+    /**
+     * Determines if the given step will finish the current row, and if so
      * switch to the last step for this row.
      * <p>
      * If the row is finished then the after borders for the cell may change
@@ -459,100 +457,99 @@ import org.apache.fop.util.BreakUtil;
      * the current row.
      * </p>
      *
-      * @param step
+     * @param step
      *            the next step
      * @return the updated step if any
-      */
-     private int considerRowLastStep(int step) {
-         this.rowFinished = true;
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             if (activeCell.endsOnRow(this.activeRowIndex)) {
-                 this.rowFinished &= activeCell.finishes(step);
-             }
-         }
-         if (this.rowFinished) {
-             if (log.isTraceEnabled()) {
-                 log.trace("Step = " + step);
-                 log.trace("Row finished, computing last step");
-             }
-             int maxStep = 0;
-             for (final Iterator iter = this.activeCells.iterator(); iter
-                    .hasNext();) {
-                 final ActiveCell activeCell = (ActiveCell) iter.next();
-                 if (activeCell.endsOnRow(this.activeRowIndex)) {
-                     maxStep = Math.max(maxStep, activeCell.getLastStep());
-                 }
-             }
-             if (log.isTraceEnabled()) {
-                 log.trace("Max step: " + maxStep);
-             }
-             for (final Iterator iter = this.activeCells.iterator(); iter
-                    .hasNext();) {
-                 final ActiveCell activeCell = (ActiveCell) iter.next();
-                 activeCell.endRow(this.activeRowIndex);
-                 if (!activeCell.endsOnRow(this.activeRowIndex)) {
-                     activeCell.signalRowLastStep(maxStep);
-                 }
-             }
-             if (maxStep < step) {
-                 log.trace("Row height smaller than first step, produced penalty will be infinite");
-                 this.rowHeightSmallerThanFirstStep = true;
-             }
-             step = maxStep;
-             prepareNextRow();
-         }
-         return step;
-     }
+     */
+    private int considerRowLastStep(int step) {
+        this.rowFinished = true;
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            if (activeCell.endsOnRow(this.activeRowIndex)) {
+                this.rowFinished &= activeCell.finishes(step);
+            }
+        }
+        if (this.rowFinished) {
+            if (log.isTraceEnabled()) {
+                log.trace("Step = " + step);
+                log.trace("Row finished, computing last step");
+            }
+            int maxStep = 0;
+            for (final Object element : this.activeCells) {
+                final ActiveCell activeCell = (ActiveCell) element;
+                if (activeCell.endsOnRow(this.activeRowIndex)) {
+                    maxStep = Math.max(maxStep, activeCell.getLastStep());
+                }
+            }
+            if (log.isTraceEnabled()) {
+                log.trace("Max step: " + maxStep);
+            }
+            for (final Object element : this.activeCells) {
+                final ActiveCell activeCell = (ActiveCell) element;
+                activeCell.endRow(this.activeRowIndex);
+                if (!activeCell.endsOnRow(this.activeRowIndex)) {
+                    activeCell.signalRowLastStep(maxStep);
+                }
+            }
+            if (maxStep < step) {
+                log.trace("Row height smaller than first step, produced penalty will be infinite");
+                this.rowHeightSmallerThanFirstStep = true;
+            }
+            step = maxStep;
+            prepareNextRow();
+        }
+        return step;
+    }
 
-     /**
-      * Pre-activates the cells that will start the next row, and computes the
+    /**
+     * Pre-activates the cells that will start the next row, and computes the
      * first step for that row.
-      */
-     private void prepareNextRow() {
-         if (this.activeRowIndex < this.rowGroup.length - 1) {
-             this.previousRowsLength += this.rowGroup[this.activeRowIndex]
+     */
+    private void prepareNextRow() {
+        if (this.activeRowIndex < this.rowGroup.length - 1) {
+            this.previousRowsLength += this.rowGroup[this.activeRowIndex]
                     .getHeight().getOpt();
-             activateCells(this.nextActiveCells, this.activeRowIndex + 1);
-             if (log.isTraceEnabled()) {
-                 log.trace("Computing first step for row "
+            activateCells(this.nextActiveCells, this.activeRowIndex + 1);
+            if (log.isTraceEnabled()) {
+                log.trace("Computing first step for row "
                         + (this.activeRowIndex + 2));
-             }
-             computeRowFirstStep(this.nextActiveCells);
-             if (log.isTraceEnabled()) {
-                 log.trace("Next first step = " + this.rowFirstStep);
-             }
-         }
-     }
+            }
+            computeRowFirstStep(this.nextActiveCells);
+            if (log.isTraceEnabled()) {
+                log.trace("Next first step = " + this.rowFirstStep);
+            }
+        }
+    }
 
-     private void removeCellsEndingOnCurrentRow() {
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             if (activeCell.endsOnRow(this.activeRowIndex)) {
-                 iter.remove();
-             }
-         }
-     }
+    private void removeCellsEndingOnCurrentRow() {
+        for (final Iterator<ActiveCell> iter = this.activeCells.iterator(); iter
+                .hasNext();) {
+            final ActiveCell activeCell = iter.next();
+            if (activeCell.endsOnRow(this.activeRowIndex)) {
+                iter.remove();
+            }
+        }
+    }
 
-     /**
-      * Actually switches to the next row, increasing activeRowIndex and
+    /**
+     * Actually switches to the next row, increasing activeRowIndex and
      * transferring to activeCells the cells starting on the next row.
-      */
-     private void switchToNextRow() {
-         this.activeRowIndex++;
-         if (log.isTraceEnabled()) {
-             log.trace("Switching to row " + (this.activeRowIndex + 1));
-         }
-         for (final Iterator iter = this.activeCells.iterator(); iter.hasNext();) {
-             final ActiveCell activeCell = (ActiveCell) iter.next();
-             activeCell.nextRowStarts();
-         }
-         this.activeCells.addAll(this.nextActiveCells);
-         this.nextActiveCells.clear();
-     }
+     */
+    private void switchToNextRow() {
+        this.activeRowIndex++;
+        if (log.isTraceEnabled()) {
+            log.trace("Switching to row " + (this.activeRowIndex + 1));
+        }
+        for (final Object element : this.activeCells) {
+            final ActiveCell activeCell = (ActiveCell) element;
+            activeCell.nextRowStarts();
+        }
+        this.activeCells.addAll(this.nextActiveCells);
+        this.nextActiveCells.clear();
+    }
 
-     /** @return the table layout manager */
-     private TableLayoutManager getTableLM() {
-         return this.tclm.getTableLM();
-     }
- }
+    /** @return the table layout manager */
+    private TableLayoutManager getTableLM() {
+        return this.tclm.getTableLM();
+    }
+}

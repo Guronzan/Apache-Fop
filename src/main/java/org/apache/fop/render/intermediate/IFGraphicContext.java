@@ -33,7 +33,7 @@ public class IFGraphicContext extends GraphicContext {
 
     private static final AffineTransform[] EMPTY_TRANSFORM_ARRAY = new AffineTransform[0];
 
-    private ArrayList groupList = new ArrayList();
+    private ArrayList groupList = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -63,7 +63,7 @@ public class IFGraphicContext extends GraphicContext {
     /** @param group a group */
     public void pushGroup(Group group) {
         this.groupList.add(group);
-        for (int i = 0, c = group.getTransforms().length; i < c; i++) {
+        for (int i = 0, c = group.getTransforms().length; i < c; ++i) {
             transform(group.getTransforms()[i]);
         }
     }

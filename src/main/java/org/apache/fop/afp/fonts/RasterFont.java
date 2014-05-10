@@ -274,7 +274,7 @@ import lombok.extern.slf4j.Slf4j;
      public int[] getWidths(final int size) {
          final CharacterSet cs = getCharacterSet(size);
          final int[] widths = cs.getWidths();
-         for (int i = 0, c = widths.length; i < c; i++) {
+         for (int i = 0, c = widths.length; i < c; ++i) {
              widths[i] = metricsToAbsoluteSize(cs, widths[i], size);
          }
          return widths;

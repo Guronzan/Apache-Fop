@@ -77,7 +77,7 @@ public abstract class AbstractBorderElement implements Constants {
      * @param type binary representation of type gives <code>data</code>
      */
     public AbstractBorderElement(int type) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             data[i] = (type >> i) & 1;
         }
     }
@@ -118,7 +118,7 @@ public abstract class AbstractBorderElement implements Constants {
         pa[3] = new Point(-data[LEFT], 0);
 
         Arrays.fill(data, 0);
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; ++i) {
             Point p = state.transformPoint(pa[i], ctm);
 
             int length = (int) p.distance(0, 0);

@@ -34,7 +34,7 @@ public class PDFPages extends PDFObject {
     /**
      * the /Page objects
      */
-    protected List kids = new ArrayList();
+    protected List kids = new ArrayList<>();
 
     /**
      * the number of /Page objects
@@ -112,7 +112,7 @@ public class PDFPages extends PDFObject {
         sb.append("<< /Type /Pages\n/Count ")
                 .append(this.getCount())
                 .append("\n/Kids [");
-        for (int i = 0; i < kids.size(); i++) {
+        for (int i = 0; i < kids.size(); ++i) {
             Object kid = kids.get(i);
             if (kid == null) {
                 throw new IllegalStateException("Gap in the kids list!");

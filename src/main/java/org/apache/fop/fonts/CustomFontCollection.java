@@ -54,7 +54,7 @@ public class CustomFontCollection implements FontCollection {
         String internalName = null;
         //FontReader reader = null;
 
-        for (int i = 0; i < embedFontInfoList.size(); i++) {
+        for (int i = 0; i < embedFontInfoList.size(); ++i) {
             EmbedFontInfo embedFontInfo = embedFontInfoList.get(i);
 
             //String metricsFile = configFontInfo.getMetricsFile();

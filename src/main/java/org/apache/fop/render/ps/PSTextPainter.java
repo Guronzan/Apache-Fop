@@ -454,7 +454,7 @@ import org.apache.xmlgraphics.ps.PSGenerator;
                     && ((LazyFont) metrics).getRealFont() instanceof MultiByteFont;
              final StringBuilder sb = new StringBuilder();
              sb.append(multiByte ? '<' : '(');
-             for (int i = 0, c = this.currentChars.length(); i < c; i++) {
+             for (int i = 0, c = this.currentChars.length(); i < c; ++i) {
                  final char ch = this.currentChars.charAt(i);
                  mapped = f.mapChar(ch);
                  if (multiByte) {
@@ -532,7 +532,7 @@ import org.apache.xmlgraphics.ps.PSGenerator;
              iter.next();
              final Point2D pos = new Point2D.Double(0, 0);
              gen.writeln("0 0 M");
-             for (int i = 0, c = this.currentChars.length(); i < c; i++) {
+             for (int i = 0, c = this.currentChars.length(); i < c; ++i) {
                  final char ch = this.currentChars.charAt(0);
                  if (i == 0) {
                      // Font only has to be setup up before the first character

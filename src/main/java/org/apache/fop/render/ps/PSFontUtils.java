@@ -156,7 +156,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
             final PSEventProducer eventProducer) throws IOException {
          gen.commentln("%FOPBeginFontDict");
 
-         final Map fontResources = new HashMap();
+         final Map fontResources = new HashMap<>();
          for (final String key : fonts.keySet()) {
              final Typeface tf = getTypeFace(fontInfo, fonts, key);
              final PSResource fontRes = new PSResource(PSResource.TYPE_FONT,
@@ -172,7 +172,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
                      sbf.encodeAllUnencodedCharacters();
                  }
 
-                 for (int i = 0, c = sbf.getAdditionalEncodingCount(); i < c; i++) {
+                 for (int i = 0, c = sbf.getAdditionalEncodingCount(); i < c; ++i) {
                      final SingleByteEncoding encoding = sbf
                             .getAdditionalEncoding(i);
                      defineEncoding(gen, encoding);
@@ -370,7 +370,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
              buildCharStrings = false;
          } else {
              buildCharStrings = true;
-             for (int i = 0; i < Glyphs.WINANSI_ENCODING.length; i++) {
+             for (int i = 0; i < Glyphs.WINANSI_ENCODING.length; ++i) {
                  gen.write("dup ");
                  gen.write(i);
                  gen.write(" /");
@@ -577,7 +577,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
             final CustomFont font) throws IOException {
          final int[] bbox = font.getFontBBox();
          gen.write("/FontBBox[");
-         for (int i = 0; i < 4; i++) {
+         for (int i = 0; i < 4; ++i) {
              gen.write(" ");
              gen.write(bbox[i]);
          }
@@ -642,7 +642,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
       */
      public static Map determineSuppliedFonts(final ResourceTracker resTracker,
              final FontInfo fontInfo, final Map<String, Typeface> fonts) {
-         final Map fontResources = new java.util.HashMap();
+         final Map fontResources = new HashMap<>();
          for (final String key : fonts.keySet()) {
              final Typeface tf = getTypeFace(fontInfo, fonts, key);
              final PSResource fontRes = new PSResource("font",
@@ -665,7 +665,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
                      }
                      if (tf instanceof SingleByteFont) {
                          final SingleByteFont sbf = (SingleByteFont) tf;
-                         for (int i = 0, c = sbf.getAdditionalEncodingCount(); i < c; i++) {
+                         for (int i = 0, c = sbf.getAdditionalEncodingCount(); i < c; ++i) {
                              final SingleByteEncoding encoding = sbf
                                     .getAdditionalEncoding(i);
                              final PSResource encodingRes = new PSResource(
@@ -702,7 +702,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
          gen.writeDSCComment(DSCConstants.BEGIN_RESOURCE, res);
          gen.writeln("/" + encoding.getName() + " [");
          final String[] charNames = encoding.getCharNameMap();
-         for (int i = 0; i < 256; i++) {
+         for (int i = 0; i < 256; ++i) {
              if (i > 0) {
                  if (i % 5 == 0) {
                      gen.newLine();
@@ -780,7 +780,7 @@ import org.apache.xmlgraphics.ps.dsc.ResourceTracker;
          final String[] charNameMap = encoding.getCharNameMap();
          final char[] unicodeCharMap = encoding.getUnicodeCharMap();
          assert charNameMap.length == unicodeCharMap.length;
-         for (int i = 0; i < charNameMap.length; i++) {
+         for (int i = 0; i < charNameMap.length; ++i) {
              final String glyphName = charNameMap[i];
              gen.write("    /");
              gen.write(glyphName);

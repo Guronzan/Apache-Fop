@@ -229,7 +229,7 @@ import org.apache.tools.ant.Task;
      * @return a list of urls to the runtime jar files.
       */
      private URL[] createUrls(final String mainJar) throws MalformedURLException {
-         final ArrayList urls = new ArrayList();
+         final ArrayList urls = new ArrayList<>();
          urls.add(new File(mainJar).toURI().toURL());
          final File[] libFiles = new File("lib").listFiles();
          for (final File libFile : libFiles) {

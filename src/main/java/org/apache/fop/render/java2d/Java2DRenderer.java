@@ -39,6 +39,7 @@ import java.awt.print.PrinterException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +129,7 @@ implements Printable {
     protected int pageHeight = 0;
 
     /** List of Viewports */
-    protected List pageViewportList = new java.util.ArrayList();
+    protected List<PageViewport> pageViewportList = new ArrayList<>();
 
     /** The 0-based current page number */
     private int currentPageNumber = 0;
@@ -148,7 +149,7 @@ implements Printable {
     /** The current state, holds a Graphics2D and its context */
     protected Java2DGraphicsState state;
 
-    private final Stack stateStack = new Stack();
+    private final Stack<Java2DGraphicsState> stateStack = new Stack<>();
 
     /** true if the renderer has finished rendering all the pages */
     private boolean renderingDone;
@@ -459,7 +460,7 @@ implements Printable {
                     + pageIndex + "; only " + this.pageViewportList.size()
                     + " page(s) available.");
         }
-        return (PageViewport) this.pageViewportList.get(pageIndex);
+        return this.pageViewportList.get(pageIndex);
     }
 
     /**
@@ -488,7 +489,7 @@ implements Printable {
     @Override
     protected void restoreGraphicsState() {
         this.state.dispose();
-        this.state = (Java2DGraphicsState) this.stateStack.pop();
+        this.state = this.stateStack.pop();
     }
 
     /** {@inheritDoc} */
@@ -523,15 +524,15 @@ implements Printable {
 
     /** {@inheritDoc} */
     @Override
-    protected List breakOutOfStateStack() {
+    protected List<Java2DGraphicsState> breakOutOfStateStack() {
         log.debug("Block.FIXED --> break out");
-        List breakOutList;
-        breakOutList = new java.util.ArrayList();
+        List<Java2DGraphicsState> breakOutList;
+        breakOutList = new ArrayList<>();
         while (!this.stateStack.isEmpty()) {
             breakOutList.add(0, this.state);
             // We only pop, we don't dispose, because we can use the instances
             // again later
-            this.state = (Java2DGraphicsState) this.stateStack.pop();
+            this.state = this.stateStack.pop();
         }
         return breakOutList;
     }
@@ -840,9 +841,7 @@ implements Printable {
 
         float textCursor = 0;
 
-        final Iterator iter = text.getChildAreas().iterator();
-        while (iter.hasNext()) {
-            final InlineArea child = (InlineArea) iter.next();
+        for (final InlineArea child : text.getChildAreas()) {
             if (child instanceof WordArea) {
                 final WordArea word = (WordArea) child;
                 final String s = word.getWord();
@@ -858,7 +857,7 @@ implements Printable {
                     final int[] offsets = getGlyphOffsets(s, font, text,
                             letterAdjust);
                     float cursor = 0.0f;
-                    for (int i = 0; i < offsets.length; i++) {
+                    for (int i = 0; i < offsets.length; ++i) {
                         final Point2D pt = gv.getGlyphPosition(i);
                         pt.setLocation(cursor, pt.getY());
                         gv.setGlyphPosition(i, pt);
@@ -890,7 +889,7 @@ implements Printable {
             final TextArea text, final int[] letterAdjust) {
         final int textLen = s.length();
         final int[] offsets = new int[textLen];
-        for (int i = 0; i < textLen; i++) {
+        for (int i = 0; i < textLen; ++i) {
             final char c = s.charAt(i);
             final char mapped = font.mapChar(c);
             int wordSpace;

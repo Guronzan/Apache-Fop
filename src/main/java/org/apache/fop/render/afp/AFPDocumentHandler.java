@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -62,7 +63,7 @@ import org.apache.fop.render.intermediate.IFPainter;
  * that produces AFP (MO:DCA).
  */
 public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
-        implements AFPCustomizable {
+implements AFPCustomizable {
 
     // ** logging instance */
     // private static Log log = LogFactory.getLog(AFPDocumentHandler.class);
@@ -80,7 +81,7 @@ public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
     private DataStream dataStream;
 
     /** the map of page segments */
-    private final Map<String, PageSegmentDescriptor> pageSegmentMap = new java.util.HashMap<>();
+    private final Map<String, PageSegmentDescriptor> pageSegmentMap = new HashMap<>();
 
     private static enum Location {
         ELSEWHERE, IN_DOCUMENT_HEADER, FOLLOWING_PAGE_SEQUENCE, IN_PAGE_HEADER
@@ -257,7 +258,7 @@ public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
     @Override
     public void startPage(final int index, final String name,
             final String pageMasterName, final Dimension size)
-            throws IFException {
+                    throws IFException {
         this.location = Location.ELSEWHERE;
         this.paintingState.clear();
 
@@ -401,9 +402,9 @@ public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
                     getUserAgent(), null, null);
             try {
                 getResourceManager()
-                        .createIncludedResource(formMap.getName(),
-                                formMap.getSrc(), accessor,
-                                ResourceObject.TYPE_FORMDEF);
+                .createIncludedResource(formMap.getName(),
+                        formMap.getSrc(), accessor,
+                        ResourceObject.TYPE_FORMDEF);
             } catch (final IOException ioe) {
                 throw new IFException(
                         "I/O error while embedding form map resource: "
@@ -544,7 +545,7 @@ public class AFPDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
     /**
      * Returns the page segment descriptor for a given URI if it actually
      * represents a page segment. Otherwise, it just returns null.
-     * 
+     *
      * @param uri
      *            the URI that identifies the page segment
      * @return the page segment descriptor or null if there's no page segment

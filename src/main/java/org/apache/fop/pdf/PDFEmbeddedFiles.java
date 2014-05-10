@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * Class representing an /EmbeddedFiles dictionary object (name tree).
@@ -38,28 +39,30 @@ public class PDFEmbeddedFiles extends PDFNameTreeNode {
     }
 
     /** {@inheritDoc} */
-    protected void writeDictionary(OutputStream out, StringBuilder textBuffer) throws IOException {
-        sortNames(); //Sort the names before writing them out
+    @Override
+    protected void writeDictionary(final OutputStream out,
+            final StringBuilder textBuffer) throws IOException {
+        sortNames(); // Sort the names before writing them out
         super.writeDictionary(out, textBuffer);
     }
 
     private void sortNames() {
-        PDFArray names = getNames();
-        SortedMap map = new java.util.TreeMap();
+        final PDFArray names = getNames();
+        final SortedMap map = new TreeMap<>();
         int i = 0;
-        int c = names.length();
+        final int c = names.length();
         while (i < c) {
-            Comparable key = (Comparable)names.get(i++); //Key must be a Comparable for sorting
-            Object value = names.get(i++);
+            // Key must be a Comparable for sorting
+            final Comparable key = (Comparable) names.get(i++);
+            final Object value = names.get(i++);
             map.put(key, value);
         }
         names.clear();
-        Iterator iter = map.entrySet().iterator();
+        final Iterator iter = map.entrySet().iterator();
         while (iter.hasNext()) {
-            Map.Entry entry = (Map.Entry)iter.next();
+            final Map.Entry entry = (Map.Entry) iter.next();
             names.add(entry.getKey());
             names.add(entry.getValue());
         }
     }
 }
-

@@ -164,7 +164,7 @@ public final class BidiResolver {
     private static List reorderRuns(List runs, final int level) {
         assert level >= 0;
         final List runsNew = new ArrayList<>();
-        for (int i = 0, n = runs.size(); i < n; i++) {
+        for (int i = 0, n = runs.size(); i < n; ++i) {
             final InlineRun iri = (InlineRun) runs.get(i);
             if (iri.getMinLevel() < level) {
                 runsNew.add(iri);
@@ -195,7 +195,7 @@ public final class BidiResolver {
         final int n = e - s;
         final List runsNew = new ArrayList<>(n);
         if (n > 0) {
-            for (int i = 0; i < n; i++) {
+            for (int i = 0; i < n; ++i) {
                 final int k = n - i - 1;
                 final InlineRun ir = (InlineRun) runs.get(s + k);
                 ir.reverse();

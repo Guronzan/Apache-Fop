@@ -55,7 +55,7 @@ public class ColumnNumberManager {
      * @param end   end number, inclusive
      */
     void signalUsedColumnNumbers(int start, int end) {
-        for (int i = start - 1; i < end; i++) {
+        for (int i = start - 1; i < end; ++i) {
             usedColumnIndices.set(i);
         }
 
@@ -74,7 +74,7 @@ public class ColumnNumberManager {
     void prepareForNextRow(List pendingSpans) {
         usedColumnIndices.clear();
         PendingSpan pSpan;
-        for (int i = 0; i < pendingSpans.size(); i++) {
+        for (int i = 0; i < pendingSpans.size(); ++i) {
             pSpan = (PendingSpan) pendingSpans.get(i);
             if (pSpan != null) {
                 if ( pSpan.decrRowsLeft() == 0 ) {

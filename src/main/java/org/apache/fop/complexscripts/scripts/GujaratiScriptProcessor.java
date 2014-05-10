@@ -93,7 +93,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
             final int k) {
          final GlyphSequence.CharAssociation a = gs.getAssociation(k);
          final int[] ca = gs.getCharacterArray(false);
-         for (int i = a.getStart(), e = a.getEnd(); i < e; i++) {
+         for (int i = a.getStart(), e = a.getEnd(); i < e; ++i) {
              if (isPreM(ca[i])) {
                  return true;
              }
@@ -104,7 +104,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
      private static boolean containsConsonant(final GlyphSequence gs, final int k) {
          final GlyphSequence.CharAssociation a = gs.getAssociation(k);
          final int[] ca = gs.getCharacterArray(false);
-         for (int i = a.getStart(), e = a.getEnd(); i < e; i++) {
+         for (int i = a.getStart(), e = a.getEnd(); i < e; ++i) {
              if (isC(ca[i])) {
                  return true;
              }
@@ -123,7 +123,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
      protected int findReph(final GlyphSequence gs) {
          final int ng = gs.getGlyphCount();
          int li = -1;
-         for (int i = 0; i < ng; i++) {
+         for (int i = 0; i < ng; ++i) {
              if (containsReph(gs, i)) {
                  li = i;
                  break;
@@ -138,7 +138,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
          int c1 = -1;
          int c2 = -1;
          // first candidate target is after first non-half consonant
-         for (int i = 0; i < ng; i++) {
+         for (int i = 0; i < ng; ++i) {
              if (i != source && containsConsonant(gs, i)) {
                  if (!containsHalfConsonant(gs, i)) {
                      c1 = i + 1;
@@ -148,7 +148,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
          }
          // second candidate target is after last non-prebase matra after first
         // candidate or before first syllable or vedic mark
-         for (int i = c1 >= 0 ? c1 : 0; i < ng; i++) {
+         for (int i = c1 >= 0 ? c1 : 0; i < ng; ++i) {
              if (containsMatra(gs, i) && !containsPreBaseMatra(gs, i)) {
                  c2 = i + 1;
              } else if (containsOtherMark(gs, i)) {
@@ -174,7 +174,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
      private static boolean containsMatra(final GlyphSequence gs, final int k) {
          final GlyphSequence.CharAssociation a = gs.getAssociation(k);
          final int[] ca = gs.getCharacterArray(false);
-         for (int i = a.getStart(), e = a.getEnd(); i < e; i++) {
+         for (int i = a.getStart(), e = a.getEnd(); i < e; ++i) {
              if (isM(ca[i])) {
                  return true;
              }
@@ -185,7 +185,7 @@ import org.apache.fop.complexscripts.util.GlyphSequence;
      private static boolean containsOtherMark(final GlyphSequence gs, final int k) {
          final GlyphSequence.CharAssociation a = gs.getAssociation(k);
          final int[] ca = gs.getCharacterArray(false);
-         for (int i = a.getStart(), e = a.getEnd(); i < e; i++) {
+         for (int i = a.getStart(), e = a.getEnd(); i < e; ++i) {
              switch (typeOf(ca[i])) {
              case C_T: // tone (e.g., udatta, anudatta)
              case C_A: // accent (e.g., acute, grave)

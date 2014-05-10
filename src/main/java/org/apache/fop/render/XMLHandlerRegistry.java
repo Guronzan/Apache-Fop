@@ -19,6 +19,8 @@
 
 package org.apache.fop.render;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +38,7 @@ import org.apache.xmlgraphics.util.Service;
 public class XMLHandlerRegistry {
 
     /** Map containing XML handlers for various document types */
-    private final Map<String, List<XMLHandler>> handlers = new java.util.HashMap<String, List<XMLHandler>>();
+    private final Map<String, List<XMLHandler>> handlers = new HashMap<>();
 
     /**
      * Default constructor.
@@ -107,7 +109,7 @@ public class XMLHandlerRegistry {
     private void addXMLHandler(final String ns, final XMLHandler handler) {
         List<XMLHandler> lst = this.handlers.get(ns);
         if (lst == null) {
-            lst = new java.util.ArrayList<XMLHandler>();
+            lst = new ArrayList<>();
             this.handlers.put(ns, lst);
         }
         lst.add(handler);
@@ -140,7 +142,7 @@ public class XMLHandlerRegistry {
             final List<XMLHandler> lst) {
         XMLHandler handler;
         if (lst != null) {
-            for (int i = 0, c = lst.size(); i < c; i++) {
+            for (int i = 0, c = lst.size(); i < c; ++i) {
                 // TODO Maybe add priorities later
                 handler = lst.get(i);
                 if (handler.supportsRenderer(renderer)) {

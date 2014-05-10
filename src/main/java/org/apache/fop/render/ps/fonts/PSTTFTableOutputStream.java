@@ -41,7 +41,7 @@ public class PSTTFTableOutputStream implements TTFTableOutputStream  {
     public void streamTable(byte[] ttfData, int offset, int size) throws IOException {
         int offsetPosition = offset;
         // Need to split the table into MAX_BUFFER_SIZE chunks
-        for (int i = 0; i < size / PSTTFGenerator.MAX_BUFFER_SIZE; i++) {
+        for (int i = 0; i < size / PSTTFGenerator.MAX_BUFFER_SIZE; ++i) {
             streamString(ttfData, offsetPosition, PSTTFGenerator.MAX_BUFFER_SIZE);
             offsetPosition += PSTTFGenerator.MAX_BUFFER_SIZE;
         }

@@ -22,6 +22,7 @@ package org.apache.fop.render.xml;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.transform.TransformerConfigurationException;
@@ -84,11 +85,11 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
     /**
      * A list of ExtensionAttachements received through processOffDocumentItem()
      */
-    protected List extensionAttachments;
+    protected List<ExtensionAttachment> extensionAttachments;
 
     /**
      * Handles SAXExceptions.
-     * 
+     *
      * @param saxe
      *            the SAXException to handle
      */
@@ -98,7 +99,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Handles page extension attachments
-     * 
+     *
      * @param page
      *            the page viewport
      */
@@ -108,7 +109,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Writes a comment to the generated XML.
-     * 
+     *
      * @param comment
      *            the comment
      */
@@ -125,7 +126,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Starts a new element (without attributes).
-     * 
+     *
      * @param tagName
      *            tag name of the element
      */
@@ -135,7 +136,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Starts a new element.
-     * 
+     *
      * @param tagName
      *            tag name of the element
      * @param atts
@@ -151,7 +152,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Ends an element.
-     * 
+     *
      * @param tagName
      *            tag name of the element
      */
@@ -165,7 +166,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Sends plain text to the XML
-     * 
+     *
      * @param text
      *            the text
      */
@@ -180,7 +181,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     * 
+     *
      * @param name
      *            name of the attribute
      * @param value
@@ -192,7 +193,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     * 
+     *
      * @param name
      *            name of the attribute
      * @param value
@@ -205,7 +206,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     * 
+     *
      * @param name
      *            name of the attribute
      * @param value
@@ -222,7 +223,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Adds a new attribute to the protected member variable "atts".
-     * 
+     *
      * @param name
      *            name of the attribute
      * @param rect
@@ -280,7 +281,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
             final ExtensionAttachment attachment = ((OffDocumentExtensionAttachment) oDI)
                     .getAttachment();
             if (this.extensionAttachments == null) {
-                this.extensionAttachments = new java.util.ArrayList();
+                this.extensionAttachments = new ArrayList<>();
             }
             this.extensionAttachments.add(attachment);
         } else {
@@ -301,7 +302,7 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
     /**
      * Sets an outside TransformerHandler to use instead of the default one
      * create in this class in startRenderer().
-     * 
+     *
      * @param handler
      *            Overriding TransformerHandler
      */
@@ -311,15 +312,16 @@ public abstract class AbstractXMLRenderer extends PrintRenderer {
 
     /**
      * Handles a list of extension attachments
-     * 
+     *
      * @param attachments
      *            a list of extension attachments
      */
-    protected abstract void handleExtensionAttachments(final List attachments);
+    protected abstract void handleExtensionAttachments(
+            final List<ExtensionAttachment> attachments);
 
     /**
      * Renders a bookmark tree
-     * 
+     *
      * @param odi
      *            the bookmark data
      */

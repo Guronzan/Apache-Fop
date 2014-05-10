@@ -20,6 +20,7 @@
 package org.apache.fop.render.java2d;
 
 import java.awt.GraphicsEnvironment;
+import java.util.HashSet;
 import java.util.Set;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,113 +35,113 @@ import org.apache.fop.fonts.FontUtil;
  * A custom AWT font collection
  */
 @Slf4j
- public class InstalledFontCollection implements FontCollection {
+public class InstalledFontCollection implements FontCollection {
 
     private static final Set<String> HARDCODED_FONT_NAMES;
 
-     static {
-         HARDCODED_FONT_NAMES = new java.util.HashSet<>();
-         HARDCODED_FONT_NAMES.add("any");
-         HARDCODED_FONT_NAMES.add("sans-serif");
-         HARDCODED_FONT_NAMES.add("serif");
-         HARDCODED_FONT_NAMES.add("monospace");
+    static {
+        HARDCODED_FONT_NAMES = new HashSet<>();
+        HARDCODED_FONT_NAMES.add("any");
+        HARDCODED_FONT_NAMES.add("sans-serif");
+        HARDCODED_FONT_NAMES.add("serif");
+        HARDCODED_FONT_NAMES.add("monospace");
 
-         HARDCODED_FONT_NAMES.add("Helvetica");
-         HARDCODED_FONT_NAMES.add("Times");
-         HARDCODED_FONT_NAMES.add("Courier");
-         HARDCODED_FONT_NAMES.add("Symbol");
-         HARDCODED_FONT_NAMES.add("ZapfDingbats");
-         HARDCODED_FONT_NAMES.add("Times Roman");
-         HARDCODED_FONT_NAMES.add("Times-Roman");
-         HARDCODED_FONT_NAMES.add("Computer-Modern-Typewriter");
-     }
+        HARDCODED_FONT_NAMES.add("Helvetica");
+        HARDCODED_FONT_NAMES.add("Times");
+        HARDCODED_FONT_NAMES.add("Courier");
+        HARDCODED_FONT_NAMES.add("Symbol");
+        HARDCODED_FONT_NAMES.add("ZapfDingbats");
+        HARDCODED_FONT_NAMES.add("Times Roman");
+        HARDCODED_FONT_NAMES.add("Times-Roman");
+        HARDCODED_FONT_NAMES.add("Computer-Modern-Typewriter");
+    }
 
-     /** Required by new instances of FontMetricsMapper */
-     private final Java2DFontMetrics java2DFontMetrics;
+    /** Required by new instances of FontMetricsMapper */
+    private final Java2DFontMetrics java2DFontMetrics;
 
-     /**
-      * Main constructor
-      *
-      * @param java2DFontMetrics
+    /**
+     * Main constructor
+     *
+     * @param java2DFontMetrics
      *            required by new instances of FontMetricsMapper
-      */
-     public InstalledFontCollection(final Java2DFontMetrics java2DFontMetrics) {
-         this.java2DFontMetrics = java2DFontMetrics;
-     }
+     */
+    public InstalledFontCollection(final Java2DFontMetrics java2DFontMetrics) {
+        this.java2DFontMetrics = java2DFontMetrics;
+    }
 
-     /**
-      * {@inheritDoc}
-      */
-     @Override
-     public int setup(final int start, final FontInfo fontInfo) {
-         int num = start;
-         final GraphicsEnvironment env = GraphicsEnvironment
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int setup(final int start, final FontInfo fontInfo) {
+        int num = start;
+        final GraphicsEnvironment env = GraphicsEnvironment
                 .getLocalGraphicsEnvironment();
 
-         final java.awt.Font[] fonts = env.getAllFonts();
-         for (final java.awt.Font font : fonts) {
-             final java.awt.Font f = font;
-             if (HARDCODED_FONT_NAMES.contains(f.getName())) {
-                 continue; // skip
-             }
+        final java.awt.Font[] fonts = env.getAllFonts();
+        for (final java.awt.Font font : fonts) {
+            final java.awt.Font f = font;
+            if (HARDCODED_FONT_NAMES.contains(f.getName())) {
+                continue; // skip
+            }
 
-             if (log.isTraceEnabled()) {
-                 log.trace("AWT Font: " + f.getFontName() + ", family: "
+            if (log.isTraceEnabled()) {
+                log.trace("AWT Font: " + f.getFontName() + ", family: "
                         + f.getFamily() + ", PS: " + f.getPSName() + ", Name: "
                         + f.getName() + ", Angle: " + f.getItalicAngle()
-                         + ", Style: " + f.getStyle());
-             }
+                        + ", Style: " + f.getStyle());
+            }
 
-             final String searchName = FontUtil.stripWhiteSpace(f.getName())
+            final String searchName = FontUtil.stripWhiteSpace(f.getName())
                     .toLowerCase();
-             final String guessedStyle = FontUtil.guessStyle(searchName);
-             final int guessedWeight = FontUtil.guessWeight(searchName);
+            final String guessedStyle = FontUtil.guessStyle(searchName);
+            final int guessedWeight = FontUtil.guessWeight(searchName);
 
-             num++;
-             final String fontKey = "F" + num;
-             final int style = convertToAWTFontStyle(guessedStyle, guessedWeight);
-             addFontMetricsMapper(fontInfo, f.getName(), fontKey,
+            num++;
+            final String fontKey = "F" + num;
+            final int style = convertToAWTFontStyle(guessedStyle, guessedWeight);
+            addFontMetricsMapper(fontInfo, f.getName(), fontKey,
                     this.java2DFontMetrics, style);
 
-             // Register appropriate font triplets matching the font. Two
+            // Register appropriate font triplets matching the font. Two
             // different strategies:
-             // Example: "Arial Bold", normal, normal
-             addFontTriplet(fontInfo, f.getName(), Font.STYLE_NORMAL,
+            // Example: "Arial Bold", normal, normal
+            addFontTriplet(fontInfo, f.getName(), Font.STYLE_NORMAL,
                     Font.WEIGHT_NORMAL, fontKey);
-             if (!f.getName().equals(f.getFamily())) {
-                 // Example: "Arial", bold, normal
-                 addFontTriplet(fontInfo, f.getFamily(), guessedStyle,
+            if (!f.getName().equals(f.getFamily())) {
+                // Example: "Arial", bold, normal
+                addFontTriplet(fontInfo, f.getFamily(), guessedStyle,
                         guessedWeight, fontKey);
-             }
-         }
-         return num;
-     }
+            }
+        }
+        return num;
+    }
 
-     private static void addFontTriplet(final FontInfo fontInfo,
+    private static void addFontTriplet(final FontInfo fontInfo,
             final String fontName, final String fontStyle,
-             final int fontWeight, final String fontKey) {
-         final FontTriplet triplet = FontInfo.createFontKey(fontName, fontStyle,
+            final int fontWeight, final String fontKey) {
+        final FontTriplet triplet = FontInfo.createFontKey(fontName, fontStyle,
                 fontWeight);
-         fontInfo.addFontProperties(fontKey, triplet);
-     }
+        fontInfo.addFontProperties(fontKey, triplet);
+    }
 
-     private static void addFontMetricsMapper(final FontInfo fontInfo,
+    private static void addFontMetricsMapper(final FontInfo fontInfo,
             final String family, final String fontKey,
-             final Java2DFontMetrics java2DFontMetrics, final int style) {
-         final FontMetricsMapper metric = new SystemFontMetricsMapper(family,
+            final Java2DFontMetrics java2DFontMetrics, final int style) {
+        final FontMetricsMapper metric = new SystemFontMetricsMapper(family,
                 style, java2DFontMetrics);
-         fontInfo.addMetrics(fontKey, metric);
-     }
+        fontInfo.addMetrics(fontKey, metric);
+    }
 
-     private static int convertToAWTFontStyle(final String fontStyle,
+    private static int convertToAWTFontStyle(final String fontStyle,
             final int fontWeight) {
-         int style = java.awt.Font.PLAIN;
-         if (fontWeight >= Font.WEIGHT_BOLD) {
-             style |= java.awt.Font.BOLD;
-         }
-         if (!"normal".equals(fontStyle)) {
-             style |= java.awt.Font.ITALIC;
-         }
-         return style;
-     }
- }
+        int style = java.awt.Font.PLAIN;
+        if (fontWeight >= Font.WEIGHT_BOLD) {
+            style |= java.awt.Font.BOLD;
+        }
+        if (!"normal".equals(fontStyle)) {
+            style |= java.awt.Font.ITALIC;
+        }
+        return style;
+    }
+}

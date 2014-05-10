@@ -153,7 +153,7 @@ public final class RtfFontManager {
 
         final int len = this.fontTable.size();
 
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             header.writeGroupMark(true);
             header.newLine();
             header.write("\\f" + i);

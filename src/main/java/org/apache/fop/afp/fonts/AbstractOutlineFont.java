@@ -139,7 +139,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      */
     public int[] getWidths(int size) {
         int[] widths =  charSet.getWidths();
-        for (int i = 0; i < widths.length; i++) {
+        for (int i = 0; i < widths.length; ++i) {
             widths[i] = widths[i] * size;
         }
         return widths;

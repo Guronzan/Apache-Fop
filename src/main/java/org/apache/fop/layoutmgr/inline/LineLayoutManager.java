@@ -285,7 +285,7 @@ BlockLevelLayoutManager {
          * @return true if the sequence contains a box
          */
         public boolean containsBox() {
-            for (int i = 0; i < size(); i++) {
+            for (int i = 0; i < size(); ++i) {
                 final KnuthElement el = (KnuthElement) get(i);
                 if (el.isBox()) {
                     return true;
@@ -535,7 +535,7 @@ BlockLevelLayoutManager {
                 // leave all active nodes and find the optimum line number
                 // log.debug("LBA.filterActiveNodes> " + activeNodeCount +
                 // " layouts");
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         // log.debug("                       + lines = "
                         // + node.line + " demerits = " + node.totalDemerits);
@@ -545,7 +545,7 @@ BlockLevelLayoutManager {
 
                 // scan the node set once again and remove some nodes
                 // log.debug("LBA.filterActiveList> layout selection");
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         // if (Math.abs(node.line - bestActiveNode.line) >
                         // maxDiff) {
@@ -565,7 +565,7 @@ BlockLevelLayoutManager {
                 }
             } else {
                 // leave only the active node with fewest total demerits
-                for (int i = this.startLine; i < this.endLine; i++) {
+                for (int i = this.startLine; i < this.endLine; ++i) {
                     for (KnuthNode node = getNode(i); node != null; node = node.next) {
                         bestActiveNode = compareNodes(bestActiveNode, node);
                         if (node != bestActiveNode) {
@@ -864,7 +864,7 @@ BlockLevelLayoutManager {
         this.lineLayoutsList = new LineLayoutPossibilities[this.knuthParagraphs
                                                            .size()];
         LineLayoutPossibilities llPoss;
-        for (int i = 0; paragraphsIterator.hasNext(); i++) {
+        for (int i = 0; paragraphsIterator.hasNext(); ++i) {
             final KnuthSequence seq = paragraphsIterator.next();
             if (!seq.isInlineSequence()) {
                 // This set of line layout possibilities does not matter;
@@ -1027,7 +1027,7 @@ BlockLevelLayoutManager {
                  * represent effective lines, and contain LineBreakPositions
                  */
                 int startIndex = 0;
-                for (int i = 0; i < llPoss.getChosenLineCount(); i++) {
+                for (int i = 0; i < llPoss.getChosenLineCount(); ++i) {
                     if (returnList.size() > 0
                             && i > 0 // if i==0 break generated above already
                             && i >= this.fobj.getOrphans()
@@ -1173,7 +1173,7 @@ BlockLevelLayoutManager {
         }
 
         // optional lines
-        for (int i = 0; i < optionalLines; i++) {
+        for (int i = 0; i < optionalLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(0, elementPosition, false));
             list.add(new KnuthPenalty(0, KnuthElement.INFINITE, false,
@@ -1184,7 +1184,7 @@ BlockLevelLayoutManager {
         }
 
         // eliminable lines
-        for (int i = 0; i < eliminableLines; i++) {
+        for (int i = 0; i < eliminableLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(this.constantLineHeight, elementPosition,
                     false));
@@ -1196,7 +1196,7 @@ BlockLevelLayoutManager {
         }
 
         // inner lines
-        for (int i = 0; i < innerLines; i++) {
+        for (int i = 0; i < innerLines; ++i) {
             list.addAll(breaker);
             list.add(new KnuthBox(this.constantLineHeight, elementPosition,
                     false));
@@ -1309,7 +1309,7 @@ BlockLevelLayoutManager {
             final LineLayoutPossibilities llPoss = this.lineLayoutsList[p];
             // log.debug("demerits of the chosen layout: " +
             // llPoss.getChosenDemerits());
-            for (int i = 0; i < llPoss.getChosenLineCount(); i++) {
+            for (int i = 0; i < llPoss.getChosenLineCount(); ++i) {
                 if (!((BlockLevelLayoutManager) this.parentLayoutManager)
                         .mustKeepTogether()
                         && i >= this.fobj.getOrphans()
@@ -1437,10 +1437,10 @@ BlockLevelLayoutManager {
                 // ask each LM to hyphenate its word fragment
                 if (hc != null) {
                     KnuthElement element = null;
-                    for (int i = 0; i < boxCount + auxCount; i++) {
+                    for (int i = 0; i < boxCount + auxCount; ++i) {
                         currParIterator.previous();
                     }
-                    for (int i = 0; i < boxCount + auxCount; i++) {
+                    for (int i = 0; i < boxCount + auxCount; ++i) {
                         element = (KnuthElement) currParIterator.next();
                         if (element.isBox() && !element.isAuxiliary()) {
                             ((InlineLevelLayoutManager) element

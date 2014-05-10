@@ -359,7 +359,7 @@ import lombok.extern.slf4j.Slf4j;
              final int[] origIndexes = buildSubsetIndexToOrigIndexMap(glyphs);
              this.glyphOffsets = new int[origIndexes.length];
 
-             for (int i = 0; i < origIndexes.length; i++) {
+             for (int i = 0; i < origIndexes.length; ++i) {
                  int nextOffset = 0;
                  final int origGlyphIndex = origIndexes[i];
                  if (origGlyphIndex >= this.mtxTab.length - 1) {
@@ -549,7 +549,7 @@ import lombok.extern.slf4j.Slf4j;
             throws IOException {
          glyphOut.startGlyphStream();
          // Stream all but the last glyph
-         for (int i = 0; i < this.glyphOffsets.length - 1; i++) {
+         for (int i = 0; i < this.glyphOffsets.length - 1; ++i) {
              glyphOut.streamGlyph(this.output, this.glyphOffsets[i],
                      this.glyphOffsets[i + 1] - this.glyphOffsets[i]);
          }
@@ -665,7 +665,7 @@ import lombok.extern.slf4j.Slf4j;
      private void pad4() {
          final int padSize = getPadSize(this.currentPos);
          if (padSize < 4) {
-             for (int i = 0; i < padSize; i++) {
+             for (int i = 0; i < padSize; ++i) {
                  this.output[this.currentPos++] = 0;
                  this.realSize++;
              }

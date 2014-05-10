@@ -19,6 +19,7 @@
 
 package org.apache.fop.events;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public final class EventExceptionManager {
     private EventExceptionManager() {
     }
 
-    private static final Map<String, ExceptionFactory> EXCEPTION_FACTORIES = new java.util.HashMap<>();
+    private static final Map<String, ExceptionFactory> EXCEPTION_FACTORIES = new HashMap<>();
 
     static {
         final Iterator<ExceptionFactory> iter = Service

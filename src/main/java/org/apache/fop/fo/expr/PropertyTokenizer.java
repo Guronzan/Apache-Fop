@@ -286,7 +286,7 @@ class PropertyTokenizer {
      * character is an opening parenthesis.
      */
     private boolean followingParen() {
-        for (int i = exprIndex; i < exprLength; i++) {
+        for (int i = exprIndex; i < exprLength; ++i) {
             switch (expr.charAt(i)) {
             case '(':
                 exprIndex = i + 1;

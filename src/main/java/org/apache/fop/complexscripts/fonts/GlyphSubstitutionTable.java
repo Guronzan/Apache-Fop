@@ -782,7 +782,7 @@ import org.apache.fop.complexscripts.util.GlyphTester;
              final Ligature[] la = ls.getLigatures();
              int k = -1;
              int maxComponents = -1;
-             for (int i = 0, n = la.length; i < n; i++) {
+             for (int i = 0, n = la.length; i < n; ++i) {
                  final Ligature l = la[i];
                  if (l.matchesComponents(glyphs)) {
                      final int nc = l.getNumComponents();
@@ -1818,7 +1818,7 @@ import org.apache.fop.complexscripts.util.GlyphTester;
              if (glyphs.length < this.components.length + 1) {
                  return false;
              } else {
-                 for (int i = 0, n = this.components.length; i < n; i++) {
+                 for (int i = 0, n = this.components.length; i < n; ++i) {
                      if (glyphs[i + 1] != this.components[i]) {
                          return false;
                      }
@@ -1832,7 +1832,7 @@ import org.apache.fop.complexscripts.util.GlyphTester;
          public String toString() {
              final StringBuilder sb = new StringBuilder();
              sb.append("{components={");
-             for (int i = 0, n = this.components.length; i < n; i++) {
+             for (int i = 0, n = this.components.length; i < n; ++i) {
                  if (i > 0) {
                      sb.append(',');
                  }
@@ -1913,7 +1913,7 @@ import org.apache.fop.complexscripts.util.GlyphTester;
          public String toString() {
              final StringBuilder sb = new StringBuilder();
              sb.append("{ligs={");
-             for (int i = 0, n = this.ligatures.length; i < n; i++) {
+             for (int i = 0, n = this.ligatures.length; i < n; ++i) {
                  if (i > 0) {
                      sb.append(',');
                  }

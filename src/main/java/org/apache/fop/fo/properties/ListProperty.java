@@ -19,6 +19,7 @@
 
 package org.apache.fop.fo.properties;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.fop.fo.FObj;
@@ -38,7 +39,7 @@ public class ListProperty extends Property {
 
         /**
          * Create a maker for the given property id.
-         * 
+         *
          * @param propId
          *            ID of the property for which Maker should be created
          */
@@ -50,7 +51,7 @@ public class ListProperty extends Property {
         @Override
         public Property convertProperty(final Property p,
                 final PropertyList propertyList, final FObj fo)
-                throws PropertyException {
+                        throws PropertyException {
             if (p instanceof ListProperty) {
                 return p;
             } else {
@@ -61,7 +62,7 @@ public class ListProperty extends Property {
     }
 
     /** List containing the list of sub-properties */
-    protected final List<Property> list = new java.util.ArrayList<>();
+    protected final List<Property> list = new ArrayList<>();
 
     /**
      * Simple constructor used by subclasses to do some special processing.
@@ -73,7 +74,7 @@ public class ListProperty extends Property {
     /**
      * Create a new instance, using the given {@link Property} as the first
      * element in the list.
-     * 
+     *
      * @param prop
      *            the first property to be added to the list
      */
@@ -84,7 +85,7 @@ public class ListProperty extends Property {
 
     /**
      * Add a new property to the list
-     * 
+     *
      * @param prop
      *            Property to be added to the list
      */
@@ -95,7 +96,7 @@ public class ListProperty extends Property {
     /**
      * Return the {@code java.util.List} of {@link Property} instances contained
      * in this property.
-     * 
+     *
      * @return the list of properties contained in this instance
      */
     @Override
@@ -106,7 +107,7 @@ public class ListProperty extends Property {
     /**
      * Return the {@code java.util.List} of {@link Property} instances, cast as
      * a {@code java.lang.Object}.
-     * 
+     *
      * @return this.list cast as an Object
      */
     @Override

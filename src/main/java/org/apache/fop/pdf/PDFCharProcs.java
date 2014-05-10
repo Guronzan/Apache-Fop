@@ -42,7 +42,7 @@ public class PDFCharProcs extends PDFObject {
      * Create a new PDF char proc store.
      */
     public PDFCharProcs() {
-        keys = new HashMap();
+        keys = new HashMap<>();
     }
 
     /**

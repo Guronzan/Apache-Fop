@@ -27,6 +27,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -60,247 +61,247 @@ import org.xml.sax.SAXException;
  * found and managed in the FOUserAgent.
  */
 @Slf4j
- public class FopFactory implements ImageContext {
+public class FopFactory implements ImageContext {
 
     /** Factory for Renderers and FOEventHandlers */
-     private final RendererFactory rendererFactory;
+    private final RendererFactory rendererFactory;
 
-     /** Registry for XML handlers */
-     private final XMLHandlerRegistry xmlHandlers;
+    /** Registry for XML handlers */
+    private final XMLHandlerRegistry xmlHandlers;
 
-     /** Registry for image handlers */
-     private final ImageHandlerRegistry imageHandlers;
+    /** Registry for image handlers */
+    private final ImageHandlerRegistry imageHandlers;
 
-     /** The registry for ElementMapping instances */
-     private final ElementMappingRegistry elementMappingRegistry;
+    /** The registry for ElementMapping instances */
+    private final ElementMappingRegistry elementMappingRegistry;
 
-     /** The registry for ContentHandlerFactory instance */
-     private final ContentHandlerFactoryRegistry contentHandlerFactoryRegistry = new ContentHandlerFactoryRegistry();
+    /** The registry for ContentHandlerFactory instance */
+    private final ContentHandlerFactoryRegistry contentHandlerFactoryRegistry = new ContentHandlerFactoryRegistry();
 
-     /** The resolver for user-supplied hyphenation patterns */
-     private HyphenationTreeResolver hyphResolver = null;
+    /** The resolver for user-supplied hyphenation patterns */
+    private HyphenationTreeResolver hyphResolver = null;
 
-     private ColorSpaceCache colorSpaceCache = null;
+    private ColorSpaceCache colorSpaceCache = null;
 
-     /** Image manager for loading and caching image objects */
-     private final ImageManager imageManager;
+    /** Image manager for loading and caching image objects */
+    private final ImageManager imageManager;
 
-     /** Font manager for font substitution, autodetection and caching **/
-     private final FontManager fontManager;
+    /** Font manager for font substitution, autodetection and caching **/
+    private final FontManager fontManager;
 
-     /** Configuration layer used to configure fop */
-     private FopFactoryConfigurator config = null;
+    /** Configuration layer used to configure fop */
+    private FopFactoryConfigurator config = null;
 
-     /**
-      * The base URL for all URL resolutions, especially for external-graphics.
-      */
-     private String base = null;
+    /**
+     * The base URL for all URL resolutions, especially for external-graphics.
+     */
+    private String base = null;
 
-     /**
-      * Controls if accessibility is turned on or off
-      */
-     private boolean accessibility = false;
+    /**
+     * Controls if accessibility is turned on or off
+     */
+    private boolean accessibility = false;
 
-     /** The base URL for all hyphen URL resolutions. */
-     private String hyphenBase = null;
+    /** The base URL for all hyphen URL resolutions. */
+    private String hyphenBase = null;
 
-     /**
-      * Map of configured names of hyphenation pattern file names: ll_CC => name
-      */
-     private Map/* <String,String> */hyphPatNames = null;
+    /**
+     * Map of configured names of hyphenation pattern file names: ll_CC => name
+     */
+    private Map/* <String,String> */hyphPatNames = null;
 
-     /**
-      * FOP has the ability, for some FO's, to continue processing even if the
+    /**
+     * FOP has the ability, for some FO's, to continue processing even if the
      * input XSL violates that FO's content model. This is the default behavior
      * for FOP. However, this flag, if set, provides the user the ability for
      * FOP to halt on all content model violations if desired.
-      */
-     private boolean strictFOValidation = FopFactoryConfigurator.DEFAULT_STRICT_FO_VALIDATION;
+     */
+    private boolean strictFOValidation = FopFactoryConfigurator.DEFAULT_STRICT_FO_VALIDATION;
 
-     /**
-      * FOP will validate the contents of the user configuration strictly (e.g.
+    /**
+     * FOP will validate the contents of the user configuration strictly (e.g.
      * base-urls and font urls/paths).
-      */
-     private boolean strictUserConfigValidation = FopFactoryConfigurator.DEFAULT_STRICT_USERCONFIG_VALIDATION;
+     */
+    private boolean strictUserConfigValidation = FopFactoryConfigurator.DEFAULT_STRICT_USERCONFIG_VALIDATION;
 
-     /** Source resolution in dpi */
-     private float sourceResolution = FopFactoryConfigurator.DEFAULT_SOURCE_RESOLUTION;
+    /** Source resolution in dpi */
+    private float sourceResolution = FopFactoryConfigurator.DEFAULT_SOURCE_RESOLUTION;
 
-     /** Target resolution in dpi */
-     private float targetResolution = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
+    /** Target resolution in dpi */
+    private float targetResolution = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
 
-     /** Page height */
-     private String pageHeight = FopFactoryConfigurator.DEFAULT_PAGE_HEIGHT;
+    /** Page height */
+    private String pageHeight = FopFactoryConfigurator.DEFAULT_PAGE_HEIGHT;
 
-     /** Page width */
-     private String pageWidth = FopFactoryConfigurator.DEFAULT_PAGE_WIDTH;
+    /** Page width */
+    private String pageWidth = FopFactoryConfigurator.DEFAULT_PAGE_WIDTH;
 
-     /** Complex scripts support enabled */
-     private boolean useComplexScriptFeatures = FopFactoryConfigurator.DEFAULT_COMPLEX_SCRIPT_FEATURES;
+    /** Complex scripts support enabled */
+    private boolean useComplexScriptFeatures = FopFactoryConfigurator.DEFAULT_COMPLEX_SCRIPT_FEATURES;
 
-     /** @see #setBreakIndentInheritanceOnReferenceAreaBoundary(boolean) */
-     private boolean breakIndentInheritanceOnReferenceAreaBoundary = FopFactoryConfigurator.DEFAULT_BREAK_INDENT_INHERITANCE;
+    /** @see #setBreakIndentInheritanceOnReferenceAreaBoundary(boolean) */
+    private boolean breakIndentInheritanceOnReferenceAreaBoundary = FopFactoryConfigurator.DEFAULT_BREAK_INDENT_INHERITANCE;
 
-     /** Optional overriding LayoutManagerMaker */
-     private LayoutManagerMaker lmMakerOverride = null;
+    /** Optional overriding LayoutManagerMaker */
+    private LayoutManagerMaker lmMakerOverride = null;
 
-     private final Set<String> ignoredNamespaces;
+    private final Set<String> ignoredNamespaces;
 
-     private final FOURIResolver foURIResolver;
+    private final FOURIResolver foURIResolver;
 
-     /**
-      * Main constructor.
-      */
-     protected FopFactory() {
-         this.config = new FopFactoryConfigurator(this);
-         this.elementMappingRegistry = new ElementMappingRegistry(this);
-         this.foURIResolver = new FOURIResolver(validateUserConfigStrictly());
-         this.fontManager = new FontManager() {
+    /**
+     * Main constructor.
+     */
+    protected FopFactory() {
+        this.config = new FopFactoryConfigurator(this);
+        this.elementMappingRegistry = new ElementMappingRegistry(this);
+        this.foURIResolver = new FOURIResolver(validateUserConfigStrictly());
+        this.fontManager = new FontManager() {
 
-             /** {@inheritDoc} */
-             @Override
-             public void setFontBaseURL(final String fontBase)
+            /** {@inheritDoc} */
+            @Override
+            public void setFontBaseURL(final String fontBase)
                     throws MalformedURLException {
-                 super.setFontBaseURL(getFOURIResolver().checkBaseURL(fontBase));
-             }
+                super.setFontBaseURL(getFOURIResolver().checkBaseURL(fontBase));
+            }
 
-         };
-         this.colorSpaceCache = new ColorSpaceCache(this.foURIResolver);
-         this.imageManager = new ImageManager(this);
-         this.rendererFactory = new RendererFactory();
-         this.xmlHandlers = new XMLHandlerRegistry();
-         this.imageHandlers = new ImageHandlerRegistry();
-         this.ignoredNamespaces = new java.util.HashSet<String>();
-     }
+        };
+        this.colorSpaceCache = new ColorSpaceCache(this.foURIResolver);
+        this.imageManager = new ImageManager(this);
+        this.rendererFactory = new RendererFactory();
+        this.xmlHandlers = new XMLHandlerRegistry();
+        this.imageHandlers = new ImageHandlerRegistry();
+        this.ignoredNamespaces = new HashSet<>();
+    }
 
-     /**
-      * Returns a new FopFactory instance.
-      * 
+    /**
+     * Returns a new FopFactory instance.
+     *
      * @return the requested FopFactory instance.
-      */
-     public static FopFactory newInstance() {
-         return new FopFactory();
-     }
+     */
+    public static FopFactory newInstance() {
+        return new FopFactory();
+    }
 
-     /**
-      * Returns a new FOUserAgent instance. Use the FOUserAgent to configure
+    /**
+     * Returns a new FOUserAgent instance. Use the FOUserAgent to configure
      * special values that are particular to a rendering run. Don't reuse
      * instances over multiple rendering runs but instead create a new one each
      * time and reuse the FopFactory.
-     * 
+     *
      * @return the newly created FOUserAgent instance initialized with default
      *         values
      * @throws FOPException
-      */
-     public FOUserAgent newFOUserAgent() {
-         final FOUserAgent userAgent = new FOUserAgent(this);
-         return userAgent;
-     }
+     */
+    public FOUserAgent newFOUserAgent() {
+        final FOUserAgent userAgent = new FOUserAgent(this);
+        return userAgent;
+    }
 
-     /**
-      * Sets accessibility support.
-      *
-      * @param value
+    /**
+     * Sets accessibility support.
+     *
+     * @param value
      *            <code>true</code> to enable accessibility, <code>false</code>
      *            otherwise
-      */
-     void setAccessibility(final boolean value) {
-         this.accessibility = value;
-     }
+     */
+    void setAccessibility(final boolean value) {
+        this.accessibility = value;
+    }
 
-     boolean isAccessibilityEnabled() {
-         return this.accessibility;
-     }
+    boolean isAccessibilityEnabled() {
+        return this.accessibility;
+    }
 
-     /**
-      * Sets complex script support.
-      * 
+    /**
+     * Sets complex script support.
+     *
      * @param value
      *            <code>true</code> to enable complex script features,
-      *            <code>false</code> otherwise
-      */
-     void setComplexScriptFeaturesEnabled(final boolean value) {
-         this.useComplexScriptFeatures = value;
-     }
+     *            <code>false</code> otherwise
+     */
+    void setComplexScriptFeaturesEnabled(final boolean value) {
+        this.useComplexScriptFeatures = value;
+    }
 
-     boolean isComplexScriptFeaturesEnabled() {
-         return this.useComplexScriptFeatures;
-     }
+    boolean isComplexScriptFeaturesEnabled() {
+        return this.useComplexScriptFeatures;
+    }
 
-     /**
-      * Returns a new {@link Fop} instance. FOP will be configured with a default
+    /**
+     * Returns a new {@link Fop} instance. FOP will be configured with a default
      * user agent instance.
      * <p>
      * MIME types are used to select the output format (ex. "application/pdf"
      * for PDF). You can use the constants defined in {@link MimeConstants}.
-      * 
+     *
      * @param outputFormat
      *            the MIME type of the output format to use (ex.
      *            "application/pdf").
      * @return the new Fop instance
-      * @throws FOPException
+     * @throws FOPException
      *             when the constructor fails
-      */
-     public Fop newFop(final String outputFormat) throws FOPException {
-         return newFop(outputFormat, newFOUserAgent());
-     }
+     */
+    public Fop newFop(final String outputFormat) throws FOPException {
+        return newFop(outputFormat, newFOUserAgent());
+    }
 
-     /**
-      * Returns a new {@link Fop} instance. Use this factory method if you want
+    /**
+     * Returns a new {@link Fop} instance. Use this factory method if you want
      * to configure this very rendering run, i.e. if you want to set some
      * metadata like the title and author of the document you want to render. In
      * that case, create a new {@link FOUserAgent} instance using
      * {@link #newFOUserAgent()}.
-      * <p>
+     * <p>
      * MIME types are used to select the output format (ex. "application/pdf"
      * for PDF). You can use the constants defined in {@link MimeConstants}.
-      * 
+     *
      * @param outputFormat
      *            the MIME type of the output format to use (ex.
      *            "application/pdf").
      * @param userAgent
      *            the user agent that will be used to control the rendering run
      * @return the new Fop instance
-      * @throws FOPException
+     * @throws FOPException
      *             when the constructor fails
-      */
-     public Fop newFop(final String outputFormat, final FOUserAgent userAgent)
+     */
+    public Fop newFop(final String outputFormat, final FOUserAgent userAgent)
             throws FOPException {
-         return newFop(outputFormat, userAgent, null);
-     }
+        return newFop(outputFormat, userAgent, null);
+    }
 
-     /**
-      * Returns a new {@link Fop} instance. FOP will be configured with a default
+    /**
+     * Returns a new {@link Fop} instance. FOP will be configured with a default
      * user agent instance. Use this factory method if your output type requires
      * an output stream.
      * <p>
      * MIME types are used to select the output format (ex. "application/pdf"
      * for PDF). You can use the constants defined in {@link MimeConstants}.
-      * 
+     *
      * @param outputFormat
      *            the MIME type of the output format to use (ex.
      *            "application/pdf").
      * @param stream
      *            the output stream
      * @return the new Fop instance
-      * @throws FOPException
+     * @throws FOPException
      *             when the constructor fails
-      */
-     public Fop newFop(final String outputFormat, final OutputStream stream)
+     */
+    public Fop newFop(final String outputFormat, final OutputStream stream)
             throws FOPException {
-         return newFop(outputFormat, newFOUserAgent(), stream);
-     }
+        return newFop(outputFormat, newFOUserAgent(), stream);
+    }
 
-     /**
-      * Returns a new {@link Fop} instance. Use this factory method if your
+    /**
+     * Returns a new {@link Fop} instance. Use this factory method if your
      * output type requires an output stream and you want to configure this very
      * rendering run, i.e. if you want to set some metadata like the title and
      * author of the document you want to render. In that case, create a new
      * {@link FOUserAgent} instance using {@link #newFOUserAgent()}.
-      * <p>
+     * <p>
      * MIME types are used to select the output format (ex. "application/pdf"
      * for PDF). You can use the constants defined in {@link MimeConstants}.
-      * 
+     *
      * @param outputFormat
      *            the MIME type of the output format to use (ex.
      *            "application/pdf").
@@ -309,276 +310,276 @@ import org.xml.sax.SAXException;
      * @param stream
      *            the output stream
      * @return the new Fop instance
-      * @throws FOPException
+     * @throws FOPException
      *             when the constructor fails
-      */
-     public Fop newFop(final String outputFormat, final FOUserAgent userAgent,
+     */
+    public Fop newFop(final String outputFormat, final FOUserAgent userAgent,
             final OutputStream stream) throws FOPException {
-         if (userAgent == null) {
-             throw new NullPointerException(
+        if (userAgent == null) {
+            throw new NullPointerException(
                     "The userAgent parameter must not be null!");
-         }
-         return new Fop(outputFormat, userAgent, stream);
-     }
+        }
+        return new Fop(outputFormat, userAgent, stream);
+    }
 
-     /**
-      * Returns a new {@link Fop} instance. Use this factory method if you want
+    /**
+     * Returns a new {@link Fop} instance. Use this factory method if you want
      * to supply your own {@link org.apache.fop.render.Renderer Renderer} or
-      * {@link org.apache.fop.fo.FOEventHandler FOEventHandler} instance instead
+     * {@link org.apache.fop.fo.FOEventHandler FOEventHandler} instance instead
      * of the default ones created internally by FOP.
-     * 
+     *
      * @param userAgent
      *            the user agent that will be used to control the rendering run
      * @return the new Fop instance
-      * @throws FOPException
+     * @throws FOPException
      *             when the constructor fails
-      */
-     public Fop newFop(final FOUserAgent userAgent) throws FOPException {
-         if (userAgent.getRendererOverride() == null
-                 && userAgent.getFOEventHandlerOverride() == null
-                 && userAgent.getDocumentHandlerOverride() == null) {
-             throw new IllegalStateException(
+     */
+    public Fop newFop(final FOUserAgent userAgent) throws FOPException {
+        if (userAgent.getRendererOverride() == null
+                && userAgent.getFOEventHandlerOverride() == null
+                && userAgent.getDocumentHandlerOverride() == null) {
+            throw new IllegalStateException(
                     "An overriding renderer,"
                             + " FOEventHandler or IFDocumentHandler must be set on the user agent"
                             + " when this factory method is used!");
-         }
-         return newFop(null, userAgent);
-     }
+        }
+        return newFop(null, userAgent);
+    }
 
-     /** @return the RendererFactory */
-     public RendererFactory getRendererFactory() {
-         return this.rendererFactory;
-     }
+    /** @return the RendererFactory */
+    public RendererFactory getRendererFactory() {
+        return this.rendererFactory;
+    }
 
-     /** @return the XML handler registry */
-     public XMLHandlerRegistry getXMLHandlerRegistry() {
-         return this.xmlHandlers;
-     }
+    /** @return the XML handler registry */
+    public XMLHandlerRegistry getXMLHandlerRegistry() {
+        return this.xmlHandlers;
+    }
 
-     /** @return the image handler registry */
-     public ImageHandlerRegistry getImageHandlerRegistry() {
-         return this.imageHandlers;
-     }
+    /** @return the image handler registry */
+    public ImageHandlerRegistry getImageHandlerRegistry() {
+        return this.imageHandlers;
+    }
 
-     /** @return the element mapping registry */
-     public ElementMappingRegistry getElementMappingRegistry() {
-         return this.elementMappingRegistry;
-     }
+    /** @return the element mapping registry */
+    public ElementMappingRegistry getElementMappingRegistry() {
+        return this.elementMappingRegistry;
+    }
 
-     /** @return the content handler factory registry */
-     public ContentHandlerFactoryRegistry getContentHandlerFactoryRegistry() {
-         return this.contentHandlerFactoryRegistry;
-     }
+    /** @return the content handler factory registry */
+    public ContentHandlerFactoryRegistry getContentHandlerFactoryRegistry() {
+        return this.contentHandlerFactoryRegistry;
+    }
 
-     /**
-      * Returns the image manager.
-      * 
+    /**
+     * Returns the image manager.
+     *
      * @return the image manager
-      */
-     public ImageManager getImageManager() {
-         return this.imageManager;
-     }
+     */
+    public ImageManager getImageManager() {
+        return this.imageManager;
+    }
 
-     /**
-      * Add the element mapping with the given class name.
-      * 
+    /**
+     * Add the element mapping with the given class name.
+     *
      * @param elementMapping
      *            the class name representing the element mapping.
-      */
-     public void addElementMapping(final ElementMapping elementMapping) {
-         this.elementMappingRegistry.addElementMapping(elementMapping);
-     }
+     */
+    public void addElementMapping(final ElementMapping elementMapping) {
+        this.elementMappingRegistry.addElementMapping(elementMapping);
+    }
 
-     /**
-      * Sets an explicit LayoutManagerMaker instance which overrides the one
-      * defined by the AreaTreeHandler.
-      * 
+    /**
+     * Sets an explicit LayoutManagerMaker instance which overrides the one
+     * defined by the AreaTreeHandler.
+     *
      * @param lmMaker
      *            the LayoutManagerMaker instance
-      */
-     public void setLayoutManagerMakerOverride(final LayoutManagerMaker lmMaker) {
-         this.lmMakerOverride = lmMaker;
-     }
+     */
+    public void setLayoutManagerMakerOverride(final LayoutManagerMaker lmMaker) {
+        this.lmMakerOverride = lmMaker;
+    }
 
-     /**
-      * Returns the overriding LayoutManagerMaker instance, if any.
-      * 
+    /**
+     * Returns the overriding LayoutManagerMaker instance, if any.
+     *
      * @return the overriding LayoutManagerMaker or null
-      */
-     public LayoutManagerMaker getLayoutManagerMakerOverride() {
-         return this.lmMakerOverride;
-     }
+     */
+    public LayoutManagerMaker getLayoutManagerMakerOverride() {
+        return this.lmMakerOverride;
+    }
 
-     /**
-      * Sets the base URL.
-      * 
+    /**
+     * Sets the base URL.
+     *
      * @param base
      *            the base URL
      * @throws MalformedURLException
      *             if there's a problem with a file URL
-      */
-     public void setBaseURL(final String base) throws MalformedURLException {
-         this.base = this.foURIResolver.checkBaseURL(base);
-     }
+     */
+    public void setBaseURL(final String base) throws MalformedURLException {
+        this.base = this.foURIResolver.checkBaseURL(base);
+    }
 
-     /**
-      * Returns the base URL.
-      * 
+    /**
+     * Returns the base URL.
+     *
      * @return the base URL
-      */
-     public String getBaseURL() {
-         return this.base;
-     }
+     */
+    public String getBaseURL() {
+        return this.base;
+    }
 
-     /**
-      * Sets the font base URL.
-      * 
+    /**
+     * Sets the font base URL.
+     *
      * @param fontBase
      *            font base URL
      * @throws MalformedURLException
      *             if there's a problem with a file URL
      * @deprecated use getFontManager().setFontBaseURL(fontBase) instead
-      */
-     @Deprecated
-     public void setFontBaseURL(final String fontBase)
+     */
+    @Deprecated
+    public void setFontBaseURL(final String fontBase)
             throws MalformedURLException {
-         getFontManager().setFontBaseURL(fontBase);
-     }
+        getFontManager().setFontBaseURL(fontBase);
+    }
 
-     /**
-      * @return the font base URL
-      * @deprecated use getFontManager().setFontBaseURL(fontBase) instead
-      */
-     @Deprecated
-     public String getFontBaseURL() {
-         return getFontManager().getFontBaseURL();
-     }
+    /**
+     * @return the font base URL
+     * @deprecated use getFontManager().setFontBaseURL(fontBase) instead
+     */
+    @Deprecated
+    public String getFontBaseURL() {
+        return getFontManager().getFontBaseURL();
+    }
 
-     /** @return the hyphen base URL */
-     public String getHyphenBaseURL() {
-         return this.hyphenBase;
-     }
+    /** @return the hyphen base URL */
+    public String getHyphenBaseURL() {
+        return this.hyphenBase;
+    }
 
-     /**
-      * Sets the hyphen base URL.
-      * 
+    /**
+     * Sets the hyphen base URL.
+     *
      * @param hyphenBase
      *            hythen base URL
      * @throws MalformedURLException
      *             if there's a problem with a file URL
-      * */
-     public void setHyphenBaseURL(final String hyphenBase)
+     * */
+    public void setHyphenBaseURL(final String hyphenBase)
             throws MalformedURLException {
-         if (hyphenBase != null) {
-             setHyphenationTreeResolver(new HyphenationTreeResolver() {
-                         @Override
-                         public Source resolve(final String href) {
-                             return resolveURI(href, hyphenBase);
-                         }
-                     });
-         }
-         this.hyphenBase = this.foURIResolver.checkBaseURL(hyphenBase);
-     }
+        if (hyphenBase != null) {
+            setHyphenationTreeResolver(new HyphenationTreeResolver() {
+                @Override
+                public Source resolve(final String href) {
+                    return resolveURI(href, hyphenBase);
+                }
+            });
+        }
+        this.hyphenBase = this.foURIResolver.checkBaseURL(hyphenBase);
+    }
 
-     /**
-      * @return the hyphPatNames
-      */
-     public Map getHyphPatNames() {
-         return this.hyphPatNames;
-     }
+    /**
+     * @return the hyphPatNames
+     */
+    public Map getHyphPatNames() {
+        return this.hyphPatNames;
+    }
 
-     /**
-      * @param hyphPatNames
+    /**
+     * @param hyphPatNames
      *            the hyphPatNames to set
-      */
-     public void setHyphPatNames(Map hyphPatNames) {
-         if (hyphPatNames == null) {
-             hyphPatNames = new HashMap();
-         }
-         this.hyphPatNames = hyphPatNames;
-     }
+     */
+    public void setHyphPatNames(Map hyphPatNames) {
+        if (hyphPatNames == null) {
+            hyphPatNames = new HashMap<>();
+        }
+        this.hyphPatNames = hyphPatNames;
+    }
 
-     /**
-      * Sets the URI Resolver. It is used for resolving factory-level URIs like
+    /**
+     * Sets the URI Resolver. It is used for resolving factory-level URIs like
      * hyphenation patterns and as backup for URI resolution performed during a
      * rendering run.
-     * 
+     *
      * @param uriResolver
      *            the new URI resolver
-      */
-     public void setURIResolver(final URIResolver uriResolver) {
-         this.foURIResolver.setCustomURIResolver(uriResolver);
-     }
+     */
+    public void setURIResolver(final URIResolver uriResolver) {
+        this.foURIResolver.setCustomURIResolver(uriResolver);
+    }
 
-     /**
-      * Returns the URI Resolver.
-      * 
+    /**
+     * Returns the URI Resolver.
+     *
      * @return the URI Resolver
-      */
-     public URIResolver getURIResolver() {
-         return this.foURIResolver;
-     }
+     */
+    public URIResolver getURIResolver() {
+        return this.foURIResolver;
+    }
 
-     /**
-      * Returns the FO URI Resolver.
-      * 
+    /**
+     * Returns the FO URI Resolver.
+     *
      * @return the FO URI Resolver
-      */
-     public FOURIResolver getFOURIResolver() {
-         return this.foURIResolver;
-     }
+     */
+    public FOURIResolver getFOURIResolver() {
+        return this.foURIResolver;
+    }
 
-     /**
+    /**
      * @return the HyphenationTreeResolver for resolving user-supplied
      *         hyphenation patterns.
      */
-     public HyphenationTreeResolver getHyphenationTreeResolver() {
-         return this.hyphResolver;
-     }
+    public HyphenationTreeResolver getHyphenationTreeResolver() {
+        return this.hyphResolver;
+    }
 
-     /**
-      * Sets the HyphenationTreeResolver to be used for resolving user-supplied
+    /**
+     * Sets the HyphenationTreeResolver to be used for resolving user-supplied
      * hyphenation files.
-     * 
+     *
      * @param hyphResolver
      *            the HyphenationTreeResolver instance
-      */
-     public void setHyphenationTreeResolver(
+     */
+    public void setHyphenationTreeResolver(
             final HyphenationTreeResolver hyphResolver) {
-         this.hyphResolver = hyphResolver;
-     }
+        this.hyphResolver = hyphResolver;
+    }
 
-     /**
-      * Activates strict XSL content model validation for FOP Default is false
+    /**
+     * Activates strict XSL content model validation for FOP Default is false
      * (FOP will continue processing where it can)
-     * 
+     *
      * @param validateStrictly
      *            true to turn on strict validation
-      */
-     public void setStrictValidation(final boolean validateStrictly) {
-         this.strictFOValidation = validateStrictly;
-     }
+     */
+    public void setStrictValidation(final boolean validateStrictly) {
+        this.strictFOValidation = validateStrictly;
+    }
 
-     /**
-      * Returns whether FOP is strictly validating input XSL
-      * 
+    /**
+     * Returns whether FOP is strictly validating input XSL
+     *
      * @return true of strict validation turned on, false otherwise
-      */
-     public boolean validateStrictly() {
-         return this.strictFOValidation;
-     }
+     */
+    public boolean validateStrictly() {
+        return this.strictFOValidation;
+    }
 
-     /**
-      * @return true if the indent inheritance should be broken when crossing
+    /**
+     * @return true if the indent inheritance should be broken when crossing
      *         reference area boundaries (for more info, see the javadoc for the
      *         relative member variable)
-      */
-     public boolean isBreakIndentInheritanceOnReferenceAreaBoundary() {
-         return this.breakIndentInheritanceOnReferenceAreaBoundary;
-     }
+     */
+    public boolean isBreakIndentInheritanceOnReferenceAreaBoundary() {
+        return this.breakIndentInheritanceOnReferenceAreaBoundary;
+    }
 
-     /**
-      * Controls whether to enable a feature that breaks indent inheritance when
+    /**
+     * Controls whether to enable a feature that breaks indent inheritance when
      * crossing reference area boundaries.
      * <p>
      * This flag controls whether FOP will enable special code that breaks
@@ -589,329 +590,329 @@ import org.xml.sax.SAXException;
      * and to produce results that are more in line with the expectation of
      * unexperienced FO users. Note: Enabling this features violates the XSL
      * specification!
-     * 
+     *
      * @param value
      *            true to enable the feature
-      */
-     public void setBreakIndentInheritanceOnReferenceAreaBoundary(
+     */
+    public void setBreakIndentInheritanceOnReferenceAreaBoundary(
             final boolean value) {
-         this.breakIndentInheritanceOnReferenceAreaBoundary = value;
-     }
+        this.breakIndentInheritanceOnReferenceAreaBoundary = value;
+    }
 
-     /**
-      * @return true if kerning on base 14 fonts is enabled
-      * @deprecated use getFontManager().isBase14KerningEnabled() instead
-      */
-     @Deprecated
-     public boolean isBase14KerningEnabled() {
-         return getFontManager().isBase14KerningEnabled();
-     }
+    /**
+     * @return true if kerning on base 14 fonts is enabled
+     * @deprecated use getFontManager().isBase14KerningEnabled() instead
+     */
+    @Deprecated
+    public boolean isBase14KerningEnabled() {
+        return getFontManager().isBase14KerningEnabled();
+    }
 
-     /**
-      * Controls whether kerning is activated on base 14 fonts.
-      * 
+    /**
+     * Controls whether kerning is activated on base 14 fonts.
+     *
      * @param value
      *            true if kerning should be activated
      * @deprecated use getFontManager().setBase14KerningEnabled(boolean) instead
-      */
-     @Deprecated
-     public void setBase14KerningEnabled(final boolean value) {
-         getFontManager().setBase14KerningEnabled(value);
-     }
+     */
+    @Deprecated
+    public void setBase14KerningEnabled(final boolean value) {
+        getFontManager().setBase14KerningEnabled(value);
+    }
 
-     /** @return the resolution for resolution-dependant input */
-     @Override
-     public float getSourceResolution() {
-         return this.sourceResolution;
-     }
+    /** @return the resolution for resolution-dependant input */
+    @Override
+    public float getSourceResolution() {
+        return this.sourceResolution;
+    }
 
-     /**
-      * Returns the conversion factor from pixel units to millimeters. This
-      * depends on the desired source resolution.
-      * 
+    /**
+     * Returns the conversion factor from pixel units to millimeters. This
+     * depends on the desired source resolution.
+     *
      * @return float conversion factor
-      * @see #getSourceResolution()
-      */
-     public float getSourcePixelUnitToMillimeter() {
-         return UnitConv.IN2MM / getSourceResolution();
-     }
+     * @see #getSourceResolution()
+     */
+    public float getSourcePixelUnitToMillimeter() {
+        return UnitConv.IN2MM / getSourceResolution();
+    }
 
-     /**
-      * Sets the source resolution in dpi. This value is used to interpret the
+    /**
+     * Sets the source resolution in dpi. This value is used to interpret the
      * pixel size of source documents like SVG images and bitmap images without
      * resolution information.
-     * 
+     *
      * @param dpi
      *            resolution in dpi
-      */
-     public void setSourceResolution(final float dpi) {
-         this.sourceResolution = dpi;
-         if (log.isDebugEnabled()) {
-             log.debug("source-resolution set to: " + this.sourceResolution
-                     + "dpi (px2mm=" + getSourcePixelUnitToMillimeter() + ")");
-         }
-     }
+     */
+    public void setSourceResolution(final float dpi) {
+        this.sourceResolution = dpi;
+        if (log.isDebugEnabled()) {
+            log.debug("source-resolution set to: " + this.sourceResolution
+                    + "dpi (px2mm=" + getSourcePixelUnitToMillimeter() + ")");
+        }
+    }
 
-     /** @return the resolution for resolution-dependant output */
-     public float getTargetResolution() {
-         return this.targetResolution;
-     }
+    /** @return the resolution for resolution-dependant output */
+    public float getTargetResolution() {
+        return this.targetResolution;
+    }
 
-     /**
-      * Returns the conversion factor from pixel units to millimeters. This
-      * depends on the desired target resolution.
-      * 
+    /**
+     * Returns the conversion factor from pixel units to millimeters. This
+     * depends on the desired target resolution.
+     *
      * @return float conversion factor
-      * @see #getTargetResolution()
-      */
-     public float getTargetPixelUnitToMillimeter() {
-         return UnitConv.IN2MM / this.targetResolution;
-     }
+     * @see #getTargetResolution()
+     */
+    public float getTargetPixelUnitToMillimeter() {
+        return UnitConv.IN2MM / this.targetResolution;
+    }
 
-     /**
-      * Sets the source resolution in dpi. This value is used to interpret the
+    /**
+     * Sets the source resolution in dpi. This value is used to interpret the
      * pixel size of source documents like SVG images and bitmap images without
      * resolution information.
-     * 
+     *
      * @param dpi
      *            resolution in dpi
-      */
-     public void setTargetResolution(final float dpi) {
-         this.targetResolution = dpi;
-     }
+     */
+    public void setTargetResolution(final float dpi) {
+        this.targetResolution = dpi;
+    }
 
-     /**
-      * Sets the source resolution in dpi. This value is used to interpret the
+    /**
+     * Sets the source resolution in dpi. This value is used to interpret the
      * pixel size of source documents like SVG images and bitmap images without
      * resolution information.
-     * 
+     *
      * @param dpi
      *            resolution in dpi
-      */
-     public void setSourceResolution(final int dpi) {
-         setSourceResolution((float) dpi);
-     }
+     */
+    public void setSourceResolution(final int dpi) {
+        setSourceResolution((float) dpi);
+    }
 
-     /**
-      * Gets the default page-height to use as fallback, in case
+    /**
+     * Gets the default page-height to use as fallback, in case
      * page-height="auto"
      *
-      * @return the page-height, as a String
-      */
-     public String getPageHeight() {
-         return this.pageHeight;
-     }
+     * @return the page-height, as a String
+     */
+    public String getPageHeight() {
+        return this.pageHeight;
+    }
 
-     /**
-      * Sets the page-height to use as fallback, in case page-height="auto"
+    /**
+     * Sets the page-height to use as fallback, in case page-height="auto"
      *
-      * @param pageHeight
+     * @param pageHeight
      *            page-height as a String
-      */
-     public void setPageHeight(final String pageHeight) {
-         this.pageHeight = pageHeight;
-         if (log.isDebugEnabled()) {
-             log.debug("Default page-height set to: " + pageHeight);
-         }
-     }
+     */
+    public void setPageHeight(final String pageHeight) {
+        this.pageHeight = pageHeight;
+        if (log.isDebugEnabled()) {
+            log.debug("Default page-height set to: " + pageHeight);
+        }
+    }
 
-     /**
-      * Gets the default page-width to use as fallback, in case page-width="auto"
+    /**
+     * Gets the default page-width to use as fallback, in case page-width="auto"
      *
-      * @return the page-width, as a String
-      */
-     public String getPageWidth() {
-         return this.pageWidth;
-     }
+     * @return the page-width, as a String
+     */
+    public String getPageWidth() {
+        return this.pageWidth;
+    }
 
-     /**
-      * Sets the page-width to use as fallback, in case page-width="auto"
+    /**
+     * Sets the page-width to use as fallback, in case page-width="auto"
      *
-      * @param pageWidth
+     * @param pageWidth
      *            page-width as a String
-      */
-     public void setPageWidth(final String pageWidth) {
-         this.pageWidth = pageWidth;
-         if (log.isDebugEnabled()) {
-             log.debug("Default page-width set to: " + pageWidth);
-         }
-     }
+     */
+    public void setPageWidth(final String pageWidth) {
+        this.pageWidth = pageWidth;
+        if (log.isDebugEnabled()) {
+            log.debug("Default page-width set to: " + pageWidth);
+        }
+    }
 
-     /**
-      * Adds a namespace to the set of ignored namespaces. If FOP encounters a
+    /**
+     * Adds a namespace to the set of ignored namespaces. If FOP encounters a
      * namespace which it cannot handle, it issues a warning except if this
      * namespace is in the ignored set.
-     * 
+     *
      * @param namespaceURI
      *            the namespace URI
-      */
-     public void ignoreNamespace(final String namespaceURI) {
-         this.ignoredNamespaces.add(namespaceURI);
-     }
+     */
+    public void ignoreNamespace(final String namespaceURI) {
+        this.ignoredNamespaces.add(namespaceURI);
+    }
 
-     /**
-      * Adds a collection of namespaces to the set of ignored namespaces. If FOP
+    /**
+     * Adds a collection of namespaces to the set of ignored namespaces. If FOP
      * encounters a namespace which it cannot handle, it issues a warning except
      * if this namespace is in the ignored set.
-     * 
+     *
      * @param namespaceURIs
      *            the namespace URIs
-      */
-     public void ignoreNamespaces(final Collection<String> namespaceURIs) {
-         this.ignoredNamespaces.addAll(namespaceURIs);
-     }
+     */
+    public void ignoreNamespaces(final Collection<String> namespaceURIs) {
+        this.ignoredNamespaces.addAll(namespaceURIs);
+    }
 
-     /**
-      * Indicates whether a namespace URI is on the ignored list.
-      * 
+    /**
+     * Indicates whether a namespace URI is on the ignored list.
+     *
      * @param namespaceURI
      *            the namespace URI
      * @return true if the namespace is ignored by FOP
-      */
-     public boolean isNamespaceIgnored(final String namespaceURI) {
-         return this.ignoredNamespaces.contains(namespaceURI);
-     }
+     */
+    public boolean isNamespaceIgnored(final String namespaceURI) {
+        return this.ignoredNamespaces.contains(namespaceURI);
+    }
 
-     /** @return the set of namespaces that are ignored by FOP */
-     public Set<String> getIgnoredNamespace() {
-         return Collections.unmodifiableSet(this.ignoredNamespaces);
-     }
+    /** @return the set of namespaces that are ignored by FOP */
+    public Set<String> getIgnoredNamespace() {
+        return Collections.unmodifiableSet(this.ignoredNamespaces);
+    }
 
-     // ------------------------------------------- Configuration stuff
+    // ------------------------------------------- Configuration stuff
 
-     /**
-      * Set the user configuration.
-      * 
+    /**
+     * Set the user configuration.
+     *
      * @param userConfigFile
      *            the configuration file
      * @throws IOException
      *             if an I/O error occurs
      * @throws SAXException
      *             if a parsing error occurs
-      */
-     public void setUserConfig(final File userConfigFile) throws SAXException,
-            IOException {
-         this.config.setUserConfig(userConfigFile);
-     }
+     */
+    public void setUserConfig(final File userConfigFile) throws SAXException,
+    IOException {
+        this.config.setUserConfig(userConfigFile);
+    }
 
-     /**
-      * Set the user configuration from an URI.
-      * 
+    /**
+     * Set the user configuration from an URI.
+     *
      * @param uri
      *            the URI to the configuration file
      * @throws IOException
      *             if an I/O error occurs
      * @throws SAXException
      *             if a parsing error occurs
-      */
-     public void setUserConfig(final String uri) throws SAXException,
-            IOException {
-         this.config.setUserConfig(uri);
-     }
+     */
+    public void setUserConfig(final String uri) throws SAXException,
+    IOException {
+        this.config.setUserConfig(uri);
+    }
 
-     /**
-      * Set the user configuration.
-      * 
+    /**
+     * Set the user configuration.
+     *
      * @param userConfig
      *            configuration
      * @throws FOPException
      *             if a configuration problem occurs
-      */
-     public void setUserConfig(final Configuration userConfig)
+     */
+    public void setUserConfig(final Configuration userConfig)
             throws FOPException {
-         this.config.setUserConfig(userConfig);
-     }
+        this.config.setUserConfig(userConfig);
+    }
 
-     /**
-      * Set the base URI for the user configuration Useful for programmatic
+    /**
+     * Set the base URI for the user configuration Useful for programmatic
      * configurations
-     * 
+     *
      * @param baseURI
      *            the base URI
-      */
-     public void setUserConfigBaseURI(final URI baseURI) {
-         this.config.setBaseURI(baseURI);
-     }
+     */
+    public void setUserConfigBaseURI(final URI baseURI) {
+        this.config.setBaseURI(baseURI);
+    }
 
-     /**
-      * Get the user configuration.
-      * 
+    /**
+     * Get the user configuration.
+     *
      * @return the user configuration
-      */
-     public Configuration getUserConfig() {
-         return this.config.getUserConfig();
-     }
+     */
+    public Configuration getUserConfig() {
+        return this.config.getUserConfig();
+    }
 
-     /**
-      * Is the user configuration to be validated?
-      * 
+    /**
+     * Is the user configuration to be validated?
+     *
      * @param strictUserConfigValidation
      *            strict user config validation
-      */
-     public void setStrictUserConfigValidation(
+     */
+    public void setStrictUserConfigValidation(
             final boolean strictUserConfigValidation) {
-         this.strictUserConfigValidation = strictUserConfigValidation;
-         this.foURIResolver.setThrowExceptions(strictUserConfigValidation);
-     }
+        this.strictUserConfigValidation = strictUserConfigValidation;
+        this.foURIResolver.setThrowExceptions(strictUserConfigValidation);
+    }
 
-     /**
-      * Is the user configuration to be validated?
-      * 
+    /**
+     * Is the user configuration to be validated?
+     *
      * @return if the user configuration should be validated
-      */
-     public boolean validateUserConfigStrictly() {
-         return this.strictUserConfigValidation;
-     }
+     */
+    public boolean validateUserConfigStrictly() {
+        return this.strictUserConfigValidation;
+    }
 
-     // ------------------------------------------- Font related stuff
+    // ------------------------------------------- Font related stuff
 
-     /**
-      * Whether or not to cache results of font triplet detection/auto-config
-      * 
+    /**
+     * Whether or not to cache results of font triplet detection/auto-config
+     *
      * @param useCache
      *            use cache or not
      * @deprecated use getFontManager().setUseCache(boolean) instead
-      */
-     @Deprecated
-     public void setUseCache(final boolean useCache) {
-         getFontManager().setUseCache(useCache);
-     }
+     */
+    @Deprecated
+    public void setUseCache(final boolean useCache) {
+        getFontManager().setUseCache(useCache);
+    }
 
-     /**
-      * Cache results of font triplet detection/auto-config?
-      * 
+    /**
+     * Cache results of font triplet detection/auto-config?
+     *
      * @return whether this factory is uses the cache
-      * @deprecated use getFontManager().useCache() instead
-      */
-     @Deprecated
-     public boolean useCache() {
-         return getFontManager().useCache();
-     }
+     * @deprecated use getFontManager().useCache() instead
+     */
+    @Deprecated
+    public boolean useCache() {
+        return getFontManager().useCache();
+    }
 
-     /**
-      * Returns the font cache instance used by this factory.
-      * 
+    /**
+     * Returns the font cache instance used by this factory.
+     *
      * @return the font cache
-      * @deprecated use getFontManager().getFontCache() instead
-      */
-     @Deprecated
-     public FontCache getFontCache() {
-         return getFontManager().getFontCache();
-     }
+     * @deprecated use getFontManager().getFontCache() instead
+     */
+    @Deprecated
+    public FontCache getFontCache() {
+        return getFontManager().getFontCache();
+    }
 
-     /**
-      * Returns the font manager.
-      * 
+    /**
+     * Returns the font manager.
+     *
      * @return the font manager
-      */
-     public FontManager getFontManager() {
-         return this.fontManager;
-     }
+     */
+    public FontManager getFontManager() {
+        return this.fontManager;
+    }
 
-     /**
-      * Attempts to resolve the given URI. Will use the configured resolver and
+    /**
+     * Attempts to resolve the given URI. Will use the configured resolver and
      * if not successful fall back to the default resolver.
-     * 
+     *
      * @param href
      *            URI to access
      * @param baseUri
@@ -919,26 +920,26 @@ import org.xml.sax.SAXException;
      * @return A {@link javax.xml.transform.Source} object, or null if the URI
      *         cannot be resolved.
      * @see org.apache.fop.apps.FOURIResolver
-      */
-     public Source resolveURI(final String href, final String baseUri) {
-         Source source = null;
-         try {
-             source = this.foURIResolver.resolve(href, baseUri);
-         } catch (final TransformerException e) {
-             log.error("Attempt to resolve URI '" + href + "' failed: ", e);
-         }
-         return source;
-     }
+     */
+    public Source resolveURI(final String href, final String baseUri) {
+        Source source = null;
+        try {
+            source = this.foURIResolver.resolve(href, baseUri);
+        } catch (final TransformerException e) {
+            log.error("Attempt to resolve URI '" + href + "' failed: ", e);
+        }
+        return source;
+    }
 
-     /**
-      * Returns the color space cache for this instance.
-      * <p>
-      * Note: this method should not be considered as part of FOP's external API.
-      * 
+    /**
+     * Returns the color space cache for this instance.
+     * <p>
+     * Note: this method should not be considered as part of FOP's external API.
+     *
      * @return the color space cache
-      */
-     public ColorSpaceCache getColorSpaceCache() {
-         return this.colorSpaceCache;
-     }
+     */
+    public ColorSpaceCache getColorSpaceCache() {
+        return this.colorSpaceCache;
+    }
 
- }
+}

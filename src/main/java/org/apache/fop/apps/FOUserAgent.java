@@ -23,6 +23,7 @@ package org.apache.fop.apps;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.transform.Source;
@@ -67,390 +68,390 @@ import org.apache.xmlgraphics.util.UnitConv;
  * resolvable areas
  */
 @Slf4j
- public class FOUserAgent {
+public class FOUserAgent {
 
-     /** Defines the default target resolution (72dpi) for FOP */
-     public static final float DEFAULT_TARGET_RESOLUTION = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
+    /** Defines the default target resolution (72dpi) for FOP */
+    public static final float DEFAULT_TARGET_RESOLUTION = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
 
     private final FopFactory factory;
 
-     /**
-      * The base URL for all URL resolutions, especially for external-graphics.
-      */
-     private String base = null;
+    /**
+     * The base URL for all URL resolutions, especially for external-graphics.
+     */
+    private String base = null;
 
-     /** A user settable URI Resolver */
-     private URIResolver uriResolver = null;
+    /** A user settable URI Resolver */
+    private URIResolver uriResolver = null;
 
-     private float targetResolution = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
-     private final Map rendererOptions = new java.util.HashMap();
-     private File outputFile = null;
-     private IFDocumentHandler documentHandlerOverride = null;
-     private Renderer rendererOverride = null;
-     private FOEventHandler foEventHandlerOverride = null;
-     private boolean locatorEnabled = true; // true by default (for error
-                                           // messages).
-     private boolean conserveMemoryPolicy = false;
-     private final EventBroadcaster eventBroadcaster = new FOPEventBroadcaster();
-     private StructureTreeEventHandler structureTreeEventHandler = DummyStructureTreeEventHandler.INSTANCE;
+    private float targetResolution = FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
+    private final Map<String, Object> rendererOptions = new HashMap<>();
+    private File outputFile = null;
+    private IFDocumentHandler documentHandlerOverride = null;
+    private Renderer rendererOverride = null;
+    private FOEventHandler foEventHandlerOverride = null;
+    private boolean locatorEnabled = true; // true by default (for error
+    // messages).
+    private boolean conserveMemoryPolicy = false;
+    private final EventBroadcaster eventBroadcaster = new FOPEventBroadcaster();
+    private StructureTreeEventHandler structureTreeEventHandler = DummyStructureTreeEventHandler.INSTANCE;
 
-     /**
+    /**
      * Producer: Metadata element for the system/software that produces the
      * document. (Some renderers can store this in the document.)
-      */
-     protected String producer = "Apache FOP Version " + Version.getVersion();
+     */
+    protected String producer = "Apache FOP Version " + Version.getVersion();
 
-     /**
+    /**
      * Creator: Metadata element for the user that created the document. (Some
      * renderers can store this in the document.)
-      */
-     protected String creator = null;
+     */
+    protected String creator = null;
 
-     /**
+    /**
      * Creation Date: Override of the date the document was created. (Some
      * renderers can store this in the document.)
-      */
-     protected Date creationDate = null;
+     */
+    protected Date creationDate = null;
 
-     /** Author of the content of the document. */
-     protected String author = null;
-     /** Title of the document. */
-     protected String title = null;
-     /** Subject of the document. */
-     protected String subject = null;
-     /** Set of keywords applicable to this document. */
-     protected String keywords = null;
+    /** Author of the content of the document. */
+    protected String author = null;
+    /** Title of the document. */
+    protected String title = null;
+    /** Subject of the document. */
+    protected String subject = null;
+    /** Set of keywords applicable to this document. */
+    protected String keywords = null;
 
-     private final ImageSessionContext imageSessionContext = new AbstractImageSessionContext() {
+    private final ImageSessionContext imageSessionContext = new AbstractImageSessionContext() {
 
-         @Override
-         public ImageContext getParentContext() {
-             return getFactory();
-         }
+        @Override
+        public ImageContext getParentContext() {
+            return getFactory();
+        }
 
-         @Override
-         public float getTargetResolution() {
-             return FOUserAgent.this.getTargetResolution();
-         }
+        @Override
+        public float getTargetResolution() {
+            return FOUserAgent.this.getTargetResolution();
+        }
 
-         @Override
-         public Source resolveURI(final String uri) {
-             return FOUserAgent.this.resolveURI(uri);
-         }
+        @Override
+        public Source resolveURI(final String uri) {
+            return FOUserAgent.this.resolveURI(uri);
+        }
 
-     };
+    };
 
-     /**
-      * Main constructor. <b>This constructor should not be called directly.
+    /**
+     * Main constructor. <b>This constructor should not be called directly.
      * Please use the methods from FopFactory to construct FOUserAgent
      * instances!</b>
-     * 
+     *
      * @param factory
      *            the factory that provides environment-level information
      * @see org.apache.fop.apps.FopFactory
-      */
-     public FOUserAgent(final FopFactory factory) {
-         if (factory == null) {
-             throw new NullPointerException(
+     */
+    public FOUserAgent(final FopFactory factory) {
+        if (factory == null) {
+            throw new NullPointerException(
                     "The factory parameter must not be null");
-         }
-         this.factory = factory;
-         setBaseURL(factory.getBaseURL());
-         setTargetResolution(factory.getTargetResolution());
-         setAccessibility(factory.isAccessibilityEnabled());
-     }
+        }
+        this.factory = factory;
+        setBaseURL(factory.getBaseURL());
+        setTargetResolution(factory.getTargetResolution());
+        setAccessibility(factory.isAccessibilityEnabled());
+    }
 
-     /** @return the associated FopFactory instance */
-     public FopFactory getFactory() {
-         return this.factory;
-     }
+    /** @return the associated FopFactory instance */
+    public FopFactory getFactory() {
+        return this.factory;
+    }
 
-     // ---------------------------------------------- rendering-run dependent
+    // ---------------------------------------------- rendering-run dependent
     // stuff
 
-     /**
-      * Sets an explicit document handler to use which overrides the one that
+    /**
+     * Sets an explicit document handler to use which overrides the one that
      * would be selected by default.
-     * 
+     *
      * @param documentHandler
      *            the document handler instance to use
-      */
-     public void setDocumentHandlerOverride(
+     */
+    public void setDocumentHandlerOverride(
             final IFDocumentHandler documentHandler) {
-         if (isAccessibilityEnabled()) {
-             setStructureTreeEventHandler(documentHandler
+        if (isAccessibilityEnabled()) {
+            setStructureTreeEventHandler(documentHandler
                     .getStructureTreeEventHandler());
-         }
-         this.documentHandlerOverride = documentHandler;
+        }
+        this.documentHandlerOverride = documentHandler;
 
-     }
-
-     /**
-      * Returns the overriding {@link IFDocumentHandler} instance, if any.
-      * 
-     * @return the overriding document handler or null
-      */
-     public IFDocumentHandler getDocumentHandlerOverride() {
-         return this.documentHandlerOverride;
-     }
-
-     /**
-      * Sets an explicit renderer to use which overrides the one defined by the
-      * render type setting.
-      * 
-     * @param renderer
-     *            the Renderer instance to use
-      */
-     public void setRendererOverride(final Renderer renderer) {
-         this.rendererOverride = renderer;
-     }
-
-     /**
-      * Returns the overriding Renderer instance, if any.
-      * 
-     * @return the overriding Renderer or null
-      */
-     public Renderer getRendererOverride() {
-         return this.rendererOverride;
-     }
+    }
 
     /**
-      * Sets an explicit FOEventHandler instance which overrides the one defined
+     * Returns the overriding {@link IFDocumentHandler} instance, if any.
+     *
+     * @return the overriding document handler or null
+     */
+    public IFDocumentHandler getDocumentHandlerOverride() {
+        return this.documentHandlerOverride;
+    }
+
+    /**
+     * Sets an explicit renderer to use which overrides the one defined by the
+     * render type setting.
+     *
+     * @param renderer
+     *            the Renderer instance to use
+     */
+    public void setRendererOverride(final Renderer renderer) {
+        this.rendererOverride = renderer;
+    }
+
+    /**
+     * Returns the overriding Renderer instance, if any.
+     *
+     * @return the overriding Renderer or null
+     */
+    public Renderer getRendererOverride() {
+        return this.rendererOverride;
+    }
+
+    /**
+     * Sets an explicit FOEventHandler instance which overrides the one defined
      * by the render type setting.
-     * 
+     *
      * @param handler
      *            the FOEventHandler instance
-      */
-     public void setFOEventHandlerOverride(final FOEventHandler handler) {
-         this.foEventHandlerOverride = handler;
-     }
+     */
+    public void setFOEventHandlerOverride(final FOEventHandler handler) {
+        this.foEventHandlerOverride = handler;
+    }
 
-     /**
-      * Returns the overriding FOEventHandler instance, if any.
-      * 
+    /**
+     * Returns the overriding FOEventHandler instance, if any.
+     *
      * @return the overriding FOEventHandler or null
-      */
-     public FOEventHandler getFOEventHandlerOverride() {
-         return this.foEventHandlerOverride;
-     }
+     */
+    public FOEventHandler getFOEventHandlerOverride() {
+        return this.foEventHandlerOverride;
+    }
 
-     /**
-      * Sets the producer of the document.
-      * 
+    /**
+     * Sets the producer of the document.
+     *
      * @param producer
      *            source of document
-      */
-     public void setProducer(final String producer) {
-         this.producer = producer;
-     }
+     */
+    public void setProducer(final String producer) {
+        this.producer = producer;
+    }
 
-     /**
-      * Returns the producer of the document
-      * 
+    /**
+     * Returns the producer of the document
+     *
      * @return producer name
-      */
-     public String getProducer() {
-         return this.producer;
-     }
+     */
+    public String getProducer() {
+        return this.producer;
+    }
 
-     /**
-      * Sets the creator of the document.
-      * 
+    /**
+     * Sets the creator of the document.
+     *
      * @param creator
      *            of document
-      */
-     public void setCreator(final String creator) {
-         this.creator = creator;
-     }
+     */
+    public void setCreator(final String creator) {
+        this.creator = creator;
+    }
 
-     /**
-      * Returns the creator of the document
-      * 
+    /**
+     * Returns the creator of the document
+     *
      * @return creator name
-      */
-     public String getCreator() {
-         return this.creator;
-     }
+     */
+    public String getCreator() {
+        return this.creator;
+    }
 
-     /**
-      * Sets the creation date of the document.
-      * 
+    /**
+     * Sets the creation date of the document.
+     *
      * @param creationDate
      *            date of document
-      */
-     public void setCreationDate(final Date creationDate) {
-         this.creationDate = creationDate;
-     }
+     */
+    public void setCreationDate(final Date creationDate) {
+        this.creationDate = creationDate;
+    }
 
-     /**
-      * Returns the creation date of the document
-      * 
+    /**
+     * Returns the creation date of the document
+     *
      * @return creation date of document
-      */
-     public Date getCreationDate() {
-         return this.creationDate;
-     }
+     */
+    public Date getCreationDate() {
+        return this.creationDate;
+    }
 
-     /**
-      * Sets the author of the document.
-      * 
+    /**
+     * Sets the author of the document.
+     *
      * @param author
      *            of document
-      */
-     public void setAuthor(final String author) {
-         this.author = author;
-     }
+     */
+    public void setAuthor(final String author) {
+        this.author = author;
+    }
 
-     /**
-      * Returns the author of the document
-      * 
+    /**
+     * Returns the author of the document
+     *
      * @return author name
-      */
-     public String getAuthor() {
-         return this.author;
-     }
+     */
+    public String getAuthor() {
+        return this.author;
+    }
 
-     /**
-      * Sets the title of the document. This will override any title coming from
-      * an fo:title element.
-      * 
+    /**
+     * Sets the title of the document. This will override any title coming from
+     * an fo:title element.
+     *
      * @param title
      *            of document
-      */
-     public void setTitle(final String title) {
-         this.title = title;
-     }
+     */
+    public void setTitle(final String title) {
+        this.title = title;
+    }
 
-     /**
-      * Returns the title of the document
-      * 
+    /**
+     * Returns the title of the document
+     *
      * @return title name
-      */
-     public String getTitle() {
-         return this.title;
-     }
+     */
+    public String getTitle() {
+        return this.title;
+    }
 
-     /**
-      * Sets the subject of the document.
-      * 
+    /**
+     * Sets the subject of the document.
+     *
      * @param subject
      *            of document
-      */
-     public void setSubject(final String subject) {
-         this.subject = subject;
-     }
+     */
+    public void setSubject(final String subject) {
+        this.subject = subject;
+    }
 
-     /**
-      * Returns the subject of the document
-      * 
+    /**
+     * Returns the subject of the document
+     *
      * @return the subject
-      */
-     public String getSubject() {
-         return this.subject;
-     }
+     */
+    public String getSubject() {
+        return this.subject;
+    }
 
-     /**
-      * Sets the keywords for the document.
-      * 
+    /**
+     * Sets the keywords for the document.
+     *
      * @param keywords
      *            for the document
-      */
-     public void setKeywords(final String keywords) {
-         this.keywords = keywords;
-     }
+     */
+    public void setKeywords(final String keywords) {
+        this.keywords = keywords;
+    }
 
-     /**
-      * Returns the keywords for the document
-      * 
+    /**
+     * Returns the keywords for the document
+     *
      * @return the keywords
-      */
-     public String getKeywords() {
-         return this.keywords;
-     }
+     */
+    public String getKeywords() {
+        return this.keywords;
+    }
 
-     /**
-      * Returns the renderer options
-      * 
+    /**
+     * Returns the renderer options
+     *
      * @return renderer options
-      */
-     public Map getRendererOptions() {
-         return this.rendererOptions;
-     }
+     */
+    public Map<String, Object> getRendererOptions() {
+        return this.rendererOptions;
+    }
 
-     /**
-      * Sets the base URL.
-      * 
+    /**
+     * Sets the base URL.
+     *
      * @param baseUrl
      *            base URL
-      */
-     public void setBaseURL(final String baseUrl) {
-         this.base = baseUrl;
-     }
+     */
+    public void setBaseURL(final String baseUrl) {
+        this.base = baseUrl;
+    }
 
-     /**
-      * Sets font base URL.
-      * 
+    /**
+     * Sets font base URL.
+     *
      * @param fontBaseUrl
      *            font base URL
      * @deprecated Use
      *             {@link org.apache.fop.fonts.FontManager#setFontBaseURL(String)}
      *             instead.
-      */
-     @Deprecated
-     public void setFontBaseURL(final String fontBaseUrl) {
-         try {
-             getFactory().getFontManager().setFontBaseURL(fontBaseUrl);
-         } catch (final MalformedURLException e) {
-             throw new IllegalArgumentException(e.getMessage());
-         }
-     }
+     */
+    @Deprecated
+    public void setFontBaseURL(final String fontBaseUrl) {
+        try {
+            getFactory().getFontManager().setFontBaseURL(fontBaseUrl);
+        } catch (final MalformedURLException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        }
+    }
 
-     /**
-      * Returns the base URL.
-      * 
+    /**
+     * Returns the base URL.
+     *
      * @return the base URL
-      */
-     public String getBaseURL() {
-         return this.base;
-     }
+     */
+    public String getBaseURL() {
+        return this.base;
+    }
 
-     /**
-      * Sets the URI Resolver.
-      * 
+    /**
+     * Sets the URI Resolver.
+     *
      * @param resolver
      *            the new URI resolver
-      */
-     public void setURIResolver(final URIResolver resolver) {
-         this.uriResolver = resolver;
-     }
+     */
+    public void setURIResolver(final URIResolver resolver) {
+        this.uriResolver = resolver;
+    }
 
-     /**
-      * Returns the URI Resolver.
-      * 
+    /**
+     * Returns the URI Resolver.
+     *
      * @return the URI Resolver
-      */
-     public URIResolver getURIResolver() {
-         return this.uriResolver;
-     }
+     */
+    public URIResolver getURIResolver() {
+        return this.uriResolver;
+    }
 
-     /**
-      * Attempts to resolve the given URI. Will use the configured resolver and
+    /**
+     * Attempts to resolve the given URI. Will use the configured resolver and
      * if not successful fall back to the default resolver.
-     * 
+     *
      * @param uri
      *            URI to access
      * @return A {@link javax.xml.transform.Source} object, or null if the URI
      *         cannot be resolved.
      * @see org.apache.fop.apps.FOURIResolver
-      */
-     public Source resolveURI(final String uri) {
-         return resolveURI(uri, getBaseURL());
-     }
+     */
+    public Source resolveURI(final String uri) {
+        return resolveURI(uri, getBaseURL());
+    }
 
-     /**
-      * Attempts to resolve the given URI. Will use the configured resolver and
+    /**
+     * Attempts to resolve the given URI. Will use the configured resolver and
      * if not successful fall back to the default resolver.
-     * 
+     *
      * @param href
      *            URI to access
      * @param base
@@ -458,341 +459,341 @@ import org.apache.xmlgraphics.util.UnitConv;
      * @return A {@link javax.xml.transform.Source} object, or null if the URI
      *         cannot be resolved.
      * @see org.apache.fop.apps.FOURIResolver
-      */
-     public Source resolveURI(final String href, final String base) {
-         Source source = null;
-         // RFC 2397 data URLs don't need to be resolved, just decode them
+     */
+    public Source resolveURI(final String href, final String base) {
+        Source source = null;
+        // RFC 2397 data URLs don't need to be resolved, just decode them
         // through FOP's default
-         // URIResolver.
-         final boolean bypassURIResolution = href.startsWith("data:");
-         if (!bypassURIResolution && this.uriResolver != null) {
-             try {
-                 source = this.uriResolver.resolve(href, base);
-             } catch (final TransformerException te) {
-                 log.error("Attempt to resolve URI '" + href + "' failed: ", te);
-             }
-         }
-         if (source == null) {
-             // URI Resolver not configured or returned null, use default
+        // URIResolver.
+        final boolean bypassURIResolution = href.startsWith("data:");
+        if (!bypassURIResolution && this.uriResolver != null) {
+            try {
+                source = this.uriResolver.resolve(href, base);
+            } catch (final TransformerException te) {
+                log.error("Attempt to resolve URI '" + href + "' failed: ", te);
+            }
+        }
+        if (source == null) {
+            // URI Resolver not configured or returned null, use default
             // resolver from the factory
-             source = getFactory().resolveURI(href, base);
-         }
-         return source;
-     }
+            source = getFactory().resolveURI(href, base);
+        }
+        return source;
+    }
 
-     /**
-      * Sets the output File.
-      * 
+    /**
+     * Sets the output File.
+     *
      * @param f
      *            the output File
-      */
-     public void setOutputFile(final File f) {
-         this.outputFile = f;
-     }
+     */
+    public void setOutputFile(final File f) {
+        this.outputFile = f;
+    }
 
-     /**
-      * Gets the output File.
-      * 
+    /**
+     * Gets the output File.
+     *
      * @return the output File
-      */
-     public File getOutputFile() {
-         return this.outputFile;
-     }
+     */
+    public File getOutputFile() {
+        return this.outputFile;
+    }
 
-     /**
-      * Returns the conversion factor from pixel units to millimeters. This
-      * depends on the desired target resolution.
-      * 
+    /**
+     * Returns the conversion factor from pixel units to millimeters. This
+     * depends on the desired target resolution.
+     *
      * @return float conversion factor
-      * @see #getTargetResolution()
-      */
-     public float getTargetPixelUnitToMillimeter() {
-         return UnitConv.IN2MM / this.targetResolution;
-     }
+     * @see #getTargetResolution()
+     */
+    public float getTargetPixelUnitToMillimeter() {
+        return UnitConv.IN2MM / this.targetResolution;
+    }
 
-     /** @return the resolution for resolution-dependant output */
-     public float getTargetResolution() {
-         return this.targetResolution;
-     }
+    /** @return the resolution for resolution-dependant output */
+    public float getTargetResolution() {
+        return this.targetResolution;
+    }
 
-     /**
-      * Sets the target resolution in dpi. This value defines the target
+    /**
+     * Sets the target resolution in dpi. This value defines the target
      * resolution of bitmap images generated by the bitmap renderers (such as
      * the TIFF renderer) and of bitmap images generated by filter effects in
      * Apache Batik.
-     * 
+     *
      * @param dpi
      *            resolution in dpi
-      */
-     public void setTargetResolution(final float dpi) {
-         this.targetResolution = dpi;
-         if (log.isDebugEnabled()) {
-             log.debug("target-resolution set to: " + this.targetResolution
-                     + "dpi (px2mm=" + getTargetPixelUnitToMillimeter() + ")");
-         }
-     }
+     */
+    public void setTargetResolution(final float dpi) {
+        this.targetResolution = dpi;
+        if (log.isDebugEnabled()) {
+            log.debug("target-resolution set to: " + this.targetResolution
+                    + "dpi (px2mm=" + getTargetPixelUnitToMillimeter() + ")");
+        }
+    }
 
-     /**
-      * Sets the target resolution in dpi. This value defines the target
+    /**
+     * Sets the target resolution in dpi. This value defines the target
      * resolution of bitmap images generated by the bitmap renderers (such as
      * the TIFF renderer) and of bitmap images generated by filter effects in
      * Apache Batik.
-     * 
+     *
      * @param dpi
      *            resolution in dpi
-      */
-     public void setTargetResolution(final int dpi) {
-         setTargetResolution((float) dpi);
-     }
+     */
+    public void setTargetResolution(final int dpi) {
+        setTargetResolution((float) dpi);
+    }
 
-     /**
-      * Returns the image session context for the image package.
-      * 
+    /**
+     * Returns the image session context for the image package.
+     *
      * @return the ImageSessionContext instance for this rendering run
-      */
-     public ImageSessionContext getImageSessionContext() {
-         return this.imageSessionContext;
-     }
+     */
+    public ImageSessionContext getImageSessionContext() {
+        return this.imageSessionContext;
+    }
 
-     // ---------------------------------------------- environment-level stuff
-     // (convenience access to FopFactory methods)
+    // ---------------------------------------------- environment-level stuff
+    // (convenience access to FopFactory methods)
 
-     /**
-      * Returns the font base URL.
-      * 
+    /**
+     * Returns the font base URL.
+     *
      * @return the font base URL
-      * @deprecated Use {@link org.apache.fop.fonts.FontManager#getFontBaseURL()}
+     * @deprecated Use {@link org.apache.fop.fonts.FontManager#getFontBaseURL()}
      *             instead. This method is not used by FOP.
-      */
-     @Deprecated
-     public String getFontBaseURL() {
-         final String fontBase = getFactory().getFontManager().getFontBaseURL();
-         return fontBase != null ? fontBase : getBaseURL();
-     }
+     */
+    @Deprecated
+    public String getFontBaseURL() {
+        final String fontBase = getFactory().getFontManager().getFontBaseURL();
+        return fontBase != null ? fontBase : getBaseURL();
+    }
 
-     /**
-      * Returns the conversion factor from pixel units to millimeters. This
-      * depends on the desired source resolution.
-      * 
+    /**
+     * Returns the conversion factor from pixel units to millimeters. This
+     * depends on the desired source resolution.
+     *
      * @return float conversion factor
-      * @see #getSourceResolution()
-      */
-     public float getSourcePixelUnitToMillimeter() {
-         return getFactory().getSourcePixelUnitToMillimeter();
-     }
+     * @see #getSourceResolution()
+     */
+    public float getSourcePixelUnitToMillimeter() {
+        return getFactory().getSourcePixelUnitToMillimeter();
+    }
 
-     /** @return the resolution for resolution-dependant input */
-     public float getSourceResolution() {
-         return getFactory().getSourceResolution();
-     }
+    /** @return the resolution for resolution-dependant input */
+    public float getSourceResolution() {
+        return getFactory().getSourceResolution();
+    }
 
-     /**
-      * Gets the default page-height to use as fallback, in case
+    /**
+     * Gets the default page-height to use as fallback, in case
      * page-height="auto"
      *
-      * @return the page-height, as a String
-      * @see FopFactory#getPageHeight()
-      */
-     public String getPageHeight() {
-         return getFactory().getPageHeight();
-     }
+     * @return the page-height, as a String
+     * @see FopFactory#getPageHeight()
+     */
+    public String getPageHeight() {
+        return getFactory().getPageHeight();
+    }
 
-     /**
-      * Gets the default page-width to use as fallback, in case page-width="auto"
+    /**
+     * Gets the default page-width to use as fallback, in case page-width="auto"
      *
-      * @return the page-width, as a String
-      * @see FopFactory#getPageWidth()
-      */
-     public String getPageWidth() {
-         return getFactory().getPageWidth();
-     }
+     * @return the page-width, as a String
+     * @see FopFactory#getPageWidth()
+     */
+    public String getPageWidth() {
+        return getFactory().getPageWidth();
+    }
 
-     /**
-      * Returns whether FOP is strictly validating input XSL
-      * 
+    /**
+     * Returns whether FOP is strictly validating input XSL
+     *
      * @return true of strict validation turned on, false otherwise
-      * @see FopFactory#validateStrictly()
-      */
-     public boolean validateStrictly() {
-         return getFactory().validateStrictly();
-     }
+     * @see FopFactory#validateStrictly()
+     */
+    public boolean validateStrictly() {
+        return getFactory().validateStrictly();
+    }
 
-     /**
-      * @return true if the indent inheritance should be broken when crossing
+    /**
+     * @return true if the indent inheritance should be broken when crossing
      *         reference area boundaries (for more info, see the javadoc for the
      *         relative member variable)
      * @see FopFactory#isBreakIndentInheritanceOnReferenceAreaBoundary()
-      */
-     public boolean isBreakIndentInheritanceOnReferenceAreaBoundary() {
-         return getFactory().isBreakIndentInheritanceOnReferenceAreaBoundary();
-     }
+     */
+    public boolean isBreakIndentInheritanceOnReferenceAreaBoundary() {
+        return getFactory().isBreakIndentInheritanceOnReferenceAreaBoundary();
+    }
 
-     /**
-      * @return the RendererFactory
-      */
-     public RendererFactory getRendererFactory() {
-         return getFactory().getRendererFactory();
-     }
+    /**
+     * @return the RendererFactory
+     */
+    public RendererFactory getRendererFactory() {
+        return getFactory().getRendererFactory();
+    }
 
-     /**
-      * @return the XML handler registry
-      */
-     public XMLHandlerRegistry getXMLHandlerRegistry() {
-         return getFactory().getXMLHandlerRegistry();
-     }
+    /**
+     * @return the XML handler registry
+     */
+    public XMLHandlerRegistry getXMLHandlerRegistry() {
+        return getFactory().getXMLHandlerRegistry();
+    }
 
-     /**
-      * Controls the use of SAXLocators to provide location information in error
-      * messages.
-      *
-      * @param enableLocator
+    /**
+     * Controls the use of SAXLocators to provide location information in error
+     * messages.
+     *
+     * @param enableLocator
      *            <code>false</code> if SAX Locators should be disabled
-      */
-     public void setLocatorEnabled(final boolean enableLocator) {
-         this.locatorEnabled = enableLocator;
-     }
+     */
+    public void setLocatorEnabled(final boolean enableLocator) {
+        this.locatorEnabled = enableLocator;
+    }
 
-     /**
-      * Checks if the use of Locators is enabled
-      * 
+    /**
+     * Checks if the use of Locators is enabled
+     *
      * @return true if context information should be stored on each node in the
      *         FO tree.
-      */
-     public boolean isLocatorEnabled() {
-         return this.locatorEnabled;
-     }
+     */
+    public boolean isLocatorEnabled() {
+        return this.locatorEnabled;
+    }
 
-     /**
-      * Returns the event broadcaster that control events sent inside a
+    /**
+     * Returns the event broadcaster that control events sent inside a
      * processing run. Clients can register event listeners with the event
      * broadcaster to listen for events that occur while a document is being
      * processed.
-     * 
+     *
      * @return the event broadcaster.
-      */
-     public EventBroadcaster getEventBroadcaster() {
-         return this.eventBroadcaster;
-     }
+     */
+    public EventBroadcaster getEventBroadcaster() {
+        return this.eventBroadcaster;
+    }
 
-     private class FOPEventBroadcaster extends DefaultEventBroadcaster {
+    private class FOPEventBroadcaster extends DefaultEventBroadcaster {
 
-         private EventListener rootListener;
+        private EventListener rootListener;
 
-         public FOPEventBroadcaster() {
-             // Install a temporary event listener that catches the first event
+        public FOPEventBroadcaster() {
+            // Install a temporary event listener that catches the first event
             // to
-             // do some initialization.
-             this.rootListener = new EventListener() {
-                 @Override
-                 public void processEvent(final Event event) {
-                     if (!FOPEventBroadcaster.this.listeners.hasEventListeners()) {
-                         // Backwards-compatibility: Make sure at least the
+            // do some initialization.
+            this.rootListener = new EventListener() {
+                @Override
+                public void processEvent(final Event event) {
+                    if (!FOPEventBroadcaster.this.listeners.hasEventListeners()) {
+                        // Backwards-compatibility: Make sure at least the
                         // LoggingEventListener is
-                         // plugged in so no events are just silently swallowed.
-                         addEventListener(new LoggingEventListener());
-                     }
-                     // Replace with final event listener
-                     FOPEventBroadcaster.this.rootListener = new FOPEventListenerProxy(
-                             FOPEventBroadcaster.this.listeners,
+                        // plugged in so no events are just silently swallowed.
+                        addEventListener(new LoggingEventListener());
+                    }
+                    // Replace with final event listener
+                    FOPEventBroadcaster.this.rootListener = new FOPEventListenerProxy(
+                            FOPEventBroadcaster.this.listeners,
                             FOUserAgent.this);
-                     FOPEventBroadcaster.this.rootListener.processEvent(event);
-                 }
-             };
-         }
+                    FOPEventBroadcaster.this.rootListener.processEvent(event);
+                }
+            };
+        }
 
-         /** {@inheritDoc} */
-         @Override
-         public void broadcastEvent(final Event event) {
-             this.rootListener.processEvent(event);
-         }
+        /** {@inheritDoc} */
+        @Override
+        public void broadcastEvent(final Event event) {
+            this.rootListener.processEvent(event);
+        }
 
-     }
+    }
 
-     /**
-      * Check whether memory-conservation is enabled.
-      *
-      * @return true if FOP is to conserve as much as possible
-      */
-     public boolean isConserveMemoryPolicyEnabled() {
-         return this.conserveMemoryPolicy;
-     }
+    /**
+     * Check whether memory-conservation is enabled.
+     *
+     * @return true if FOP is to conserve as much as possible
+     */
+    public boolean isConserveMemoryPolicyEnabled() {
+        return this.conserveMemoryPolicy;
+    }
 
-     /**
-      * Control whether memory-conservation should be enabled
-      *
-      * @param conserveMemoryPolicy
+    /**
+     * Control whether memory-conservation should be enabled
+     *
+     * @param conserveMemoryPolicy
      *            the cachingEnabled to set
-      */
-     public void setConserveMemoryPolicy(final boolean conserveMemoryPolicy) {
-         this.conserveMemoryPolicy = conserveMemoryPolicy;
-     }
+     */
+    public void setConserveMemoryPolicy(final boolean conserveMemoryPolicy) {
+        this.conserveMemoryPolicy = conserveMemoryPolicy;
+    }
 
-     /**
-      * Check whether complex script features are enabled.
-      *
-      * @return true if FOP is to use complex script features
-      */
-     public boolean isComplexScriptFeaturesEnabled() {
-         return this.factory.isComplexScriptFeaturesEnabled();
-     }
+    /**
+     * Check whether complex script features are enabled.
+     *
+     * @return true if FOP is to use complex script features
+     */
+    public boolean isComplexScriptFeaturesEnabled() {
+        return this.factory.isComplexScriptFeaturesEnabled();
+    }
 
-     /**
-      * Control whether complex script features should be enabled
-      *
-      * @param useComplexScriptFeatures
+    /**
+     * Control whether complex script features should be enabled
+     *
+     * @param useComplexScriptFeatures
      *            true if FOP is to use complex script features
-      */
-     public void setComplexScriptFeaturesEnabled(
+     */
+    public void setComplexScriptFeaturesEnabled(
             final boolean useComplexScriptFeatures) {
-         this.factory.setComplexScriptFeaturesEnabled(useComplexScriptFeatures);
-     }
+        this.factory.setComplexScriptFeaturesEnabled(useComplexScriptFeatures);
+    }
 
-     /**
-      * Activates accessibility (for output formats that support it).
-      *
-      * @param accessibility
+    /**
+     * Activates accessibility (for output formats that support it).
+     *
+     * @param accessibility
      *            <code>true</code> to enable accessibility support
-      */
-     public void setAccessibility(final boolean accessibility) {
-         if (accessibility) {
-             getRendererOptions().put(Accessibility.ACCESSIBILITY, Boolean.TRUE);
-         }
-     }
+     */
+    public void setAccessibility(final boolean accessibility) {
+        if (accessibility) {
+            getRendererOptions().put(Accessibility.ACCESSIBILITY, Boolean.TRUE);
+        }
+    }
 
-     /**
-      * Check if accessibility is enabled.
-      * 
+    /**
+     * Check if accessibility is enabled.
+     *
      * @return true if accessibility is enabled
-      */
-     public boolean isAccessibilityEnabled() {
-         final Boolean enabled = (Boolean) getRendererOptions().get(
+     */
+    public boolean isAccessibilityEnabled() {
+        final Boolean enabled = (Boolean) getRendererOptions().get(
                 Accessibility.ACCESSIBILITY);
-         if (enabled != null) {
-             return enabled.booleanValue();
-         } else {
-             return false;
-         }
-     }
+        if (enabled != null) {
+            return enabled.booleanValue();
+        } else {
+            return false;
+        }
+    }
 
-     /**
-      * Sets the document's structure tree event handler, for use by accessible
-      * output formats.
-      *
-      * @param structureTreeEventHandler
+    /**
+     * Sets the document's structure tree event handler, for use by accessible
+     * output formats.
+     *
+     * @param structureTreeEventHandler
      *            The structure tree event handler to set
-      */
-     public void setStructureTreeEventHandler(
+     */
+    public void setStructureTreeEventHandler(
             final StructureTreeEventHandler structureTreeEventHandler) {
-         this.structureTreeEventHandler = structureTreeEventHandler;
-     }
+        this.structureTreeEventHandler = structureTreeEventHandler;
+    }
 
-     /**
-      * Returns the document's structure tree event handler, for use by
-      * accessible output formats.
-      *
-      * @return The structure tree event handler
-      */
-     public StructureTreeEventHandler getStructureTreeEventHandler() {
-         return this.structureTreeEventHandler;
-     }
- }
+    /**
+     * Returns the document's structure tree event handler, for use by
+     * accessible output formats.
+     *
+     * @return The structure tree event handler
+     */
+    public StructureTreeEventHandler getStructureTreeEventHandler() {
+        return this.structureTreeEventHandler;
+    }
+}

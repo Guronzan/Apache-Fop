@@ -23,6 +23,7 @@ package org.apache.fop.fonts.type1;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,473 +35,473 @@ import org.apache.xmlgraphics.fonts.Glyphs;
  * This class represents a PFM file (or parts of it) as a Java object.
  */
 @Slf4j
- public class PFMFile {
+public class PFMFile {
 
-     // Header stuff
-     private String windowsName;
-     private String postscriptName;
-     private short dfItalic;
-     private int dfWeight;
-     private short dfCharSet;
-     private short dfPitchAndFamily;
-     private int dfAvgWidth;
-     private int dfMaxWidth;
-     private int dfMinWidth;
-     private short dfFirstChar;
-     private short dfLastChar;
+    // Header stuff
+    private String windowsName;
+    private String postscriptName;
+    private short dfItalic;
+    private int dfWeight;
+    private short dfCharSet;
+    private short dfPitchAndFamily;
+    private int dfAvgWidth;
+    private int dfMaxWidth;
+    private int dfMinWidth;
+    private short dfFirstChar;
+    private short dfLastChar;
 
-     // Extension stuff
-     // ---
+    // Extension stuff
+    // ---
 
-     // Extend Text Metrics
-     private int etmCapHeight;
-     private int etmXHeight;
-     private int etmLowerCaseAscent;
-     private int etmLowerCaseDescent;
+    // Extend Text Metrics
+    private int etmCapHeight;
+    private int etmXHeight;
+    private int etmLowerCaseAscent;
+    private int etmLowerCaseDescent;
 
-     // Extent table
-     private int[] extentTable;
+    // Extent table
+    private int[] extentTable;
 
-     private final Map kerningTab = new java.util.HashMap();
+    private final Map<Integer, Map<Integer, Integer>> kerningTab = new HashMap<>();
 
     /**
-      * Parses a PFM file
-      *
-      * @param inStream
+     * Parses a PFM file
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
      * @throws IOException
      *             In case of an I/O problem
-      */
-     public void load(final InputStream inStream) throws IOException {
-         final byte[] pfmBytes = IOUtils.toByteArray(inStream);
-         InputStream bufin = inStream;
-         bufin = new ByteArrayInputStream(pfmBytes);
-         final PFMInputStream in = new PFMInputStream(bufin);
-         bufin.mark(512);
-         final short sh1 = in.readByte();
-         final short sh2 = in.readByte();
-         if (sh1 == 128 && sh2 == 1) {
-             // Found the first section header of a PFB file!
-             throw new IOException(
+     */
+    public void load(final InputStream inStream) throws IOException {
+        final byte[] pfmBytes = IOUtils.toByteArray(inStream);
+        InputStream bufin = inStream;
+        bufin = new ByteArrayInputStream(pfmBytes);
+        final PFMInputStream in = new PFMInputStream(bufin);
+        bufin.mark(512);
+        final short sh1 = in.readByte();
+        final short sh2 = in.readByte();
+        if (sh1 == 128 && sh2 == 1) {
+            // Found the first section header of a PFB file!
+            throw new IOException(
                     "Cannot parse PFM file. You probably specified the PFB file"
                             + " of a Type 1 font as parameter instead of the PFM.");
-         }
-         bufin.reset();
-         final byte[] b = new byte[16];
-         bufin.read(b);
-         if (new String(b, "US-ASCII").equalsIgnoreCase("StartFontMetrics")) {
-             // Found the header of a AFM file!
-             throw new IOException(
+        }
+        bufin.reset();
+        final byte[] b = new byte[16];
+        bufin.read(b);
+        if (new String(b, "US-ASCII").equalsIgnoreCase("StartFontMetrics")) {
+            // Found the header of a AFM file!
+            throw new IOException(
                     "Cannot parse PFM file. You probably specified the AFM file"
                             + " of a Type 1 font as parameter instead of the PFM.");
-         }
-         bufin.reset();
-         final int version = in.readShort();
-         if (version != 256) {
-             log.warn("PFM version expected to be '256' but got '" + version
+        }
+        bufin.reset();
+        final int version = in.readShort();
+        if (version != 256) {
+            log.warn("PFM version expected to be '256' but got '" + version
                     + "'."
-                     + " Please make sure you specify the PFM as parameter"
-                     + " and not the PFB or the AFM.");
-         }
-         // final long filesize = in.readInt();
-         bufin.reset();
+                    + " Please make sure you specify the PFM as parameter"
+                    + " and not the PFB or the AFM.");
+        }
+        // final long filesize = in.readInt();
+        bufin.reset();
 
-         loadHeader(in);
-         loadExtension(in);
-     }
+        loadHeader(in);
+        loadExtension(in);
+    }
 
-     /**
-      * Parses the header of the PFM file.
-      *
-      * @param inStream
+    /**
+     * Parses the header of the PFM file.
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
      * @throws IOException
      *             In case of an I/O problem
-      */
-     private void loadHeader(final PFMInputStream inStream) throws IOException {
-         inStream.skip(80);
-         this.dfItalic = inStream.readByte();
-         inStream.skip(2);
-         this.dfWeight = inStream.readShort();
-         this.dfCharSet = inStream.readByte();
-         inStream.skip(4);
-         this.dfPitchAndFamily = inStream.readByte();
-         this.dfAvgWidth = inStream.readShort();
-         this.dfMaxWidth = inStream.readShort();
-         this.dfFirstChar = inStream.readByte();
-         this.dfLastChar = inStream.readByte();
-         inStream.skip(8);
-         final long faceOffset = inStream.readInt();
+     */
+    private void loadHeader(final PFMInputStream inStream) throws IOException {
+        inStream.skip(80);
+        this.dfItalic = inStream.readByte();
+        inStream.skip(2);
+        this.dfWeight = inStream.readShort();
+        this.dfCharSet = inStream.readByte();
+        inStream.skip(4);
+        this.dfPitchAndFamily = inStream.readByte();
+        this.dfAvgWidth = inStream.readShort();
+        this.dfMaxWidth = inStream.readShort();
+        this.dfFirstChar = inStream.readByte();
+        this.dfLastChar = inStream.readByte();
+        inStream.skip(8);
+        final long faceOffset = inStream.readInt();
 
-         inStream.reset();
-         inStream.skip(faceOffset);
-         this.windowsName = inStream.readString();
+        inStream.reset();
+        inStream.skip(faceOffset);
+        this.windowsName = inStream.readString();
 
-         inStream.reset();
-         inStream.skip(117);
-     }
+        inStream.reset();
+        inStream.skip(117);
+    }
 
-     /**
-      * Parses the extension part of the PFM file.
-      *
-      * @param inStream
+    /**
+     * Parses the extension part of the PFM file.
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
-      */
-     private void loadExtension(final PFMInputStream inStream)
+     */
+    private void loadExtension(final PFMInputStream inStream)
             throws IOException {
-         final int size = inStream.readShort();
-         if (size != 30) {
-             log.warn("Size of extension block was expected to be "
+        final int size = inStream.readShort();
+        if (size != 30) {
+            log.warn("Size of extension block was expected to be "
                     + "30 bytes, but was " + size + " bytes.");
-         }
-         final long extMetricsOffset = inStream.readInt();
-         final long extentTableOffset = inStream.readInt();
-         inStream.skip(4); // Skip dfOriginTable
-         final long kernPairOffset = inStream.readInt();
-         inStream.skip(4); // Skip dfTrackKernTable
-         final long driverInfoOffset = inStream.readInt();
+        }
+        final long extMetricsOffset = inStream.readInt();
+        final long extentTableOffset = inStream.readInt();
+        inStream.skip(4); // Skip dfOriginTable
+        final long kernPairOffset = inStream.readInt();
+        inStream.skip(4); // Skip dfTrackKernTable
+        final long driverInfoOffset = inStream.readInt();
 
-         if (kernPairOffset > 0) {
-             inStream.reset();
-             inStream.skip(kernPairOffset);
-             loadKernPairs(inStream);
-         }
+        if (kernPairOffset > 0) {
+            inStream.reset();
+            inStream.skip(kernPairOffset);
+            loadKernPairs(inStream);
+        }
 
-         inStream.reset();
-         inStream.skip(driverInfoOffset);
-         this.postscriptName = inStream.readString();
+        inStream.reset();
+        inStream.skip(driverInfoOffset);
+        this.postscriptName = inStream.readString();
 
-         if (extMetricsOffset != 0) {
-             inStream.reset();
-             inStream.skip(extMetricsOffset);
-             loadExtMetrics(inStream);
-         }
-         if (extentTableOffset != 0) {
-             inStream.reset();
-             inStream.skip(extentTableOffset);
-             loadExtentTable(inStream);
-         }
+        if (extMetricsOffset != 0) {
+            inStream.reset();
+            inStream.skip(extMetricsOffset);
+            loadExtMetrics(inStream);
+        }
+        if (extentTableOffset != 0) {
+            inStream.reset();
+            inStream.skip(extentTableOffset);
+            loadExtentTable(inStream);
+        }
 
-     }
+    }
 
-     /**
-      * Parses the kernPairs part of the pfm file
-      *
-      * @param inStream
+    /**
+     * Parses the kernPairs part of the pfm file
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
-      */
-     private void loadKernPairs(final PFMInputStream inStream)
+     */
+    private void loadKernPairs(final PFMInputStream inStream)
             throws IOException {
-         int i = inStream.readShort();
+        int i = inStream.readShort();
 
         if (log.isTraceEnabled()) {
-             log.trace(i + " kerning pairs");
-         }
-         while (i > 0) {
-             final int g1 = inStream.readByte();
-             i--;
+            log.trace(i + " kerning pairs");
+        }
+        while (i > 0) {
+            final int g1 = inStream.readByte();
+            i--;
 
-             final int g2 = inStream.readByte();
+            final int g2 = inStream.readByte();
 
-             int adj = inStream.readShort();
-             if (adj > 0x8000) {
-                 adj = -(0x10000 - adj);
-             }
+            int adj = inStream.readShort();
+            if (adj > 0x8000) {
+                adj = -(0x10000 - adj);
+            }
 
-             if (log.isTraceEnabled()) {
-                 log.trace("Char no: (" + g1 + ", " + g2 + ") kern: " + adj);
-                 final String glyph1 = Glyphs.TEX8R_GLYPH_NAMES[g1];
-                 final String glyph2 = Glyphs.TEX8R_GLYPH_NAMES[g2];
-                 log.trace("glyphs: " + glyph1 + ", " + glyph2);
-             }
+            if (log.isTraceEnabled()) {
+                log.trace("Char no: (" + g1 + ", " + g2 + ") kern: " + adj);
+                final String glyph1 = Glyphs.TEX8R_GLYPH_NAMES[g1];
+                final String glyph2 = Glyphs.TEX8R_GLYPH_NAMES[g2];
+                log.trace("glyphs: " + glyph1 + ", " + glyph2);
+            }
 
-             Map adjTab = (Map) this.kerningTab.get(new Integer(g1));
-             if (adjTab == null) {
-                 adjTab = new java.util.HashMap();
-             }
-             adjTab.put(new Integer(g2), new Integer(adj));
-             this.kerningTab.put(new Integer(g1), adjTab);
-         }
-     }
+            Map<Integer, Integer> adjTab = this.kerningTab.get(new Integer(g1));
+            if (adjTab == null) {
+                adjTab = new HashMap<>();
+            }
+            adjTab.put(new Integer(g2), new Integer(adj));
+            this.kerningTab.put(new Integer(g1), adjTab);
+        }
+    }
 
-     /**
-      * Parses the extended metrics part of the PFM file.
-      *
-      * @param inStream
+    /**
+     * Parses the extended metrics part of the PFM file.
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
-      */
-     private void loadExtMetrics(final PFMInputStream inStream)
+     */
+    private void loadExtMetrics(final PFMInputStream inStream)
             throws IOException {
-         final int size = inStream.readShort();
-         if (size != 52) {
-             log.warn("Size of extension block was expected to be "
+        final int size = inStream.readShort();
+        if (size != 52) {
+            log.warn("Size of extension block was expected to be "
                     + "52 bytes, but was " + size + " bytes.");
-         }
-         inStream.skip(12); // Skip etmPointSize, etmOrientation,
-                           // etmMasterHeight,
-         // etmMinScale, etmMaxScale, emtMasterUnits
-         this.etmCapHeight = inStream.readShort();
-         this.etmXHeight = inStream.readShort();
-         this.etmLowerCaseAscent = inStream.readShort();
-         this.etmLowerCaseDescent = -inStream.readShort();
-         // Ignore the rest of the values
-     }
+        }
+        inStream.skip(12); // Skip etmPointSize, etmOrientation,
+        // etmMasterHeight,
+        // etmMinScale, etmMaxScale, emtMasterUnits
+        this.etmCapHeight = inStream.readShort();
+        this.etmXHeight = inStream.readShort();
+        this.etmLowerCaseAscent = inStream.readShort();
+        this.etmLowerCaseDescent = -inStream.readShort();
+        // Ignore the rest of the values
+    }
 
-     /**
-      * Parses the extent table of the PFM file.
-      *
-      * @param inStream
+    /**
+     * Parses the extent table of the PFM file.
+     *
+     * @param inStream
      *            The stream from which to read the PFM file.
-      */
-     private void loadExtentTable(final PFMInputStream inStream)
+     */
+    private void loadExtentTable(final PFMInputStream inStream)
             throws IOException {
-         this.extentTable = new int[this.dfLastChar - this.dfFirstChar + 1];
-         this.dfMinWidth = this.dfMaxWidth;
-         for (short i = this.dfFirstChar; i <= this.dfLastChar; i++) {
-             this.extentTable[i - this.dfFirstChar] = inStream.readShort();
-             if (this.extentTable[i - this.dfFirstChar] < this.dfMinWidth) {
-                 this.dfMinWidth = this.extentTable[i - this.dfFirstChar];
-             }
-         }
-     }
+        this.extentTable = new int[this.dfLastChar - this.dfFirstChar + 1];
+        this.dfMinWidth = this.dfMaxWidth;
+        for (short i = this.dfFirstChar; i <= this.dfLastChar; ++i) {
+            this.extentTable[i - this.dfFirstChar] = inStream.readShort();
+            if (this.extentTable[i - this.dfFirstChar] < this.dfMinWidth) {
+                this.dfMinWidth = this.extentTable[i - this.dfFirstChar];
+            }
+        }
+    }
 
-     /**
-      * Returns the Windows name of the font.
-      *
-      * @return The Windows name.
-      */
-     public String getWindowsName() {
-         return this.windowsName;
-     }
+    /**
+     * Returns the Windows name of the font.
+     *
+     * @return The Windows name.
+     */
+    public String getWindowsName() {
+        return this.windowsName;
+    }
 
-     /**
-      * Return the kerning table. The kerning table is a Map with strings with
+    /**
+     * Return the kerning table. The kerning table is a Map with strings with
      * glyphnames as keys, containing Maps as value. The value map contains a
      * glyph name string key and an Integer value
      *
-      * @return A Map containing the kerning table
-      */
-     public Map getKerning() {
-         return this.kerningTab;
-     }
+     * @return A Map containing the kerning table
+     */
+    public Map<Integer, Map<Integer, Integer>> getKerning() {
+        return this.kerningTab;
+    }
 
-     /**
-      * Returns the Postscript name of the font.
-      *
-      * @return The Postscript name.
-      */
-     public String getPostscriptName() {
-         return this.postscriptName;
-     }
+    /**
+     * Returns the Postscript name of the font.
+     *
+     * @return The Postscript name.
+     */
+    public String getPostscriptName() {
+        return this.postscriptName;
+    }
 
-     /**
-      * Returns the charset used for the font.
-      *
-      * @return The charset (0=WinAnsi).
-      */
-     public short getCharSet() {
-         return this.dfCharSet;
-     }
+    /**
+     * Returns the charset used for the font.
+     *
+     * @return The charset (0=WinAnsi).
+     */
+    public short getCharSet() {
+        return this.dfCharSet;
+    }
 
-     /**
-      * Returns the charset of the font as a string.
-      *
-      * @return The name of the charset.
-      */
-     public String getCharSetName() {
-         // TODO Had to remove the detection for Expert(Subset) encoding. The PFM
+    /**
+     * Returns the charset of the font as a string.
+     *
+     * @return The name of the charset.
+     */
+    public String getCharSetName() {
+        // TODO Had to remove the detection for Expert(Subset) encoding. The PFM
         // is not suitable
-         // for detecting these character sets. We have to parse the AFM for
+        // for detecting these character sets. We have to parse the AFM for
         // that.
-         switch (this.dfCharSet) {
-         case 0:
-             return "WinAnsi"; // AKA ISOAdobe
-         case 2:
-             if ("Symbol".equals(getPostscriptName())) {
-                 return "Symbol";
-             }
-             break;
-         case 128:
-             return "Shift-JIS (Japanese)";
-         default:
-             log.warn("Unknown charset detected (" + this.dfCharSet + ", 0x"
+        switch (this.dfCharSet) {
+        case 0:
+            return "WinAnsi"; // AKA ISOAdobe
+        case 2:
+            if ("Symbol".equals(getPostscriptName())) {
+                return "Symbol";
+            }
+            break;
+        case 128:
+            return "Shift-JIS (Japanese)";
+        default:
+            log.warn("Unknown charset detected (" + this.dfCharSet + ", 0x"
                     + Integer.toHexString(this.dfCharSet)
-                     + "). Trying fallback to WinAnsi.");
-         }
-         return "WinAnsi";
-     }
+                    + "). Trying fallback to WinAnsi.");
+        }
+        return "WinAnsi";
+    }
 
-     /**
-      * Returns the number of the character that defines the first entry in the
+    /**
+     * Returns the number of the character that defines the first entry in the
      * widths list.
      *
-      * @return The number of the first character.
-      */
-     public short getFirstChar() {
-         return this.dfFirstChar;
-     }
+     * @return The number of the first character.
+     */
+    public short getFirstChar() {
+        return this.dfFirstChar;
+    }
 
-     /**
-      * Returns the number of the character that defines the last entry in the
+    /**
+     * Returns the number of the character that defines the last entry in the
      * widths list.
      *
-      * @return The number of the last character.
-      */
-     public short getLastChar() {
-         return this.dfLastChar;
-     }
+     * @return The number of the last character.
+     */
+    public short getLastChar() {
+        return this.dfLastChar;
+    }
 
-     /**
-      * Returns the CapHeight parameter for the font (height of uppercase H).
-      *
-      * @return The CapHeight parameter.
-      */
-     public int getCapHeight() {
-         return this.etmCapHeight;
-     }
+    /**
+     * Returns the CapHeight parameter for the font (height of uppercase H).
+     *
+     * @return The CapHeight parameter.
+     */
+    public int getCapHeight() {
+        return this.etmCapHeight;
+    }
 
-     /**
-      * Returns the XHeight parameter for the font (height of lowercase x).
-      *
-      * @return The CapHeight parameter.
-      */
-     public int getXHeight() {
-         return this.etmXHeight;
-     }
+    /**
+     * Returns the XHeight parameter for the font (height of lowercase x).
+     *
+     * @return The CapHeight parameter.
+     */
+    public int getXHeight() {
+        return this.etmXHeight;
+    }
 
-     /**
-      * Returns the LowerCaseAscent parameter for the font (height of lowercase
+    /**
+     * Returns the LowerCaseAscent parameter for the font (height of lowercase
      * d).
      *
-      * @return The LowerCaseAscent parameter.
-      */
-     public int getLowerCaseAscent() {
-         return this.etmLowerCaseAscent;
-     }
+     * @return The LowerCaseAscent parameter.
+     */
+    public int getLowerCaseAscent() {
+        return this.etmLowerCaseAscent;
+    }
 
-     /**
-      * Returns the LowerCaseDescent parameter for the font (height of lowercase
+    /**
+     * Returns the LowerCaseDescent parameter for the font (height of lowercase
      * p).
      *
-      * @return The LowerCaseDescent parameter.
-      */
-     public int getLowerCaseDescent() {
-         return this.etmLowerCaseDescent;
-     }
+     * @return The LowerCaseDescent parameter.
+     */
+    public int getLowerCaseDescent() {
+        return this.etmLowerCaseDescent;
+    }
 
-     /**
-      * Tells whether the font has proportional character spacing.
-      *
-      * @return ex. true for Times, false for Courier.
-      */
-     public boolean getIsProportional() {
-         return (this.dfPitchAndFamily & 1) == 1;
-     }
+    /**
+     * Tells whether the font has proportional character spacing.
+     *
+     * @return ex. true for Times, false for Courier.
+     */
+    public boolean getIsProportional() {
+        return (this.dfPitchAndFamily & 1) == 1;
+    }
 
-     /**
-      * Returns the bounding box for the font. Note: this value is just an
+    /**
+     * Returns the bounding box for the font. Note: this value is just an
      * approximation, it does not really exist in the PFM file.
      *
-      * @return The calculated Font BBox.
-      */
-     public int[] getFontBBox() {
-         final int[] bbox = new int[4];
+     * @return The calculated Font BBox.
+     */
+    public int[] getFontBBox() {
+        final int[] bbox = new int[4];
 
-         // Just guessing....
-         if (!getIsProportional() && this.dfAvgWidth == this.dfMaxWidth) {
-             bbox[0] = -20;
-         } else {
-             bbox[0] = -100;
-         }
-         bbox[1] = getLowerCaseDescent() - 5;
-         bbox[2] = this.dfMaxWidth + 10;
-         bbox[3] = getLowerCaseAscent() + 5;
-         return bbox;
-     }
+        // Just guessing....
+        if (!getIsProportional() && this.dfAvgWidth == this.dfMaxWidth) {
+            bbox[0] = -20;
+        } else {
+            bbox[0] = -100;
+        }
+        bbox[1] = getLowerCaseDescent() - 5;
+        bbox[2] = this.dfMaxWidth + 10;
+        bbox[3] = getLowerCaseAscent() + 5;
+        return bbox;
+    }
 
-     /**
-      * Indicates whether the font is non-symbolic (Font uses the Adobe standard
+    /**
+     * Indicates whether the font is non-symbolic (Font uses the Adobe standard
      * Latin character set or a subset of it).
-     * 
+     *
      * @return true if the font is non-symbolic
-      */
-     public boolean isNonSymbolic() {
-         return this.dfCharSet != 2; // != Symbol fonts
-     }
+     */
+    public boolean isNonSymbolic() {
+        return this.dfCharSet != 2; // != Symbol fonts
+    }
 
-     /**
-      * Returns the characteristics flags for the font as needed for a PDF font
+    /**
+     * Returns the characteristics flags for the font as needed for a PDF font
      * descriptor (See PDF specs).
      *
-      * @return The characteristics flags.
-      */
-     public int getFlags() {
-         int flags = 0;
-         if (!getIsProportional()) {
-             flags |= 1; // bit 1: FixedPitch
-         }
-         if (isNonSymbolic()) {
-             flags |= 32; // bit 6: Nonsymbolic
-         } else {
-             flags |= 4; // bit 3: Symbolic
-         }
-         // int serif = dfPitchAndFamily & 0xFFFE;
-         if ((this.dfPitchAndFamily & 16) != 0) {
-             flags |= 2; // bit 2: Serif
-         }
-         if ((this.dfPitchAndFamily & 64) != 0) {
-             flags |= 8; // bit 4: Script
-         }
-         if (this.dfItalic != 0) {
-             flags |= 64; // bit 7: Italic
-         }
-         return flags;
-     }
+     * @return The characteristics flags.
+     */
+    public int getFlags() {
+        int flags = 0;
+        if (!getIsProportional()) {
+            flags |= 1; // bit 1: FixedPitch
+        }
+        if (isNonSymbolic()) {
+            flags |= 32; // bit 6: Nonsymbolic
+        } else {
+            flags |= 4; // bit 3: Symbolic
+        }
+        // int serif = dfPitchAndFamily & 0xFFFE;
+        if ((this.dfPitchAndFamily & 16) != 0) {
+            flags |= 2; // bit 2: Serif
+        }
+        if ((this.dfPitchAndFamily & 64) != 0) {
+            flags |= 8; // bit 4: Script
+        }
+        if (this.dfItalic != 0) {
+            flags |= 64; // bit 7: Italic
+        }
+        return flags;
+    }
 
-     /**
-      * Returns the width of the dominant vertical stems of the font. Note: this
+    /**
+     * Returns the width of the dominant vertical stems of the font. Note: this
      * value is just an approximation, it does not really exist in the PFM file.
      *
-      * @return The vertical stem width.
-      */
-     public int getStemV() {
-         // Just guessing....
-         if (this.dfItalic != 0) {
-             return (int) Math.round(this.dfMinWidth * 0.25);
-         } else {
-             return (int) Math.round(this.dfMinWidth * 0.6);
-         }
-     }
+     * @return The vertical stem width.
+     */
+    public int getStemV() {
+        // Just guessing....
+        if (this.dfItalic != 0) {
+            return (int) Math.round(this.dfMinWidth * 0.25);
+        } else {
+            return (int) Math.round(this.dfMinWidth * 0.6);
+        }
+    }
 
-     /**
-      * Returns the italic angle of the font. Note: this value is just an
+    /**
+     * Returns the italic angle of the font. Note: this value is just an
      * approximation, it does not really exist in the PFM file.
      *
-      * @return The italic angle.
-      */
-     public int getItalicAngle() {
-         if (this.dfItalic != 0) {
-             return -16; // Just guessing....
-         } else {
-             return 0;
-         }
-     }
+     * @return The italic angle.
+     */
+    public int getItalicAngle() {
+        if (this.dfItalic != 0) {
+            return -16; // Just guessing....
+        } else {
+            return 0;
+        }
+    }
 
-     /**
-      * Returns the width of a character
-      *
-      * @param which
+    /**
+     * Returns the width of a character
+     *
+     * @param which
      *            The number of the character for which the width is requested.
      * @return The width of a character.
-      */
-     public int getCharWidth(final short which) {
-         if (this.extentTable != null) {
-             return this.extentTable[which - this.dfFirstChar];
-         } else {
-             // Fixed-width font (PFM may have no extent table)
-             // we'll just use the average width
-             return this.dfAvgWidth;
-         }
-     }
+     */
+    public int getCharWidth(final short which) {
+        if (this.extentTable != null) {
+            return this.extentTable[which - this.dfFirstChar];
+        } else {
+            // Fixed-width font (PFM may have no extent table)
+            // we'll just use the average width
+            return this.dfAvgWidth;
+        }
+    }
 
- }
+}

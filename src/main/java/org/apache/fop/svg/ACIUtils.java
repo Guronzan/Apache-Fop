@@ -23,6 +23,7 @@ import java.awt.font.TextAttribute;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
 import java.text.CharacterIterator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -61,10 +62,10 @@ public final class ACIUtils {
      */
     public static Font[] findFontsForBatikACI(
             final AttributedCharacterIterator aci, final FontInfo fontInfo) {
-        final List<Font> fonts = new java.util.ArrayList<>();
+        final List<Font> fonts = new ArrayList<>();
         @SuppressWarnings("unchecked")
         final List<GVTFontFamily> gvtFonts = (List<GVTFontFamily>) aci
-                .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
+        .getAttribute(GVTAttributedCharacterIterator.TextAttribute.GVT_FONT_FAMILIES);
         final Float posture = (Float) aci.getAttribute(TextAttribute.POSTURE);
         final Float taWeight = (Float) aci.getAttribute(TextAttribute.WEIGHT);
         final Float fontSize = (Float) aci.getAttribute(TextAttribute.SIZE);

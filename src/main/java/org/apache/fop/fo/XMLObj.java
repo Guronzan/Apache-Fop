@@ -119,7 +119,7 @@ import org.xml.sax.Locator;
          return this.name;
      }
 
-     private static HashMap ns = new HashMap();
+     private static HashMap ns = new HashMap<>();
      static {
          ns.put(XMLConstants.XLINK_PREFIX, XMLConstants.XLINK_NAMESPACE);
      }

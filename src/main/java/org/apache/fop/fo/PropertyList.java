@@ -348,7 +348,7 @@ import org.xml.sax.Attributes;
          String attributeName;
          String attributeValue;
          final FopFactory factory = getFObj().getUserAgent().getFactory();
-         for (int i = 0; i < attributes.getLength(); i++) {
+         for (int i = 0; i < attributes.getLength(); ++i) {
              /*
              * convert all attributes with the same namespace as the fo element
              * the "xml:lang" and "xml:base" properties are special cases

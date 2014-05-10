@@ -66,7 +66,7 @@ public class FontSubstitutionsConfigurator {
      */
     public void configure(FontSubstitutions substitutions) throws FOPException {
         Configuration[] substitutionCfgs = cfg.getChildren("substitution");
-        for (int i = 0; i < substitutionCfgs.length; i++) {
+        for (int i = 0; i < substitutionCfgs.length; ++i) {
             Configuration fromCfg = substitutionCfgs[i].getChild("from", false);
             if (fromCfg == null) {
                 throw new FOPException("'substitution' element without child 'from' element");

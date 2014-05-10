@@ -131,7 +131,7 @@ public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder
     /** {@inheritDoc} */
     public String toString() {
         String coordsStr = "";
-        for (int i = 0; i < coords.length; i++) {
+        for (int i = 0; i < coords.length; ++i) {
             coordsStr += (i % 2 == 0) ? "x" : "y";
             coordsStr += (i / 2) + "=" + coords[i] + ",";
         }

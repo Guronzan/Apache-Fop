@@ -417,7 +417,7 @@ import org.w3c.dom.Document;
                  // Analyze string and split up in order to paint in different
                 // sub-fonts/encodings
                  int currentEncoding = -1;
-                 for (int i = 0; i < textLen; i++) {
+                 for (int i = 0; i < textLen; ++i) {
                      final char c = text.charAt(i);
                      final char mapped = tf.mapChar(c);
                      final int encoding = mapped / 256;
@@ -463,7 +463,7 @@ import org.w3c.dom.Document;
          final StringBuilder sb = new StringBuilder(initialSize);
          final int[] dx = IFUtil.convertDPToDX(dp);
          final int dxl = dx != null ? dx.length : 0;
-         for (int i = start; i < end; i++) {
+         for (int i = start; i < end; ++i) {
              final char orgChar = text.charAt(i);
              char ch;
              int cw;

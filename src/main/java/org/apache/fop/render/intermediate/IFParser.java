@@ -25,6 +25,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -75,7 +76,7 @@ public class IFParser implements IFConstants {
     private static SAXTransformerFactory tFactory = (SAXTransformerFactory) SAXTransformerFactory
             .newInstance();
 
-    private static Set<String> handledNamespaces = new java.util.HashSet<String>();
+    private static Set<String> handledNamespaces = new HashSet<>();
 
     static {
         handledNamespaces.add(XMLNS_NAMESPACE_URI);
@@ -102,7 +103,7 @@ public class IFParser implements IFConstants {
      */
     public void parse(final Source src,
             final IFDocumentHandler documentHandler, final FOUserAgent userAgent)
-            throws TransformerException, IFException {
+                    throws TransformerException, IFException {
         try {
             final Transformer transformer = tFactory.newTransformer();
             transformer.setErrorListener(new DefaultErrorListener());
@@ -201,7 +202,7 @@ public class IFParser implements IFConstants {
             @Override
             public void startElement(final String uri, String localName,
                     final String qName, final Attributes attributes)
-                            throws SAXException {
+                    throws SAXException {
                 if (!"structure-tree".equals(localName)) {
                     if (localName.equals("marked-content")) {
                         localName = "#PCDATA";
@@ -279,7 +280,7 @@ public class IFParser implements IFConstants {
         @Override
         public void startElement(final String uri, final String localName,
                 final String qName, final Attributes attributes)
-                        throws SAXException {
+                throws SAXException {
             if (this.delegate != null) {
                 this.delegateDepth++;
                 this.delegate.startElement(uri, localName, qName, attributes);
@@ -328,7 +329,7 @@ public class IFParser implements IFConstants {
                     if (this.navParser == null) {
                         this.navParser = new DocumentNavigationHandler(
                                 this.documentHandler
-                                .getDocumentNavigationHandler(),
+                                        .getDocumentNavigationHandler(),
                                 this.structureTreeElements);
                     }
                     this.delegate = this.navParser;
@@ -457,7 +458,7 @@ public class IFParser implements IFConstants {
 
         private interface ElementHandler {
             void startElement(final Attributes attributes) throws IFException,
-            SAXException;
+                    SAXException;
 
             void endElement() throws IFException;
 
@@ -518,7 +519,7 @@ public class IFParser implements IFConstants {
             public void startElement(final Attributes attributes)
                     throws IFException {
                 Handler.this.documentHandler
-                .setDocumentLocale(getLanguage(attributes));
+                        .setDocumentLocale(getLanguage(attributes));
             }
         }
 
@@ -765,7 +766,7 @@ public class IFParser implements IFConstants {
                 final int height = Integer.parseInt(attributes
                         .getValue("height"));
                 Handler.this.painter
-                .clipRect(new Rectangle(x, y, width, height));
+                        .clipRect(new Rectangle(x, y, width, height));
             }
 
         }
@@ -821,7 +822,7 @@ public class IFParser implements IFConstants {
         }
 
         private static final String[] SIDES = new String[] { "top", "bottom",
-            "left", "right" };
+                "left", "right" };
 
         private class BorderRectHandler extends AbstractElementHandler {
 
@@ -835,7 +836,7 @@ public class IFParser implements IFConstants {
                 final int height = Integer.parseInt(attributes
                         .getValue("height"));
                 final BorderProps[] borders = new BorderProps[4];
-                for (int i = 0; i < 4; i++) {
+                for (int i = 0; i < 4; ++i) {
                     final String b = attributes.getValue(SIDES[i]);
                     if (b != null) {
                         borders[i] = BorderProps.valueOf(
@@ -844,8 +845,8 @@ public class IFParser implements IFConstants {
                 }
 
                 Handler.this.painter
-                .drawBorderRect(new Rectangle(x, y, width, height),
-                        borders[0], borders[1], borders[2], borders[3]);
+                        .drawBorderRect(new Rectangle(x, y, width, height),
+                                borders[0], borders[1], borders[2], borders[3]);
             }
 
         }
@@ -931,14 +932,14 @@ public class IFParser implements IFConstants {
         private static Map<QName, String> getForeignAttributes(
                 final Attributes atts) {
             Map<QName, String> foreignAttributes = null;
-            for (int i = 0, c = atts.getLength(); i < c; i++) {
+            for (int i = 0, c = atts.getLength(); i < c; ++i) {
                 final String ns = atts.getURI(i);
                 if (ns.length() > 0) {
                     if (handledNamespaces.contains(ns)) {
                         continue;
                     }
                     if (foreignAttributes == null) {
-                        foreignAttributes = new java.util.HashMap<QName, String>();
+                        foreignAttributes = new HashMap<QName, String>();
                     }
                     final QName qname = new QName(ns, atts.getQName(i));
                     foreignAttributes.put(qname, atts.getValue(i));

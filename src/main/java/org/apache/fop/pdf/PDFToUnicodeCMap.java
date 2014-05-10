@@ -109,7 +109,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
          */
         protected void writeBFCharEntries(char[] charArray) throws IOException {
             int totalEntries = 0;
-            for (int i = 0; i < charArray.length; i++) {
+            for (int i = 0; i < charArray.length; ++i) {
                 if (!partOfRange(charArray, i)) {
                     totalEntries++;
                 }
@@ -123,7 +123,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
                 /* Limited to 100 entries in each section */
                 int entriesThisSection = Math.min(remainingEntries, 100);
                 writer.write(entriesThisSection + " beginbfchar\n");
-                for (int i = 0; i < entriesThisSection; i++) {
+                for (int i = 0; i < entriesThisSection; ++i) {
                     /* Go to the next char not in a range */
                     while (partOfRange(charArray, charIndex)) {
                         charIndex++;
@@ -149,7 +149,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
          */
         protected void writeBFRangeEntries(char[] charArray) throws IOException {
             int totalEntries = 0;
-            for (int i = 0; i < charArray.length; i++) {
+            for (int i = 0; i < charArray.length; ++i) {
                 if (startOfRange(charArray, i)) {
                     totalEntries++;
                 }
@@ -163,7 +163,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
                 /* Limited to 100 entries in each section */
                 int entriesThisSection = Math.min(remainingEntries, 100);
                 writer.write(entriesThisSection + " beginbfrange\n");
-                for (int i = 0; i < entriesThisSection; i++) {
+                for (int i = 0; i < entriesThisSection; ++i) {
                     /* Go to the next start of a range */
                     while (!startOfRange(charArray, charIndex)) {
                         charIndex++;
@@ -285,7 +285,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
                 return input;
             }
             StringBuilder returnString = new StringBuilder();
-            for (int i = 1; i <= numChars - length; i++) {
+            for (int i = 1; i <= numChars - length; ++i) {
                 returnString.append("0");
             }
             returnString.append(input);

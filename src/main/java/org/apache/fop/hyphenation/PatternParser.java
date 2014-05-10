@@ -141,7 +141,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         String word;
         boolean space = false;
         int i;
-        for (i = 0; i < chars.length(); i++) {
+        for (i = 0; i < chars.length(); ++i) {
             if (Character.isWhitespace(chars.charAt(i))) {
                 space = true;
             } else {
@@ -161,7 +161,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
             }
         }
         space = false;
-        for (i = 0; i < chars.length(); i++) {
+        for (i = 0; i < chars.length(); ++i) {
             if (Character.isWhitespace(chars.charAt(i))) {
                 space = true;
                 break;
@@ -185,7 +185,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     private static String getPattern(String word) {
         StringBuilder pat = new StringBuilder();
         int len = word.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             if (!Character.isDigit(word.charAt(i))) {
                 pat.append(word.charAt(i));
             }
@@ -194,8 +194,8 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     }
 
     private ArrayList normalizeException(ArrayList ex) {
-        ArrayList res = new ArrayList();
-        for (int i = 0; i < ex.size(); i++) {
+        ArrayList res = new ArrayList<>();
+        for (int i = 0; i < ex.size(); ++i) {
             Object item = ex.get(i);
             if (item instanceof String) {
                 String str = (String)item;
@@ -226,7 +226,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
 
     private String getExceptionWord(ArrayList ex) {
         StringBuilder res = new StringBuilder();
-        for (int i = 0; i < ex.size(); i++) {
+        for (int i = 0; i < ex.size(); ++i) {
             Object item = ex.get(i);
             if (item instanceof String) {
                 res.append((String)item);
@@ -243,7 +243,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         StringBuilder il = new StringBuilder();
         String word = pat + "a";    // add dummy letter to serve as sentinel
         int len = word.length();
-        for (int i = 0; i < len; i++) {
+        for (int i = 0; i < len; ++i) {
             char c = word.charAt(i);
             if (Character.isDigit(c)) {
                 il.append(c);
@@ -299,7 +299,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
                 getExternalClasses();
             }
             currElement = ELEM_EXCEPTIONS;
-            exception = new ArrayList();
+            exception = new ArrayList<>();
         } else if (local.equals("hyphen")) {
             if (token.length() > 0) {
                 exception.add(token.toString());

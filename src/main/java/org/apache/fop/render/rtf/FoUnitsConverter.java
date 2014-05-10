@@ -47,7 +47,7 @@ final class FoUnitsConverter {
 
 
     /** conversion factors keyed by xsl:fo units names */
-    private static final Map TWIP_FACTORS = new HashMap();
+    private static final Map TWIP_FACTORS = new HashMap<>();
     static {
         TWIP_FACTORS.put(FixedLength.MM, new Float(MM_TO_TWIPS));
         TWIP_FACTORS.put(FixedLength.CM, new Float(CM_TO_TWIPS));
@@ -78,7 +78,7 @@ final class FoUnitsConverter {
         final StringBuilder number = new StringBuilder();
         final StringBuilder units = new StringBuilder();
 
-        for (int i = 0; i < foValue.length(); i++) {
+        for (int i = 0; i < foValue.length(); ++i) {
             final char c = foValue.charAt(i);
             if (Character.isDigit(c) || c == '.') {
                 number.append(c);

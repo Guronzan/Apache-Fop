@@ -19,6 +19,7 @@
 
 package org.apache.fop.util;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,94 +33,92 @@ import org.apache.xmlgraphics.util.Service;
  * class path.
  */
 @Slf4j
- public class ContentHandlerFactoryRegistry {
+public class ContentHandlerFactoryRegistry {
 
     /** Map from namespace URIs to ContentHandlerFactories */
-     private final Map factories = new java.util.HashMap();
+    private final Map<String, ContentHandlerFactory> factories = new HashMap<>();
 
-     /**
-      * Default constructor.
-      */
-     public ContentHandlerFactoryRegistry() {
-         discover();
-     }
+    /**
+     * Default constructor.
+     */
+    public ContentHandlerFactoryRegistry() {
+        discover();
+    }
 
-     /**
-      * Add an XML handler. The handler itself is inspected to find out what it
+    /**
+     * Add an XML handler. The handler itself is inspected to find out what it
      * supports.
-     * 
+     *
      * @param classname
      *            the fully qualified class name
-      */
-     public void addContentHandlerFactory(final String classname) {
-         try {
-             final ContentHandlerFactory factory = (ContentHandlerFactory) Class
+     */
+    public void addContentHandlerFactory(final String classname) {
+        try {
+            final ContentHandlerFactory factory = (ContentHandlerFactory) Class
                     .forName(classname).newInstance();
-             addContentHandlerFactory(factory);
-         } catch (final ClassNotFoundException e) {
-             throw new IllegalArgumentException("Could not find " + classname);
-         } catch (final InstantiationException e) {
-             throw new IllegalArgumentException("Could not instantiate "
+            addContentHandlerFactory(factory);
+        } catch (final ClassNotFoundException e) {
+            throw new IllegalArgumentException("Could not find " + classname);
+        } catch (final InstantiationException e) {
+            throw new IllegalArgumentException("Could not instantiate "
                     + classname);
-         } catch (final IllegalAccessException e) {
-             throw new IllegalArgumentException("Could not access " + classname);
-         } catch (final ClassCastException e) {
-             throw new IllegalArgumentException(classname + " is not an "
+        } catch (final IllegalAccessException e) {
+            throw new IllegalArgumentException("Could not access " + classname);
+        } catch (final ClassCastException e) {
+            throw new IllegalArgumentException(classname + " is not an "
                     + ContentHandlerFactory.class.getName());
-         }
-     }
+        }
+    }
 
-     /**
-      * Add an ContentHandlerFactory. The instance is inspected to find out what
+    /**
+     * Add an ContentHandlerFactory. The instance is inspected to find out what
      * it supports.
-     * 
+     *
      * @param factory
      *            the ContentHandlerFactory instance
-      */
-     public void addContentHandlerFactory(final ContentHandlerFactory factory) {
-         final String[] ns = factory.getSupportedNamespaces();
-         for (final String element : ns) {
-             this.factories.put(element, factory);
-         }
-     }
+     */
+    public void addContentHandlerFactory(final ContentHandlerFactory factory) {
+        final String[] ns = factory.getSupportedNamespaces();
+        for (final String element : ns) {
+            this.factories.put(element, factory);
+        }
+    }
 
-     /**
-      * Retrieves a ContentHandlerFactory instance of a given namespace URI.
-      * 
+    /**
+     * Retrieves a ContentHandlerFactory instance of a given namespace URI.
+     *
      * @param namespaceURI
      *            the namespace to be handled.
      * @return the ContentHandlerFactory or null, if no suitable instance is
      *         available.
-      */
-     public ContentHandlerFactory getFactory(final String namespaceURI) {
-         final ContentHandlerFactory factory = (ContentHandlerFactory) this.factories
-                .get(namespaceURI);
-         return factory;
-     }
+     */
+    public ContentHandlerFactory getFactory(final String namespaceURI) {
+        final ContentHandlerFactory factory = this.factories.get(namespaceURI);
+        return factory;
+    }
 
-     /**
-      * Discovers ContentHandlerFactory implementations through the classpath and
+    /**
+     * Discovers ContentHandlerFactory implementations through the classpath and
      * dynamically registers them.
-      */
-     private void discover() {
-         // add mappings from available services
-         final Iterator providers = Service
+     */
+    private void discover() {
+        // add mappings from available services
+        final Iterator<ContentHandlerFactory> providers = Service
                 .providers(ContentHandlerFactory.class);
-         if (providers != null) {
-             while (providers.hasNext()) {
-                 final ContentHandlerFactory factory = (ContentHandlerFactory) providers
-                        .next();
-                 try {
-                     if (log.isDebugEnabled()) {
-                         log.debug("Dynamically adding ContentHandlerFactory: "
-                                 + factory.getClass().getName());
-                     }
-                     addContentHandlerFactory(factory);
-                 } catch (final IllegalArgumentException e) {
-                     log.error("Error while adding ContentHandlerFactory", e);
-                 }
+        if (providers != null) {
+            while (providers.hasNext()) {
+                final ContentHandlerFactory factory = providers.next();
+                try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Dynamically adding ContentHandlerFactory: "
+                                + factory.getClass().getName());
+                    }
+                    addContentHandlerFactory(factory);
+                } catch (final IllegalArgumentException e) {
+                    log.error("Error while adding ContentHandlerFactory", e);
+                }
 
-             }
-         }
-     }
- }
+            }
+        }
+    }
+}

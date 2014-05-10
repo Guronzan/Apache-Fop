@@ -20,6 +20,7 @@
 package org.apache.fop.area;
 
 // Java
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -42,7 +43,7 @@ public class AreaTreeModel {
      * Create a new store pages model
      */
     public AreaTreeModel() {
-        this.pageSequenceList = new java.util.ArrayList<>();
+        this.pageSequenceList = new ArrayList<>();
     }
 
     /**

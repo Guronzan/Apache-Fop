@@ -232,7 +232,7 @@ public class RtfExtraRowSet extends RtfContainer {
                // Add empty cells merged vertically with the cells above and with the same widths
                // (BEFORE the cell that contains the nested table)
                 for (int i = 0; (xOffset < pc.xOffset)
-                        && (i < parentITableColumnsInfo.getNumberOfColumns()); i++) {
+                        && (i < parentITableColumnsInfo.getNumberOfColumns()); ++i) {
                     // Get the width of the cell above
                     xOffset += parentITableColumnsInfo.getColumnWidth();
                     // Create the empty cell merged vertically

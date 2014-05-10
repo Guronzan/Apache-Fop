@@ -346,7 +346,7 @@ import org.apache.fop.util.BreakUtil;
             final Block backgroundArea, final int xShift) {
          addBackgroundArea(backgroundArea);
          if (this.columnBackgroundAreas == null) {
-             this.columnBackgroundAreas = new ArrayList();
+             this.columnBackgroundAreas = new ArrayList<>();
          }
          this.columnBackgroundAreas.add(new ColumnBackgroundInfo(column,
                 backgroundArea, xShift));

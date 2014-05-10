@@ -228,7 +228,7 @@ public class Java2DPainter extends AbstractIFPainter {
             cursor.setLocation(cursor.getX() - (dx[0] / 10f), cursor.getY());
             gv.setGlyphPosition(0, cursor);
         }
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             char orgChar = text.charAt(i);
             float glyphAdjust = 0;
             int cw = font.getCharWidth(orgChar);

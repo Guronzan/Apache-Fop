@@ -19,6 +19,8 @@
 
 package org.apache.fop.util.text;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +50,9 @@ public class AdvancedMessageFormat {
     /** Regex that matches "," but not "\," (escaped comma) */
     static final Pattern COMMA_SEPARATOR_REGEX = Pattern.compile("(?<!\\\\),");
 
-    private static final Map<String, PartFactory> PART_FACTORIES = new java.util.HashMap<>();
-    private static final List<ObjectFormatter> OBJECT_FORMATTERS = new java.util.ArrayList<>();
-    private static final Map<Object, Function> FUNCTIONS = new java.util.HashMap<>();
+    private static final Map<String, PartFactory> PART_FACTORIES = new HashMap<>();
+    private static final List<ObjectFormatter> OBJECT_FORMATTERS = new ArrayList<>();
+    private static final Map<Object, Function> FUNCTIONS = new HashMap<>();
 
     private CompositePart rootPart;
 
@@ -444,7 +446,7 @@ public class AdvancedMessageFormat {
 
     private static class CompositePart implements Part {
 
-        protected List<Part> parts = new java.util.ArrayList<>();
+        protected List<Part> parts = new ArrayList<>();
         private final boolean conditional;
         private boolean hasSections = false;
 
@@ -474,7 +476,7 @@ public class AdvancedMessageFormat {
             if (!this.hasSections) {
                 final List<Part> p = this.parts;
                 // Dropping into a different mode...
-                this.parts = new java.util.ArrayList<>();
+                this.parts = new ArrayList<>();
                 this.parts.add(new CompositePart(p));
                 this.hasSections = true;
             }

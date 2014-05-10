@@ -72,7 +72,7 @@ public final class BorderStyle extends TraitEnum {
      * @return the enumeration object
      */
     public static BorderStyle valueOf(String name) {
-        for (int i = 0; i < STYLES.length; i++) {
+        for (int i = 0; i < STYLES.length; ++i) {
             if (STYLES[i].getName().equalsIgnoreCase(name)) {
                 return STYLES[i];
             }
@@ -86,7 +86,7 @@ public final class BorderStyle extends TraitEnum {
      * @return the enumeration object
      */
     public static BorderStyle valueOf(int enumValue) {
-        for (int i = 0; i < STYLES.length; i++) {
+        for (int i = 0; i < STYLES.length; ++i) {
             if (STYLES[i].getEnumValue() == enumValue) {
                 return STYLES[i];
             }

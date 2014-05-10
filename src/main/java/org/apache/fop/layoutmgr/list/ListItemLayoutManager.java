@@ -343,7 +343,7 @@ import org.apache.fop.traits.SpaceVal;
              // footnote-agnostic as possible
              LinkedList<FootnoteBodyLayoutManager> footnoteList = null;
              ListElement el;
-             for (int i = 0; i < elementLists.length; i++) {
+             for (int i = 0; i < elementLists.length; ++i) {
                  for (int j = start[i]; j <= end[i]; j++) {
                      el = (ListElement) elementLists[i].get(j);
                      if (el instanceof KnuthBlockBox
@@ -393,7 +393,7 @@ import org.apache.fop.traits.SpaceVal;
 
          // get next possible sequence for label and body
          int seqCount = 0;
-         for (int i = 0; i < start.length; i++) {
+         for (int i = 0; i < start.length; ++i) {
              while (end[i] + 1 < elementLists[i].size()) {
                  end[i]++;
                  final KnuthElement el = (KnuthElement) elementLists[i]
@@ -444,7 +444,7 @@ import org.apache.fop.traits.SpaceVal;
          }
 
          // reset bigger-than-step sequences
-         for (int i = 0; i < partialHeights.length; i++) {
+         for (int i = 0; i < partialHeights.length; ++i) {
              if (partialHeights[i] > step) {
                  partialHeights[i] = backupHeights[i];
                  end[i] = start[i] - 1;

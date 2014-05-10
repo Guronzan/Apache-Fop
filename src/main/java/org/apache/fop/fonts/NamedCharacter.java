@@ -131,7 +131,7 @@ public class NamedCharacter {
         StringBuilder sb = new StringBuilder(this.unicodeSequence);
         sb.append(" (");
         if (this.unicodeSequence != null) {
-            for (int i = 0, c = this.unicodeSequence.length(); i < c; i++) {
+            for (int i = 0, c = this.unicodeSequence.length(); i < c; ++i) {
                 sb.append("0x").append(Integer.toHexString(this.unicodeSequence.charAt(0)));
             }
             sb.append(", ");

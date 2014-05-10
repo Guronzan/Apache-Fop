@@ -71,7 +71,7 @@ class RowPainter {
      * needed for spanned cells where you need to know the y-offset of the
      * starting row when the area is generated at the time the cell is closed.
      */
-    private final List rowOffsets = new ArrayList();
+    private final List rowOffsets = new ArrayList<>();
 
     private final int[] cellHeights;
     private final boolean[] firstCellOnPage;
@@ -106,7 +106,7 @@ class RowPainter {
         if (background.hasBackground()) {
             this.tablePartBackground = background;
             if (this.tablePartBackgroundAreas == null) {
-                this.tablePartBackgroundAreas = new ArrayList();
+                this.tablePartBackgroundAreas = new ArrayList<>();
             }
         }
         this.tablePartOffset = this.currentRowOffset;
@@ -228,7 +228,7 @@ class RowPainter {
         boolean firstCellPart = true;
         boolean lastCellPart = true;
         int actualRowHeight = 0;
-        for (int i = 0; i < this.colCount; i++) {
+        for (int i = 0; i < this.colCount; ++i) {
             final GridUnit currentGU = this.currentRow.getGridUnit(i);
             if (currentGU.isEmpty()) {
                 continue;
@@ -275,7 +275,7 @@ class RowPainter {
         }
 
         // Then add areas for cells finishing on the current row
-        for (int i = 0; i < this.colCount; i++) {
+        for (int i = 0; i < this.colCount; ++i) {
             final GridUnit currentGU = this.currentRow.getGridUnit(i);
             if (currentGU.isEmpty() && !this.tclm.isSeparateBorderModel()) {
                 int borderBeforeWhich;
@@ -439,7 +439,7 @@ class RowPainter {
                 && pgu.hasSpanning()) {
             spannedGridRowHeights = new int[currentRowIndex - startRowIndex + 1];
             int prevOffset = getRowOffset(startRowIndex);
-            for (int i = 0; i < currentRowIndex - startRowIndex; i++) {
+            for (int i = 0; i < currentRowIndex - startRowIndex; ++i) {
                 final int newOffset = getRowOffset(startRowIndex + i + 1);
                 spannedGridRowHeights[i] = newOffset - prevOffset;
                 prevOffset = newOffset;
@@ -565,7 +565,7 @@ class RowPainter {
          * needed to correctly offset blocks for cells starting on this row.
          * Hence the loop below.
          */
-        for (int i = this.rowOffsets.size(); i <= rowIndex - this.firstRowIndex; i++) {
+        for (int i = this.rowOffsets.size(); i <= rowIndex - this.firstRowIndex; ++i) {
             this.rowOffsets.add(new Integer(offset));
         }
     }

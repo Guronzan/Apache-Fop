@@ -22,6 +22,7 @@ package org.apache.fop.fonts.apps;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,96 +36,96 @@ import lombok.extern.slf4j.Slf4j;
  * Abstract base class for the PFM and TTF Reader command-line applications.
  */
 @Slf4j
- public abstract class AbstractFontReader {
+public abstract class AbstractFontReader {
 
     /**
-      * Main constructor.
-      */
-     protected AbstractFontReader() {
-         // Create logger if necessary here to allow embedding of TTFReader in
-         // other applications. There is a possible but harmless synchronization
-         // issue.
-     }
+     * Main constructor.
+     */
+    protected AbstractFontReader() {
+        // Create logger if necessary here to allow embedding of TTFReader in
+        // other applications. There is a possible but harmless synchronization
+        // issue.
+    }
 
-     /**
-      * Parse commandline arguments. put options in the HashMap and return
+    /**
+     * Parse commandline arguments. put options in the HashMap and return
      * arguments in the String array the arguments: -fn Perpetua,Bold -cn
      * PerpetuaBold per.ttf Perpetua.xml returns a String[] with the per.ttf and
      * Perpetua.xml. The hash will have the (key, value) pairs: (-fn, Perpetua)
      * and (-cn, PerpetuaBold)
-     * 
+     *
      * @param options
      *            Map that will receive options
      * @param args
      *            the command-line arguments
      * @return the arguments
-      */
-     protected static String[] parseArguments(final Map options,
+     */
+    protected static String[] parseArguments(final Map<String, String> options,
             final String[] args) {
-         final List arguments = new java.util.ArrayList();
-         for (int i = 0; i < args.length; i++) {
-             if (args[i].startsWith("-")) {
-                 if ("-t".equals(args[i]) || "-d".equals(args[i])
+        final List<String> arguments = new ArrayList<>();
+        for (int i = 0; i < args.length; ++i) {
+            if (args[i].startsWith("-")) {
+                if ("-t".equals(args[i]) || "-d".equals(args[i])
                         || "-q".equals(args[i])) {
-                     options.put(args[i], "");
-                 } else if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
-                     options.put(args[i], args[i + 1]);
-                     i++;
-                 } else {
-                     options.put(args[i], "");
-                 }
-             } else {
-                 arguments.add(args[i]);
-             }
-         }
-         return (String[]) arguments.toArray(new String[0]);
-     }
+                    options.put(args[i], "");
+                } else if (i + 1 < args.length && !args[i + 1].startsWith("-")) {
+                    options.put(args[i], args[i + 1]);
+                    i++;
+                } else {
+                    options.put(args[i], "");
+                }
+            } else {
+                arguments.add(args[i]);
+            }
+        }
+        return arguments.toArray(new String[0]);
+    }
 
-     /**
-      * Writes the generated DOM Document to a file.
-      *
-      * @param doc
+    /**
+     * Writes the generated DOM Document to a file.
+     *
+     * @param doc
      *            The DOM Document to save.
      * @param target
      *            The target filename for the XML file.
      * @throws TransformerException
      *             if an error occurs during serialization
-      */
-     public void writeFontXML(final org.w3c.dom.Document doc, final String target)
+     */
+    public void writeFontXML(final org.w3c.dom.Document doc, final String target)
             throws TransformerException {
-         writeFontXML(doc, new File(target));
-     }
+        writeFontXML(doc, new File(target));
+    }
 
-     /**
-      * Writes the generated DOM Document to a file.
-      *
-      * @param doc
+    /**
+     * Writes the generated DOM Document to a file.
+     *
+     * @param doc
      *            The DOM Document to save.
      * @param target
      *            The target file for the XML file.
      * @throws TransformerException
      *             if an error occurs during serialization
-      */
-     public void writeFontXML(final org.w3c.dom.Document doc, final File target)
+     */
+    public void writeFontXML(final org.w3c.dom.Document doc, final File target)
             throws TransformerException {
-         log.info("Writing xml font file " + target + "...");
+        log.info("Writing xml font file " + target + "...");
 
-         try {
-             OutputStream out = new java.io.FileOutputStream(target);
-             out = new java.io.BufferedOutputStream(out);
-             try {
-                 final TransformerFactory factory = TransformerFactory
+        try {
+            OutputStream out = new java.io.FileOutputStream(target);
+            out = new java.io.BufferedOutputStream(out);
+            try {
+                final TransformerFactory factory = TransformerFactory
                         .newInstance();
-                 final Transformer transformer = factory.newTransformer();
-                 transformer.transform(
-                         new javax.xml.transform.dom.DOMSource(doc),
-                         new javax.xml.transform.stream.StreamResult(out));
-             } finally {
-                 out.close();
-             }
-         } catch (final IOException ioe) {
-             throw new TransformerException("Error writing the output file", ioe);
-         }
-     }
+                final Transformer transformer = factory.newTransformer();
+                transformer.transform(
+                        new javax.xml.transform.dom.DOMSource(doc),
+                        new javax.xml.transform.stream.StreamResult(out));
+            } finally {
+                out.close();
+            }
+        } catch (final IOException ioe) {
+            throw new TransformerException("Error writing the output file", ioe);
+        }
+    }
 
- }
+}

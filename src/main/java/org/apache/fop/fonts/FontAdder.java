@@ -59,7 +59,7 @@ public class FontAdder {
             if (embedFontInfos == null) {
                 continue;
             }
-            for (int i = 0, c = embedFontInfos.length; i < c; i++) {
+            for (int i = 0, c = embedFontInfos.length; i < c; ++i) {
                 EmbedFontInfo fontInfo = embedFontInfos[i];
                 if (fontInfo != null) {
                     fontInfoList.add(fontInfo);

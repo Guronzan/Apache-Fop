@@ -58,7 +58,7 @@ public class AFPBase12FontCollection implements FontCollection {
         "60", "70", "80", "90", "00", "A0", "B0", "D0", "F0", "H0", "J0", "N0", "T0", "Z0"};
 
     private void addCharacterSet(RasterFont font, String charsetName, Base14Font base14) {
-        for (int i = 0; i < RASTER_SIZES.length; i++) {
+        for (int i = 0; i < RASTER_SIZES.length; ++i) {
             int size = RASTER_SIZES[i] * 1000;
             FopCharacterSet characterSet = new FopCharacterSet(
                     CharacterSet.DEFAULT_CODEPAGE, CharacterSet.DEFAULT_ENCODING,

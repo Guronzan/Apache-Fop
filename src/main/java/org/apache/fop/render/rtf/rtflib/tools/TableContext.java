@@ -19,6 +19,7 @@
 
 package org.apache.fop.render.rtf.rtflib.tools;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ import org.apache.fop.render.rtf.rtflib.rtfdoc.RtfAttributes;
 @Slf4j
 public class TableContext implements ITableColumnsInfo {
     private final BuilderContext context;
-    private final List colWidths = new java.util.ArrayList();
+    private final List<Float> colWidths = new ArrayList<>();
     private int colIndex;
 
     /**
@@ -51,7 +52,7 @@ public class TableContext implements ITableColumnsInfo {
      * == 0 means there is no row-spanning value > 0 means there is row-spanning
      * Each value in the list is decreased by 1 after each finished table-row
      */
-    private final List colRowSpanningNumber = new java.util.ArrayList();
+    private final List<Integer> colRowSpanningNumber = new ArrayList<>();
 
     /**
      * If there has a vertical merged cell to be created, its attributes are
@@ -59,14 +60,14 @@ public class TableContext implements ITableColumnsInfo {
      * attributes of a cell are stored in this array, as soon as a
      * number-rows-spanned attribute has been found.
      */
-    private final List colRowSpanningAttrs = new java.util.ArrayList();
+    private final List<RtfAttributes> colRowSpanningAttrs = new ArrayList<>();
 
     /**
      * This ArrayList contains one element for each column in the table. value
      * == true means, it's the first of multiple spanned columns value == false
      * meanst, it's NOT the first of multiple spanned columns
      */
-    private final List colFirstSpanningCol = new java.util.ArrayList();
+    private final List<Boolean> colFirstSpanningCol = new ArrayList<>();
 
     private boolean bNextRowBelongsToHeader = false;
 
@@ -98,7 +99,7 @@ public class TableContext implements ITableColumnsInfo {
 
     /**
      * Adds a column and sets its width.
-     * 
+     *
      * @param width
      *            Width of next column
      */
@@ -111,7 +112,7 @@ public class TableContext implements ITableColumnsInfo {
      * @return RtfAttributes of current row-spanning cell
      */
     public RtfAttributes getColumnRowSpanningAttrs() {
-        return (RtfAttributes) this.colRowSpanningAttrs.get(this.colIndex);
+        return this.colRowSpanningAttrs.get(this.colIndex);
     }
 
     /**
@@ -119,7 +120,7 @@ public class TableContext implements ITableColumnsInfo {
      * @return Number of currently spanned rows
      */
     public Integer getColumnRowSpanningNumber() {
-        return (Integer) this.colRowSpanningNumber.get(this.colIndex);
+        return this.colRowSpanningNumber.get(this.colIndex);
     }
 
     /**
@@ -128,7 +129,7 @@ public class TableContext implements ITableColumnsInfo {
      */
     @Override
     public boolean getFirstSpanningCol() {
-        final Boolean b = (Boolean) this.colFirstSpanningCol.get(this.colIndex);
+        final Boolean b = this.colFirstSpanningCol.get(this.colIndex);
         return b.booleanValue();
     }
 
@@ -199,7 +200,7 @@ public class TableContext implements ITableColumnsInfo {
      */
     public void decreaseRowSpannings() {
         for (int z = 0; z < this.colRowSpanningNumber.size(); ++z) {
-            Integer i = (Integer) this.colRowSpanningNumber.get(z);
+            Integer i = this.colRowSpanningNumber.get(z);
 
             if (i.intValue() > 0) {
                 i = new Integer(i.intValue() - 1);
@@ -235,7 +236,7 @@ public class TableContext implements ITableColumnsInfo {
 
     /**
      * Get current column width according to column iteration index
-     * 
+     *
      * @return INVALID_COLUMN_WIDTH if we cannot find the value The 'public'
      *         modifier has been added by Boris Poudérous for
      *         'number-columns-spanned' processing
@@ -251,12 +252,12 @@ public class TableContext implements ITableColumnsInfo {
                 setNextColumnWidth(new Float(INVALID_COLUMN_WIDTH));
             }
         }
-        return ((Float) this.colWidths.get(this.colIndex)).floatValue();
+        return this.colWidths.get(this.colIndex).floatValue();
     }
 
     /**
      * Set current column index.
-     * 
+     *
      * @param index
      *            New column index
      */

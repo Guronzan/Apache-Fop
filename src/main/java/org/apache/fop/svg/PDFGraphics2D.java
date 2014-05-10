@@ -50,8 +50,12 @@ import java.awt.image.renderable.RenderableImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.batik.ext.awt.LinearGradientPaint;
 import org.apache.batik.ext.awt.MultipleGradientPaint;
@@ -104,6 +108,7 @@ import org.apache.xmlgraphics.java2d.GraphicContext;
  *
  * @see org.apache.batik.ext.awt.g2d.AbstractGraphics2D
  */
+@Slf4j
 public class PDFGraphics2D extends AbstractGraphics2D implements
         NativeImageHandler {
     private static final AffineTransform IDENTITY_TRANSFORM = new AffineTransform();
@@ -250,7 +255,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     /**
      * Creates a new <code>Graphics</code> object that is a copy of this
      * <code>Graphics</code> object.
-     * 
+     *
      * @return a new graphics context that is a copy of this graphics context.
      */
     @Override
@@ -260,13 +265,13 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Central handler for IOExceptions for this class.
-     * 
+     *
      * @param ioe
      *            IOException to handle
      */
     protected void handleIOException(final IOException ioe) {
         // TODO Surely, there's a better way to do this.
-        ioe.printStackTrace();
+        log.error("IOException", ioe);
     }
 
     /**
@@ -302,7 +307,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Get the string containing all the commands written into this Graphics.
-     * 
+     *
      * @return the string containing the PDF markup
      */
     public String getString() {
@@ -312,7 +317,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     /**
      * Get the string buffer from the currentStream, containing all the commands
      * written into this Graphics so far.
-     * 
+     *
      * @return the StringBuilder containing the PDF markup
      */
     public StringBuffer getBuffer() {
@@ -321,7 +326,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Gets the PDF reference of the current page.
-     * 
+     *
      * @return the PDF reference of the current page
      */
     public String getPageReference() {
@@ -330,7 +335,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Set the Graphics context.
-     * 
+     *
      * @param c
      *            the graphics context to use
      */
@@ -385,7 +390,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     /**
      * This is mainly used for shading patterns which use the document-global
      * coordinate system instead of the local one.
-     * 
+     *
      * @return the transformation matrix that established the basic user space
      *         for this document
      */
@@ -505,7 +510,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * <code>drawImage</code> returns <code>false</code>. As more of the image
      * becomes available, the process that draws the image notifies the
      * specified image observer.
-     * 
+     *
      * @param img
      *            the specified image to be drawn.
      * @param x
@@ -604,7 +609,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * efficiency, programmers should call <code>dispose</code> when finished
      * using a <code>Graphics</code> object only if it was created directly from
      * a component or another <code>Graphics</code> object.
-     * 
+     *
      * @see java.awt.Graphics#finalize
      * @see java.awt.Component#paint
      * @see java.awt.Component#update
@@ -624,7 +629,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * current <code>Graphics2D</code> context. The rendering attributes applied
      * include the <code>Clip</code>, <code>Transform</code>, <code>Paint</code>
      * , <code>Composite</code> and <code>Stroke</code> attributes.
-     * 
+     *
      * @param s
      *            the <code>Shape</code> to be rendered
      * @see #setStroke
@@ -800,7 +805,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      *         be rasterized
      */
     protected boolean applyPaint(Paint paint, final boolean fill) { // CSOK:
-                                                                    // MethodLength
+        // MethodLength
         preparePainting();
 
         if (paint instanceof Color) {
@@ -843,7 +848,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(gp.getTransform());
 
-            final List<Double> theMatrix = new java.util.ArrayList<Double>();
+            final List<Double> theMatrix = new ArrayList<>();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -852,29 +857,29 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
             final Point2D p1 = gp.getStartPoint();
             final Point2D p2 = gp.getEndPoint();
-            final List<Double> theCoords = new java.util.ArrayList<Double>();
+            final List<Double> theCoords = new ArrayList<>();
             theCoords.add(new Double(p1.getX()));
             theCoords.add(new Double(p1.getY()));
             theCoords.add(new Double(p2.getX()));
             theCoords.add(new Double(p2.getY()));
 
-            final List<Boolean> theExtend = new java.util.ArrayList<Boolean>();
+            final List<Boolean> theExtend = new ArrayList<>();
             theExtend.add(Boolean.TRUE);
             theExtend.add(Boolean.TRUE);
 
-            final List<Double> theDomain = new java.util.ArrayList<Double>();
+            final List<Double> theDomain = new ArrayList<>();
             theDomain.add(new Double(0));
             theDomain.add(new Double(1));
 
-            final List<Double> theEncode = new java.util.ArrayList<Double>();
+            final List<Double> theEncode = new ArrayList<>();
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
             theEncode.add(new Double(0));
             theEncode.add(new Double(1));
 
-            final List<Double> theBounds = new java.util.ArrayList<Double>();
+            final List<Double> theBounds = new ArrayList<>();
 
-            final List<Color> someColors = new java.util.ArrayList<Color>();
+            final List<Color> someColors = new ArrayList<>();
 
             for (int count = 0; count < cols.length; count++) {
                 final Color c1 = cols[count];
@@ -922,7 +927,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             transform.concatenate(getTransform());
             transform.concatenate(rgp.getTransform());
 
-            final List<Double> theMatrix = new java.util.ArrayList<Double>();
+            final List<Double> theMatrix = new ArrayList<>();
             final double[] mat = new double[6];
             transform.getMatrix(mat);
             for (final double element : mat) {
@@ -933,7 +938,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             final Point2D ac = rgp.getCenterPoint();
             final Point2D af = rgp.getFocusPoint();
 
-            final List<Double> theCoords = new java.util.ArrayList<Double>();
+            final List<Double> theCoords = new ArrayList<>();
             double dx = af.getX() - ac.getX();
             double dy = af.getY() - ac.getY();
             final double d = Math.sqrt(dx * dx + dy * dy);
@@ -953,7 +958,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             theCoords.add(new Double(ar));
 
             final Color[] cols = rgp.getColors();
-            final List<Color> someColors = new java.util.ArrayList<Color>();
+            final List<Color> someColors = new ArrayList<>();
             for (final Color cc : cols) {
                 if (cc.getAlpha() != 255) {
                     return false; // PDF can't do alpha
@@ -963,7 +968,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
             }
 
             final float[] fractions = rgp.getFractions();
-            final List<Double> theBounds = new java.util.ArrayList<Double>();
+            final List<Double> theBounds = new ArrayList<>();
             for (int count = 1; count < fractions.length - 1; count++) {
                 final float offset = fractions[count];
                 theBounds.add(new Double(offset));
@@ -1040,7 +1045,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         // }
         // }
 
-        final List<Double> bbox = new java.util.ArrayList<Double>();
+        final List<Double> bbox = new ArrayList<>();
         bbox.add(new Double(rect.getX()));
         bbox.add(new Double(rect.getHeight() + rect.getY()));
         bbox.add(new Double(rect.getWidth() + rect.getX()));
@@ -1051,7 +1056,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
         transform.concatenate(getTransform());
         transform.concatenate(pp.getPatternTransform());
 
-        final List<Double> theMatrix = new java.util.ArrayList<Double>();
+        final List<Double> theMatrix = new ArrayList<>();
         final double[] mat = new double[6];
         transform.getMatrix(mat);
         for (final double element : mat) {
@@ -1349,7 +1354,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * the glyphs can be rendered from right to left, in which case the
      * coordinate supplied is the location of the leftmost character on the
      * baseline.
-     * 
+     *
      * @param s
      *            the <code>String</code> to be rendered
      * @param x
@@ -1427,7 +1432,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
         final int l = s.length();
 
-        for (int i = 0; i < l; i++) {
+        for (int i = 0; i < l; ++i) {
             final char ch = fontState.mapChar(s.charAt(i));
 
             if (!useMultiByte) {
@@ -1465,7 +1470,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Applies the given alpha values for filling and stroking.
-     * 
+     *
      * @param fillAlpha
      *            A value between 0 and 255 (=OPAQUE) for filling
      * @param strokeAlpha
@@ -1474,7 +1479,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
     protected void applyAlpha(final int fillAlpha, final int strokeAlpha) {
         if (fillAlpha != OPAQUE || strokeAlpha != OPAQUE) {
             checkTransparencyAllowed();
-            final Map<String, Float> vals = new java.util.HashMap<String, Float>();
+            final Map<String, Float> vals = new HashMap<>();
             if (fillAlpha != OPAQUE) {
                 vals.put(PDFGState.GSTATE_ALPHA_NONSTROKE, new Float(
                         fillAlpha / 255f));
@@ -1492,7 +1497,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Updates the currently selected font.
-     * 
+     *
      * @param font
      *            the new font to use
      */
@@ -1510,7 +1515,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Returns a suitable internal font given an AWT Font instance.
-     * 
+     *
      * @param awtFont
      *            the AWT font
      * @return the internal Font
@@ -1524,7 +1529,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Determines whether the font with the given name is a multi-byte font.
-     * 
+     *
      * @param name
      *            the name of the font
      * @return true if it's a multi-byte font
@@ -1563,7 +1568,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * the glyphs can be rendered from right to left, in which case the
      * coordinate supplied is the location of the leftmost character on the
      * baseline.
-     * 
+     *
      * @param iterator
      *            the iterator whose text is to be rendered
      * @param x
@@ -1624,7 +1629,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * <code>Graphics2D</code> context. The rendering attributes applied include
      * the <code>Clip</code>, <code>Transform</code>, <code>Paint</code>, and
      * <code>Composite</code>.
-     * 
+     *
      * @param s
      *            the <code>Shape</code> to be filled
      * @see #setPaint
@@ -1725,7 +1730,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Processes a path iterator generating the necessary painting operations.
-     * 
+     *
      * @param iter
      *            PathIterator to process
      */
@@ -1825,7 +1830,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
 
     /**
      * Gets the font metrics for the specified font.
-     * 
+     *
      * @return the font metrics for the specified font.
      * @param f
      *            the specified font
@@ -1851,7 +1856,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * Pixels that are of colors other than those two colors are changed in an
      * unpredictable but reversible manner; if the same figure is drawn twice,
      * then all pixels are restored to their original values.
-     * 
+     *
      * @param c1
      *            the XOR alternation color
      */
@@ -1870,7 +1875,7 @@ public class PDFGraphics2D extends AbstractGraphics2D implements
      * or is obscured by another window or component, <code>copyArea</code> will
      * be unable to copy the associated pixels. The area that is omitted can be
      * refreshed by calling the component's <code>paint</code> method.
-     * 
+     *
      * @param x
      *            the <i>x</i> coordinate of the source rectangle.
      * @param y

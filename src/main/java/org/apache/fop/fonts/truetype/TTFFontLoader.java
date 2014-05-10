@@ -188,7 +188,7 @@ public class TTFFontLoader extends FontLoader {
 
     private void copyWidthsSingleByte(TTFFile ttf) {
         int[] wx = ttf.getWidths();
-        for (int i = singleFont.getFirstChar(); i <= singleFont.getLastChar(); i++) {
+        for (int i = singleFont.getFirstChar(); i <= singleFont.getLastChar(); ++i) {
             singleFont.setWidth(i, ttf.getCharWidth(i));
         }
 

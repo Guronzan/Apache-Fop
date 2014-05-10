@@ -92,11 +92,11 @@ public abstract class TablePart extends TableCellContainer {
             if (t.hasExplicitColumns()) {
                 int size = t.getNumberOfColumns();
                 pendingSpans = new ArrayList(size);
-                for (int i = 0; i < size; i++) {
+                for (int i = 0; i < size; ++i) {
                     pendingSpans.add(null);
                 }
             } else {
-                pendingSpans = new ArrayList();
+                pendingSpans = new ArrayList<>();
             }
             columnNumberManager = new ColumnNumberManager();
         }

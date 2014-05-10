@@ -301,7 +301,7 @@ public class TernaryTree implements Cloneable, Serializable {
         int i;
         int d;
         final int len = str.length();
-        for (i = 0; i < len; i++) {
+        for (i = 0; i < len; ++i) {
             d = str.charAt(i) - a[start + i];
             if (d != 0) {
                 return d;
@@ -343,7 +343,7 @@ public class TernaryTree implements Cloneable, Serializable {
      */
     public static int strlen(final char[] a, final int start) {
         int len = 0;
-        for (int i = start; i < a.length && a[i] != 0; i++) {
+        for (int i = start; i < a.length && a[i] != 0; ++i) {
             len++;
         }
         return len;
@@ -769,7 +769,7 @@ public class TernaryTree implements Cloneable, Serializable {
         log.info("Key Array length = " + Integer.toString(this.kv.length()));
 
         /*
-         * for(int i=0; i<kv.length(); i++) if ( kv.get(i) != 0 )
+         * for(int i=0; i<kv.length(); ++i) if ( kv.get(i) != 0 )
          * log.info(kv.get(i)); else log.info(""); log.info("Keys:");
          * for(Enumeration enum = keys(); enum.hasMoreElements(); )
          * log.info(enum.nextElement());

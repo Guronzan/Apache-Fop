@@ -21,7 +21,9 @@ package org.apache.fop.fonts.type1;
 
 import java.awt.geom.Dimension2D;
 import java.awt.geom.RectangularShape;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,8 +58,8 @@ public class AFMFile {
 
     private final AFMWritingDirectionMetrics[] writingDirectionMetrics = new AFMWritingDirectionMetrics[3];
 
-    private final List<AFMCharMetrics> charMetrics = new java.util.ArrayList<>();
-    private final Map<String, AFMCharMetrics> charNameToMetrics = new java.util.HashMap<>();
+    private final List<AFMCharMetrics> charMetrics = new ArrayList<>();
+    private final Map<String, AFMCharMetrics> charNameToMetrics = new HashMap<>();
     private int firstChar = -1;
     private int lastChar = -1;
 
@@ -442,11 +444,11 @@ public class AFMFile {
     public void addXKerning(final String name1, final String name2,
             final double kx) {
         if (this.kerningMap == null) {
-            this.kerningMap = new java.util.HashMap<>();
+            this.kerningMap = new HashMap<>();
         }
         Map<String, Dimension2D> entries = this.kerningMap.get(name1);
         if (entries == null) {
-            entries = new java.util.HashMap<>();
+            entries = new HashMap<>();
             this.kerningMap.put(name1, entries);
         }
         entries.put(name2, new Dimension2DDouble(kx, 0));
@@ -471,7 +473,7 @@ public class AFMFile {
         if (!hasKerning()) {
             return null;
         }
-        final Map<Integer, Map<Integer, Integer>> m = new java.util.HashMap<>();
+        final Map<Integer, Map<Integer, Integer>> m = new HashMap<>();
         for (final Map.Entry<String, Map<String, Dimension2D>> entryFrom : this.kerningMap
                 .entrySet()) {
             final String name1 = entryFrom.getKey();
@@ -492,7 +494,7 @@ public class AFMFile {
                     final Integer k1 = Integer.valueOf(chm1.getCharCode());
                     container = m.get(k1);
                     if (container == null) {
-                        container = new java.util.HashMap<>();
+                        container = new HashMap<>();
                         m.put(k1, container);
                     }
                 }

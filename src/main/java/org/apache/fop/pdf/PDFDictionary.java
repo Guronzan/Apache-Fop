@@ -21,6 +21,8 @@ package org.apache.fop.pdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,13 +36,13 @@ public class PDFDictionary extends PDFObject {
     /**
      * the entry map
      */
-    protected Map<String, Object> entries = new java.util.HashMap<String, Object>();
+    protected Map<String, Object> entries = new HashMap<>();
 
     /**
-     * maintains the order of the entries added to the entry map. Whenever you modify
-     * "entries", always make sure you adjust this list accordingly.
+     * maintains the order of the entries added to the entry map. Whenever you
+     * modify "entries", always make sure you adjust this list accordingly.
      */
-    protected List<String> order = new java.util.ArrayList<String>();
+    protected List<String> order = new ArrayList<>();
 
     /**
      * Create a new dictionary object.
@@ -51,25 +53,30 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Create a new dictionary object.
-     * @param parent the object's parent if any
+     *
+     * @param parent
+     *            the object's parent if any
      */
-    public PDFDictionary(PDFObject parent) {
+    public PDFDictionary(final PDFObject parent) {
         super(parent);
     }
 
     /**
      * Puts a new name/value pair.
-     * @param name the name
-     * @param value the value
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
      */
-    public void put(String name, Object value) {
+    public void put(final String name, final Object value) {
         if (value instanceof PDFObject) {
-            PDFObject pdfObj = (PDFObject)value;
+            final PDFObject pdfObj = (PDFObject) value;
             if (!pdfObj.hasObjectNumber()) {
                 pdfObj.setParent(this);
             }
         }
-        if (!entries.containsKey(name)) {
+        if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
         this.entries.put(name, value);
@@ -77,11 +84,14 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Puts a new name/value pair.
-     * @param name the name
-     * @param value the value
+     *
+     * @param name
+     *            the name
+     * @param value
+     *            the value
      */
-    public void put(String name, int value) {
-        if (!entries.containsKey(name)) {
+    public void put(final String name, final int value) {
+        if (!this.entries.containsKey(name)) {
             this.order.add(name);
         }
         this.entries.put(name, Integer.valueOf(value));
@@ -89,33 +99,41 @@ public class PDFDictionary extends PDFObject {
 
     /**
      * Returns the value given a name.
-     * @param name the name of the value
+     *
+     * @param name
+     *            the name of the value
      * @return the value or null, if there's no value with the given name.
      */
-    public Object get(String name) {
+    public Object get(final String name) {
         return this.entries.get(name);
     }
 
     /** {@inheritDoc} */
     @Override
-    public int output(OutputStream stream) throws IOException {
-        CountingOutputStream cout = new CountingOutputStream(stream);
-        StringBuilder textBuffer = new StringBuilder(64);
-        writeDictionary(cout, textBuffer);
-        PDFDocument.flushTextBuffer(textBuffer, cout);
-        return cout.getCount();
+    public int output(final OutputStream stream) throws IOException {
+        try (final CountingOutputStream cout = new CountingOutputStream(stream)) {
+            final StringBuilder textBuffer = new StringBuilder(64);
+            writeDictionary(cout, textBuffer);
+            PDFDocument.flushTextBuffer(textBuffer, cout);
+            return cout.getCount();
+        }
     }
 
     /**
      * Writes the contents of the dictionary to a StringBuilder.
-     * @param out the OutputStream (for binary content)
-     * @param textBuffer the text buffer for text output
-     * @throws IOException if an I/O error occurs
+     *
+     * @param out
+     *            the OutputStream (for binary content)
+     * @param textBuffer
+     *            the text buffer for text output
+     * @throws IOException
+     *             if an I/O error occurs
      */
-    protected void writeDictionary(OutputStream out, StringBuilder textBuffer) throws IOException {
+    protected void writeDictionary(final OutputStream out,
+            final StringBuilder textBuffer) throws IOException {
         textBuffer.append("<<");
-        boolean compact = (this.order.size() <= 2);
-        for (String key : this.order) {
+        final boolean compact = this.order.size() <= 2;
+        for (final String key : this.order) {
             if (compact) {
                 textBuffer.append(' ');
             } else {
@@ -123,7 +141,7 @@ public class PDFDictionary extends PDFObject {
             }
             textBuffer.append(PDFName.escapeName(key));
             textBuffer.append(' ');
-            Object obj = this.entries.get(key);
+            final Object obj = this.entries.get(key);
             formatObject(obj, out, textBuffer);
         }
         if (compact) {

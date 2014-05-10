@@ -39,7 +39,7 @@ final class FOToPDFRoleMap {
             = new HashMap<String, PDFName>();
 
     private static final Map<String, Mapper> DEFAULT_MAPPINGS
-            = new java.util.HashMap<String, Mapper>();
+            = new HashMap<String, Mapper>();
 
     private static final PDFName THEAD;
     private static final PDFName NON_STRUCT;

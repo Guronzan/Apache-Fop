@@ -95,7 +95,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
         final int m = (n & 1) == 1 ? (n >> 1) + 2 : (n >> 1) + 1;
         final int offset = this.vspace.alloc(m);
         final byte[] va = this.vspace.getArray();
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; ++i) {
             final int j = i >> 1;
         final byte v = (byte) (values.charAt(i) - '0' + 1 & 0x0f);
         if ((i & 1) == 1) {
@@ -239,7 +239,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
             v = this.vspace.get(k++);
         }
         final byte[] res = new byte[buf.length()];
-        for (int i = 0; i < res.length; i++) {
+        for (int i = 0; i < res.length; ++i) {
             res[i] = (byte) buf.charAt(i);
         }
         return res;
@@ -251,7 +251,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
      * update interletter values. In other words, it does something like:
      * </p>
      * <code>
-     * for(i=0; i<patterns.length; i++) {
+     * for(i=0; i<patterns.length; ++i) {
      * if ( word.substring(index).startsWidth(patterns[i]) )
      * update_interletter_values(patterns[i]);
      * }
@@ -399,7 +399,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
         int iIgnoreAtBeginning = 0;
         int iLength = len;
         boolean bEndOfLetters = false;
-        for (i = 1; i <= len; i++) {
+        for (i = 1; i <= len; ++i) {
             c[0] = w[offset + i - 1];
             final int nc = this.classmap.find(c, 0);
             if (nc < 0) { // found a non-letter character ...
@@ -434,7 +434,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
             // Hyphen.no = null)
             final ArrayList hw = (ArrayList) this.stoplist.get(sw);
             int j = 0;
-            for (i = 0; i < hw.size(); i++) {
+            for (i = 0; i < hw.size(); ++i) {
                 final Object o = hw.get(i);
                 // j = index(sw) = letterindex(word)?
                 // result[k] = corresponding index(w)
@@ -451,7 +451,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
             word[len + 1] = '.'; // word end marker
             word[len + 2] = 0; // null terminated
             final byte[] il = new byte[len + 3]; // initialized to zero
-            for (i = 0; i < len + 1; i++) {
+            for (i = 0; i < len + 1; ++i) {
                 searchPatterns(word, i, il);
             }
 
@@ -459,7 +459,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
             // i is letterindex(word),
             // i + 1 is index(word),
             // result[k] = corresponding index(w)
-            for (i = 0; i < len; i++) {
+            for (i = 0; i < len; ++i) {
                 if ((il[i + 1] & 1) == 1 && i >= remainCharCount
                         && i <= len - pushCharCount) {
                     result[k++] = i + iIgnoreAtBeginning;
@@ -496,7 +496,7 @@ public class HyphenationTree extends TernaryTree implements PatternConsumer {
             final char equivChar = chargroup.charAt(0);
             final char[] key = new char[2];
             key[1] = 0;
-            for (int i = 0; i < chargroup.length(); i++) {
+            for (int i = 0; i < chargroup.length(); ++i) {
                 key[0] = chargroup.charAt(i);
                 this.classmap.insert(key, 0, equivChar);
             }

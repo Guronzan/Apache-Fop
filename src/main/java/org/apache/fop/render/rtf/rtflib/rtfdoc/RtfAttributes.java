@@ -41,7 +41,7 @@ import org.xml.sax.helpers.AttributesImpl;
 
 public class RtfAttributes implements Cloneable {
 
-    private HashMap values = new HashMap();
+    private HashMap values = new HashMap<>();
 
     /**
      * Set attributes from another attributes object
@@ -207,7 +207,7 @@ public class RtfAttributes implements Cloneable {
         }
         // copy/replace the xsl attributes into the current attributes
         if (xslAttributes != null) {
-            for (int i = 0; i < pAttribs.getLength(); i++) {
+            for (int i = 0; i < pAttribs.getLength(); ++i) {
                 String wKey = pAttribs.getQName(i);
                 int wPos = xslAttributes.getIndex(wKey);
                 if (wPos == -1) {

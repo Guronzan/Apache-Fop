@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -46,7 +47,7 @@ public class FileCompare {
 
     /**
      * Sets directory for test files.
-     * 
+     *
      * @param testDirectory
      *            the test directory
      */
@@ -59,7 +60,7 @@ public class FileCompare {
 
     /**
      * Sets directory for reference files.
-     * 
+     *
      * @param referenceDirectory
      *            the reference directory
      */
@@ -73,23 +74,23 @@ public class FileCompare {
 
     /**
      * Sets the comma-separated list of files to process.
-     * 
+     *
      * @param filenames
      *            list of files, comma-separated
      */
     public void setFilenames(final String filenames) {
         final StringTokenizer tokens = new StringTokenizer(filenames, ",");
-        final List filenameListTmp = new java.util.ArrayList(20);
+        final List<String> filenameListTmp = new ArrayList<>(20);
         while (tokens.hasMoreTokens()) {
             filenameListTmp.add(tokens.nextToken());
         }
         this.filenameList = new String[filenameListTmp.size()];
-        this.filenameList = (String[]) filenameListTmp.toArray(new String[0]);
+        this.filenameList = filenameListTmp.toArray(new String[0]);
     }
 
     /**
      * Compares two files to see if they are equal
-     * 
+     *
      * @param f1
      *            first file to compare
      * @param f2
@@ -105,7 +106,7 @@ public class FileCompare {
 
     /**
      * Compare the contents of two files.
-     * 
+     *
      * @param file1
      *            the first file to compare
      * @param file2
@@ -136,7 +137,7 @@ public class FileCompare {
 
     /**
      * Does a file size compare of two files
-     * 
+     *
      * @param oldFile
      *            the first file to compare
      * @param newFile
@@ -178,7 +179,7 @@ public class FileCompare {
 
     /**
      * Main method of task compare
-     * 
+     *
      * @throws BuildException
      *             If the execution fails.
      */

@@ -345,7 +345,7 @@ public class AFPRendererConfigurator extends PrintRendererConfigurator {
                     .validateUserConfigStrictly());
         }
 
-        final List<AFPFontInfo> fontList = new java.util.ArrayList<>();
+        final List<AFPFontInfo> fontList = new ArrayList<>();
         final Configuration[] font = fonts.getChildren("font");
         final String fontPath = null;
         for (final Configuration element : font) {

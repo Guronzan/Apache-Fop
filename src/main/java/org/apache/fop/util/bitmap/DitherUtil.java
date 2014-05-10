@@ -50,7 +50,7 @@ public final class DitherUtil {
         int[] dn = new int[d.length * 4];
         int half = (int)Math.sqrt(d.length);
         for (int part = 0; part < 4; part++) {
-            for (int i = 0, c = d.length; i < c; i++) {
+            for (int i = 0, c = d.length; i < c; ++i) {
                 setValueInMatrix(dn, half, part, i, d[i] * 4 + BAYER_D2[part]);
             }
         }
@@ -117,7 +117,7 @@ public final class DitherUtil {
                 throw new IllegalArgumentException("doubleMatrix=true is only allowed for 4x4");
             }
             dither = new byte[bayer.length / 8 * 4];
-            for (int i = 0, c = bayer.length; i < c; i++) {
+            for (int i = 0, c = bayer.length; i < c; ++i) {
                 boolean dot = !(bayer[i] < ditherIndex - 1);
                 if (dot) {
                     int byteIdx = i / 4;
@@ -129,7 +129,7 @@ public final class DitherUtil {
             }
         } else {
             dither = new byte[bayer.length / 8];
-            for (int i = 0, c = bayer.length; i < c; i++) {
+            for (int i = 0, c = bayer.length; i < c; ++i) {
                 boolean dot = !(bayer[i] < ditherIndex - 1);
                 if (dot) {
                     int byteIdx = i / 8;

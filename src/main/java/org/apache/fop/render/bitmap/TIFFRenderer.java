@@ -226,7 +226,7 @@ public class TIFFRenderer extends Java2DRenderer implements TIFFConstants {
                 final int[] off = new int[bands];
                 final int w = pageImage.getWidth();
                 final int h = pageImage.getHeight();
-                for (int i = 0; i < bands; i++) {
+                for (int i = 0; i < bands; ++i) {
                     off[i] = i;
                 }
                 final SampleModel sm = new PixelInterleavedSampleModel(

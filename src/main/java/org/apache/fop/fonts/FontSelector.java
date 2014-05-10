@@ -40,7 +40,7 @@ public final class FontSelector {
             CommonFont commonFont, PercentBaseContext context) {
         FontInfo fi = fonode.getFOEventHandler().getFontInfo();
         FontTriplet[] fontkeys = commonFont.getFontState(fi);
-        for (int i = 0; i < fontkeys.length; i++) {
+        for (int i = 0; i < fontkeys.length; ++i) {
             Font font = fi.getFontInstance(fontkeys[i], commonFont.fontSize
                     .getValue(context));
             if (font.hasChar(c)) {

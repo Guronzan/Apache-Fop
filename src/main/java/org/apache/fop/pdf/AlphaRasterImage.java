@@ -156,7 +156,7 @@ public class AlphaRasterImage implements PDFImage {
             byte[] line = new byte[nbands * w];
             for (int y = 0; y < h; y++) {
                 alpha.getDataElements(0, y, w, 1, sline);
-                for (int i = 0; i < w; i++) {
+                for (int i = 0; i < w; ++i) {
                     //this compresses a 16-bit alpha channel to 8 bits!
                     //we probably don't ever need a 16-bit channel
                     line[i] = (byte)(sline[i] >> 8);
@@ -175,7 +175,7 @@ public class AlphaRasterImage implements PDFImage {
             byte[] line = new byte[nbands * w];
             for (int y = 0; y < h; y++) {
                 alpha.getDataElements(0, y, w, 1, iline);
-                for (int i = 0; i < w; i++) {
+                for (int i = 0; i < w; ++i) {
                     line[i] = (byte)(iline[i] >> shift);
                 }
                 out.write(line);

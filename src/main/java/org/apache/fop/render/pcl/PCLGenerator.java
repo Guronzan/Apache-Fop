@@ -99,7 +99,7 @@ public class PCLGenerator {
     public PCLGenerator(OutputStream out, int maxResolution) {
         this(out);
         boolean found = false;
-        for (int i = 0; i < PCL_RESOLUTIONS.length; i++) {
+        for (int i = 0; i < PCL_RESOLUTIONS.length; ++i) {
             if (PCL_RESOLUTIONS[i] == maxResolution) {
                 found = true;
                 break;
@@ -639,7 +639,7 @@ public class PCLGenerator {
     //Threshold table to convert an alpha channel (8-bit) into a clip mask (1-bit)
     private static final byte[] THRESHOLD_TABLE = new byte[256];
     static { // Initialize the arrays
-        for (int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; ++i) {
             THRESHOLD_TABLE[i] = (byte) ((i < 240) ? 255 : 0);
         }
     }

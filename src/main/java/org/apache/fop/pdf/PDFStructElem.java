@@ -186,7 +186,7 @@ public class PDFStructElem extends PDFDictionary implements StructureTreeElement
         public void outputInline(OutputStream out, StringBuilder textBuffer) throws IOException {
             if (kids != null) {
                 assert kids.size() > 0;
-                for (int i = 0; i < kids.size(); i++) {
+                for (int i = 0; i < kids.size(); ++i) {
                     if (i > 0) {
                         textBuffer.append(' ');
                     }

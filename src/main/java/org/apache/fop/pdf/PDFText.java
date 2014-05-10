@@ -87,7 +87,7 @@ public class PDFText extends PDFObject {
             if (forceHexMode) {
                 hexMode = true;
             } else {
-                for (int i = 0, c = text.length(); i < c; i++) {
+                for (int i = 0, c = text.length(); i < c; ++i) {
                     if (text.charAt(i) >= 128) {
                         unicode = true;
                         hexMode = true;
@@ -113,7 +113,7 @@ public class PDFText extends PDFObject {
                     // byte order marker (0xfeff)
                     result.append("\\376\\377");
 
-                    for (int i = 0; i < l; i++) {
+                    for (int i = 0; i < l; ++i) {
                         final char ch = text.charAt(i);
                         final int high = (ch & 0xff00) >>> 8;
                         final int low = ch & 0xff;
@@ -123,7 +123,7 @@ public class PDFText extends PDFObject {
                         result.append(Integer.toOctalString(low));
                     }
                 } else {
-                    for (int i = 0; i < l; i++) {
+                    for (int i = 0; i < l; ++i) {
                         final char ch = text.charAt(i);
                         if (ch < 256) {
                             escapeStringChar(ch, result);
@@ -151,7 +151,7 @@ public class PDFText extends PDFObject {
         if (brackets) {
             sb.append("<");
         }
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; ++i) {
             sb.append(DIGITS[(data[i] >>> 4) & 0x0F]);
             sb.append(DIGITS[data[i] & 0x0F]);
         }
@@ -198,7 +198,7 @@ public class PDFText extends PDFObject {
             throw new CascadingRuntimeException("Incompatible VM", uee);
         }
 
-        for (int i = 0; i < uniBytes.length; i++) {
+        for (int i = 0; i < uniBytes.length; ++i) {
             buf.append(DIGITS[(uniBytes[i] >>> 4) & 0x0F]);
             buf.append(DIGITS[uniBytes[i] & 0x0F]);
         }
@@ -216,7 +216,7 @@ public class PDFText extends PDFObject {
         } else {
             final StringBuilder sb = new StringBuilder(64);
             sb.append("(");
-            for (int i = 0; i < s.length(); i++) {
+            for (int i = 0; i < s.length(); ++i) {
                 final char c = s.charAt(i);
                 escapeStringChar(c, sb);
             }
@@ -275,7 +275,7 @@ public class PDFText extends PDFObject {
     public static final byte[] escapeByteArray(byte[] data) {
         ByteArrayOutputStream bout = new ByteArrayOutputStream(data.length);
         bout.write((int)'(');
-        for (int i = 0; i < data.length; i++) {
+        for (int i = 0; i < data.length; ++i) {
             final int b = data[i];
             switch (b) {
                 case '\n':
@@ -342,7 +342,7 @@ public class PDFText extends PDFObject {
      */
     public static String toPDFString(CharSequence text, char replacement) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0, c = text.length(); i < c; i++) {
+        for (int i = 0, c = text.length(); i < c; ++i) {
             char ch = text.charAt(i);
             if (ch > 127) {
                 //TODO Revisit the restriction to US-ASCII once "string" and "text string" are

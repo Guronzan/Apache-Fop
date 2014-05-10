@@ -41,218 +41,218 @@ import org.xml.sax.Locator;
  * the reference that matches the page number and emptyness.
  */
 @Slf4j
- public class RepeatablePageMasterAlternatives extends FObj implements
-        SubSequenceSpecifier {
-     // The value of properties relevant for
+public class RepeatablePageMasterAlternatives extends FObj implements
+SubSequenceSpecifier {
+    // The value of properties relevant for
     // fo:repeatable-page-master-alternatives.
-     private Property maximumRepeats;
-     // End of property values
+    private Property maximumRepeats;
+    // End of property values
 
-     private static final int INFINITE = -1;
+    private static final int INFINITE = -1;
 
-     private int numberConsumed = 0;
+    private int numberConsumed = 0;
 
-     private List<ConditionalPageMasterReference> conditionalPageMasterRefs;
-     private boolean hasPagePositionLast = false;
-     private boolean hasPagePositionOnly = false;
+    private List<ConditionalPageMasterReference> conditionalPageMasterRefs;
+    private boolean hasPagePositionLast = false;
+    private boolean hasPagePositionOnly = false;
 
-     /**
-      * Base constructor
-      *
-      * @param parent
+    /**
+     * Base constructor
+     *
+     * @param parent
      *            {@link FONode} that is the parent of this object
-      */
-     public RepeatablePageMasterAlternatives(final FONode parent) {
-         super(parent);
-     }
+     */
+    public RepeatablePageMasterAlternatives(final FONode parent) {
+        super(parent);
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public void bind(final PropertyList pList) throws FOPException {
-         this.maximumRepeats = pList.get(PR_MAXIMUM_REPEATS);
-     }
+    /** {@inheritDoc} */
+    @Override
+    public void bind(final PropertyList pList) throws FOPException {
+        this.maximumRepeats = pList.get(PR_MAXIMUM_REPEATS);
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     protected void startOfNode() throws FOPException {
-         this.conditionalPageMasterRefs = new java.util.ArrayList<ConditionalPageMasterReference>();
+    /** {@inheritDoc} */
+    @Override
+    protected void startOfNode() throws FOPException {
+        this.conditionalPageMasterRefs = new ArrayList<>();
 
-         assert this.parent.getName().equals("fo:page-sequence-master"); // Validation
-                                                                        // by
-                                                                        // the
-                                                                        // parent
-         final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
-         pageSequenceMaster.addSubsequenceSpecifier(this);
-     }
+        assert this.parent.getName().equals("fo:page-sequence-master"); // Validation
+        // by
+        // the
+        // parent
+        final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
+        pageSequenceMaster.addSubsequenceSpecifier(this);
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     protected void endOfNode() throws FOPException {
-         if (this.firstChild == null) {
+    /** {@inheritDoc} */
+    @Override
+    protected void endOfNode() throws FOPException {
+        if (this.firstChild == null) {
             missingChildElementError("(conditional-page-master-reference+)");
-         }
-     }
+        }
+    }
 
-     /**
-      * {@inheritDoc} <br>
+    /**
+     * {@inheritDoc} <br>
      * XSL/FOP: (conditional-page-master-reference+)
-      */
-     @Override
-     protected void validateChildNode(final Locator loc, final String nsURI,
+     */
+    @Override
+    protected void validateChildNode(final Locator loc, final String nsURI,
             final String localName) throws ValidationException {
-         if (FO_URI.equals(nsURI)) {
-             if (!localName.equals("conditional-page-master-reference")) {
-                 invalidChildError(loc, nsURI, localName);
-             }
-         }
-     }
+        if (FO_URI.equals(nsURI)) {
+            if (!localName.equals("conditional-page-master-reference")) {
+                invalidChildError(loc, nsURI, localName);
+            }
+        }
+    }
 
-     /**
-      * Get the value of the <code>maximum-repeats</code> property?
-      * 
+    /**
+     * Get the value of the <code>maximum-repeats</code> property?
+     *
      * @return the "maximum-repeats" property
-      */
-     public int getMaximumRepeats() {
-         if (this.maximumRepeats.getEnum() == EN_NO_LIMIT) {
-             return INFINITE;
-         } else {
-             int mr = this.maximumRepeats.getNumeric().getValue();
-             if (mr < 0) {
-                 log.debug("negative maximum-repeats: " + this.maximumRepeats);
-                 mr = 0;
-             }
-             return mr;
-         }
-     }
+     */
+    public int getMaximumRepeats() {
+        if (this.maximumRepeats.getEnum() == EN_NO_LIMIT) {
+            return INFINITE;
+        } else {
+            int mr = this.maximumRepeats.getNumeric().getValue();
+            if (mr < 0) {
+                log.debug("negative maximum-repeats: " + this.maximumRepeats);
+                mr = 0;
+            }
+            return mr;
+        }
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public SimplePageMaster getNextPageMaster(final boolean isOddPage,
+    /** {@inheritDoc} */
+    @Override
+    public SimplePageMaster getNextPageMaster(final boolean isOddPage,
             final boolean isFirstPage, final boolean isLastPage,
             final boolean isBlankPage) {
 
-         if (!isInfinite() && this.numberConsumed >= getMaximumRepeats()) {
-             return null;
-         }
+        if (!isInfinite() && this.numberConsumed >= getMaximumRepeats()) {
+            return null;
+        }
 
-         this.numberConsumed++;
+        this.numberConsumed++;
 
-         for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
-             if (cpmr.isValid(isOddPage, isFirstPage, isLastPage, isBlankPage)) {
-                 return cpmr.getMaster();
-             }
-         }
+        for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
+            if (cpmr.isValid(isOddPage, isFirstPage, isLastPage, isBlankPage)) {
+                return cpmr.getMaster();
+            }
+        }
 
         return null;
-     }
+    }
 
     /**
-      * Adds a new conditional page master reference.
-      * 
+     * Adds a new conditional page master reference.
+     *
      * @param cpmr
      *            the new conditional reference
-      */
-     public void addConditionalPageMasterReference(
+     */
+    public void addConditionalPageMasterReference(
             final ConditionalPageMasterReference cpmr) {
-         this.conditionalPageMasterRefs.add(cpmr);
-         if (cpmr.getPagePosition() == EN_LAST) {
-             this.hasPagePositionLast = true;
-         }
-         if (cpmr.getPagePosition() == EN_ONLY) {
-             this.hasPagePositionOnly = true;
-         }
-     }
-
-     /** {@inheritDoc} */
-     @Override
-     public void reset() {
-         this.numberConsumed = 0;
-     }
-
-     /** {@inheritDoc} */
-     @Override
-     public boolean goToPrevious() {
-         if (this.numberConsumed == 0) {
-             return false;
-         } else {
-             this.numberConsumed--;
-             return true;
-         }
-     }
-
-     /** {@inheritDoc} */
-     @Override
-     public boolean hasPagePositionLast() {
-         return this.hasPagePositionLast;
-     }
-
-     /** {@inheritDoc} */
-     @Override
-     public boolean hasPagePositionOnly() {
-         return this.hasPagePositionOnly;
-     }
-
-     /** {@inheritDoc} */
-     @Override
-     public String getLocalName() {
-         return "repeatable-page-master-alternatives";
-     }
-
-     /**
-      * {@inheritDoc}
-      * 
-     * @return {@link org.apache.fop.fo.Constants#FO_REPEATABLE_PAGE_MASTER_ALTERNATIVES}
-      */
-     @Override
-     public int getNameId() {
-         return FO_REPEATABLE_PAGE_MASTER_ALTERNATIVES;
-     }
+        this.conditionalPageMasterRefs.add(cpmr);
+        if (cpmr.getPagePosition() == EN_LAST) {
+            this.hasPagePositionLast = true;
+        }
+        if (cpmr.getPagePosition() == EN_ONLY) {
+            this.hasPagePositionOnly = true;
+        }
+    }
 
     /** {@inheritDoc} */
-     @Override
-     public void resolveReferences(final LayoutMasterSet layoutMasterSet)
+    @Override
+    public void reset() {
+        this.numberConsumed = 0;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean goToPrevious() {
+        if (this.numberConsumed == 0) {
+            return false;
+        } else {
+            this.numberConsumed--;
+            return true;
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasPagePositionLast() {
+        return this.hasPagePositionLast;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean hasPagePositionOnly() {
+        return this.hasPagePositionOnly;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String getLocalName() {
+        return "repeatable-page-master-alternatives";
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@link org.apache.fop.fo.Constants#FO_REPEATABLE_PAGE_MASTER_ALTERNATIVES}
+     */
+    @Override
+    public int getNameId() {
+        return FO_REPEATABLE_PAGE_MASTER_ALTERNATIVES;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void resolveReferences(final LayoutMasterSet layoutMasterSet)
             throws ValidationException {
-         for (final ConditionalPageMasterReference conditionalPageMasterReference : this.conditionalPageMasterRefs) {
-             conditionalPageMasterReference.resolveReferences(layoutMasterSet);
-         }
+        for (final ConditionalPageMasterReference conditionalPageMasterReference : this.conditionalPageMasterRefs) {
+            conditionalPageMasterReference.resolveReferences(layoutMasterSet);
+        }
 
-     }
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public boolean canProcess(final String flowName) {
+    /** {@inheritDoc} */
+    @Override
+    public boolean canProcess(final String flowName) {
 
-         boolean willTerminate = true;
+        boolean willTerminate = true;
 
         // Look for rest spm that cannot terminate
-         final ArrayList<ConditionalPageMasterReference> rest = new ArrayList<ConditionalPageMasterReference>();
-         for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
-             if (cpmr.isValid(true, false, false, false)
-                     || cpmr.isValid(false, false, false, false)) {
-                 rest.add(cpmr);
-             }
-         }
-         if (!rest.isEmpty()) {
-             willTerminate = false;
-             for (final ConditionalPageMasterReference cpmr : rest) {
-                 willTerminate |= cpmr.getMaster().getRegion(FO_REGION_BODY)
+        final ArrayList<ConditionalPageMasterReference> rest = new ArrayList<ConditionalPageMasterReference>();
+        for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
+            if (cpmr.isValid(true, false, false, false)
+                    || cpmr.isValid(false, false, false, false)) {
+                rest.add(cpmr);
+            }
+        }
+        if (!rest.isEmpty()) {
+            willTerminate = false;
+            for (final ConditionalPageMasterReference cpmr : rest) {
+                willTerminate |= cpmr.getMaster().getRegion(FO_REGION_BODY)
                         .getRegionName().equals(flowName);
-             }
-         }
+            }
+        }
 
         return willTerminate;
-     }
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public boolean isInfinite() {
-         return getMaximumRepeats() == INFINITE;
-     }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isInfinite() {
+        return getMaximumRepeats() == INFINITE;
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public boolean isReusable() {
-         return false;
-     }
+    /** {@inheritDoc} */
+    @Override
+    public boolean isReusable() {
+        return false;
+    }
 
- }
+}

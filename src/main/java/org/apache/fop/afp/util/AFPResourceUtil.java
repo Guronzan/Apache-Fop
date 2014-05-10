@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
+import java.util.HashSet;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -85,7 +86,7 @@ public final class AFPResourceUtil {
             }
             if (field.getSfClassCode() == identifier[0]
                     && field.getSfTypeCode() == identifier[1]
-                    && field.getSfCategoryCode() == identifier[2]) {
+                            && field.getSfCategoryCode() == identifier[2]) {
                 return field.getCompleteFieldAsBytes();
             }
         }
@@ -146,7 +147,7 @@ public final class AFPResourceUtil {
     public static void copyNamedResource(final String name,
             final InputStream in, final OutputStream out) throws IOException {
         final MODCAParser parser = new MODCAParser(in);
-        final Collection<String> resourceNames = new java.util.HashSet<>();
+        final Collection<String> resourceNames = new HashSet<>();
 
         // Find matching "Begin" field
         final UnparsedStructuredField fieldBegin;
@@ -224,7 +225,7 @@ public final class AFPResourceUtil {
 
             if (field.getSfTypeCode() == TYPE_CODE_END
                     && fieldBegin.getSfCategoryCode() == field
-                    .getSfCategoryCode()
+                            .getSfCategoryCode()
                     && name.equals(getResourceName(field))) {
                 break;
             }

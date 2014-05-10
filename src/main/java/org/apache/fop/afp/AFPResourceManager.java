@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +64,10 @@ public class AFPResourceManager {
     private int instreamObjectCount = 0;
 
     /** a mapping of resourceInfo --> include name */
-    private final Map<AFPResourceInfo, String> includeNameMap = new java.util.HashMap<>();
+    private final Map<AFPResourceInfo, String> includeNameMap = new HashMap<>();
 
     /** a mapping of resourceInfo --> page segment name */
-    private final Map<AFPResourceInfo, String> pageSegmentMap = new java.util.HashMap<>();
+    private final Map<AFPResourceInfo, String> pageSegmentMap = new HashMap<>();
 
     private final AFPResourceLevelDefaults resourceLevelDefaults = new AFPResourceLevelDefaults();
 
@@ -315,7 +316,7 @@ public class AFPResourceManager {
      */
     public void createIncludedResource(final String resourceName,
             final ResourceAccessor accessor, final byte resourceObjectType)
-                    throws IOException {
+            throws IOException {
         URI uri;
         try {
             uri = new URI(resourceName.trim());
@@ -420,7 +421,7 @@ public class AFPResourceManager {
                         final BufferedInputStream bin = new BufferedInputStream(
                                 inputStream);
                         AFPResourceUtil
-                        .copyNamedResource(resourceName, bin, os);
+                                .copyNamedResource(resourceName, bin, os);
                     } finally {
                         IOUtils.closeQuietly(inputStream);
                     }

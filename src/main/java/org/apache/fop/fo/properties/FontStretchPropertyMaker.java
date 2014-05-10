@@ -82,7 +82,7 @@ public class FontStretchPropertyMaker
             };
         }
         int baseValue = baseProperty.getEnum();
-        for (int i = 0; i < orderedFontStretchValues.length; i++) {
+        for (int i = 0; i < orderedFontStretchValues.length; ++i) {
             if (baseValue == orderedFontStretchValues[i].getEnum()) {
                 // increment/decrement the index and make sure its within the array bounds
                 i = Math.min(Math.max(0, i + direction), orderedFontStretchValues.length - 1);

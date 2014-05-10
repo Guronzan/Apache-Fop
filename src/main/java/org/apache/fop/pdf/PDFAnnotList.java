@@ -62,7 +62,7 @@ public class PDFAnnotList extends PDFObject {
     public String toPDFString() {
         final StringBuilder p = new StringBuilder(128);
         p.append("[\n");
-        for (int i = 0; i < getCount(); i++) {
+        for (int i = 0; i < getCount(); ++i) {
             p.append(this.links.get(i).referencePDF());
             p.append("\n");
         }

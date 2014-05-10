@@ -305,7 +305,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
         final int children = getChildCount();
         if (children > 0) {
             final List childList = getChildren();
-            for (int i = 0; i < children; i++) {
+            for (int i = 0; i < children; ++i) {
                 final RtfElement el = (RtfElement) childList.get(i);
                 if (!el.isEmpty()) {
                     if (el.getClass() == RtfText.class) {

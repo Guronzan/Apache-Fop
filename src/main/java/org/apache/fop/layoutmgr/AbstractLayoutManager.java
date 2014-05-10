@@ -282,7 +282,7 @@ import org.apache.xmlgraphics.util.QName;
      @Override
      public List<LayoutManager> getChildLMs() {
          if (this.childLMs == null) {
-             this.childLMs = new java.util.ArrayList<LayoutManager>(10);
+             this.childLMs = new ArrayList<LayoutManager>(10);
          }
          return this.childLMs;
      }
@@ -295,7 +295,7 @@ import org.apache.xmlgraphics.util.QName;
          }
          lm.setParent(this);
          if (this.childLMs == null) {
-             this.childLMs = new java.util.ArrayList<LayoutManager>(10);
+             this.childLMs = new ArrayList<LayoutManager>(10);
          }
          this.childLMs.add(lm);
          if (log.isTraceEnabled()) {

@@ -475,7 +475,7 @@ import lombok.extern.slf4j.Slf4j;
          // no matching font triplets found!
          if (matchedTriplets.size() == 0) {
              final StringBuilder sb = new StringBuilder();
-             for (int i = 0, c = families.length; i < c; i++) {
+             for (int i = 0, c = families.length; i < c; ++i) {
                  if (i > 0) {
                      sb.append(", ");
                  }

@@ -233,7 +233,7 @@ public class InlineRun {
                 if (ir.levels.length != this.levels.length) {
                     return false;
                 } else {
-                    for (int i = 0, n = this.levels.length; i < n; i++) {
+                    for (int i = 0, n = this.levels.length; i < n; ++i) {
                         if (ir.levels[i] != this.levels[i]) {
                             return false;
                         }
@@ -306,7 +306,7 @@ public class InlineRun {
         final StringBuilder lb = new StringBuilder();
         int maxLevel = -1;
         final int numLevels = levels.length;
-        for (int i = 0; i < numLevels; i++) {
+        for (int i = 0; i < numLevels; ++i) {
             final int l = levels[i];
             if (l > maxLevel) {
                 maxLevel = l;
@@ -316,13 +316,13 @@ public class InlineRun {
             // leave level buffer empty
         } else if (maxLevel < 10) {
             // use string of decimal digits
-            for (int i = 0; i < numLevels; i++) {
+            for (int i = 0; i < numLevels; ++i) {
                 lb.append((char) ('0' + levels[i]));
             }
         } else {
             // use comma separated list
             boolean first = true;
-            for (int i = 0; i < numLevels; i++) {
+            for (int i = 0; i < numLevels; ++i) {
                 if (first) {
                     first = false;
                 } else {

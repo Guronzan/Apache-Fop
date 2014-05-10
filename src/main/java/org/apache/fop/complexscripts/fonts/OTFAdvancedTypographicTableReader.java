@@ -20,6 +20,7 @@
 package org.apache.fop.complexscripts.fonts;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -175,8 +176,8 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read (non-required) feature indices
         final int[] fia = new int[nf];
-        final List fl = new java.util.ArrayList();
-        for (int i = 0; i < nf; i++) {
+        final List<String> fl = new ArrayList<>();
+        for (int i = 0; i < nf; ++i) {
             final int fi = this.in.readTTFUShort();
             if (log.isDebugEnabled()) {
                 log.debug(tableTag
@@ -210,12 +211,12 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read language system record count
         final int nl = this.in.readTTFUShort();
-        final List ll = new java.util.ArrayList();
+        final List ll = new ArrayList<>();
         if (nl > 0) {
             final String[] lta = new String[nl];
             final int[] loa = new int[nl];
             // read language system records
-            for (int i = 0, n = nl; i < n; i++) {
+            for (int i = 0, n = nl; i < n; ++i) {
                 final String lt = this.in.readTTFString(4);
                 final int lo = this.in.readTTFUShort();
                 if (log.isDebugEnabled()) {
@@ -231,7 +232,7 @@ public final class OTFAdvancedTypographicTableReader {
                 ll.add(lt);
             }
             // read non-default language system tables
-            for (int i = 0, n = nl; i < n; i++) {
+            for (int i = 0, n = nl; i < n; ++i) {
                 readLangSysTable(tableTag, scriptTable + loa[i], lta[i]);
             }
         }
@@ -260,7 +261,7 @@ public final class OTFAdvancedTypographicTableReader {
             final String[] sta = new String[ns];
             final int[] soa = new int[ns];
             // read script records
-            for (int i = 0, n = ns; i < n; i++) {
+            for (int i = 0, n = ns; i < n; ++i) {
                 final String st = this.in.readTTFString(4);
                 final int so = this.in.readTTFUShort();
                 if (log.isDebugEnabled()) {
@@ -271,7 +272,7 @@ public final class OTFAdvancedTypographicTableReader {
                 soa[i] = so;
             }
             // read script tables
-            for (int i = 0, n = ns; i < n; i++) {
+            for (int i = 0, n = ns; i < n; ++i) {
                 this.seLanguages = null;
                 readScriptTable(tableTag, scriptList + soa[i], sta[i]);
             }
@@ -297,8 +298,8 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read lookup table indices
         final int[] lia = new int[nl];
-        final List lul = new java.util.ArrayList();
-        for (int i = 0; i < nl; i++) {
+        final List lul = new ArrayList<>();
+        for (int i = 0; i < nl; ++i) {
             final int li = this.in.readTTFUShort();
             if (log.isDebugEnabled()) {
                 log.debug(tableTag + " feature table lookup index: " + li);
@@ -322,7 +323,7 @@ public final class OTFAdvancedTypographicTableReader {
             final String[] fta = new String[nf];
             final int[] foa = new int[nf];
             // read feature records
-            for (int i = 0, n = nf; i < n; i++) {
+            for (int i = 0, n = nf; i < n; ++i) {
                 final String ft = this.in.readTTFString(4);
                 final int fo = this.in.readTTFUShort();
                 if (log.isDebugEnabled()) {
@@ -333,7 +334,7 @@ public final class OTFAdvancedTypographicTableReader {
                 foa[i] = fo;
             }
             // read feature tables
-            for (int i = 0, n = nf; i < n; i++) {
+            for (int i = 0, n = nf; i < n; ++i) {
                 if (log.isDebugEnabled()) {
                     log.debug(tableTag + " feature index: " + i);
                 }
@@ -594,14 +595,14 @@ public final class OTFAdvancedTypographicTableReader {
     private GlyphCoverageTable readCoverageTableFormat1(final String label,
             final long tableOffset, final int coverageFormat)
                     throws IOException {
-        final List entries = new java.util.ArrayList();
+        final List entries = new ArrayList<>();
         this.in.seekSet(tableOffset);
         // skip over format (already known)
         this.in.skip(2);
         // read glyph count
         final int ng = this.in.readTTFUShort();
         final int[] ga = new int[ng];
-        for (int i = 0, n = ng; i < n; i++) {
+        for (int i = 0, n = ng; i < n; ++i) {
             final int g = this.in.readTTFUShort();
             ga[i] = g;
             entries.add(Integer.valueOf(g));
@@ -616,13 +617,13 @@ public final class OTFAdvancedTypographicTableReader {
     private GlyphCoverageTable readCoverageTableFormat2(final String label,
             final long tableOffset, final int coverageFormat)
                     throws IOException {
-        final List entries = new java.util.ArrayList();
+        final List entries = new ArrayList<>();
         this.in.seekSet(tableOffset);
         // skip over format (already known)
         this.in.skip(2);
         // read range record count
         final int nr = this.in.readTTFUShort();
-        for (int i = 0, n = nr; i < n; i++) {
+        for (int i = 0, n = nr; i < n; ++i) {
             // read range start
             final int s = this.in.readTTFUShort();
             // read range end
@@ -660,7 +661,7 @@ public final class OTFAdvancedTypographicTableReader {
 
     private GlyphClassTable readClassDefTableFormat1(final String label,
             final long tableOffset, final int classFormat) throws IOException {
-        final List entries = new java.util.ArrayList();
+        final List entries = new ArrayList<>();
         this.in.seekSet(tableOffset);
         // skip over format (already known)
         this.in.skip(2);
@@ -671,7 +672,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int ng = this.in.readTTFUShort();
         // read glyph classes
         final int[] ca = new int[ng];
-        for (int i = 0, n = ng; i < n; i++) {
+        for (int i = 0, n = ng; i < n; ++i) {
             final int gc = this.in.readTTFUShort();
             ca[i] = gc;
             entries.add(Integer.valueOf(gc));
@@ -685,13 +686,13 @@ public final class OTFAdvancedTypographicTableReader {
 
     private GlyphClassTable readClassDefTableFormat2(final String label,
             final long tableOffset, final int classFormat) throws IOException {
-        final List entries = new java.util.ArrayList();
+        final List entries = new ArrayList<>();
         this.in.seekSet(tableOffset);
         // skip over format (already known)
         this.in.skip(2);
         // read range record count
         final int nr = this.in.readTTFUShort();
-        for (int i = 0, n = nr; i < n; i++) {
+        for (int i = 0, n = nr; i < n; ++i) {
             // read range start
             final int s = this.in.readTTFUShort();
             // read range end
@@ -776,7 +777,7 @@ public final class OTFAdvancedTypographicTableReader {
                 + " single substitution coverage", subtableOffset + co);
         // read glyph substitutions
         final int[] gsa = new int[ng];
-        for (int i = 0, n = ng; i < n; i++) {
+        for (int i = 0, n = ng; i < n; ++i) {
             final int gs = this.in.readTTFUShort();
             if (log.isDebugEnabled()) {
                 log.debug(tableTag + " single substitution glyph[" + i + "]: "
@@ -829,12 +830,12 @@ public final class OTFAdvancedTypographicTableReader {
                 + " multiple substitution coverage", subtableOffset + co);
         // read sequence table offsets
         final int[] soa = new int[ns];
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             soa[i] = this.in.readTTFUShort();
         }
         // read sequence tables
         final int[][] gsa = new int[ns][];
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             final int so = soa[i];
             int[] ga;
             if (so > 0) {
@@ -898,11 +899,11 @@ public final class OTFAdvancedTypographicTableReader {
                 + " alternate substitution coverage", subtableOffset + co);
         // read alternate set table offsets
         final int[] soa = new int[ns];
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             soa[i] = this.in.readTTFUShort();
         }
         // read alternate set tables
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             final int so = soa[i];
             this.in.seekSet(subtableOffset + so);
             // read glyph count
@@ -961,11 +962,11 @@ public final class OTFAdvancedTypographicTableReader {
                 + " ligature substitution coverage", subtableOffset + co);
         // read ligature set table offsets
         final int[] soa = new int[ns];
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             soa[i] = this.in.readTTFUShort();
         }
         // read ligature set tables
-        for (int i = 0, n = ns; i < n; i++) {
+        for (int i = 0, n = ns; i < n; ++i) {
             final int so = soa[i];
             this.in.seekSet(subtableOffset + so);
             // read ligature table count
@@ -974,7 +975,7 @@ public final class OTFAdvancedTypographicTableReader {
             for (int j = 0; j < nl; j++) {
                 loa[j] = this.in.readTTFUShort();
             }
-            final List ligs = new java.util.ArrayList();
+            final List ligs = new ArrayList<>();
             for (int j = 0; j < nl; j++) {
                 final int lo = loa[j];
                 this.in.seekSet(subtableOffset + so + lo);
@@ -1017,7 +1018,7 @@ public final class OTFAdvancedTypographicTableReader {
     private GlyphTable.RuleLookup[] readRuleLookups(final int numLookups,
             final String header) throws IOException {
         final GlyphTable.RuleLookup[] la = new GlyphTable.RuleLookup[numLookups];
-        for (int i = 0, n = numLookups; i < n; i++) {
+        for (int i = 0, n = numLookups; i < n; ++i) {
             final int sequenceIndex = this.in.readTTFUShort();
             final int lookupIndex = this.in.readTTFUShort();
             la[i] = new GlyphTable.RuleLookup(sequenceIndex, lookupIndex);
@@ -1042,7 +1043,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nrs = this.in.readTTFUShort();
         // read rule set offsets
         final int[] rsoa = new int[nrs];
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             rsoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1053,7 +1054,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual substitution coverage table offset: " + co);
             log.debug(tableTag + " contextual substitution rule set count: "
                     + nrs);
-            for (int i = 0; i < nrs; i++) {
+            for (int i = 0; i < nrs; ++i) {
                 log.debug(tableTag
                         + " contextual substitution rule set offset[" + i
                         + "]: " + rsoa[i]);
@@ -1070,7 +1071,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[nrs];
         String header = null;
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             GlyphTable.RuleSet rs;
             final int rso = rsoa[i];
             if (rso > 0) {
@@ -1141,7 +1142,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int ngc = this.in.readTTFUShort();
         // read class rule set offsets
         final int[] csoa = new int[ngc];
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             csoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1152,7 +1153,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual substitution coverage table offset: " + co);
             log.debug(tableTag + " contextual substitution class set count: "
                     + ngc);
-            for (int i = 0; i < ngc; i++) {
+            for (int i = 0; i < ngc; ++i) {
                 log.debug(tableTag
                         + " contextual substitution class set offset[" + i
                         + "]: " + csoa[i]);
@@ -1178,7 +1179,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[ngc];
         String header = null;
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             final int cso = csoa[i];
             GlyphTable.RuleSet rs;
             if (cso > 0) {
@@ -1251,7 +1252,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read glyph coverage offsets, one per glyph input sequence length
         // count
         final int[] gcoa = new int[ng];
-        for (int i = 0; i < ng; i++) {
+        for (int i = 0; i < ng; ++i) {
             gcoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1262,7 +1263,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual substitution glyph input sequence length count: "
                     + ng);
             log.debug(tableTag + " contextual substitution lookup count: " + nl);
-            for (int i = 0; i < ng; i++) {
+            for (int i = 0; i < ng; ++i) {
                 log.debug(tableTag
                         + " contextual substitution coverage table offset[" + i
                         + "]: " + gcoa[i]);
@@ -1270,7 +1271,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read coverage tables
         final GlyphCoverageTable[] gca = new GlyphCoverageTable[ng];
-        for (int i = 0; i < ng; i++) {
+        for (int i = 0; i < ng; ++i) {
             final int gco = gcoa[i];
             GlyphCoverageTable gct;
             if (gco > 0) {
@@ -1336,7 +1337,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nrs = this.in.readTTFUShort();
         // read rule set offsets
         final int[] rsoa = new int[nrs];
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             rsoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1348,7 +1349,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + co);
             log.debug(tableTag
                     + " chained contextual substitution rule set count: " + nrs);
-            for (int i = 0; i < nrs; i++) {
+            for (int i = 0; i < nrs; ++i) {
                 log.debug(tableTag
                         + " chained contextual substitution rule set offset["
                         + i + "]: " + rsoa[i]);
@@ -1366,7 +1367,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[nrs];
         String header = null;
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             GlyphTable.RuleSet rs;
             final int rso = rsoa[i];
             if (rso > 0) {
@@ -1455,7 +1456,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int ngc = this.in.readTTFUShort();
         // read class set offsets
         final int[] csoa = new int[ngc];
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             csoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1468,7 +1469,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual substitution class set count: "
                     + ngc);
-            for (int i = 0; i < ngc; i++) {
+            for (int i = 0; i < ngc; ++i) {
                 log.debug(tableTag
                         + " chained contextual substitution class set offset["
                         + i + "]: " + csoa[i]);
@@ -1513,7 +1514,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[ngc];
         String header = null;
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             final int cso = csoa[i];
             GlyphTable.RuleSet rs;
             if (cso > 0) {
@@ -1599,21 +1600,21 @@ public final class OTFAdvancedTypographicTableReader {
         final int nbg = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] bgcoa = new int[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             bgcoa[i] = this.in.readTTFUShort();
         }
         // read input glyph count
         final int nig = this.in.readTTFUShort();
         // read input glyph coverage offsets
         final int[] igcoa = new int[nig];
-        for (int i = 0; i < nig; i++) {
+        for (int i = 0; i < nig; ++i) {
             igcoa[i] = this.in.readTTFUShort();
         }
         // read lookahead glyph count
         final int nlg = this.in.readTTFUShort();
         // read lookahead glyph coverage offsets
         final int[] lgcoa = new int[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             lgcoa[i] = this.in.readTTFUShort();
         }
         // read substitution lookup count
@@ -1625,7 +1626,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual substitution backtrack glyph count: "
                     + nbg);
-            for (int i = 0; i < nbg; i++) {
+            for (int i = 0; i < nbg; ++i) {
                 log.debug(tableTag
                         + " chained contextual substitution backtrack coverage table offset["
                         + i + "]: " + bgcoa[i]);
@@ -1633,7 +1634,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual substitution input glyph count: "
                     + nig);
-            for (int i = 0; i < nig; i++) {
+            for (int i = 0; i < nig; ++i) {
                 log.debug(tableTag
                         + " chained contextual substitution input coverage table offset["
                         + i + "]: " + igcoa[i]);
@@ -1641,7 +1642,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual substitution lookahead glyph count: "
                     + nlg);
-            for (int i = 0; i < nlg; i++) {
+            for (int i = 0; i < nlg; ++i) {
                 log.debug(tableTag
                         + " chained contextual substitution lookahead coverage table offset["
                         + i + "]: " + lgcoa[i]);
@@ -1651,7 +1652,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read backtrack coverage tables
         final GlyphCoverageTable[] bgca = new GlyphCoverageTable[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             final int bgco = bgcoa[i];
             GlyphCoverageTable bgct;
             if (bgco > 0) {
@@ -1666,7 +1667,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read input coverage tables
         final GlyphCoverageTable[] igca = new GlyphCoverageTable[nig];
-        for (int i = 0; i < nig; i++) {
+        for (int i = 0; i < nig; ++i) {
             final int igco = igcoa[i];
             GlyphCoverageTable igct;
             if (igco > 0) {
@@ -1680,7 +1681,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read lookahead coverage tables
         final GlyphCoverageTable[] lgca = new GlyphCoverageTable[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             final int lgco = lgcoa[i];
             GlyphCoverageTable lgct;
             if (lgco > 0) {
@@ -1789,21 +1790,21 @@ public final class OTFAdvancedTypographicTableReader {
         final int nbg = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] bgcoa = new int[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             bgcoa[i] = this.in.readTTFUShort();
         }
         // read lookahead glyph count
         final int nlg = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] lgcoa = new int[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             lgcoa[i] = this.in.readTTFUShort();
         }
         // read substitution (output) glyph count
         final int ng = this.in.readTTFUShort();
         // read substitution (output) glyphs
         final int[] glyphs = new int[ng];
-        for (int i = 0, n = ng; i < n; i++) {
+        for (int i = 0, n = ng; i < n; ++i) {
             glyphs[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -1817,7 +1818,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " reverse chained contextual substitution backtrack glyph count: "
                     + nbg);
-            for (int i = 0; i < nbg; i++) {
+            for (int i = 0; i < nbg; ++i) {
                 log.debug(tableTag
                         + " reverse chained contextual substitution backtrack coverage table offset["
                         + i + "]: " + bgcoa[i]);
@@ -1825,7 +1826,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " reverse chained contextual substitution lookahead glyph count: "
                     + nlg);
-            for (int i = 0; i < nlg; i++) {
+            for (int i = 0; i < nlg; ++i) {
                 log.debug(tableTag
                         + " reverse chained contextual substitution lookahead coverage table offset["
                         + i + "]: " + lgcoa[i]);
@@ -1840,7 +1841,7 @@ public final class OTFAdvancedTypographicTableReader {
                 subtableOffset + co);
         // read backtrack coverage tables
         final GlyphCoverageTable[] bgca = new GlyphCoverageTable[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             final int bgco = bgcoa[i];
             GlyphCoverageTable bgct;
             if (bgco > 0) {
@@ -1855,7 +1856,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read lookahead coverage tables
         final GlyphCoverageTable[] lgca = new GlyphCoverageTable[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             final int lgco = lgcoa[i];
             GlyphCoverageTable lgct;
             if (lgco > 0) {
@@ -2125,7 +2126,7 @@ public final class OTFAdvancedTypographicTableReader {
                 + " single positioning coverage", subtableOffset + co);
         // read positioning values
         final GlyphPositioningTable.Value[] pva = new GlyphPositioningTable.Value[nv];
-        for (int i = 0, n = nv; i < n; i++) {
+        for (int i = 0, n = nv; i < n; ++i) {
             final GlyphPositioningTable.Value pv = readPosValue(subtableOffset,
                     vf);
             if (log.isDebugEnabled()) {
@@ -2200,7 +2201,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read pair values
         final GlyphPositioningTable.PairValues[] pva = new GlyphPositioningTable.PairValues[npv];
-        for (int i = 0, n = npv; i < n; i++) {
+        for (int i = 0, n = npv; i < n; ++i) {
             final GlyphPositioningTable.PairValues pv = readPosPairValues(
                     subtableOffset, true, vf1, vf2);
             pva[i] = pv;
@@ -2241,7 +2242,7 @@ public final class OTFAdvancedTypographicTableReader {
                 + " pair positioning coverage", subtableOffset + co);
         // read pair value matrix
         final GlyphPositioningTable.PairValues[][] pvm = new GlyphPositioningTable.PairValues[nps][];
-        for (int i = 0, n = nps; i < n; i++) {
+        for (int i = 0, n = nps; i < n; ++i) {
             // read pair set offset
             final int pso = this.in.readTTFUShort();
             // read pair set table at offset
@@ -2301,7 +2302,7 @@ public final class OTFAdvancedTypographicTableReader {
                 + cd2o);
         // read pair value matrix
         final GlyphPositioningTable.PairValues[][] pvm = new GlyphPositioningTable.PairValues[nc1][nc2];
-        for (int i = 0; i < nc1; i++) {
+        for (int i = 0; i < nc1; ++i) {
             for (int j = 0; j < nc2; j++) {
                 final GlyphPositioningTable.PairValues pv = readPosPairValues(
                         subtableOffset, false, vf1, vf2);
@@ -2420,7 +2421,7 @@ public final class OTFAdvancedTypographicTableReader {
                 + " cursive positioning coverage", subtableOffset + co);
         // read entry/exit records
         final GlyphPositioningTable.Anchor[] aa = new GlyphPositioningTable.Anchor[ec * 2];
-        for (int i = 0, n = ec; i < n; i++) {
+        for (int i = 0, n = ec; i < n; ++i) {
             // read entry anchor offset
             final int eno = this.in.readTTFUShort();
             // read exit anchor offset
@@ -2525,7 +2526,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read mark anchor array, where i:{0...markCount}
         final GlyphPositioningTable.MarkAnchor[] maa = new GlyphPositioningTable.MarkAnchor[nm];
-        for (int i = 0; i < nm; i++) {
+        for (int i = 0; i < nm; ++i) {
             // read mark class
             final int mc = this.in.readTTFUShort();
             // read mark anchor offset
@@ -2560,7 +2561,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read anchor matrix, where i:{0...baseCount - 1},
         // j:{0...markClassCount - 1}
         final GlyphPositioningTable.Anchor[][] bam = new GlyphPositioningTable.Anchor[nb][nmc];
-        for (int i = 0; i < nb; i++) {
+        for (int i = 0; i < nb; ++i) {
             for (int j = 0; j < nmc; j++) {
                 // read base anchor offset
                 final int ao = this.in.readTTFUShort();
@@ -2658,7 +2659,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read mark anchor array, where i:{0...markCount}
         final GlyphPositioningTable.MarkAnchor[] maa = new GlyphPositioningTable.MarkAnchor[nm];
-        for (int i = 0; i < nm; i++) {
+        for (int i = 0; i < nm; ++i) {
             // read mark class
             final int mc = this.in.readTTFUShort();
             // read mark anchor offset
@@ -2693,13 +2694,13 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read ligature attach table offsets
         final int[] laoa = new int[nl];
-        for (int i = 0; i < nl; i++) {
+        for (int i = 0; i < nl; ++i) {
             laoa[i] = this.in.readTTFUShort();
         }
         // iterate over ligature attach tables, recording maximum component
         // count
         int mxc = 0;
-        for (int i = 0; i < nl; i++) {
+        for (int i = 0; i < nl; ++i) {
             final int lato = laoa[i];
             this.in.seekSet(subtableOffset + lao + lato);
             // read component count
@@ -2716,7 +2717,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read anchor matrix, where i:{0...ligatureCount - 1},
         // j:{0...maxComponentCount - 1}, k:{0...markClassCount - 1}
         final GlyphPositioningTable.Anchor[][][] lam = new GlyphPositioningTable.Anchor[nl][][];
-        for (int i = 0; i < nl; i++) {
+        for (int i = 0; i < nl; ++i) {
             final int lato = laoa[i];
             // seek to ligature attach table for ligature[i]
             this.in.seekSet(subtableOffset + lao + lato);
@@ -2822,7 +2823,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read mark anchor array, where i:{0...mark1Count}
         final GlyphPositioningTable.MarkAnchor[] maa = new GlyphPositioningTable.MarkAnchor[nm1];
-        for (int i = 0; i < nm1; i++) {
+        for (int i = 0; i < nm1; ++i) {
             // read mark class
             final int mc = this.in.readTTFUShort();
             // read mark anchor offset
@@ -2858,7 +2859,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read anchor matrix, where i:{0...mark2Count - 1},
         // j:{0...markClassCount - 1}
         final GlyphPositioningTable.Anchor[][] mam = new GlyphPositioningTable.Anchor[nm2][nmc];
-        for (int i = 0; i < nm2; i++) {
+        for (int i = 0; i < nm2; ++i) {
             for (int j = 0; j < nmc; j++) {
                 // read mark anchor offset
                 final int ao = this.in.readTTFUShort();
@@ -2914,7 +2915,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nrs = this.in.readTTFUShort();
         // read rule set offsets
         final int[] rsoa = new int[nrs];
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             rsoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -2925,7 +2926,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual positioning coverage table offset: " + co);
             log.debug(tableTag + " contextual positioning rule set count: "
                     + nrs);
-            for (int i = 0; i < nrs; i++) {
+            for (int i = 0; i < nrs; ++i) {
                 log.debug(tableTag + " contextual positioning rule set offset["
                         + i + "]: " + rsoa[i]);
             }
@@ -2941,7 +2942,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[nrs];
         String header = null;
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             GlyphTable.RuleSet rs;
             final int rso = rsoa[i];
             if (rso > 0) {
@@ -3012,7 +3013,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int ngc = this.in.readTTFUShort();
         // read class rule set offsets
         final int[] csoa = new int[ngc];
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             csoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -3023,7 +3024,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual positioning coverage table offset: " + co);
             log.debug(tableTag + " contextual positioning class set count: "
                     + ngc);
-            for (int i = 0; i < ngc; i++) {
+            for (int i = 0; i < ngc; ++i) {
                 log.debug(tableTag
                         + " contextual positioning class set offset[" + i
                         + "]: " + csoa[i]);
@@ -3049,7 +3050,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[ngc];
         String header = null;
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             final int cso = csoa[i];
             GlyphTable.RuleSet rs;
             if (cso > 0) {
@@ -3121,7 +3122,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read glyph coverage offsets, one per glyph input sequence length
         // count
         final int[] gcoa = new int[ng];
-        for (int i = 0; i < ng; i++) {
+        for (int i = 0; i < ng; ++i) {
             gcoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -3132,7 +3133,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + " contextual positioning glyph input sequence length count: "
                     + ng);
             log.debug(tableTag + " contextual positioning lookup count: " + nl);
-            for (int i = 0; i < ng; i++) {
+            for (int i = 0; i < ng; ++i) {
                 log.debug(tableTag
                         + " contextual positioning coverage table offset[" + i
                         + "]: " + gcoa[i]);
@@ -3140,7 +3141,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read coverage tables
         final GlyphCoverageTable[] gca = new GlyphCoverageTable[ng];
-        for (int i = 0; i < ng; i++) {
+        for (int i = 0; i < ng; ++i) {
             final int gco = gcoa[i];
             GlyphCoverageTable gct;
             if (gco > 0) {
@@ -3205,7 +3206,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nrs = this.in.readTTFUShort();
         // read rule set offsets
         final int[] rsoa = new int[nrs];
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             rsoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -3218,7 +3219,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + co);
             log.debug(tableTag
                     + " chained contextual positioning rule set count: " + nrs);
-            for (int i = 0; i < nrs; i++) {
+            for (int i = 0; i < nrs; ++i) {
                 log.debug(tableTag
                         + " chained contextual positioning rule set offset["
                         + i + "]: " + rsoa[i]);
@@ -3236,7 +3237,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[nrs];
         String header = null;
-        for (int i = 0; i < nrs; i++) {
+        for (int i = 0; i < nrs; ++i) {
             GlyphTable.RuleSet rs;
             final int rso = rsoa[i];
             if (rso > 0) {
@@ -3325,7 +3326,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int ngc = this.in.readTTFUShort();
         // read class set offsets
         final int[] csoa = new int[ngc];
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             csoa[i] = this.in.readTTFUShort();
         }
         // dump info if debugging
@@ -3338,7 +3339,7 @@ public final class OTFAdvancedTypographicTableReader {
                     + co);
             log.debug(tableTag
                     + " chained contextual positioning class set count: " + ngc);
-            for (int i = 0; i < ngc; i++) {
+            for (int i = 0; i < ngc; ++i) {
                 log.debug(tableTag
                         + " chained contextual positioning class set offset["
                         + i + "]: " + csoa[i]);
@@ -3383,7 +3384,7 @@ public final class OTFAdvancedTypographicTableReader {
         // read rule sets
         final GlyphTable.RuleSet[] rsa = new GlyphTable.RuleSet[ngc];
         String header = null;
-        for (int i = 0; i < ngc; i++) {
+        for (int i = 0; i < ngc; ++i) {
             final int cso = csoa[i];
             GlyphTable.RuleSet rs;
             if (cso > 0) {
@@ -3469,21 +3470,21 @@ public final class OTFAdvancedTypographicTableReader {
         final int nbg = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] bgcoa = new int[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             bgcoa[i] = this.in.readTTFUShort();
         }
         // read input glyph count
         final int nig = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] igcoa = new int[nig];
-        for (int i = 0; i < nig; i++) {
+        for (int i = 0; i < nig; ++i) {
             igcoa[i] = this.in.readTTFUShort();
         }
         // read lookahead glyph count
         final int nlg = this.in.readTTFUShort();
         // read backtrack glyph coverage offsets
         final int[] lgcoa = new int[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             lgcoa[i] = this.in.readTTFUShort();
         }
         // read positioning lookup count
@@ -3496,7 +3497,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual positioning backtrack glyph count: "
                     + nbg);
-            for (int i = 0; i < nbg; i++) {
+            for (int i = 0; i < nbg; ++i) {
                 log.debug(tableTag
                         + " chained contextual positioning backtrack coverage table offset["
                         + i + "]: " + bgcoa[i]);
@@ -3504,7 +3505,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual positioning input glyph count: "
                     + nig);
-            for (int i = 0; i < nig; i++) {
+            for (int i = 0; i < nig; ++i) {
                 log.debug(tableTag
                         + " chained contextual positioning input coverage table offset["
                         + i + "]: " + igcoa[i]);
@@ -3512,7 +3513,7 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag
                     + " chained contextual positioning lookahead glyph count: "
                     + nlg);
-            for (int i = 0; i < nlg; i++) {
+            for (int i = 0; i < nlg; ++i) {
                 log.debug(tableTag
                         + " chained contextual positioning lookahead coverage table offset["
                         + i + "]: " + lgcoa[i]);
@@ -3522,7 +3523,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read backtrack coverage tables
         final GlyphCoverageTable[] bgca = new GlyphCoverageTable[nbg];
-        for (int i = 0; i < nbg; i++) {
+        for (int i = 0; i < nbg; ++i) {
             final int bgco = bgcoa[i];
             GlyphCoverageTable bgct;
             if (bgco > 0) {
@@ -3536,7 +3537,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read input coverage tables
         final GlyphCoverageTable[] igca = new GlyphCoverageTable[nig];
-        for (int i = 0; i < nig; i++) {
+        for (int i = 0; i < nig; ++i) {
             final int igco = igcoa[i];
             GlyphCoverageTable igct;
             if (igco > 0) {
@@ -3550,7 +3551,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read lookahead coverage tables
         final GlyphCoverageTable[] lgca = new GlyphCoverageTable[nlg];
-        for (int i = 0; i < nlg; i++) {
+        for (int i = 0; i < nlg; ++i) {
             final int lgco = lgcoa[i];
             GlyphCoverageTable lgct;
             if (lgco > 0) {
@@ -3724,7 +3725,7 @@ public final class OTFAdvancedTypographicTableReader {
         }
         // read subtable offsets
         final int[] soa = new int[ns];
-        for (int i = 0; i < ns; i++) {
+        for (int i = 0; i < ns; ++i) {
             final int so = this.in.readTTFUShort();
             if (log.isDebugEnabled()) {
                 log.debug(tableTag + " lookup table subtable offset: " + so);
@@ -3741,7 +3742,7 @@ public final class OTFAdvancedTypographicTableReader {
             }
         }
         // read subtables
-        for (int i = 0; i < ns; i++) {
+        for (int i = 0; i < ns; ++i) {
             final int so = soa[i];
             if (isGSUB) {
                 readGSUBSubtable(lt, lf, lookupSequence, i, lookupTable + so);
@@ -3762,7 +3763,7 @@ public final class OTFAdvancedTypographicTableReader {
         if (nl > 0) {
             final int[] loa = new int[nl];
             // read lookup records
-            for (int i = 0, n = nl; i < n; i++) {
+            for (int i = 0, n = nl; i < n; ++i) {
                 final int lo = this.in.readTTFUShort();
                 if (log.isDebugEnabled()) {
                     log.debug(tableTag + " lookup table offset: " + lo);
@@ -3770,7 +3771,7 @@ public final class OTFAdvancedTypographicTableReader {
                 loa[i] = lo;
             }
             // read lookup tables
-            for (int i = 0, n = nl; i < n; i++) {
+            for (int i = 0, n = nl; i < n; ++i) {
                 if (log.isDebugEnabled()) {
                     log.debug(tableTag + " lookup index: " + i);
                 }
@@ -3857,7 +3858,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nl = this.in.readTTFUShort();
         // read ligature glyph table offsets
         final int[] lgto = new int[nl];
-        for (int i = 0; i < nl; i++) {
+        for (int i = 0; i < nl; ++i) {
             lgto[i] = this.in.readTTFUShort();
         }
 
@@ -3865,7 +3866,7 @@ public final class OTFAdvancedTypographicTableReader {
         if (log.isDebugEnabled()) {
             log.debug(tableTag + " ligature caret coverage table offset: " + co);
             log.debug(tableTag + " ligature caret ligature glyph count: " + nl);
-            for (int i = 0; i < nl; i++) {
+            for (int i = 0; i < nl; ++i) {
                 log.debug(tableTag + " ligature glyph table offset[" + i
                         + "]: " + lgto[i]);
             }
@@ -3908,7 +3909,7 @@ public final class OTFAdvancedTypographicTableReader {
         final int nmc = this.in.readTTFUShort();
         final long[] mso = new long[nmc];
         // read mark set coverage offsets
-        for (int i = 0; i < nmc; i++) {
+        for (int i = 0; i < nmc; ++i) {
             mso[i] = this.in.readTTFULong();
         }
         // dump info if debugging
@@ -3916,14 +3917,14 @@ public final class OTFAdvancedTypographicTableReader {
             log.debug(tableTag + " mark set subtable format: " + subtableFormat
                     + " (glyph sets)");
             log.debug(tableTag + " mark set class count: " + nmc);
-            for (int i = 0; i < nmc; i++) {
+            for (int i = 0; i < nmc; ++i) {
                 log.debug(tableTag + " mark set coverage table offset[" + i
                         + "]: " + mso[i]);
             }
         }
         // read mark set coverage tables, one per class
         final GlyphCoverageTable[] msca = new GlyphCoverageTable[nmc];
-        for (int i = 0; i < nmc; i++) {
+        for (int i = 0; i < nmc; ++i) {
             msca[i] = readCoverageTable(tableTag + " mark set coverage[" + i
                     + "]", subtableOffset + mso[i]);
         }
@@ -4246,7 +4247,7 @@ public final class OTFAdvancedTypographicTableReader {
     }
 
     private List constructGDEFSubtables() {
-        final List/* <GlyphDefinitionSubtable> */subtables = new java.util.ArrayList();
+        final List/* <GlyphDefinitionSubtable> */subtables = new ArrayList<>();
         if (this.seSubtables != null) {
             for (final Iterator it = this.seSubtables.iterator(); it.hasNext();) {
                 final Object[] stp = (Object[]) it.next();
@@ -4283,7 +4284,7 @@ public final class OTFAdvancedTypographicTableReader {
     }
 
     private List constructGSUBSubtables() {
-        final List/* <GlyphSubtable> */subtables = new java.util.ArrayList();
+        final List/* <GlyphSubtable> */subtables = new ArrayList<>();
         if (this.seSubtables != null) {
             for (final Iterator it = this.seSubtables.iterator(); it.hasNext();) {
                 final Object[] stp = (Object[]) it.next();
@@ -4320,7 +4321,7 @@ public final class OTFAdvancedTypographicTableReader {
     }
 
     private List constructGPOSSubtables() {
-        final List/* <GlyphSubtable> */subtables = new java.util.ArrayList();
+        final List/* <GlyphSubtable> */subtables = new ArrayList<>();
         if (this.seSubtables != null) {
             for (final Iterator it = this.seSubtables.iterator(); it.hasNext();) {
                 final Object[] stp = (Object[]) it.next();
@@ -4360,7 +4361,7 @@ public final class OTFAdvancedTypographicTableReader {
         this.seScripts = new java.util.LinkedHashMap();
         this.seLanguages = new java.util.LinkedHashMap();
         this.seFeatures = new java.util.LinkedHashMap();
-        this.seSubtables = new java.util.ArrayList();
+        this.seSubtables = new ArrayList<>();
         resetATSubState();
     }
 
@@ -4374,7 +4375,7 @@ public final class OTFAdvancedTypographicTableReader {
 
     private void initATSubState() {
         this.seMapping = null;
-        this.seEntries = new java.util.ArrayList();
+        this.seEntries = new ArrayList<>();
     }
 
     private void extractSESubState(final int tableType, final int lookupType,

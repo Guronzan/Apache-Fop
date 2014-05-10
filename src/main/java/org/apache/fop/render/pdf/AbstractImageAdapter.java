@@ -260,7 +260,7 @@ import org.apache.xmlgraphics.java2d.color.profile.ColorProfileUtil;
          final int[] palette = new int[c];
          icm.getRGBs(palette);
          final ByteArrayOutputStream baout = new ByteArrayOutputStream();
-         for (int i = 0; i < c; i++) {
+         for (int i = 0; i < c; ++i) {
              // TODO Probably doesn't work for non RGB based color spaces
              // See log warning above
              final int entry = palette[i];
@@ -292,7 +292,7 @@ import org.apache.xmlgraphics.java2d.color.profile.ColorProfileUtil;
          icm.getReds(reds);
          icm.getGreens(greens);
          icm.getBlues(blues);
-         for (int i = 0; i < icm.getMapSize(); i++) {
+         for (int i = 0; i < icm.getMapSize(); ++i) {
              if ((alphas[i] & 0xFF) == 0) {
                  return Integer.valueOf(i);
              }

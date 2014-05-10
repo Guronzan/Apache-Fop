@@ -145,7 +145,7 @@ import org.apache.fop.util.CharUtilities;
          final int[] es = new int[MAX_LEVELS]; /* embeddings stack */
          int ei = 0; /* embeddings stack index */
          int ec = defaultLevel; /* current embedding level */
-         for (int i = 0, n = wca.length; i < n; i++) {
+         for (int i = 0, n = wca.length; i < n; ++i) {
              final int bc = wca[i]; /* bidi class of current char */
              int el; /* embedding level to assign to current char */
              switch (bc) {
@@ -226,7 +226,7 @@ import org.apache.fop.util.CharUtilities;
          assert ea != null;
          assert la != null;
          assert la.length == ea.length;
-         for (int i = 0, n = la.length; i < n; i++) {
+         for (int i = 0, n = la.length; i < n; ++i) {
              la[i] = levelOfEmbedding(ea[i]);
          }
          return la;
@@ -331,7 +331,7 @@ import org.apache.fop.util.CharUtilities;
          if (end == wca.length) {
              le = max(level, defaultLevel);
          } else {
-             for (int i = end; i < wca.length; i++) {
+             for (int i = end; i < wca.length; ++i) {
                  if (wca[i] != BidiConstants.BN) {
                      le = max(level, la[i]);
                      break;
@@ -363,7 +363,7 @@ import org.apache.fop.util.CharUtilities;
             final int level, final int sor, final int eor) {
 
          // W1 - X BN* NSM -> X BN* X
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              final int bc = wca[i];
              if (bc == NSM) {
                  wca[i] = bcPrev;
@@ -373,7 +373,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // W2 - AL ... EN -> AL ... AN
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              final int bc = wca[i];
              if (bc == EN) {
                  if (bcPrev == AL) {
@@ -385,7 +385,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // W3 - AL -> R
-         for (int i = start, n = end; i < n; i++) {
+         for (int i = start, n = end; i < n; ++i) {
              final int bc = wca[i];
              if (bc == AL) {
                  wca[i] = R;
@@ -394,7 +394,7 @@ import org.apache.fop.util.CharUtilities;
 
          // W4 - EN BN* ES BN* EN -> EN BN* EN BN* EN; XN BN* CS BN* XN -> XN BN*
         // XN BN* XN
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              int bc = wca[i];
              if (bc == ES) {
                  int bcNext = eor;
@@ -427,7 +427,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // W5 - EN (ET|BN)* -> EN (EN|BN)*; (ET|BN)* EN -> (EN|BN)* EN
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              int bc = wca[i];
              if (bc == ET) {
                  int bcNext = eor;
@@ -447,7 +447,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // W6 - BN* (ET|ES|CS) BN* -> ON* ON ON*
-         for (int i = start, n = end; i < n; i++) {
+         for (int i = start, n = end; i < n; ++i) {
              final int bc = wca[i];
              if (bc == ET || bc == ES || bc == CS) {
                  wca[i] = ON;
@@ -456,7 +456,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // W7 - L ... EN -> L ... L
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              final int bc = wca[i];
              if (bc == EN) {
                  if (bcPrev == L) {
@@ -476,7 +476,7 @@ import org.apache.fop.util.CharUtilities;
 
          // N1 - (L|R) N+ (L|R) -> L L+ L | R R+ R; (AN|EN) N+ R -> (AN|EN) R+ R;
         // R N+ (AN|EN) -> R R+ (AN|EN)
-         for (int i = start, n = end, bcPrev = sor; i < n; i++) {
+         for (int i = start, n = end, bcPrev = sor; i < n; ++i) {
              int bc = wca[i];
              if (isNeutral(bc)) {
                  int bcNext = eor;
@@ -508,7 +508,7 @@ import org.apache.fop.util.CharUtilities;
          }
 
          // N2 - N -> embedding level
-         for (int i = start, n = end; i < n; i++) {
+         for (int i = start, n = end; i < n; ++i) {
              final int bc = wca[i];
              if (isNeutral(bc)) {
                  final int bcEmbedding = directionOfLevel(levelOfEmbedding(ea[i]));
@@ -532,7 +532,7 @@ import org.apache.fop.util.CharUtilities;
                      break;
                  }
              }
-             for (int i = index + 1; i < end; i++) {
+             for (int i = index + 1; i < end; ++i) {
                  final int bc = wca[i];
                  if (bc == BN) {
                      wca[i] = bcNew;
@@ -547,7 +547,7 @@ import org.apache.fop.util.CharUtilities;
             final int defaultLevel, final int[] ea, final int[] la,
             final int start, final int end, final int level, final int sor,
             final int eor) {
-         for (int i = start, n = end; i < n; i++) {
+         for (int i = start, n = end; i < n; ++i) {
              final int bc = wca[i]; // bidi class
              final int el = la[i]; // embedding level
              int ed = 0; // embedding level delta
@@ -590,7 +590,7 @@ import org.apache.fop.util.CharUtilities;
      private static void resolveSeparators(final int[] ica, final int[] wca,
             final int dl, final int[] la) {
          // steps (1) through (3)
-         for (int i = 0, n = ica.length; i < n; i++) {
+         for (int i = 0, n = ica.length; i < n; ++i) {
              final int ic = ica[i];
              if (ic == BidiConstants.S || ic == BidiConstants.B) {
                  la[i] = dl;
@@ -620,7 +620,7 @@ import org.apache.fop.util.CharUtilities;
              }
          }
          // step (5) - per section 5.2
-         for (int i = 0, n = ica.length; i < n; i++) {
+         for (int i = 0, n = ica.length; i < n; ++i) {
              final int ic = ica[i];
              if (isRetainedFormatting(ic)) {
                  if (i == 0) {
@@ -671,7 +671,7 @@ import org.apache.fop.util.CharUtilities;
 
      private static boolean isRetainedFormatting(final int[] ca, final int s,
             final int e) {
-         for (int i = s; i < e; i++) {
+         for (int i = s; i < e; ++i) {
              if (!isRetainedFormatting(ca[i])) {
                  return false;
              }
@@ -690,7 +690,7 @@ import org.apache.fop.util.CharUtilities;
      private static int[] getClasses(final int[] chars) {
          final int[] classes = new int[chars.length];
          int bc;
-         for (int i = 0, n = chars.length; i < n; i++) {
+         for (int i = 0, n = chars.length; i < n; ++i) {
              final int ch = chars[i];
              if (ch >= 0) {
                  bc = BidiClass.getBidiClass(chars[i]);
@@ -818,7 +818,7 @@ import org.apache.fop.util.CharUtilities;
          log.debug("BD: default level(" + defaultLevel + ")");
          final StringBuilder sb = new StringBuilder();
          if (chars != null) {
-             for (int i = 0, n = chars.length; i < n; i++) {
+             for (int i = 0, n = chars.length; i < n; ++i) {
                  final int ch = chars[i];
                  sb.setLength(0);
                  if (ch > 0x20 && ch < 0x7F) {
@@ -834,7 +834,7 @@ import org.apache.fop.util.CharUtilities;
                  log.debug(sb.toString());
              }
          } else {
-             for (int i = 0, n = classes.length; i < n; i++) {
+             for (int i = 0, n = classes.length; i < n; ++i) {
                  sb.setLength(0);
                  for (int k = sb.length(); k < 12; k++) {
                      sb.append(' ');
@@ -899,7 +899,7 @@ import org.apache.fop.util.CharUtilities;
 
      private static String padLeft(final String s, final int width) {
          final StringBuilder sb = new StringBuilder();
-         for (int i = s.length(); i < width; i++) {
+         for (int i = s.length(); i < width; ++i) {
              sb.append(' ');
          }
          sb.append(s);
@@ -913,7 +913,7 @@ import org.apache.fop.util.CharUtilities;
 
      private static String padRight(final String s, final int width) {
          final StringBuilder sb = new StringBuilder(s);
-         for (int i = sb.length(); i < width; i++) {
+         for (int i = sb.length(); i < width; ++i) {
              sb.append(' ');
          }
          return sb.toString();

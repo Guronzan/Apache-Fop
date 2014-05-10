@@ -853,7 +853,7 @@ public class PDFFactory {
         PDFPattern myPattern;
         // PDFColorSpace theColorSpace;
         final double interpolation = 1.000;
-        final List theFunctions = new ArrayList();
+        final List theFunctions = new ArrayList<>();
 
         int currentPosition;
         final int lastPosition = theColors.size() - 1;
@@ -902,7 +902,7 @@ public class PDFFactory {
             } else { // if the center x, center y, and radius specifiy
                 // the gradient, then assume the same center x, center y,
                 // and radius of zero for the other necessary component
-                final List newCoords = new ArrayList();
+                final List newCoords = new ArrayList<>();
                 newCoords.add(theCoords.get(0));
                 newCoords.add(theCoords.get(1));
                 newCoords.add(theCoords.get(2));
@@ -926,7 +926,7 @@ public class PDFFactory {
     }
 
     private List toColorVector(final Color nextColor) {
-        final List vector = new java.util.ArrayList();
+        final List vector = new ArrayList<>();
         final float[] comps = nextColor.getColorComponents(null);
         for (final float comp : comps) {
             vector.add(new Double(comp));
@@ -1579,7 +1579,7 @@ public class PDFFactory {
                 // encoding)
                 if (singleByteFont.hasAdditionalEncodings()) {
                     for (int i = 0, c = singleByteFont
-                            .getAdditionalEncodingCount(); i < c; i++) {
+                            .getAdditionalEncodingCount(); i < c; ++i) {
                         final SimpleSingleByteEncoding addEncoding = singleByteFont
                                 .getAdditionalEncoding(i);
                         final String name = fontname + "_" + (i + 1);
@@ -1638,7 +1638,7 @@ public class PDFFactory {
         int start = -1;
         final String[] baseNames = baseEncoding.getCharNameMap();
         final String[] charNameMap = encoding.getCharNameMap();
-        for (int i = 0, ci = charNameMap.length; i < ci; i++) {
+        for (int i = 0, ci = charNameMap.length; i < ci; ++i) {
             final String basec = baseNames[i];
             final String c = charNameMap[i];
             if (!basec.equals(c)) {
@@ -1673,7 +1673,7 @@ public class PDFFactory {
         final CIDSubset subset = cidFont.getCIDSubset();
         final int[] tmpWidth = new int[subset.getSubsetSize()];
 
-        for (int i = 0, c = subset.getSubsetSize(); i < c; i++) {
+        for (int i = 0, c = subset.getSubsetSize(); i < c; ++i) {
             final int nwx = Math.max(0, subset.getGlyphIndexForSubsetIndex(i));
             tmpWidth[i] = widths[nwx];
         }
@@ -1750,7 +1750,7 @@ public class PDFFactory {
         final ByteArrayOutputStream baout = new ByteArrayOutputStream(
                 cidSubset.length() / 8 + 1);
         int value = 0;
-        for (int i = 0, c = cidSubset.length(); i < c; i++) {
+        for (int i = 0, c = cidSubset.length(); i < c; ++i) {
             final int shift = i % 8;
             final boolean b = cidSubset.get(i);
             if (b) {
@@ -1975,7 +1975,7 @@ public class PDFFactory {
         final List theRange = Arrays.asList(new Double[] { zero, one, zero,
                 one, zero, one });
         final List theCZero = Arrays.asList(new Double[] { one, one, one });
-        final List theCOne = new ArrayList();
+        final List theCOne = new ArrayList<>();
         final float[] comps = ncs.getRGBColor().getColorComponents(null);
         for (final float comp : comps) {
             theCOne.add(new Double(comp));

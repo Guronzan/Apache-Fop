@@ -97,7 +97,7 @@ public class PDFRoot extends PDFDictionary {
     public int getPageMode() {
         PDFName mode = (PDFName)get("PageMode");
         if (mode != null) {
-            for (int i = 0; i < PAGEMODE_NAMES.length; i++) {
+            for (int i = 0; i < PAGEMODE_NAMES.length; ++i) {
                 if (PAGEMODE_NAMES[i].equals(mode)) {
                     return i;
                 }

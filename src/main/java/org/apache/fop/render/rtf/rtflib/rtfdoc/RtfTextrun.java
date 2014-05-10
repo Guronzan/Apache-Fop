@@ -328,7 +328,7 @@ import lombok.extern.slf4j.Slf4j;
              // add paragraph break and restore all deleted close group marks
              setChildren(children);
              par = new RtfParagraphBreak(this, this.writer);
-             for (int i = 0; i < deletedCloseGroupCount; i++) {
+             for (int i = 0; i < deletedCloseGroupCount; ++i) {
                  addCloseGroupMark(((Integer) tmp.pop()).intValue());
              }
          }

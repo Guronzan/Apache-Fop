@@ -128,7 +128,7 @@ public class PDFColor extends PDFPathPaint {
      * @return a list containing the Double values of the color
      */
     public List getVector() {
-        List theColorVector = new ArrayList();
+        List theColorVector = new ArrayList<>();
         if (this.colorSpace.getColorSpace() == PDFDeviceColorSpace.DEVICE_RGB) {
             // RGB
             theColorVector.add(new Double(this.red));

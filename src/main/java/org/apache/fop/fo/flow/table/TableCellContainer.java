@@ -89,7 +89,7 @@ public abstract class TableCellContainer extends TableFObj
          * update pending span list for the next row
          */
         if (rowSpan > 1) {
-            for (int i = 0; i < colSpan; i++) {
+            for (int i = 0; i < colSpan; ++i) {
                 pendingSpans.set(colNumber - 1 + i, new PendingSpan(rowSpan));
             }
         }

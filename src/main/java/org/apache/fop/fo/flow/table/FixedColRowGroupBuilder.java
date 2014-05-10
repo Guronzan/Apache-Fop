@@ -67,13 +67,13 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
      * Prepares this builder for creating a new row group.
      */
     private void initialize() {
-        rows = new ArrayList();
+        rows = new ArrayList<>();
         currentRowIndex = 0;
     }
 
     /** {@inheritDoc} */
     void addTableCell(TableCell cell) {
-        for (int i = rows.size(); i < currentRowIndex + cell.getNumberRowsSpanned(); i++) {
+        for (int i = rows.size(); i < currentRowIndex + cell.getNumberRowsSpanned(); ++i) {
             List effRow = new ArrayList(numberOfColumns);
             for (int j = 0; j < numberOfColumns; j++) {
                 effRow.add(null);
@@ -93,7 +93,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
             cellRow[j] = gu;
         }
         pgu.addRow(cellRow);
-        for (int i = 1; i < cell.getNumberRowsSpanned(); i++) {
+        for (int i = 1; i < cell.getNumberRowsSpanned(); ++i) {
             row = (List) rows.get(currentRowIndex + i);
             cellRow = new GridUnit[cell.getNumberColumnsSpanned()];
             for (int j = 0; j < cell.getNumberColumnsSpanned(); j++) {
@@ -151,7 +151,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
         List currentRow = (List) rows.get(currentRowIndex);
         lastRow = currentRow;
         // Fill gaps with empty grid units
-        for (int i = 0; i < numberOfColumns; i++) {
+        for (int i = 0; i < numberOfColumns; ++i) {
             if (currentRow.get(i) == null) {
                 currentRow.set(i, new EmptyGridUnit(table, currentTableRow, i));
             }

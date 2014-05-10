@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -117,7 +118,7 @@ public class CommandLineOptions {
     /* true if a catalog resolver should be used for entity and uri resolution */
     private boolean useCatalogResolver = false;
     /* rendering options (for the user agent) */
-    private final Map renderingOptions = new java.util.HashMap();
+    private final Map<String, Object> renderingOptions = new HashMap<>();
     /* target resolution (for the user agent) */
     private int targetResolution = 0;
     /* control memory-conservation policy */
@@ -177,7 +178,7 @@ public class CommandLineOptions {
                 addXSLTParameter("fop-output-format", getOutputFormat());
                 addXSLTParameter("fop-version", Version.getVersion());
                 this.foUserAgent
-                        .setConserveMemoryPolicy(this.conserveMemoryPolicy);
+                .setConserveMemoryPolicy(this.conserveMemoryPolicy);
                 if (!this.useComplexScriptFeatures) {
                     this.foUserAgent.setComplexScriptFeaturesEnabled(false);
                 }
@@ -266,7 +267,7 @@ public class CommandLineOptions {
             printUsage(System.out);
             return false;
         }
-        for (int i = 0; i < args.length; i++) {
+        for (int i = 0; i < args.length; ++i) {
             if (args[i].equals("-x") || args[i].equals("--dump-config")) {
                 this.showConfiguration = Boolean.TRUE;
             } else if (args[i].equals("-c")) {
@@ -603,7 +604,7 @@ public class CommandLineOptions {
                 } else {
                     final PagesMode mode = PagesMode.byName(s);
                     this.renderingOptions
-                            .put(PageableRenderer.PAGES_MODE, mode);
+                    .put(PageableRenderer.PAGES_MODE, mode);
                 }
             }
             return 1;
@@ -935,14 +936,14 @@ public class CommandLineOptions {
             // warning if fofile has been set in xslt mode
             if (this.fofile != null) {
                 CommandLineOptions.log
-                .warn("Can't use fo file with transform mode! Ignoring.\n"
-                        + "Your input is "
-                        + "\n xmlfile: "
-                        + this.xmlfile.getAbsolutePath()
-                        + "\nxsltfile: "
-                        + this.xsltfile.getAbsolutePath()
-                        + "\n  fofile: "
-                        + this.fofile.getAbsolutePath());
+                        .warn("Can't use fo file with transform mode! Ignoring.\n"
+                                + "Your input is "
+                                + "\n xmlfile: "
+                                + this.xmlfile.getAbsolutePath()
+                                + "\nxsltfile: "
+                                + this.xsltfile.getAbsolutePath()
+                                + "\n  fofile: "
+                                + this.fofile.getAbsolutePath());
             }
             if (this.xmlfile != null && !this.xmlfile.exists()) {
                 throw new FileNotFoundException("Error: xml file "
@@ -1050,25 +1051,25 @@ public class CommandLineOptions {
      */
     private InputHandler createInputHandler() {
         switch (this.inputmode) {
-            case FO_INPUT:
-                return new InputHandler(this.fofile);
-            case AREATREE_INPUT:
-                return new AreaTreeInputHandler(this.areatreefile);
-            case IF_INPUT:
-                return new IFInputHandler(this.iffile);
-            case XSLT_INPUT:
-                final InputHandler handler = new InputHandler(this.xmlfile,
-                        this.xsltfile, this.xsltParams);
-                if (this.useCatalogResolver) {
-                    handler.createCatalogResolver(this.foUserAgent);
-                }
-                return handler;
-            case IMAGE_INPUT:
-                return new ImageInputHandler(this.imagefile, this.xsltfile,
-                        this.xsltParams);
-            default:
-                throw new IllegalArgumentException(
-                        "Error creating InputHandler object.");
+        case FO_INPUT:
+            return new InputHandler(this.fofile);
+        case AREATREE_INPUT:
+            return new AreaTreeInputHandler(this.areatreefile);
+        case IF_INPUT:
+            return new IFInputHandler(this.iffile);
+        case XSLT_INPUT:
+            final InputHandler handler = new InputHandler(this.xmlfile,
+                    this.xsltfile, this.xsltParams);
+            if (this.useCatalogResolver) {
+                handler.createCatalogResolver(this.foUserAgent);
+            }
+            return handler;
+        case IMAGE_INPUT:
+            return new ImageInputHandler(this.imagefile, this.xsltfile,
+                    this.xsltParams);
+        default:
+            throw new IllegalArgumentException(
+                    "Error creating InputHandler object.");
         }
     }
 
@@ -1160,12 +1161,12 @@ public class CommandLineOptions {
      */
     public File getInputFile() {
         switch (this.inputmode) {
-            case FO_INPUT:
-                return this.fofile;
-            case XSLT_INPUT:
-                return this.xmlfile;
-            default:
-                return this.fofile;
+        case FO_INPUT:
+            return this.fofile;
+        case XSLT_INPUT:
+            return this.xmlfile;
+        default:
+            return this.fofile;
         }
     }
 
@@ -1285,13 +1286,13 @@ public class CommandLineOptions {
      */
     private void printUsagePrintOutput() {
         System.err
-                .println("USAGE: -print [from[-to][,even|odd]] [-copies numCopies]\n\n"
-                        + "Example:\n"
-                        + "all pages:                        fop infile.fo -print\n"
-                        + "all pages with two copies:        fop infile.fo -print -copies 2\n"
-                        + "all pages starting with page 7:   fop infile.fo -print 7\n"
-                        + "pages 2 to 3:                     fop infile.fo -print 2-3\n"
-                        + "only even page between 10 and 20: fop infile.fo -print 10-20,even\n");
+        .println("USAGE: -print [from[-to][,even|odd]] [-copies numCopies]\n\n"
+                + "Example:\n"
+                + "all pages:                        fop infile.fo -print\n"
+                + "all pages with two copies:        fop infile.fo -print -copies 2\n"
+                + "all pages starting with page 7:   fop infile.fo -print 7\n"
+                + "pages 2 to 3:                     fop infile.fo -print 2-3\n"
+                + "only even page between 10 and 20: fop infile.fo -print 10-20,even\n");
     }
 
     /**
@@ -1300,60 +1301,59 @@ public class CommandLineOptions {
     private void dumpConfiguration() {
         CommandLineOptions.log.info("Input mode: ");
         switch (this.inputmode) {
-            case NOT_SET:
-                CommandLineOptions.log.info("not set");
-                break;
-            case FO_INPUT:
-                CommandLineOptions.log.info("FO ");
-                if (isInputFromStdIn()) {
-                    CommandLineOptions.log.info("fo input file: from stdin");
-                } else {
-                    CommandLineOptions.log.info("fo input file: "
-                            + this.fofile.toString());
-                }
-                break;
-            case XSLT_INPUT:
-                CommandLineOptions.log.info("xslt transformation");
-                if (isInputFromStdIn()) {
-                    CommandLineOptions.log.info("xml input file: from stdin");
-                } else {
-                    CommandLineOptions.log.info("xml input file: "
-                            + this.xmlfile.toString());
-                }
-                CommandLineOptions.log.info("xslt stylesheet: "
-                        + this.xsltfile.toString());
-                break;
-            case AREATREE_INPUT:
-                CommandLineOptions.log.info("AT ");
-                if (isInputFromStdIn()) {
-                    CommandLineOptions.log
-                    .info("area tree input file: from stdin");
-                } else {
-                    CommandLineOptions.log.info("area tree input file: "
-                            + this.areatreefile.toString());
-                }
-                break;
-            case IF_INPUT:
-                CommandLineOptions.log.info("IF ");
-                if (isInputFromStdIn()) {
-                    CommandLineOptions.log
-                    .info("intermediate input file: from stdin");
-                } else {
-                    CommandLineOptions.log.info("intermediate input file: "
-                            + this.iffile.toString());
-                }
-                break;
-            case IMAGE_INPUT:
-                CommandLineOptions.log.info("Image ");
-                if (isInputFromStdIn()) {
-                    CommandLineOptions.log.info("image input file: from stdin");
-                } else {
-                    CommandLineOptions.log.info("image input file: "
-                            + this.imagefile.toString());
-                }
-                break;
-            default:
-                CommandLineOptions.log.info("unknown input type");
+        case NOT_SET:
+            CommandLineOptions.log.info("not set");
+            break;
+        case FO_INPUT:
+            CommandLineOptions.log.info("FO ");
+            if (isInputFromStdIn()) {
+                CommandLineOptions.log.info("fo input file: from stdin");
+            } else {
+                CommandLineOptions.log.info("fo input file: "
+                        + this.fofile.toString());
+            }
+            break;
+        case XSLT_INPUT:
+            CommandLineOptions.log.info("xslt transformation");
+            if (isInputFromStdIn()) {
+                CommandLineOptions.log.info("xml input file: from stdin");
+            } else {
+                CommandLineOptions.log.info("xml input file: "
+                        + this.xmlfile.toString());
+            }
+            CommandLineOptions.log.info("xslt stylesheet: "
+                    + this.xsltfile.toString());
+            break;
+        case AREATREE_INPUT:
+            CommandLineOptions.log.info("AT ");
+            if (isInputFromStdIn()) {
+                CommandLineOptions.log.info("area tree input file: from stdin");
+            } else {
+                CommandLineOptions.log.info("area tree input file: "
+                        + this.areatreefile.toString());
+            }
+            break;
+        case IF_INPUT:
+            CommandLineOptions.log.info("IF ");
+            if (isInputFromStdIn()) {
+                CommandLineOptions.log
+                        .info("intermediate input file: from stdin");
+            } else {
+                CommandLineOptions.log.info("intermediate input file: "
+                        + this.iffile.toString());
+            }
+            break;
+        case IMAGE_INPUT:
+            CommandLineOptions.log.info("Image ");
+            if (isInputFromStdIn()) {
+                CommandLineOptions.log.info("image input file: from stdin");
+            } else {
+                CommandLineOptions.log.info("image input file: "
+                        + this.imagefile.toString());
+            }
+            break;
+        default:
+            CommandLineOptions.log.info("unknown input type");
         }
         CommandLineOptions.log.info("Output mode: ");
         if (this.outputmode == null) {
@@ -1405,7 +1405,7 @@ public class CommandLineOptions {
                     + this.userConfigFile.toString());
         } else {
             CommandLineOptions.log
-            .info("no user configuration file is used [default]");
+                    .info("no user configuration file is used [default]");
         }
     }
 

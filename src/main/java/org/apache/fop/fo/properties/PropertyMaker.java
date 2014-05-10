@@ -127,7 +127,7 @@ import org.apache.fop.fo.expr.PropertyParser;
       */
      public void addKeyword(final String keyword, final String value) {
          if (this.keywords == null) {
-             this.keywords = new HashMap();
+             this.keywords = new HashMap<>();
          }
          this.keywords.put(keyword, value);
      }
@@ -142,7 +142,7 @@ import org.apache.fop.fo.expr.PropertyParser;
       */
      public void addEnum(final String constant, final Property value) {
          if (this.enums == null) {
-             this.enums = new HashMap();
+             this.enums = new HashMap<>();
          }
          this.enums.put(constant, value);
      }
@@ -180,7 +180,7 @@ import org.apache.fop.fo.expr.PropertyParser;
          if (this.shorthands == null) {
              this.shorthands = new PropertyMaker[3];
          }
-         for (int i = 0; i < this.shorthands.length; i++) {
+         for (int i = 0; i < this.shorthands.length; ++i) {
              if (this.shorthands[i] == null) {
                  this.shorthands[i] = shorthand;
                  break;
@@ -718,7 +718,7 @@ import org.apache.fop.fo.expr.PropertyParser;
          }
          Property prop;
          final int n = this.shorthands.length;
-         for (int i = 0; i < n && this.shorthands[i] != null; i++) {
+         for (int i = 0; i < n && this.shorthands[i] != null; ++i) {
              final PropertyMaker shorthand = this.shorthands[i];
              prop = propertyList.getExplicit(shorthand.propId);
              if (prop != null) {

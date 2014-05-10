@@ -108,7 +108,7 @@ public abstract class AbstractImageHandlerGraphics2D implements ImageHandler {
         boolean alphaPremultiplied = true;
         int bands = 2;
         int[] bits = new int[bands];
-        for (int i = 0; i < bands; i++) {
+        for (int i = 0; i < bands; ++i) {
             bits[i] = 8;
         }
         ColorModel cm = new ComponentColorModel(

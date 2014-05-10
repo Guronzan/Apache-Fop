@@ -1591,7 +1591,7 @@ import org.apache.fop.complexscripts.util.ScriptContextTester;
              super(rules);
              // find first non-null rule
              Rule r0 = null;
-             for (int i = 1, n = rules.length; r0 == null && i < n; i++) {
+             for (int i = 1, n = rules.length; r0 == null && i < n; ++i) {
                  if (rules[i] != null) {
                      r0 = rules[i];
                  }
@@ -1599,7 +1599,7 @@ import org.apache.fop.complexscripts.util.ScriptContextTester;
              // enforce rule instance homogeneity
              if (r0 != null) {
                  final Class c = r0.getClass();
-                 for (int i = 1, n = rules.length; i < n; i++) {
+                 for (int i = 1, n = rules.length; i < n; ++i) {
                      final Rule r = rules[i];
                      if (r != null && !c.isInstance(r)) {
                          throw new AdvancedTypographicTableFormatException(

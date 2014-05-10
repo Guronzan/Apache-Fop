@@ -190,7 +190,7 @@ public abstract class RtfElement {
 
         if (nameList != null) {
             // process only given attribute names
-            for (int i = 0; i < nameList.length; i++) {
+            for (int i = 0; i < nameList.length; ++i) {
                 final String name = nameList[i];
                 if (attr.isSet(name)) {
                     writeOneAttribute(name, attr.getValue(name));
@@ -262,7 +262,7 @@ public abstract class RtfElement {
     /** debugging to given PrintWriter */
     void dump(Writer w, int indent)
     throws IOException {
-        for (int i = 0; i < indent; i++) {
+        for (int i = 0; i < indent; ++i) {
             w.write(' ');
         }
         w.write(this.toString());

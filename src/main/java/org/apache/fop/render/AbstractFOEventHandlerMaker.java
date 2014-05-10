@@ -58,7 +58,7 @@ public abstract class AbstractFOEventHandlerMaker {
      */
     public boolean isMimeTypeSupported(String mimeType) {
         String[] mimes = getSupportedMimeTypes();
-        for (int i = 0; i < mimes.length; i++) {
+        for (int i = 0; i < mimes.length; ++i) {
             if (mimes[i].equals(mimeType)) {
                 return true;
             }

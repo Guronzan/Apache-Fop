@@ -19,6 +19,7 @@
 
 package org.apache.fop.layoutmgr;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -433,7 +434,7 @@ public abstract class AbstractBreaker {
         childLC.setBPAlignment(this.alignment);
 
         BlockSequence blockList;
-        this.blockLists = new java.util.ArrayList<>();
+        this.blockLists = new ArrayList<>();
 
         log.debug("PLM> flow BPD =" + flowBPD);
 
@@ -793,7 +794,7 @@ public abstract class AbstractBreaker {
              */
             final ListIterator iter = returnedList.listIterator(returnedList
                     .size());
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 3; ++i) {
                 iter.previous();
                 iter.remove();
             }
@@ -1065,7 +1066,7 @@ public abstract class AbstractBreaker {
                     final Adjustment adjustment = thisGlue.getAdjustmentClass();
                     if (adjustment.equals(Adjustment.SPACE_BEFORE_ADJUSTMENT)
                             || adjustment
-                            .equals(Adjustment.SPACE_AFTER_ADJUSTMENT)) {
+                                    .equals(Adjustment.SPACE_AFTER_ADJUSTMENT)) {
                         // potential space adjustment
                         // glue items before the first box or after the
                         // last one
@@ -1110,8 +1111,8 @@ public abstract class AbstractBreaker {
             if (thisElement.isPenalty() && thisElement.getWidth() > 0) {
                 log.debug("  mandatory variation to the number of lines!");
                 ((BlockLevelLayoutManager) thisElement.getLayoutManager())
-                .negotiateBPDAdjustment(thisElement.getWidth(),
-                        thisElement);
+                        .negotiateBPDAdjustment(thisElement.getWidth(),
+                                thisElement);
             }
 
             if (thisBreak.bpdAdjust != 0 && thisBreak.difference > 0
@@ -1125,7 +1126,7 @@ public abstract class AbstractBreaker {
                                 : -spaceMaxAdjustment.getMin());
                 log.debug("single space: "
                         + (adjustedDiff == thisBreak.difference
-                                || thisBreak.bpdAdjust == 0 ? "ok" : "ERROR"));
+                        || thisBreak.bpdAdjust == 0 ? "ok" : "ERROR"));
             } else if (thisBreak.bpdAdjust != 0) {
                 adjustedDiff += adjustLineNumbers(
                         adjustableLinesList,
@@ -1139,7 +1140,7 @@ public abstract class AbstractBreaker {
                                 .getMax() : -spaceMaxAdjustment.getMin());
                 log.debug("lines and space: "
                         + (adjustedDiff == thisBreak.difference
-                                || thisBreak.bpdAdjust == 0 ? "ok" : "ERROR"));
+                        || thisBreak.bpdAdjust == 0 ? "ok" : "ERROR"));
 
             }
         }
@@ -1186,7 +1187,7 @@ public abstract class AbstractBreaker {
                     .getLayoutManager())
                     .negotiateBPDAdjustment(
                             (int) ((float) partial * difference / total)
-                            - adjustedDiff, blockSpace);
+                                    - adjustedDiff, blockSpace);
             adjustedDiff += newAdjust;
         }
         return adjustedDiff;
@@ -1210,7 +1211,7 @@ public abstract class AbstractBreaker {
                     .getLayoutManager())
                     .negotiateBPDAdjustment(
                             (int) ((float) partial * difference / total)
-                            - adjustedDiff, line);
+                                    - adjustedDiff, line);
             adjustedDiff += newAdjust;
         }
         return adjustedDiff;

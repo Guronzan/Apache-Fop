@@ -754,7 +754,7 @@ public final class ImageRasterPattern {
                 break;
         }
 
-        for (int i = 0; i < repeat; i++) {
+        for (int i = 0; i < repeat; ++i) {
             System.arraycopy(greypattern, 0, rasterdata, i * 32, 32);
         }
         return rasterdata;
