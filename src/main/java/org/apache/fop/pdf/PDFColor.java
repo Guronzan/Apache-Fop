@@ -284,7 +284,7 @@ public class PDFColor extends PDFPathPaint {
      * @return the PDF string for setting the fill/stroke color
      */
     public String getColorSpaceOut(boolean fillNotStroke) {
-        StringBuffer p = new StringBuffer("");
+        StringBuilder p = new StringBuilder("");
 
         if (this.colorSpace.getColorSpace()
                 == PDFDeviceColorSpace.DEVICE_RGB) {       // colorspace is RGB

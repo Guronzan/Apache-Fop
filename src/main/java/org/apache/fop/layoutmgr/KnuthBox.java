@@ -52,7 +52,7 @@ public class KnuthBox extends KnuthElement {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer buffer = new StringBuffer(64);
+        StringBuilder buffer = new StringBuilder(64);
         if (isAuxiliary()) {
             buffer.append("aux. ");
         }

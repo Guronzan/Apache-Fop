@@ -128,7 +128,7 @@ public class TextArea extends AbstractTextArea {
      * @return the text string
      */
     public String getText() {
-        StringBuffer text = new StringBuffer();
+        StringBuilder text = new StringBuilder();
         // assemble the text
         for (InlineArea inline : inlines) {
             if (inline instanceof WordArea) {
@@ -143,7 +143,7 @@ public class TextArea extends AbstractTextArea {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
+        StringBuilder sb = new StringBuilder(super.toString());
         sb.append(" {text=\"");
         sb.append(CharUtilities.toNCRefs(getText()));
         sb.append("\"");

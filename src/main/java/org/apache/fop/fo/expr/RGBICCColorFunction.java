@@ -94,7 +94,7 @@ class RGBICCColorFunction extends FunctionBase {
 
         // rgb-icc is replaced with fop-rgb-icc which has an extra fifth argument containing the
         // color profile src attribute as it is defined in the color-profile declarations element.
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("fop-rgb-icc(");
         sb.append(red / 255f);
         sb.append(',').append(green / 255f);

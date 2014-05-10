@@ -75,7 +75,7 @@ public class AFPPageSetupElement extends AbstractAFPExtensionObject {
     @Override
     protected void characters(char[] data, int start, int length,
                                  PropertyList pList, Locator locator) throws FOPException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         AFPPageSetup pageSetup = getPageSetupAttachment();
         if (pageSetup.getContent() != null) {
             sb.append(pageSetup.getContent());

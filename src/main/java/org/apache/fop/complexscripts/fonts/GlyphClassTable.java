@@ -227,7 +227,7 @@ public final class GlyphClassTable extends GlyphMappingTable implements GlyphCla
         }
         /** {@inheritDoc} */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append("{ firstGlyph = " + firstGlyph + ", classes = {");
             for ( int i = 0, n = gca.length; i < n; i++ ) {
                 if ( i > 0 ) {

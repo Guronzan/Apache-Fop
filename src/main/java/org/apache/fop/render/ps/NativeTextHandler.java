@@ -134,7 +134,7 @@ public class NativeTextHandler implements PSTextHandler {
                   + gen.formatDouble(y) + " moveto ");
         gen.writeln("1 -1 scale");
 
-        StringBuffer sb = new StringBuffer("(");
+        StringBuilder sb = new StringBuilder("(");
         escapeText(s, sb);
         sb.append(") t ");
 
@@ -143,7 +143,7 @@ public class NativeTextHandler implements PSTextHandler {
         gen.restoreGraphicsState();
     }
 
-    private void escapeText(final String text, StringBuffer target) {
+    private void escapeText(final String text, StringBuilder target) {
         final int l = text.length();
         for (int i = 0; i < l; i++) {
             final char ch = text.charAt(i);

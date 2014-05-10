@@ -63,7 +63,7 @@ class CIELabColorFunction extends FunctionBase {
             throw new PropertyException("a* and b* values out of range. Valid range: [-127..+127]");
         }
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("cie-lab-color(" + red + "," + green + "," + blue + ","
                 + l + "," + a + "," + b + ")");
         FOUserAgent ua = (pInfo == null)

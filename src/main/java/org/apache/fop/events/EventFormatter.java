@@ -26,8 +26,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.util.XMLResourceBundle;
 import org.apache.fop.util.text.AdvancedMessageFormat;
@@ -37,153 +36,172 @@ import org.apache.fop.util.text.AdvancedMessageFormat.PartFactory;
 /**
  * Converts events into human-readable, localized messages.
  */
-public final class EventFormatter {
+@Slf4j
+ public final class EventFormatter {
 
-    private static final Pattern INCLUDES_PATTERN = Pattern.compile("\\{\\{.+\\}\\}");
-
-    private static Log log = LogFactory.getLog(EventFormatter.class);
+     private static final Pattern INCLUDES_PATTERN = Pattern
+            .compile("\\{\\{.+\\}\\}");
 
     private EventFormatter() {
-        //utility class
-    }
+         // utility class
+     }
 
-    private static ResourceBundle getBundle ( String groupID, Locale locale ) {
-        ResourceBundle bundle;
-        String baseName = ( groupID != null ) ? groupID : EventFormatter.class.getName();
-        try {
-            ClassLoader classLoader = EventFormatter.class.getClassLoader();
-            bundle = XMLResourceBundle.getXMLBundle ( baseName, locale, classLoader );
-        } catch ( MissingResourceException e ) {
-            if ( log.isTraceEnabled() ) {
-                log.trace ( "No XMLResourceBundle for " + baseName + " available." );
-            }
-            bundle = null;
-        }
-        return bundle;
-    }
+     private static ResourceBundle getBundle(final String groupID,
+            final Locale locale) {
+         ResourceBundle bundle;
+         final String baseName = groupID != null ? groupID
+                : EventFormatter.class.getName();
+         try {
+             final ClassLoader classLoader = EventFormatter.class
+                    .getClassLoader();
+             bundle = XMLResourceBundle.getXMLBundle(baseName, locale,
+                    classLoader);
+         } catch (final MissingResourceException e) {
+             if (log.isTraceEnabled()) {
+                 log.trace("No XMLResourceBundle for " + baseName
+                        + " available.");
+             }
+             bundle = null;
+         }
+         return bundle;
+     }
 
-    /**
-     * Formats an event using the default locale.
-     * @param event the event
+     /**
+      * Formats an event using the default locale.
+      * 
+     * @param event
+     *            the event
      * @return the formatted message
-     */
-    public static String format ( Event event ) {
-        return format ( event, event.getLocale() );
-    }
+      */
+     public static String format(final Event event) {
+         return format(event, event.getLocale());
+     }
 
-    /**
-     * Formats an event using a given locale.
-     * @param event the event
-     * @param locale the locale
+     /**
+      * Formats an event using a given locale.
+      * 
+     * @param event
+     *            the event
+     * @param locale
+     *            the locale
      * @return the formatted message
-     */
-    public static String format(Event event, Locale locale) {
-        return format ( event, getBundle ( event.getEventGroupID(), locale ) );
-    }
+      */
+     public static String format(final Event event, final Locale locale) {
+         return format(event, getBundle(event.getEventGroupID(), locale));
+     }
 
-    private static String format ( Event event, ResourceBundle bundle ) {
-        assert event != null;
-        String key = event.getEventKey();
-        String template;
-        if ( bundle != null ) {
-            template = bundle.getString ( key );
-        } else {
-            template = "Missing bundle. Can't lookup event key: '" + key + "'.";
-        }
-        return format ( event, processIncludes ( template, bundle ) );
-    }
+     private static String format(final Event event, final ResourceBundle bundle) {
+         assert event != null;
+         final String key = event.getEventKey();
+         String template;
+         if (bundle != null) {
+             template = bundle.getString(key);
+         } else {
+             template = "Missing bundle. Can't lookup event key: '" + key + "'.";
+         }
+         return format(event, processIncludes(template, bundle));
+     }
 
-    private static String processIncludes(String template, ResourceBundle bundle) {
-        CharSequence input = template;
-        int replacements;
-        StringBuffer sb;
-        do {
-            sb = new StringBuffer(Math.max(16, input.length()));
-            replacements = processIncludesInner(input, sb, bundle);
-            input = sb;
-        } while (replacements > 0);
-        String s = sb.toString();
-        return s;
-    }
+     private static String processIncludes(final String template,
+            final ResourceBundle bundle) {
+         CharSequence input = template;
+         int replacements;
+         StringBuffer sb;
+         do {
+             sb = new StringBuffer(Math.max(16, input.length()));
+             replacements = processIncludesInner(input, sb, bundle);
+             input = sb;
+         } while (replacements > 0);
+         final String s = sb.toString();
+         return s;
+     }
 
-    private static int processIncludesInner(CharSequence template, StringBuffer sb,
-            ResourceBundle bundle) {
-        int replacements = 0;
-        if ( bundle != null ) {
-            Matcher m = INCLUDES_PATTERN.matcher(template);
-            while (m.find()) {
-                String include = m.group();
-                include = include.substring(2, include.length() - 2);
-                m.appendReplacement(sb, bundle.getString(include));
-                replacements++;
-            }
-            m.appendTail(sb);
-        }
-        return replacements;
-    }
+     private static int processIncludesInner(final CharSequence template,
+            final StringBuffer sb, final ResourceBundle bundle) {
+         int replacements = 0;
+         if (bundle != null) {
+             final Matcher m = INCLUDES_PATTERN.matcher(template);
+             while (m.find()) {
+                 String include = m.group();
+                 include = include.substring(2, include.length() - 2);
+                 m.appendReplacement(sb, bundle.getString(include));
+                 replacements++;
+             }
+             m.appendTail(sb);
+         }
+         return replacements;
+     }
 
-    /**
-     * Formats the event using a given pattern. The pattern needs to be compatible with
-     * {@link AdvancedMessageFormat}.
-     * @param event the event
-     * @param pattern the pattern (compatible with {@link AdvancedMessageFormat})
-     * @return the formatted message
-     */
-    public static String format(Event event, String pattern) {
-        AdvancedMessageFormat format = new AdvancedMessageFormat(pattern);
-        Map params = new java.util.HashMap(event.getParams());
-        params.put("source", event.getSource());
-        params.put("severity", event.getSeverity());
-        params.put("groupID", event.getEventGroupID());
-        params.put("locale", event.getLocale());
-        return format.format(params);
-    }
+     /**
+      * Formats the event using a given pattern. The pattern needs to be
+     * compatible with {@link AdvancedMessageFormat}.
+      * 
+     * @param event
+     *            the event
+     * @param pattern
+     *            the pattern (compatible with {@link AdvancedMessageFormat})
+      * @return the formatted message
+      */
+     public static String format(final Event event, final String pattern) {
+         final AdvancedMessageFormat format = new AdvancedMessageFormat(pattern);
+         final Map params = new java.util.HashMap(event.getParams());
+         params.put("source", event.getSource());
+         params.put("severity", event.getSeverity());
+         params.put("groupID", event.getEventGroupID());
+         params.put("locale", event.getLocale());
+         return format.format(params);
+     }
 
-    private static class LookupFieldPart implements Part {
+     private static class LookupFieldPart implements Part {
 
-        private String fieldName;
+         private final String fieldName;
 
-        public LookupFieldPart(String fieldName) {
-            this.fieldName = fieldName;
-        }
+         public LookupFieldPart(final String fieldName) {
+             this.fieldName = fieldName;
+         }
 
-        public boolean isGenerated(Map params) {
-            return getKey(params) != null;
-        }
+         @Override
+         public boolean isGenerated(final Map params) {
+             return getKey(params) != null;
+         }
 
-        public void write(StringBuffer sb, Map params) {
-            String groupID = (String) params.get("groupID");
-            Locale locale = (Locale) params.get("locale");
-            ResourceBundle bundle = getBundle ( groupID, locale );
-            if ( bundle != null ) {
-                sb.append(bundle.getString(getKey(params)));
-            }
-        }
+         @Override
+         public void write(final StringBuilder sb, final Map params) {
+             final String groupID = (String) params.get("groupID");
+             final Locale locale = (Locale) params.get("locale");
+             final ResourceBundle bundle = getBundle(groupID, locale);
+             if (bundle != null) {
+                 sb.append(bundle.getString(getKey(params)));
+             }
+         }
 
-        private String getKey(Map params) {
-            return (String)params.get(fieldName);
-        }
+         private String getKey(final Map params) {
+             return (String) params.get(this.fieldName);
+         }
 
-        /** {@inheritDoc} */
-        public String toString() {
-            return "{" + this.fieldName + ", lookup}";
-        }
+         /** {@inheritDoc} */
+         @Override
+         public String toString() {
+             return "{" + this.fieldName + ", lookup}";
+         }
 
-    }
+     }
 
-    /** PartFactory for lookups. */
-    public static class LookupFieldPartFactory implements PartFactory {
+     /** PartFactory for lookups. */
+     public static class LookupFieldPartFactory implements PartFactory {
 
-        /** {@inheritDoc} */
-        public Part newPart(String fieldName, String values) {
-            return new LookupFieldPart(fieldName);
-        }
+         /** {@inheritDoc} */
+         @Override
+         public Part newPart(final String fieldName, final String values) {
+             return new LookupFieldPart(fieldName);
+         }
 
-        /** {@inheritDoc} */
-        public String getFormat() {
-            return "lookup";
-        }
+         /** {@inheritDoc} */
+         @Override
+         public String getFormat() {
+             return "lookup";
+         }
 
-    }
+     }
 
-}
+ }

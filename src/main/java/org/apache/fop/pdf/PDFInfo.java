@@ -24,233 +24,255 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.xmlgraphics.util.DateFormatUtil;
 
 /**
  * class representing an /Info object
  */
-public class PDFInfo extends PDFObject {
+@Slf4j
+ public class PDFInfo extends PDFObject {
 
-    /**
-     * the application producing the PDF
-     */
-    private String producer;
+     /**
+      * the application producing the PDF
+      */
+     private String producer;
 
-    private String title = null;
-    private String author = null;
-    private String subject = null;
-    private String keywords = null;
-    private Date creationDate = null;
-    private Date modDate = null;
+     private String title = null;
+     private String author = null;
+     private String subject = null;
+     private String keywords = null;
+     private Date creationDate = null;
+     private Date modDate = null;
 
-    /**
-     * the name of the application that created the
-     * original document before converting to PDF
-     */
-    private String creator;
+     /**
+      * the name of the application that created the original document before
+     * converting to PDF
+      */
+     private String creator;
 
-    /** @return the producer of the document or null if not set */
-    public String getProducer() {
-        return this.producer;
-    }
+     /** @return the producer of the document or null if not set */
+     public String getProducer() {
+         return this.producer;
+     }
 
-    /**
-     * set the producer string
-     *
-     * @param producer the producer string
-     */
-    public void setProducer(String producer) {
-        this.producer = producer;
-    }
+     /**
+      * set the producer string
+      *
+      * @param producer
+     *            the producer string
+      */
+     public void setProducer(final String producer) {
+         this.producer = producer;
+     }
 
-    /** @return the creator of the document or null if not set */
-    public String getCreator() {
-        return this.creator;
-    }
+     /** @return the creator of the document or null if not set */
+     public String getCreator() {
+         return this.creator;
+     }
 
-    /**
-     * set the creator string
-     *
-     * @param creator the document creator
-     */
-    public void setCreator(String creator) {
-        this.creator = creator;
-    }
+     /**
+      * set the creator string
+      *
+      * @param creator
+     *            the document creator
+      */
+     public void setCreator(final String creator) {
+         this.creator = creator;
+     }
 
-    /** @return the title string */
-    public String getTitle() {
-        return this.title;
-    }
+     /** @return the title string */
+     public String getTitle() {
+         return this.title;
+     }
 
-    /**
-     * set the title string
-     *
-     * @param t the document title
-     */
-    public void setTitle(String t) {
-        this.title = t;
-    }
+     /**
+      * set the title string
+      *
+      * @param t
+     *            the document title
+      */
+     public void setTitle(final String t) {
+         this.title = t;
+     }
 
-    /** @return the author of the document or null if not set */
-    public String getAuthor() {
-        return this.author;
-    }
+     /** @return the author of the document or null if not set */
+     public String getAuthor() {
+         return this.author;
+     }
 
-    /**
-     * set the author string
-     *
-     * @param a the document author
-     */
-    public void setAuthor(String a) {
-        this.author = a;
-    }
+     /**
+      * set the author string
+      *
+      * @param a
+     *            the document author
+      */
+     public void setAuthor(final String a) {
+         this.author = a;
+     }
 
-    /** @return the subject of the document or null if not set */
-    public String getSubject() {
-        return this.subject;
-    }
+     /** @return the subject of the document or null if not set */
+     public String getSubject() {
+         return this.subject;
+     }
 
-    /**
-     * set the subject string
-     *
-     * @param s the document subject
-     */
-    public void setSubject(String s) {
-        this.subject = s;
-    }
+     /**
+      * set the subject string
+      *
+      * @param s
+     *            the document subject
+      */
+     public void setSubject(final String s) {
+         this.subject = s;
+     }
 
-    /** @return the keywords for the document or null if not set */
-    public String getKeywords() {
-        return this.keywords;
-    }
+     /** @return the keywords for the document or null if not set */
+     public String getKeywords() {
+         return this.keywords;
+     }
 
-    /**
-     * set the keywords string
-     *
-     * @param k the keywords for this document
-     */
-    public void setKeywords(String k) {
-        this.keywords = k;
-    }
+     /**
+      * set the keywords string
+      *
+      * @param k
+     *            the keywords for this document
+      */
+     public void setKeywords(final String k) {
+         this.keywords = k;
+     }
 
-    /**
-     * @return last set creation date
-     */
-    public Date getCreationDate() {
-        return creationDate;
-    }
+     /**
+      * @return last set creation date
+      */
+     public Date getCreationDate() {
+         return this.creationDate;
+     }
 
-    /**
-     * @param date Date to store in the PDF as creation date. Use null to force current system date.
-     */
-    public void setCreationDate(Date date) {
-        creationDate = date;
-    }
+     /**
+      * @param date
+     *            Date to store in the PDF as creation date. Use null to force
+     *            current system date.
+      */
+     public void setCreationDate(final Date date) {
+         this.creationDate = date;
+     }
 
-    /** @return last modification date
-     */
-    public Date getModDate() {
-        return this.modDate;
-    }
+     /**
+     * @return last modification date
+      */
+     public Date getModDate() {
+         return this.modDate;
+     }
 
-    /**
-     * Sets the date of the last modification.
-     * @param date the last modification date or null if there are no modifications
-     */
-    public void setModDate(Date date) {
-        this.modDate = date;
-    }
+     /**
+      * Sets the date of the last modification.
+      * 
+     * @param date
+     *            the last modification date or null if there are no
+     *            modifications
+      */
+     public void setModDate(final Date date) {
+         this.modDate = date;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public byte[] toPDF() {
-        PDFProfile profile = getDocumentSafely().getProfile();
-        ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
-        try {
-            bout.write(encode("<<\n"));
-            if (title != null && title.length() > 0) {
-                bout.write(encode("/Title "));
-                bout.write(encodeText(this.title));
-                bout.write(encode("\n"));
-            } else {
-                profile.verifyTitleAbsent();
-            }
-            if (author != null) {
-                bout.write(encode("/Author "));
-                bout.write(encodeText(this.author));
-                bout.write(encode("\n"));
-            }
-            if (subject != null) {
-                bout.write(encode("/Subject "));
-                bout.write(encodeText(this.subject));
-                bout.write(encode("\n"));
-            }
-            if (keywords != null) {
-                bout.write(encode("/Keywords "));
-                bout.write(encodeText(this.keywords));
-                bout.write(encode("\n"));
-            }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public byte[] toPDF() {
+         final PDFProfile profile = getDocumentSafely().getProfile();
+         final ByteArrayOutputStream bout = new ByteArrayOutputStream(128);
+         try {
+             bout.write(encode("<<\n"));
+             if (this.title != null && this.title.length() > 0) {
+                 bout.write(encode("/Title "));
+                 bout.write(encodeText(this.title));
+                 bout.write(encode("\n"));
+             } else {
+                 profile.verifyTitleAbsent();
+             }
+             if (this.author != null) {
+                 bout.write(encode("/Author "));
+                 bout.write(encodeText(this.author));
+                 bout.write(encode("\n"));
+             }
+             if (this.subject != null) {
+                 bout.write(encode("/Subject "));
+                 bout.write(encodeText(this.subject));
+                 bout.write(encode("\n"));
+             }
+             if (this.keywords != null) {
+                 bout.write(encode("/Keywords "));
+                 bout.write(encodeText(this.keywords));
+                 bout.write(encode("\n"));
+             }
 
-            if (creator != null) {
-                bout.write(encode("/Creator "));
-                bout.write(encodeText(this.creator));
-                bout.write(encode("\n"));
-            }
+             if (this.creator != null) {
+                 bout.write(encode("/Creator "));
+                 bout.write(encodeText(this.creator));
+                 bout.write(encode("\n"));
+             }
 
-            bout.write(encode("/Producer "));
-            bout.write(encodeText(this.producer));
-            bout.write(encode("\n"));
+             bout.write(encode("/Producer "));
+             bout.write(encodeText(this.producer));
+             bout.write(encode("\n"));
 
-            // creation date in form (D:YYYYMMDDHHmmSSOHH'mm')
-            if (creationDate == null) {
-                creationDate = new Date();
-            }
-            bout.write(encode("/CreationDate "));
-            bout.write(encodeString(formatDateTime(creationDate)));
-            bout.write(encode("\n"));
+             // creation date in form (D:YYYYMMDDHHmmSSOHH'mm')
+             if (this.creationDate == null) {
+                 this.creationDate = new Date();
+             }
+             bout.write(encode("/CreationDate "));
+             bout.write(encodeString(formatDateTime(this.creationDate)));
+             bout.write(encode("\n"));
 
-            if (profile.isModDateRequired() && this.modDate == null) {
-                this.modDate = this.creationDate;
-            }
-            if (this.modDate != null) {
-                bout.write(encode("/ModDate "));
-                bout.write(encodeString(formatDateTime(modDate)));
-                bout.write(encode("\n"));
-            }
-            if (profile.isPDFXActive()) {
-                bout.write(encode("/GTS_PDFXVersion "));
-                bout.write(encodeString(profile.getPDFXMode().getName()));
-                bout.write(encode("\n"));
-            }
-            if (profile.isTrappedEntryRequired()) {
-                bout.write(encode("/Trapped /False\n"));
-            }
+             if (profile.isModDateRequired() && this.modDate == null) {
+                 this.modDate = this.creationDate;
+             }
+             if (this.modDate != null) {
+                 bout.write(encode("/ModDate "));
+                 bout.write(encodeString(formatDateTime(this.modDate)));
+                 bout.write(encode("\n"));
+             }
+             if (profile.isPDFXActive()) {
+                 bout.write(encode("/GTS_PDFXVersion "));
+                 bout.write(encodeString(profile.getPDFXMode().getName()));
+                 bout.write(encode("\n"));
+             }
+             if (profile.isTrappedEntryRequired()) {
+                 bout.write(encode("/Trapped /False\n"));
+             }
 
-            bout.write(encode(">>"));
-        } catch (IOException ioe) {
-            log.error("Ignored I/O exception", ioe);
-        }
-        return bout.toByteArray();
-    }
+             bout.write(encode(">>"));
+         } catch (final IOException ioe) {
+             log.error("Ignored I/O exception", ioe);
+         }
+         return bout.toByteArray();
+     }
 
-    /**
-     * Formats a date/time according to the PDF specification (D:YYYYMMDDHHmmSSOHH'mm').
-     * @param time date/time value to format
-     * @param tz the time zone
+     /**
+      * Formats a date/time according to the PDF specification
+     * (D:YYYYMMDDHHmmSSOHH'mm').
+     * 
+     * @param time
+     *            date/time value to format
+     * @param tz
+     *            the time zone
      * @return the requested String representation
-     */
-    protected static String formatDateTime(final Date time, TimeZone tz) {
-        return DateFormatUtil.formatPDFDate(time, tz);
-    }
+      */
+     protected static String formatDateTime(final Date time, final TimeZone tz) {
+         return DateFormatUtil.formatPDFDate(time, tz);
+     }
 
-    /**
-     * Formats a date/time according to the PDF specification. (D:YYYYMMDDHHmmSSOHH'mm').
-     * @param time date/time value to format
+     /**
+      * Formats a date/time according to the PDF specification.
+     * (D:YYYYMMDDHHmmSSOHH'mm').
+     * 
+     * @param time
+     *            date/time value to format
      * @return the requested String representation
-     */
-    protected static String formatDateTime(final Date time) {
-        return formatDateTime(time, TimeZone.getDefault());
-    }
-}
-
+      */
+     protected static String formatDateTime(final Date time) {
+         return formatDateTime(time, TimeZone.getDefault());
+     }
+ }

@@ -49,7 +49,7 @@ class TableHFPenaltyPosition extends Position {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("TableHFPenaltyPosition:");
+        StringBuilder sb = new StringBuilder("TableHFPenaltyPosition:");
         sb.append(getIndex()).append("(");
         sb.append("header:");
         sb.append(headerElements);

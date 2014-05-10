@@ -93,7 +93,7 @@ public final class RtfStringConverter {
             return null;
         }
 
-        StringBuffer sb = new StringBuffer(Math.max(16, str.length()));
+        StringBuilder sb = new StringBuilder(Math.max(16, str.length()));
         // TODO: could be made more efficient (binary lookup, etc.)
         for (int i = 0; i < str.length(); i++) {
             final Character c = new Character(str.charAt(i));

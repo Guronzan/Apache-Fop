@@ -21,94 +21,99 @@ package org.apache.fop.fonts.substitute;
 
 import java.util.StringTokenizer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Encapsulates a range of font weight values
  */
-public class FontWeightRange {
-
-    /** logging instance */
-    protected static final Log log = LogFactory.getLog("org.apache.fop.render.fonts");
+@Slf4j
+ public class FontWeightRange {
 
     /**
-     * Returns an <code>FontWeightRange</code> object holding the
-     * range values of the specified <code>String</code>.
-     *
-     * @param weightRangeString the value range string
+      * Returns an <code>FontWeightRange</code> object holding the range values
+     * of the specified <code>String</code>.
+      *
+      * @param weightRangeString
+     *            the value range string
      * @return an <code>FontWeightRange</code> object holding the value ranges
-     */
-    public static FontWeightRange valueOf(String weightRangeString) {
-        StringTokenizer rangeToken = new StringTokenizer(weightRangeString, "..");
-        FontWeightRange weightRange = null;
-        if (rangeToken.countTokens() == 2) {
-            String weightString = rangeToken.nextToken().trim();
-            try {
-                int start = Integer.parseInt(weightString);
-                if (start % 100 != 0) {
-                    log.error("font-weight start range is not a multiple of 100");
-                }
-                int end = Integer.parseInt(rangeToken.nextToken());
-                if (end % 100 != 0) {
-                    log.error("font-weight end range is not a multiple of 100");
-                }
-                if (start <= end) {
-                    weightRange = new FontWeightRange(start, end);
-                } else {
-                    log.error("font-weight start range is greater than end range");
-                }
-            } catch (NumberFormatException e) {
-                log.error("invalid font-weight value " + weightString);
-            }
-        }
-        return weightRange;
-    }
+      */
+     public static FontWeightRange valueOf(final String weightRangeString) {
+         final StringTokenizer rangeToken = new StringTokenizer(
+                weightRangeString, "..");
+         FontWeightRange weightRange = null;
+         if (rangeToken.countTokens() == 2) {
+             final String weightString = rangeToken.nextToken().trim();
+             try {
+                 final int start = Integer.parseInt(weightString);
+                 if (start % 100 != 0) {
+                     log.error("font-weight start range is not a multiple of 100");
+                 }
+                 final int end = Integer.parseInt(rangeToken.nextToken());
+                 if (end % 100 != 0) {
+                     log.error("font-weight end range is not a multiple of 100");
+                 }
+                 if (start <= end) {
+                     weightRange = new FontWeightRange(start, end);
+                 } else {
+                     log.error("font-weight start range is greater than end range");
+                 }
+             } catch (final NumberFormatException e) {
+                 log.error("invalid font-weight value " + weightString);
+             }
+         }
+         return weightRange;
+     }
 
-    /** the start range */
-    private int start;
+     /** the start range */
+     private final int start;
 
-    /** the end range */
-    private int end;
+     /** the end range */
+     private final int end;
 
-    /**
-     * Main constructor
-     * @param start the start value range
-     * @param end the end value range
-     */
-    public FontWeightRange(int start, int end) {
-        this.start = start;
-        this.end = end;
-    }
+     /**
+      * Main constructor
+      * 
+     * @param start
+     *            the start value range
+     * @param end
+     *            the end value range
+      */
+     public FontWeightRange(final int start, final int end) {
+         this.start = start;
+         this.end = end;
+     }
 
-    /**
-     * Returns true if the given integer value is within this integer range
-     * @param value the integer value
+     /**
+      * Returns true if the given integer value is within this integer range
+      * 
+     * @param value
+     *            the integer value
      * @return true if the given integer value is within this integer range
-     */
-    public boolean isWithinRange(int value) {
-        return (value >= start && value <= end);
-    }
+      */
+     public boolean isWithinRange(final int value) {
+         return value >= this.start && value <= this.end;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String toString() {
-        return start + ".." + end;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public String toString() {
+         return this.start + ".." + this.end;
+     }
 
-    /**
-     * @return an integer array containing the weight ranges
-     */
-    public int[] toArray() {
-        int cnt = 0;
-        for (int i = start; i <= end; i += 100) {
-            cnt++;
-        }
-        int[] range = new int[cnt];
-        for (int i = 0; i < cnt; i++) {
-            range[i] = start + (i * 100);
-        }
-        return range;
-    }
-}
+     /**
+      * @return an integer array containing the weight ranges
+      */
+     public int[] toArray() {
+         int cnt = 0;
+         for (int i = this.start; i <= this.end; i += 100) {
+             cnt++;
+         }
+         final int[] range = new int[cnt];
+         for (int i = 0; i < cnt; i++) {
+             range[i] = this.start + i * 100;
+         }
+         return range;
+     }
+ }

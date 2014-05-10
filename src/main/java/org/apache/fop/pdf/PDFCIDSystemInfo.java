@@ -52,7 +52,7 @@ public class PDFCIDSystemInfo extends PDFObject {
      * @return the string for the CIDSystemInfo entry with the inline dictionary
      */
     public String toPDFString() {
-        StringBuffer p = new StringBuffer(64);
+        StringBuilder p = new StringBuilder(64);
         p.setLength(0);
         p.append("/CIDSystemInfo << /Registry (");
         p.append(registry);

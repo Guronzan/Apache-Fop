@@ -268,7 +268,7 @@ public class PDFFilterList {
 
     private String buildFilterEntries(List names) {
         int filterCount = 0;
-        StringBuffer sb = new StringBuffer(64);
+        StringBuilder sb = new StringBuilder(64);
         for (int i = 0; i < names.size(); i++) {
             final String name = (String)names.get(i);
             if (name.length() > 0) {
@@ -306,7 +306,7 @@ public class PDFFilterList {
     }
 
     private String buildDecodeParms(List parms) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         boolean needParmsEntry = false;
         sb.append("\n/DecodeParms ");
 

@@ -21,6 +21,8 @@ package org.apache.fop.fo.expr;
 
 import java.awt.Color;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.apps.FOUserAgent;
 import org.apache.fop.datatypes.Length;
 import org.apache.fop.datatypes.Numeric;
@@ -33,120 +35,134 @@ import org.apache.fop.util.CompareUtil;
  * A numeric property which hold the final absolute result of an expression
  * calculations.
  */
-public class NumericProperty extends Property implements Numeric, Length {
-    private double value;
-    private int dim;
+@Slf4j
+ public class NumericProperty extends Property implements Length {
+     private final double value;
+     private final int dim;
 
-    /**
-     * Construct a Numeric object by specifying one or more components,
-     * including absolute length, percent length, table units.
-     * @param value The value of the numeric.
-     * @param dim The dimension of the value. 0 for a Number, 1 for a Length
-     * (any type), >1, <0 if Lengths have been multiplied or divided.
-     */
-    protected NumericProperty(double value, int dim) {
-        this.value = value;
-        this.dim = dim;
-    }
+     /**
+      * Construct a Numeric object by specifying one or more components,
+      * including absolute length, percent length, table units.
+      * 
+     * @param value
+     *            The value of the numeric.
+     * @param dim
+     *            The dimension of the value. 0 for a Number, 1 for a Length
+     *            (any type), >1, <0 if Lengths have been multiplied or divided.
+      */
+     protected NumericProperty(final double value, final int dim) {
+         this.value = value;
+         this.dim = dim;
+     }
 
-    /**
-     * Return the dimension.
-     * {@inheritDoc}
-     */
-    public int getDimension() {
-        return dim;
-    }
+     /**
+      * Return the dimension. {@inheritDoc}
+      */
+     @Override
+     public int getDimension() {
+         return this.dim;
+     }
 
-    /**
-     * Return the value.
-     * {@inheritDoc}
-     */
-    public double getNumericValue() {
-        return value;
-    }
+     /**
+      * Return the value. {@inheritDoc}
+      */
+     @Override
+     public double getNumericValue() {
+         return this.value;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getNumericValue(PercentBaseContext context) {
-        return value;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public double getNumericValue(final PercentBaseContext context) {
+         return this.value;
+     }
 
-    /**
-     * Return true of the numeric is absolute.
-     * {@inheritDoc}
-     */
-    public boolean isAbsolute() {
-        return true;
-    }
+     /**
+      * Return true of the numeric is absolute. {@inheritDoc}
+      */
+     @Override
+     public boolean isAbsolute() {
+         return true;
+     }
 
-    /** {@inheritDoc} */
-    public Numeric getNumeric() {
-        return this;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Numeric getNumeric() {
+         return this;
+     }
 
-    /** {@inheritDoc} */
-    public Number getNumber() {
-        return new Double(value);
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Number getNumber() {
+         return new Double(this.value);
+     }
 
-    /** {@inheritDoc} */
-    public int getValue() {
-        return (int) value;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public int getValue() {
+         return (int) this.value;
+     }
 
-    /** {@inheritDoc} */
-    public int getValue(PercentBaseContext context) {
-        return (int) value;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public int getValue(final PercentBaseContext context) {
+         return (int) this.value;
+     }
 
-    /** {@inheritDoc} */
-    public Length getLength() {
-        if (dim == 1) {
-            return this;
-        }
-        log.error("Can't create length with dimension " + dim);
-        return null;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Length getLength() {
+         if (this.dim == 1) {
+             return this;
+         }
+         log.error("Can't create length with dimension " + this.dim);
+         return null;
+     }
 
-    /** {@inheritDoc} */
-    public Color getColor(FOUserAgent foUserAgent) {
-        // TODO:  try converting to numeric number and then to color
-        return null;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Color getColor(final FOUserAgent foUserAgent) {
+         // TODO: try converting to numeric number and then to color
+         return null;
+     }
 
-    /** {@inheritDoc} */
-    public Object getObject() {
-        return this;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Object getObject() {
+         return this;
+     }
 
-    /** {@inheritDoc} */
-    public String toString() {
-        if (dim == 1) {
-            return (int) value + FixedLength.MPT;
-        } else {
-            return value + "^" + dim;
-        }
-    }
+     /** {@inheritDoc} */
+     @Override
+     public String toString() {
+         if (this.dim == 1) {
+             return (int) this.value + FixedLength.MPT;
+         } else {
+             return this.value + "^" + this.dim;
+         }
+     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + dim;
-        result = prime * result + CompareUtil.getHashCode(value);
-        return result;
-    }
+     @Override
+     public int hashCode() {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result + this.dim;
+         result = prime * result + CompareUtil.getHashCode(this.value);
+         return result;
+     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof NumericProperty)) {
-            return false;
-        }
-        NumericProperty other = (NumericProperty) obj;
-        return dim == other.dim && CompareUtil.equal(value, other.value);
-    }
-}
+     @Override
+     public boolean equals(final Object obj) {
+         if (this == obj) {
+             return true;
+         }
+         if (!(obj instanceof NumericProperty)) {
+             return false;
+         }
+         final NumericProperty other = (NumericProperty) obj;
+         return this.dim == other.dim
+                && CompareUtil.equal(this.value, other.value);
+     }
+ }

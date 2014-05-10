@@ -98,7 +98,7 @@ public class PDFICCBasedColorSpace extends PDFObject implements PDFColorSpace {
     /** {@inheritDoc} */
     @Override
     protected String toPDFString() {
-        StringBuffer sb = new StringBuffer(64);
+        StringBuilder sb = new StringBuilder(64);
         sb.append("[/ICCBased ").append(getICCStream().referencePDF()).append("]");
         return sb.toString();
     }

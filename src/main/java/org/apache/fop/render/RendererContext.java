@@ -116,7 +116,7 @@ public class RendererContext {
 
     /** {@inheritDoc} **/
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer("RendererContext{\n");
+        StringBuilder stringBuffer = new StringBuilder("RendererContext{\n");
         Iterator it = props.keySet().iterator();
         while (it.hasNext()) {
             String key = (String)it.next();

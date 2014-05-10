@@ -48,7 +48,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     private XMLReader parser;
     private int currElement;
     private PatternConsumer consumer;
-    private StringBuffer token;
+    private StringBuilder token;
     private ArrayList exception;
     private char hyphenChar;
     private String errMsg;
@@ -65,7 +65,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      */
     public PatternParser() throws HyphenationException {
         this.consumer = this;
-        token = new StringBuffer();
+        token = new StringBuilder();
         parser = createParser();
         parser.setContentHandler(this);
         parser.setErrorHandler(this);
@@ -137,7 +137,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
         }
     }
 
-    private String readToken(StringBuffer chars) {
+    private String readToken(StringBuilder chars) {
         String word;
         boolean space = false;
         int i;
@@ -183,7 +183,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     }
 
     private static String getPattern(String word) {
-        StringBuffer pat = new StringBuffer();
+        StringBuilder pat = new StringBuilder();
         int len = word.length();
         for (int i = 0; i < len; i++) {
             if (!Character.isDigit(word.charAt(i))) {
@@ -199,7 +199,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
             Object item = ex.get(i);
             if (item instanceof String) {
                 String str = (String)item;
-                StringBuffer buf = new StringBuffer();
+                StringBuilder buf = new StringBuilder();
                 for (int j = 0; j < str.length(); j++) {
                     char c = str.charAt(j);
                     if (c != hyphenChar) {
@@ -225,7 +225,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     }
 
     private String getExceptionWord(ArrayList ex) {
-        StringBuffer res = new StringBuffer();
+        StringBuilder res = new StringBuilder();
         for (int i = 0; i < ex.size(); i++) {
             Object item = ex.get(i);
             if (item instanceof String) {
@@ -240,7 +240,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     }
 
     private static String getInterletterValues(String pat) {
-        StringBuffer il = new StringBuffer();
+        StringBuilder il = new StringBuilder();
         String word = pat + "a";    // add dummy letter to serve as sentinel
         int len = word.length();
         for (int i = 0; i < len; i++) {
@@ -358,11 +358,11 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * {@inheritDoc}
      */
     public void characters(char[] ch, int start, int length) {
-        StringBuffer chars = new StringBuffer(length);
+        StringBuilder chars = new StringBuilder(length);
         chars.append(ch, start, length);
         String word = readToken(chars);
         while (word != null) {
-            // System.out.println("\"" + word + "\"");
+            // log.info("\"" + word + "\"");
             switch (currElement) {
             case ELEM_CLASSES:
                 consumer.addClass(word);
@@ -418,7 +418,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * Returns a string of the location.
      */
     private String getLocationString(SAXParseException ex) {
-        StringBuffer str = new StringBuffer();
+        StringBuilder str = new StringBuilder();
 
         String systemId = ex.getSystemId();
         if (systemId != null) {

@@ -46,7 +46,7 @@ public class HexFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
-    public void write(StringBuffer sb, Map params) {
+    public void write(StringBuilder sb, Map params) {
         if (!params.containsKey(fieldName)) {
             throw new IllegalArgumentException(
                     "Message pattern contains unsupported field name: " + fieldName);

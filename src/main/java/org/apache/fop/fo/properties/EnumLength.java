@@ -19,95 +19,110 @@
 
 package org.apache.fop.fo.properties;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.datatypes.PercentBaseContext;
 import org.apache.fop.util.CompareUtil;
 
 /**
  * A length quantity in XSL which is specified as an enum, such as "auto"
  */
-public class EnumLength extends LengthProperty {
-    private Property enumProperty;
+@Slf4j
+ public class EnumLength extends LengthProperty {
+     private final Property enumProperty;
 
-    /**
-     * Construct an enumerated length from an enum property.
-     * @param enumProperty the enumeration property
-     */
-    public EnumLength(Property enumProperty) {
-        this.enumProperty = enumProperty;
-    }
+     /**
+      * Construct an enumerated length from an enum property.
+      * 
+     * @param enumProperty
+     *            the enumeration property
+      */
+     public EnumLength(final Property enumProperty) {
+         this.enumProperty = enumProperty;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public int getEnum() {
-        return enumProperty.getEnum();
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public int getEnum() {
+         return this.enumProperty.getEnum();
+     }
 
-    /** @return true if absolute */
-    public boolean isAbsolute() {
-        return false;
-    }
+     /** @return true if absolute */
+     @Override
+     public boolean isAbsolute() {
+         return false;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public int getValue() {
-        log.error("getValue() called on " + enumProperty + " length");
-        return 0;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public int getValue() {
+         log.error("getValue() called on " + this.enumProperty + " length");
+         return 0;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public int getValue(PercentBaseContext context) {
-        log.error("getValue() called on " + enumProperty + " length");
-        return 0;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public int getValue(final PercentBaseContext context) {
+         log.error("getValue() called on " + this.enumProperty + " length");
+         return 0;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getNumericValue() {
-        log.error("getNumericValue() called on " + enumProperty + " number");
-        return 0;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public double getNumericValue() {
+         log.error("getNumericValue() called on " + this.enumProperty
+                + " number");
+         return 0;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public double getNumericValue(PercentBaseContext context) {
-        log.error("getNumericValue() called on " + enumProperty + " number");
-        return 0;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public double getNumericValue(final PercentBaseContext context) {
+         log.error("getNumericValue() called on " + this.enumProperty
+                + " number");
+         return 0;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public String getString() {
-        return enumProperty.toString();
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public String getString() {
+         return this.enumProperty.toString();
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object getObject() {
-        return enumProperty.getObject();
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public Object getObject() {
+         return this.enumProperty.getObject();
+     }
 
-    @Override
-    public int hashCode() {
-        return enumProperty.hashCode();
-    }
+     @Override
+     public int hashCode() {
+         return this.enumProperty.hashCode();
+     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (!(obj instanceof EnumLength)) {
-            return false;
-        }
-        EnumLength other = (EnumLength) obj;
-        return CompareUtil.equal(enumProperty, other.enumProperty);
-    }
-}
+     @Override
+     public boolean equals(final Object obj) {
+         if (this == obj) {
+             return true;
+         }
+         if (!(obj instanceof EnumLength)) {
+             return false;
+         }
+         final EnumLength other = (EnumLength) obj;
+         return CompareUtil.equal(this.enumProperty, other.enumProperty);
+     }
+ }

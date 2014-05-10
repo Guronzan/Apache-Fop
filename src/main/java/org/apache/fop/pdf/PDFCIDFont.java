@@ -199,7 +199,7 @@ public class PDFCIDFont extends PDFObject {
      * {@inheritDoc}
      */
     public String toPDFString() {
-        StringBuffer p = new StringBuffer(128);
+        StringBuilder p = new StringBuilder(128);
         p.append("<< /Type /Font");
         p.append("\n/BaseFont /");
         p.append(this.basefont);

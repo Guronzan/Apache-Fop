@@ -22,8 +22,7 @@ package org.apache.fop.fonts.substitute;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.fonts.FontInfo;
 import org.apache.fop.fonts.FontTriplet;
@@ -31,37 +30,42 @@ import org.apache.fop.fonts.FontTriplet;
 /**
  * Font substitutions
  */
-public class FontSubstitutions extends java.util.ArrayList/*<Substitutions>*/ {
+@Slf4j
+ public class FontSubstitutions extends java.util.ArrayList/* <Substitutions> */{
 
-    private static final long serialVersionUID = -9173104935431899722L;
-
-    /** logging instance */
-    protected static final Log log = LogFactory.getLog(FontSubstitutions.class);
+     private static final long serialVersionUID = -9173104935431899722L;
 
     /**
-     * Adjusts a given fontInfo using this font substitution catalog
-     * @param fontInfo font info
-     */
-    public void adjustFontInfo(FontInfo fontInfo) {
-        for (Iterator/*<FontSubstitution>*/ subsIt = super.iterator(); subsIt.hasNext();) {
-            FontSubstitution substitution = (FontSubstitution)subsIt.next();
+      * Adjusts a given fontInfo using this font substitution catalog
+      * 
+     * @param fontInfo
+     *            font info
+      */
+     public void adjustFontInfo(final FontInfo fontInfo) {
+         for (final Iterator/* <FontSubstitution> */subsIt = super.iterator(); subsIt
+                .hasNext();) {
+             final FontSubstitution substitution = (FontSubstitution) subsIt
+                    .next();
 
-            // find the best matching font triplet
-            FontQualifier toQualifier = substitution.getToQualifier();
-            FontTriplet fontTriplet = toQualifier.bestMatch(fontInfo);
-            if (fontTriplet == null) {
-                log.error("Unable to match font substitution for destination qualifier "
-                        + toQualifier);
-                continue;
-            }
-            String internalFontKey = fontInfo.getInternalFontKey(fontTriplet);
+             // find the best matching font triplet
+             final FontQualifier toQualifier = substitution.getToQualifier();
+             final FontTriplet fontTriplet = toQualifier.bestMatch(fontInfo);
+             if (fontTriplet == null) {
+                 log.error("Unable to match font substitution for destination qualifier "
+                         + toQualifier);
+                 continue;
+             }
+             final String internalFontKey = fontInfo
+                    .getInternalFontKey(fontTriplet);
 
-            FontQualifier fromQualifier = substitution.getFromQualifier();
-            List/*<FontTriplet>*/ tripletList = fromQualifier.getTriplets();
-            for (Iterator tripletit = tripletList.iterator(); tripletit.hasNext();) {
-                FontTriplet triplet = (FontTriplet) tripletit.next();
-                fontInfo.addFontProperties(internalFontKey, triplet);
-            }
-        }
-    }
-}
+             final FontQualifier fromQualifier = substitution.getFromQualifier();
+             final List/* <FontTriplet> */tripletList = fromQualifier
+                    .getTriplets();
+             for (final Iterator tripletit = tripletList.iterator(); tripletit
+                    .hasNext();) {
+                 final FontTriplet triplet = (FontTriplet) tripletit.next();
+                 fontInfo.addFontProperties(internalFontKey, triplet);
+             }
+         }
+     }
+ }

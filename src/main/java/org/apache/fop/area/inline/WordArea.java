@@ -197,7 +197,7 @@ public class WordArea extends InlineArea {
      */
     public void reverse ( boolean mirror ) {
         if ( word.length() > 0 ) {
-            word = ( ( new StringBuffer ( word ) ) .reverse() ) .toString();
+            word = ( ( new StringBuilder ( word ) ) .reverse() ) .toString();
             if ( levels != null ) {
                 reverse ( levels );
             }

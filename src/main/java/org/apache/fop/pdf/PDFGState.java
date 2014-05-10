@@ -148,7 +148,7 @@ public class PDFGState extends PDFObject {
      * {@inheritDoc}
      */
     public String toPDFString() {
-        StringBuffer sb = new StringBuffer(64);
+        StringBuilder sb = new StringBuilder(64);
         sb.append("<<\n/Type /ExtGState\n");
         appendVal(sb, GSTATE_ALPHA_NONSTROKE);
         appendVal(sb, GSTATE_ALPHA_STROKE);
@@ -156,7 +156,7 @@ public class PDFGState extends PDFObject {
         return sb.toString();
     }
 
-    private void appendVal(StringBuffer sb, String name) {
+    private void appendVal(StringBuilder sb, String name) {
         Object val = values.get(name);
         if (val != null) {
             sb.append("/" + name + " " + val + "\n");

@@ -102,7 +102,7 @@ public final class URISpecification {
         '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
     };
 
-    private static void appendEscape(StringBuffer sb, byte b) {
+    private static void appendEscape(StringBuilder sb, byte b) {
         sb.append('%').append(HEX_DIGITS[(b >> 4) & 0x0f]).append(HEX_DIGITS[(b >> 0) & 0x0f]);
     }
 
@@ -115,7 +115,7 @@ public final class URISpecification {
      */
     public static String escapeURI(String uri) {
         uri = getURL(uri);
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0, c = uri.length(); i < c; i++) {
             char ch = uri.charAt(i);
             if (ch == '%') {

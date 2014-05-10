@@ -269,7 +269,7 @@ public class EffRow {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer sb = new StringBuffer("EffRow {");
+        StringBuilder sb = new StringBuilder("EffRow {");
         sb.append(index);
         if (getBodyType() == TableRowIterator.BODY) {
             sb.append(" in body");

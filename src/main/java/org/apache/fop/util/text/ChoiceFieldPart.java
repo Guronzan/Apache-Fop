@@ -54,7 +54,7 @@ public class ChoiceFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
-    public void write(StringBuffer sb, Map params) {
+    public void write(StringBuilder sb, Map params) {
         Object obj = params.get(fieldName);
         Number num = (Number)obj;
         String result = this.choiceFormat.format(num.doubleValue());

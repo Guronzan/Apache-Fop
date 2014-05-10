@@ -293,7 +293,7 @@ public class PDFContentGenerator {
      * @param rect the clip rectangle
      */
     public void clipRect(Rectangle rect) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append(format(rect.x / 1000f)).append(' ');
         sb.append(format(rect.y / 1000f)).append(' ');
         sb.append(format(rect.width / 1000f)).append(' ');
@@ -347,7 +347,7 @@ public class PDFContentGenerator {
      */
     public void setColor(Color col, boolean fill, PDFStream stream) {
         assert stream != null;
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         setColor(col, fill, sb);
         stream.add(sb.toString());
     }
@@ -366,10 +366,10 @@ public class PDFContentGenerator {
      * this method does not check the PDFState for optimization possibilities.
      * @param col the color to apply
      * @param fill true to set the fill color, false for the foreground color
-     * @param pdf StringBuffer to write the PDF code to, if null, the code is
+     * @param pdf StringBuilder to write the PDF code to, if null, the code is
      *     written to the current stream.
      */
-    protected void setColor(Color col, boolean fill, StringBuffer pdf) {
+    protected void setColor(Color col, boolean fill, StringBuilder pdf) {
         if (pdf != null) {
             colorHandler.establishColor(pdf, col, fill);
         } else {
@@ -381,10 +381,10 @@ public class PDFContentGenerator {
      * Establishes a new foreground or fill color.
      * @param col the color to apply (null skips this operation)
      * @param fill true to set the fill color, false for the foreground color
-     * @param pdf StringBuffer to write the PDF code to, if null, the code is
+     * @param pdf StringBuilder to write the PDF code to, if null, the code is
      *     written to the current stream.
      */
-    public void updateColor(Color col, boolean fill, StringBuffer pdf) {
+    public void updateColor(Color col, boolean fill, StringBuilder pdf) {
         if (col == null) {
             return;
         }

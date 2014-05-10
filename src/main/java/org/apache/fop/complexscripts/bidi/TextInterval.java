@@ -118,7 +118,7 @@ class TextInterval {
         return l;
     }
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char c;
         if ( fn instanceof FOText ) {
             c = 'T';

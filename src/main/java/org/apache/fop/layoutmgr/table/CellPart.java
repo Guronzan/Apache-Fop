@@ -119,7 +119,7 @@ class CellPart {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer sb = new StringBuffer("Part: ");
+        StringBuilder sb = new StringBuilder("Part: ");
         sb.append(start).append("-").append(end);
         sb.append(" [").append(isFirstPart() ? "F" : "-").append(isLastPart() ? "L" : "-");
         sb.append("] ").append(pgu);

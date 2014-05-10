@@ -133,7 +133,7 @@ public class BuilderContext {
      */
     public void replaceContainer(RtfContainer oldC, RtfContainer newC)
     throws Exception {
-        // treating the Stack as a Vector allows such manipulations (yes, I hear you screaming ;-)
+        // treating the Stack as a List allows such manipulations (yes, I hear you screaming ;-)
         final int index = containers.indexOf(oldC);
         if (index < 0) {
             throw new Exception("container to replace not found:" + oldC);

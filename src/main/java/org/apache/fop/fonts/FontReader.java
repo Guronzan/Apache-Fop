@@ -57,7 +57,7 @@ public class FontReader extends DefaultHandler {
     private CustomFont returnFont = null;
     private MultiByteFont multiFont = null;
     private SingleByteFont singleFont = null;
-    private StringBuffer text = new StringBuffer();
+    private StringBuilder text = new StringBuilder();
 
     private List<Integer> cidWidths = null;
     private int cidWidthIndex = 0;

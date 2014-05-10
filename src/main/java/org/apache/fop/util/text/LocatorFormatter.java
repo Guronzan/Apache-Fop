@@ -29,7 +29,7 @@ import org.apache.fop.util.text.AdvancedMessageFormat.ObjectFormatter;
 public class LocatorFormatter implements ObjectFormatter {
 
     /** {@inheritDoc} */
-    public void format(StringBuffer sb, Object obj) {
+    public void format(StringBuilder sb, Object obj) {
         Locator loc = (Locator)obj;
         sb.append(loc.getLineNumber()).append(":").append(loc.getColumnNumber());
     }

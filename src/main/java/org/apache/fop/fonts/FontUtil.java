@@ -68,7 +68,7 @@ public final class FontUtil {
      */
     public static String stripWhiteSpace(String str) {
         if (str != null) {
-            StringBuffer stringBuffer = new StringBuffer(str.length());
+            StringBuilder stringBuffer = new StringBuilder(str.length());
             for (int i = 0, strLen = str.length(); i < strLen; i++) {
                 final char ch = str.charAt(i);
                 if (ch != ' ' && ch != '\r' && ch != '\n' && ch != '\t') {

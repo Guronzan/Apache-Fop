@@ -27,10 +27,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.util.UnitConv;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FopFactoryConfigurator;
 import org.apache.fop.apps.MimeConstants;
@@ -43,300 +40,332 @@ import org.apache.fop.render.intermediate.IFPainter;
 import org.apache.fop.render.java2d.Java2DPainter;
 import org.apache.fop.render.java2d.Java2DUtil;
 import org.apache.fop.render.pcl.extensions.PCLElementMapping;
+import org.apache.xmlgraphics.util.UnitConv;
 
 /**
  * {@link org.apache.fop.render.intermediate.IFDocumentHandler} implementation
  * that produces PCL 5.
  */
-public class PCLDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
-            implements PCLConstants {
-
-    /** logging instance */
-    private static Log log = LogFactory.getLog(PCLDocumentHandler.class);
-
-    /** Utility class for handling all sorts of peripheral tasks around PCL generation. */
-    protected PCLRenderingUtil pclUtil;
-
-    /** The PCL generator */
-    private PCLGenerator gen;
-
-    private PCLPageDefinition currentPageDefinition;
-
-    /** contains the pageWith of the last printed page */
-    private long pageWidth = 0;
-    /** contains the pageHeight of the last printed page */
-    private long pageHeight = 0;
-
-    /** the current page image (only set when all-bitmap painting is activated) */
-    private BufferedImage currentImage;
-
+@Slf4j
+ public class PCLDocumentHandler extends AbstractBinaryWritingIFDocumentHandler
+        implements PCLConstants {
 
     /**
-     * Default constructor.
+     * Utility class for handling all sorts of peripheral tasks around PCL
+     * generation.
      */
-    public PCLDocumentHandler() {
-    }
+     protected PCLRenderingUtil pclUtil;
 
-    /** {@inheritDoc} */
-    public boolean supportsPagesOutOfOrder() {
-        return false;
-    }
+     /** The PCL generator */
+     private PCLGenerator gen;
 
-    /** {@inheritDoc} */
-    public String getMimeType() {
-        return MimeConstants.MIME_PCL;
-    }
+     private PCLPageDefinition currentPageDefinition;
 
-    /** {@inheritDoc} */
-    @Override
-    public void setContext(IFContext context) {
-        super.setContext(context);
-        this.pclUtil = new PCLRenderingUtil(context.getUserAgent());
-    }
+     /** contains the pageWith of the last printed page */
+     private long pageWidth = 0;
+     /** contains the pageHeight of the last printed page */
+     private long pageHeight = 0;
 
-    /** {@inheritDoc} */
-    public IFDocumentHandlerConfigurator getConfigurator() {
-        return new PCLRendererConfigurator(getUserAgent());
-    }
+     /** the current page image (only set when all-bitmap painting is activated) */
+     private BufferedImage currentImage;
 
-    /** {@inheritDoc} */
-    @Override
-    public void setDefaultFontInfo(FontInfo fontInfo) {
-        FontInfo fi = Java2DUtil.buildDefaultJava2DBasedFontInfo(fontInfo, getUserAgent());
-        setFontInfo(fi);
-    }
+    /**
+      * Default constructor.
+      */
+     public PCLDocumentHandler() {
+     }
 
-    PCLRenderingUtil getPCLUtil() {
-        return this.pclUtil;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean supportsPagesOutOfOrder() {
+         return false;
+     }
 
-    PCLGenerator getPCLGenerator() {
-        return this.gen;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public String getMimeType() {
+         return MimeConstants.MIME_PCL;
+     }
 
-    /** @return the target resolution */
-    protected int getResolution() {
-        int resolution = Math.round(getUserAgent().getTargetResolution());
-        if (resolution <= 300) {
-            return 300;
-        } else {
-            return 600;
-        }
-    }
+     /** {@inheritDoc} */
+     @Override
+     public void setContext(final IFContext context) {
+         super.setContext(context);
+         this.pclUtil = new PCLRenderingUtil(context.getUserAgent());
+     }
 
-    //----------------------------------------------------------------------------------------------
+     /** {@inheritDoc} */
+     @Override
+     public IFDocumentHandlerConfigurator getConfigurator() {
+         return new PCLRendererConfigurator(getUserAgent());
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void startDocument() throws IFException {
-        super.startDocument();
-        try {
-            this.gen = new PCLGenerator(this.outputStream, getResolution());
-            this.gen.setDitheringQuality(pclUtil.getDitheringQuality());
+     /** {@inheritDoc} */
+     @Override
+     public void setDefaultFontInfo(final FontInfo fontInfo) {
+         final FontInfo fi = Java2DUtil.buildDefaultJava2DBasedFontInfo(
+                fontInfo, getUserAgent());
+         setFontInfo(fi);
+     }
 
-            if (!pclUtil.isPJLDisabled()) {
-                gen.universalEndOfLanguage();
-                gen.writeText("@PJL COMMENT Produced by " + getUserAgent().getProducer() + "\n");
-                if (getUserAgent().getTitle() != null) {
-                    gen.writeText("@PJL JOB NAME = \"" + getUserAgent().getTitle() + "\"\n");
-                }
-                gen.writeText("@PJL SET RESOLUTION = " + getResolution() + "\n");
-                gen.writeText("@PJL ENTER LANGUAGE = PCL\n");
-            }
-            gen.resetPrinter();
-            gen.setUnitOfMeasure(getResolution());
-            gen.setRasterGraphicsResolution(getResolution());
-        } catch (IOException e) {
-            throw new IFException("I/O error in startDocument()", e);
-        }
-    }
+     PCLRenderingUtil getPCLUtil() {
+         return this.pclUtil;
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void endDocumentHeader() throws IFException {
-    }
+     PCLGenerator getPCLGenerator() {
+         return this.gen;
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void endDocument() throws IFException {
-        try {
-            gen.separateJobs();
-            gen.resetPrinter();
-            if (!pclUtil.isPJLDisabled()) {
-                gen.universalEndOfLanguage();
-            }
-        } catch (IOException ioe) {
-            throw new IFException("I/O error in endDocument()", ioe);
-        }
-        super.endDocument();
-    }
+     /** @return the target resolution */
+     protected int getResolution() {
+         final int resolution = Math.round(getUserAgent().getTargetResolution());
+         if (resolution <= 300) {
+             return 300;
+         } else {
+             return 600;
+         }
+     }
 
-    /** {@inheritDoc} */
-    public void startPageSequence(String id) throws IFException {
-        //nop
-    }
+     // ----------------------------------------------------------------------------------------------
 
-    /** {@inheritDoc} */
-    public void endPageSequence() throws IFException {
-        //nop
-    }
+     /** {@inheritDoc} */
+     @Override
+     public void startDocument() throws IFException {
+         super.startDocument();
+         try {
+             this.gen = new PCLGenerator(this.outputStream, getResolution());
+             this.gen.setDitheringQuality(this.pclUtil.getDitheringQuality());
 
-    /** {@inheritDoc} */
-    public void startPage(int index, String name, String pageMasterName, Dimension size)
+             if (!this.pclUtil.isPJLDisabled()) {
+                 this.gen.universalEndOfLanguage();
+                 this.gen.writeText("@PJL COMMENT Produced by "
+                        + getUserAgent().getProducer() + "\n");
+                 if (getUserAgent().getTitle() != null) {
+                     this.gen.writeText("@PJL JOB NAME = \""
+                            + getUserAgent().getTitle() + "\"\n");
+                 }
+                 this.gen.writeText("@PJL SET RESOLUTION = " + getResolution()
+                        + "\n");
+                 this.gen.writeText("@PJL ENTER LANGUAGE = PCL\n");
+             }
+             this.gen.resetPrinter();
+             this.gen.setUnitOfMeasure(getResolution());
+             this.gen.setRasterGraphicsResolution(getResolution());
+         } catch (final IOException e) {
+             throw new IFException("I/O error in startDocument()", e);
+         }
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void endDocumentHeader() throws IFException {
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void endDocument() throws IFException {
+         try {
+             this.gen.separateJobs();
+             this.gen.resetPrinter();
+             if (!this.pclUtil.isPJLDisabled()) {
+                 this.gen.universalEndOfLanguage();
+             }
+         } catch (final IOException ioe) {
+             throw new IFException("I/O error in endDocument()", ioe);
+         }
+         super.endDocument();
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void startPageSequence(final String id) throws IFException {
+         // nop
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void endPageSequence() throws IFException {
+         // nop
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void startPage(final int index, final String name,
+            final String pageMasterName, final Dimension size)
+             throws IFException {
+
+         try {
+             // Paper source
+             final Object paperSource = getContext().getForeignAttribute(
+                     PCLElementMapping.PCL_PAPER_SOURCE);
+             if (paperSource != null) {
+                 this.gen.selectPaperSource(Integer.parseInt(paperSource
+                        .toString()));
+             }
+
+             // Output bin
+             final Object outputBin = getContext().getForeignAttribute(
+                     PCLElementMapping.PCL_OUTPUT_BIN);
+             if (outputBin != null) {
+                 this.gen.selectOutputBin(Integer.parseInt(outputBin.toString()));
+             }
+
+             // Is Page duplex?
+             final Object pageDuplex = getContext().getForeignAttribute(
+                     PCLElementMapping.PCL_DUPLEX_MODE);
+             if (pageDuplex != null) {
+                 this.gen.selectDuplexMode(Integer.parseInt(pageDuplex
+                        .toString()));
+             }
+
+             // Page size
+             final long pagewidth = size.width;
+             final long pageheight = size.height;
+             selectPageFormat(pagewidth, pageheight);
+         } catch (final IOException ioe) {
+             throw new IFException("I/O error in startPage()", ioe);
+         }
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public IFPainter startPageContent() throws IFException {
+         if (this.pclUtil.getRenderingMode() == PCLRenderingMode.BITMAP) {
+             return createAllBitmapPainter();
+         } else {
+             return new PCLPainter(this, this.currentPageDefinition);
+         }
+     }
+
+     private IFPainter createAllBitmapPainter() {
+         final double scale = this.gen.getMaximumBitmapResolution()
+                 / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
+         final Rectangle printArea = this.currentPageDefinition
+                .getLogicalPageRect();
+         final int bitmapWidth = (int) Math.ceil(UnitConv.mpt2px(
+                printArea.width, this.gen.getMaximumBitmapResolution()));
+         final int bitmapHeight = (int) Math.ceil(UnitConv.mpt2px(
+                printArea.height, this.gen.getMaximumBitmapResolution()));
+         this.currentImage = createBufferedImage(bitmapWidth, bitmapHeight);
+         final Graphics2D graphics2D = this.currentImage.createGraphics();
+
+         if (!PCLGenerator.isJAIAvailable()) {
+             final RenderingHints hints = new RenderingHints(null);
+             // These hints don't seem to make a difference :-( Not seeing any
+            // dithering on Sun Java.
+             hints.put(RenderingHints.KEY_DITHERING,
+                     RenderingHints.VALUE_DITHER_ENABLE);
+             graphics2D.addRenderingHints(hints);
+         }
+
+         // Ensure white page background
+         graphics2D.setBackground(Color.WHITE);
+         graphics2D.clearRect(0, 0, bitmapWidth, bitmapHeight);
+
+         graphics2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
+                 RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
+                 RenderingHints.VALUE_STROKE_PURE);
+         graphics2D.scale(scale / 1000f, scale / 1000f);
+         graphics2D.translate(-printArea.x, -printArea.y);
+
+         return new Java2DPainter(graphics2D, getContext(), getFontInfo());
+     }
+
+     private BufferedImage createBufferedImage(final int bitmapWidth,
+            final int bitmapHeight) {
+         int bitmapType;
+         if (PCLGenerator.isJAIAvailable()) {
+             // TYPE_BYTE_GRAY was used to work around the lack of dithering when
+            // using
+             // TYPE_BYTE_BINARY. Adding RenderingHints didn't help.
+             bitmapType = BufferedImage.TYPE_BYTE_GRAY;
+             // bitmapType = BufferedImage.TYPE_INT_RGB; //Use to enable Batik
+            // gradients
+         } else {
+             bitmapType = BufferedImage.TYPE_BYTE_BINARY;
+         }
+         return new BufferedImage(bitmapWidth, bitmapHeight, bitmapType);
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void endPageContent() throws IFException {
+         if (this.currentImage != null) {
+             try {
+                 // ImageWriterUtil.saveAsPNG(this.currentImage, new
+                // java.io.File("D:/page.png"));
+                 final Rectangle printArea = this.currentPageDefinition
+                        .getLogicalPageRect();
+                 this.gen.setCursorPos(0, 0);
+                 this.gen.paintBitmap(this.currentImage, printArea.getSize(),
+                        true);
+             } catch (final IOException ioe) {
+                 throw new IFException("I/O error while encoding page image",
+                        ioe);
+             } finally {
+                 this.currentImage = null;
+             }
+         }
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void endPage() throws IFException {
+         try {
+             // Eject page
+             this.gen.formFeed();
+         } catch (final IOException ioe) {
+             throw new IFException("I/O error in endPage()", ioe);
+         }
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void handleExtensionObject(final Object extension)
             throws IFException {
+         if (false) {
+             // TODO Handle extensions
+         } else {
+             log.debug("Don't know how to handle extension object. Ignoring: "
+                     + extension + " (" + extension.getClass().getName() + ")");
+         }
+     }
 
-        try {
-            //Paper source
-            Object paperSource = getContext().getForeignAttribute(
-                    PCLElementMapping.PCL_PAPER_SOURCE);
-            if (paperSource != null) {
-                gen.selectPaperSource(Integer.parseInt(paperSource.toString()));
-            }
+     private void selectPageFormat(final long pagewidth, final long pageheight)
+            throws IOException {
+         // Only set the page format if it changes (otherwise duplex printing
+        // won't work)
+         if (pagewidth != this.pageWidth || pageheight != this.pageHeight) {
+             this.pageWidth = pagewidth;
+             this.pageHeight = pageheight;
 
-            //Output bin
-            Object outputBin = getContext().getForeignAttribute(
-                    PCLElementMapping.PCL_OUTPUT_BIN);
-            if (outputBin != null) {
-                gen.selectOutputBin(Integer.parseInt(outputBin.toString()));
-            }
+             this.currentPageDefinition = PCLPageDefinition.getPageDefinition(
+                     pagewidth, pageheight, 1000);
 
-            // Is Page duplex?
-            Object pageDuplex = getContext().getForeignAttribute(
-                    PCLElementMapping.PCL_DUPLEX_MODE);
-            if (pageDuplex != null) {
-                gen.selectDuplexMode(Integer.parseInt(pageDuplex.toString()));
-            }
+             if (this.currentPageDefinition == null) {
+                 this.currentPageDefinition = PCLPageDefinition
+                        .getDefaultPageDefinition();
+                 log.warn("Paper type could not be determined. Falling back to: "
+                         + this.currentPageDefinition.getName());
+             }
+             if (log.isDebugEnabled()) {
+                 log.debug("page size: "
+                        + this.currentPageDefinition.getPhysicalPageSize());
+                 log.debug("logical page: "
+                        + this.currentPageDefinition.getLogicalPageRect());
+             }
 
-            //Page size
-            final long pagewidth = size.width;
-            final long pageheight = size.height;
-            selectPageFormat(pagewidth, pageheight);
-        } catch (IOException ioe) {
-            throw new IFException("I/O error in startPage()", ioe);
-        }
-    }
+             if (this.currentPageDefinition.isLandscapeFormat()) {
+                 this.gen.writeCommand("&l1O"); // Landscape Orientation
+             } else {
+                 this.gen.writeCommand("&l0O"); // Portrait Orientation
+             }
+             this.gen.selectPageSize(this.currentPageDefinition.getSelector());
 
-    /** {@inheritDoc} */
-    public IFPainter startPageContent() throws IFException {
-        if (pclUtil.getRenderingMode() == PCLRenderingMode.BITMAP) {
-            return createAllBitmapPainter();
-        } else {
-            return new PCLPainter(this, this.currentPageDefinition);
-        }
-    }
+             this.gen.clearHorizontalMargins();
+             this.gen.setTopMargin(0);
+         }
+     }
 
-    private IFPainter createAllBitmapPainter() {
-        double scale = gen.getMaximumBitmapResolution()
-                / FopFactoryConfigurator.DEFAULT_TARGET_RESOLUTION;
-        Rectangle printArea = this.currentPageDefinition.getLogicalPageRect();
-        int bitmapWidth = (int)Math.ceil(
-                UnitConv.mpt2px(printArea.width, gen.getMaximumBitmapResolution()));
-        int bitmapHeight = (int)Math.ceil(
-                UnitConv.mpt2px(printArea.height, gen.getMaximumBitmapResolution()));
-        this.currentImage = createBufferedImage(bitmapWidth, bitmapHeight);
-        Graphics2D graphics2D = this.currentImage.createGraphics();
-
-        if (!PCLGenerator.isJAIAvailable()) {
-            RenderingHints hints = new RenderingHints(null);
-            //These hints don't seem to make a difference :-( Not seeing any dithering on Sun Java.
-            hints.put(RenderingHints.KEY_DITHERING,
-                    RenderingHints.VALUE_DITHER_ENABLE);
-            graphics2D.addRenderingHints(hints);
-        }
-
-        //Ensure white page background
-        graphics2D.setBackground(Color.WHITE);
-        graphics2D.clearRect(0, 0, bitmapWidth, bitmapHeight);
-
-        graphics2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS,
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL,
-                RenderingHints.VALUE_STROKE_PURE);
-        graphics2D.scale(scale / 1000f, scale / 1000f);
-        graphics2D.translate(-printArea.x, -printArea.y);
-
-        return new Java2DPainter(graphics2D, getContext(), getFontInfo());
-    }
-
-    private BufferedImage createBufferedImage(int bitmapWidth, int bitmapHeight) {
-        int bitmapType;
-        if (PCLGenerator.isJAIAvailable()) {
-            //TYPE_BYTE_GRAY was used to work around the lack of dithering when using
-            //TYPE_BYTE_BINARY. Adding RenderingHints didn't help.
-            bitmapType = BufferedImage.TYPE_BYTE_GRAY;
-            //bitmapType = BufferedImage.TYPE_INT_RGB; //Use to enable Batik gradients
-        } else {
-            bitmapType = BufferedImage.TYPE_BYTE_BINARY;
-        }
-        return new BufferedImage(
-                bitmapWidth, bitmapHeight, bitmapType);
-    }
-
-    /** {@inheritDoc} */
-    public void endPageContent() throws IFException {
-        if (this.currentImage != null) {
-            try {
-                //ImageWriterUtil.saveAsPNG(this.currentImage, new java.io.File("D:/page.png"));
-                Rectangle printArea = this.currentPageDefinition.getLogicalPageRect();
-                gen.setCursorPos(0, 0);
-                gen.paintBitmap(this.currentImage, printArea.getSize(), true);
-            } catch (IOException ioe) {
-                throw new IFException("I/O error while encoding page image", ioe);
-            } finally {
-                this.currentImage = null;
-            }
-        }
-    }
-
-    /** {@inheritDoc} */
-    public void endPage() throws IFException {
-        try {
-            //Eject page
-            gen.formFeed();
-        } catch (IOException ioe) {
-            throw new IFException("I/O error in endPage()", ioe);
-        }
-    }
-
-    /** {@inheritDoc} */
-    public void handleExtensionObject(Object extension) throws IFException {
-        if (false) {
-            //TODO Handle extensions
-        } else {
-            log.debug("Don't know how to handle extension object. Ignoring: "
-                    + extension + " (" + extension.getClass().getName() + ")");
-        }
-    }
-
-    private void selectPageFormat(long pagewidth, long pageheight) throws IOException {
-        //Only set the page format if it changes (otherwise duplex printing won't work)
-        if ((pagewidth != this.pageWidth) || (pageheight != this.pageHeight))  {
-            this.pageWidth = pagewidth;
-            this.pageHeight = pageheight;
-
-            this.currentPageDefinition = PCLPageDefinition.getPageDefinition(
-                    pagewidth, pageheight, 1000);
-
-            if (this.currentPageDefinition == null) {
-                this.currentPageDefinition = PCLPageDefinition.getDefaultPageDefinition();
-                log.warn("Paper type could not be determined. Falling back to: "
-                        + this.currentPageDefinition.getName());
-            }
-            if (log.isDebugEnabled()) {
-                log.debug("page size: " + currentPageDefinition.getPhysicalPageSize());
-                log.debug("logical page: " + currentPageDefinition.getLogicalPageRect());
-            }
-
-            if (this.currentPageDefinition.isLandscapeFormat()) {
-                gen.writeCommand("&l1O"); //Landscape Orientation
-            } else {
-                gen.writeCommand("&l0O"); //Portrait Orientation
-            }
-            gen.selectPageSize(this.currentPageDefinition.getSelector());
-
-            gen.clearHorizontalMargins();
-            gen.setTopMargin(0);
-        }
-    }
-
-}
+ }

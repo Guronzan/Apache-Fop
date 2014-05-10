@@ -34,7 +34,7 @@ class CMYKColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("cmyk(" + args[0] + "," + args[1] + "," + args[2] + "," + args[3] + ")");
         FOUserAgent ua = (pInfo == null)
                 ? null

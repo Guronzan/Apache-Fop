@@ -39,7 +39,7 @@ public final class BinaryUtils {
      * @return the hexadecimal digits as a byte array
      */
     public static byte[] convert(int integer, int bufsize) {
-        StringBuffer buf = new StringBuffer(Integer.toHexString(integer));
+        StringBuilder buf = new StringBuilder(Integer.toHexString(integer));
         //Convert to an even number of digits
         if (buf.length() % 2 != 0) {
             buf.insert(0, "0");

@@ -54,7 +54,7 @@ class TableHeaderFooterPosition extends Position {
     }
 
     public String toString() {
-        StringBuffer sb = new StringBuffer("Table");
+        StringBuilder sb = new StringBuilder("Table");
         sb.append(header ? "Header" : "Footer");
         sb.append("Position:");
         sb.append(getIndex()).append("(");

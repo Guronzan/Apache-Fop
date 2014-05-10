@@ -23,66 +23,78 @@ package org.apache.fop.pdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.fonts.type1.PFBData;
 
 /**
  * Special PDFStream for embedding Type 1 fonts.
  */
-public class PDFT1Stream extends AbstractPDFFontStream {
+@Slf4j
+ public class PDFT1Stream extends AbstractPDFFontStream {
 
-    private PFBData pfb;
+     private PFBData pfb;
 
-    /** {@inheritDoc} */
-    protected int getSizeHint() throws IOException {
-        if (this.pfb != null) {
-            return pfb.getLength();
-        } else {
-            return 0; //no hint available
-        }
-    }
+     /** {@inheritDoc} */
+     @Override
+     protected int getSizeHint() throws IOException {
+         if (this.pfb != null) {
+             return this.pfb.getLength();
+         } else {
+             return 0; // no hint available
+         }
+     }
 
-    /**
-     * Overload the base object method so we don't have to copy
-     * byte arrays around so much
-     * {@inheritDoc}
-     */
-    public int output(java.io.OutputStream stream)
-            throws java.io.IOException {
-        if (pfb == null) {
-            throw new IllegalStateException("pfb must not be null at this point");
-        }
-        if (log.isDebugEnabled()) {
-            log.debug("Writing " + pfb.getLength() + " bytes of Type 1 font data");
-        }
+     /**
+      * Overload the base object method so we don't have to copy byte arrays
+     * around so much {@inheritDoc}
+      */
+     @Override
+     public int output(final java.io.OutputStream stream)
+             throws java.io.IOException {
+         if (this.pfb == null) {
+             throw new IllegalStateException(
+                    "pfb must not be null at this point");
+         }
+         if (log.isDebugEnabled()) {
+             log.debug("Writing " + this.pfb.getLength()
+                    + " bytes of Type 1 font data");
+         }
 
-        int length = super.output(stream);
-        log.debug("Embedded Type1 font");
-        return length;
-    }
+         final int length = super.output(stream);
+         log.debug("Embedded Type1 font");
+         return length;
+     }
 
-    /** {@inheritDoc} */
-    protected void populateStreamDict(Object lengthEntry) {
-        super.populateStreamDict(lengthEntry);
-        put("Length1", new Integer(pfb.getLength1()));
-        put("Length2", new Integer(pfb.getLength2()));
-        put("Length3", new Integer(pfb.getLength3()));
-    }
+     /** {@inheritDoc} */
+     @Override
+     protected void populateStreamDict(final Object lengthEntry) {
+         super.populateStreamDict(lengthEntry);
+         put("Length1", new Integer(this.pfb.getLength1()));
+         put("Length2", new Integer(this.pfb.getLength2()));
+         put("Length3", new Integer(this.pfb.getLength3()));
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    protected void outputRawStreamData(OutputStream out) throws IOException {
-        this.pfb.outputAllParts(out);
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     protected void outputRawStreamData(final OutputStream out)
+            throws IOException {
+         this.pfb.outputAllParts(out);
+     }
 
-    /**
-     * Used to set the PFBData object that represents the embeddable Type 1
-     * font.
-     * @param pfb The PFB file
-     * @throws IOException in case of an I/O problem
-     */
-    public void setData(PFBData pfb) throws IOException {
-        this.pfb = pfb;
-    }
+     /**
+      * Used to set the PFBData object that represents the embeddable Type 1
+      * font.
+      * 
+     * @param pfb
+     *            The PFB file
+     * @throws IOException
+     *             in case of an I/O problem
+      */
+     public void setData(final PFBData pfb) throws IOException {
+         this.pfb = pfb;
+     }
 
-}
+ }

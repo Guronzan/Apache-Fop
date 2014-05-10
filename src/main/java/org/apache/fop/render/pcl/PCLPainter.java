@@ -351,7 +351,7 @@ public class PCLPainter extends AbstractIFPainter implements PCLConstants {
         int[] dx = IFUtil.convertDPToDX ( dp );
         int dxl = (dx != null ? dx.length : 0);
 
-        StringBuffer sb = new StringBuffer(Math.max(16, l));
+        StringBuilder sb = new StringBuilder(Math.max(16, l));
         if (dx != null && dxl > 0 && dx[0] != 0) {
             sb.append("\u001B&a+").append(gen.formatDouble2(dx[0] / 100.0)).append('H');
         }

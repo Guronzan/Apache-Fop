@@ -57,7 +57,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
                                  PropertyList pList, Locator locator) {
         String content = setupCode.getContent();
         if (content != null) {
-            StringBuffer sb = new StringBuffer(content);
+            StringBuilder sb = new StringBuilder(content);
             sb.append(data, start, length);
             setupCode.setContent(sb.toString());
         } else {

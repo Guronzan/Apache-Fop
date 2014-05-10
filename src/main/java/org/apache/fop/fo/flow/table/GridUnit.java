@@ -442,7 +442,7 @@ public class GridUnit {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         if (isEmpty()) {
             buffer.append("EMPTY");
         } else if (isPrimary()) {

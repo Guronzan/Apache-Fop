@@ -20,7 +20,7 @@
 package org.apache.fop.fo.pagination;
 
 // XML
-import org.xml.sax.Locator;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
@@ -29,161 +29,181 @@ import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
 import org.apache.fop.fo.properties.Property;
 import org.apache.fop.layoutmgr.BlockLevelEventProducer;
+import org.xml.sax.Locator;
 
 /**
- * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_repeatable-page-master-reference">
- * <code>fo:repeatable-page-master-reference</code></a> object.
- * This handles a reference with a specified number of repeating
- * instances of the referenced page master (may have no limit).
+ * Class modelling the <a
+ * href="http://www.w3.org/TR/xsl/#fo_repeatable-page-master-reference">
+ * <code>fo:repeatable-page-master-reference</code></a> object. This handles a
+ * reference with a specified number of repeating instances of the referenced
+ * page master (may have no limit).
  */
-public class RepeatablePageMasterReference extends FObj
-    implements SubSequenceSpecifier {
+@Slf4j
+ public class RepeatablePageMasterReference extends FObj implements
+        SubSequenceSpecifier {
 
-    // The value of properties relevant for fo:repeatable-page-master-reference.
-    private String masterReference;
-    // The simple page master referenced
-    private SimplePageMaster master;
-    private Property maximumRepeats;
-    // End of property values
+     // The value of properties relevant for fo:repeatable-page-master-reference.
+     private String masterReference;
+     // The simple page master referenced
+     private SimplePageMaster master;
+     private Property maximumRepeats;
+     // End of property values
 
-    private static final int INFINITE = -1;
+     private static final int INFINITE = -1;
 
-    private int numberConsumed = 0;
+     private int numberConsumed = 0;
 
-    /**
-     * Base constructor
-     *
-     * @param parent {@link FONode} that is the parent of this object
-     */
-    public RepeatablePageMasterReference(FONode parent) {
-        super(parent);
-    }
+     /**
+      * Base constructor
+      *
+      * @param parent
+     *            {@link FONode} that is the parent of this object
+      */
+     public RepeatablePageMasterReference(final FONode parent) {
+         super(parent);
+     }
 
-    /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
-        masterReference = pList.get(PR_MASTER_REFERENCE).getString();
-        maximumRepeats = pList.get(PR_MAXIMUM_REPEATS);
+     /** {@inheritDoc} */
+     @Override
+     public void bind(final PropertyList pList) throws FOPException {
+         this.masterReference = pList.get(PR_MASTER_REFERENCE).getString();
+         this.maximumRepeats = pList.get(PR_MAXIMUM_REPEATS);
 
-        if (masterReference == null || masterReference.equals("")) {
-            missingPropertyError("master-reference");
-        }
-    }
+         if (this.masterReference == null || this.masterReference.equals("")) {
+             missingPropertyError("master-reference");
+         }
+     }
 
-    /** {@inheritDoc} */
-    protected void startOfNode() throws FOPException {
-        PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) parent;
+     /** {@inheritDoc} */
+     @Override
+     protected void startOfNode() throws FOPException {
+         final PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) this.parent;
 
-        if (masterReference == null) {
-            missingPropertyError("master-reference");
-        } else {
-            pageSequenceMaster.addSubsequenceSpecifier(this);
-        }
-    }
+         if (this.masterReference == null) {
+             missingPropertyError("master-reference");
+         } else {
+             pageSequenceMaster.addSubsequenceSpecifier(this);
+         }
+     }
 
-    /**
-     * {@inheritDoc}
-     * <br>XSL Content Model: empty
-     */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-        throws ValidationException {
-        invalidChildError(loc, nsURI, localName);
-    }
+     /**
+      * {@inheritDoc} <br>
+     * XSL Content Model: empty
+      */
+     @Override
+     protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
+         invalidChildError(loc, nsURI, localName);
+     }
 
-    /** {@inheritDoc} */
-    public SimplePageMaster getNextPageMaster(boolean isOddPage,
-                                        boolean isFirstPage,
-                                        boolean isLastPage,
-                                        boolean isEmptyPage) {
-        if (getMaximumRepeats() != INFINITE && numberConsumed >= getMaximumRepeats()) {
-           return null;
-        }
-        numberConsumed++;
-        return master;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public SimplePageMaster getNextPageMaster(final boolean isOddPage,
+            final boolean isFirstPage, final boolean isLastPage,
+            final boolean isEmptyPage) {
+         if (getMaximumRepeats() != INFINITE
+                && this.numberConsumed >= getMaximumRepeats()) {
+            return null;
+         }
+         this.numberConsumed++;
+         return this.master;
+     }
 
-    /**
-     * Get the value of the <code>maximum-repeats</code> property.
+     /**
+      * Get the value of the <code>maximum-repeats</code> property.
+      * 
      * @return the "maximum-repeats" property
-     */
-    public int getMaximumRepeats() {
-        if (maximumRepeats.getEnum() == EN_NO_LIMIT) {
-            return INFINITE;
-        } else {
-            int mr = maximumRepeats.getNumeric().getValue();
-            if (mr < 0) {
-                log.debug("negative maximum-repeats: "
-                        + this.maximumRepeats);
-                mr = 0;
-            }
-            return mr;
-        }
-    }
+      */
+     public int getMaximumRepeats() {
+         if (this.maximumRepeats.getEnum() == EN_NO_LIMIT) {
+             return INFINITE;
+         } else {
+             int mr = this.maximumRepeats.getNumeric().getValue();
+             if (mr < 0) {
+                 log.debug("negative maximum-repeats: " + this.maximumRepeats);
+                 mr = 0;
+             }
+             return mr;
+         }
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public void reset() {
+         this.numberConsumed = 0;
+     }
 
     /** {@inheritDoc} */
-    public void reset() {
-        this.numberConsumed = 0;
-    }
+     @Override
+     public boolean goToPrevious() {
+         if (this.numberConsumed == 0) {
+             return false;
+         } else {
+             this.numberConsumed--;
+             return true;
+         }
+     }
 
+     /** {@inheritDoc} */
+     @Override
+     public boolean hasPagePositionLast() {
+         return false;
+     }
 
-    /** {@inheritDoc} */
-    public boolean goToPrevious() {
-        if (numberConsumed == 0) {
-            return false;
-        } else {
-            numberConsumed--;
-            return true;
-        }
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean hasPagePositionOnly() {
+         return false;
+     }
 
-    /** {@inheritDoc} */
-    public boolean hasPagePositionLast() {
-        return false;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public String getLocalName() {
+         return "repeatable-page-master-reference";
+     }
 
-    /** {@inheritDoc} */
-    public boolean hasPagePositionOnly() {
-        return false;
-    }
-
-    /** {@inheritDoc} */
-    public String getLocalName() {
-        return "repeatable-page-master-reference";
-    }
-
-    /**
-     * {@inheritDoc}
+     /**
+      * {@inheritDoc}
+      * 
      * @return {@link org.apache.fop.fo.Constants#FO_REPEATABLE_PAGE_MASTER_REFERENCE}
-     */
-    public int getNameId() {
-        return FO_REPEATABLE_PAGE_MASTER_REFERENCE;
-    }
-
-
-    /** {@inheritDoc} */
-    public void resolveReferences(LayoutMasterSet layoutMasterSet) throws ValidationException {
-        master = layoutMasterSet.getSimplePageMaster(masterReference);
-        if (master == null) {
-            BlockLevelEventProducer.Provider.get(
-                getUserAgent().getEventBroadcaster())
-                .noMatchingPageMaster(this, parent.getName(), masterReference, getLocator());
-        }
-
-    }
+      */
+     @Override
+     public int getNameId() {
+         return FO_REPEATABLE_PAGE_MASTER_REFERENCE;
+     }
 
     /** {@inheritDoc} */
-    public boolean canProcess(String flowName) {
-        assert master != null;
-        return master.getRegion(FO_REGION_BODY).getRegionName().equals(flowName);
-    }
+     @Override
+     public void resolveReferences(final LayoutMasterSet layoutMasterSet)
+            throws ValidationException {
+         this.master = layoutMasterSet.getSimplePageMaster(this.masterReference);
+         if (this.master == null) {
+             BlockLevelEventProducer.Provider.get(
+                    getUserAgent().getEventBroadcaster()).noMatchingPageMaster(
+                    this, this.parent.getName(), this.masterReference,
+                    getLocator());
+         }
 
-    /** {@inheritDoc} */
-    public boolean isInfinite() {
-        return getMaximumRepeats() == INFINITE;
-    }
+     }
 
-    /** {@inheritDoc} */
-    public boolean isReusable() {
-        return false;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean canProcess(final String flowName) {
+         assert this.master != null;
+         return this.master.getRegion(FO_REGION_BODY).getRegionName()
+                .equals(flowName);
+     }
 
-}
+     /** {@inheritDoc} */
+     @Override
+     public boolean isInfinite() {
+         return getMaximumRepeats() == INFINITE;
+     }
+
+     /** {@inheritDoc} */
+     @Override
+     public boolean isReusable() {
+         return false;
+     }
+
+ }

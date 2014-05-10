@@ -242,7 +242,7 @@ public class PDFPainter extends AbstractIFPainter {
                     throw new UnsupportedOperationException("Non-Color paints NYI");
                 }
             }
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append(format(rect.x)).append(' ');
             sb.append(format(rect.y)).append(' ');
             sb.append(format(rect.width)).append(' ');

@@ -22,255 +22,266 @@ package org.apache.fop.layoutmgr;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.datatypes.LengthBase;
-import org.apache.fop.datatypes.PercentBaseContext;
 import org.apache.fop.fo.FObj;
 
 /**
- * The base class for nearly all LayoutManagers.
- * Provides the functionality for merging the {@link LayoutManager}
- * and the {@link org.apache.fop.datatypes.PercentBaseContext} interfaces
- * into a common base class for all higher LayoutManagers.
+ * The base class for nearly all LayoutManagers. Provides the functionality for
+ * merging the {@link LayoutManager} and the
+ * {@link org.apache.fop.datatypes.PercentBaseContext} interfaces into a common
+ * base class for all higher LayoutManagers.
  */
-public abstract class AbstractBaseLayoutManager
-    implements LayoutManager, PercentBaseContext {
+@Slf4j
+ public abstract class AbstractBaseLayoutManager implements LayoutManager {
 
-    /** Indicator if this LM generates reference areas. */
-    protected boolean generatesReferenceArea = false;
-    /** Indicator if this LM generates block areas. */
-    protected boolean generatesBlockArea = false;
-    /** The formatting object for this LM. */
-    protected final FObj fobj;
-
-    /**
-     * logging instance
-     */
-    private static final Log LOG = LogFactory.getLog(AbstractBaseLayoutManager.class);
+     /** Indicator if this LM generates reference areas. */
+     protected boolean generatesReferenceArea = false;
+     /** Indicator if this LM generates block areas. */
+     protected boolean generatesBlockArea = false;
+     /** The formatting object for this LM. */
+     protected final FObj fobj;
 
     /**
-     * Abstract base layout manager.
-     */
-    public AbstractBaseLayoutManager() {
-        fobj = null;
-    }
+      * Abstract base layout manager.
+      */
+     public AbstractBaseLayoutManager() {
+         this.fobj = null;
+     }
 
-    /**
-     * Abstract base layout manager.
-     *
-     * @param fo the formatting object for this layout manager
-     */
-    public AbstractBaseLayoutManager(FObj fo) {
-        this.fobj = fo;
-        setGeneratesReferenceArea(fo.generatesReferenceAreas());
-        if (getGeneratesReferenceArea()) {
-            setGeneratesBlockArea(true);
-        }
-    }
+     /**
+      * Abstract base layout manager.
+      *
+      * @param fo
+     *            the formatting object for this layout manager
+      */
+     public AbstractBaseLayoutManager(final FObj fo) {
+         this.fobj = fo;
+         setGeneratesReferenceArea(fo.generatesReferenceAreas());
+         if (getGeneratesReferenceArea()) {
+             setGeneratesBlockArea(true);
+         }
+     }
 
-    // --------- Property Resolution related functions --------- //
+     // --------- Property Resolution related functions --------- //
 
-    /** {@inheritDoc} */
-    public int getBaseLength(int lengthBase, FObj fobjx) {
-        if (fobjx == this.fobj) {
-            switch (lengthBase) {
-            case LengthBase.CONTAINING_BLOCK_WIDTH:
-                return getAncestorBlockAreaIPD();
-            case LengthBase.CONTAINING_BLOCK_HEIGHT:
-                return getAncestorBlockAreaBPD();
-            case LengthBase.PARENT_AREA_WIDTH:
-                return getParentAreaIPD();
-            case LengthBase.CONTAINING_REFAREA_WIDTH:
-                return getReferenceAreaIPD();
-            default:
-                LOG.error("Unknown base type for LengthBase:" + lengthBase);
-                return 0;
-            }
-        } else {
-            LayoutManager lm = getParent();
-            while (lm != null && fobjx != lm.getFObj()) {
-                lm = lm.getParent();
-            }
-            if (lm != null) {
-                return lm.getBaseLength(lengthBase, fobjx);
-            }
-        }
-        LOG.error("Cannot find LM to handle given FO for LengthBase. ("
-                + fobjx.getContextInfo() + ")");
-        return 0;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public int getBaseLength(final int lengthBase, final FObj fobjx) {
+         if (fobjx == this.fobj) {
+             switch (lengthBase) {
+                case LengthBase.CONTAINING_BLOCK_WIDTH:
+                    return getAncestorBlockAreaIPD();
+                case LengthBase.CONTAINING_BLOCK_HEIGHT:
+                    return getAncestorBlockAreaBPD();
+                case LengthBase.PARENT_AREA_WIDTH:
+                    return getParentAreaIPD();
+                case LengthBase.CONTAINING_REFAREA_WIDTH:
+                    return getReferenceAreaIPD();
+                default:
+                    log.error("Unknown base type for LengthBase:" + lengthBase);
+                    return 0;
+             }
+         } else {
+             LayoutManager lm = getParent();
+             while (lm != null && fobjx != lm.getFObj()) {
+                 lm = lm.getParent();
+             }
+             if (lm != null) {
+                 return lm.getBaseLength(lengthBase, fobjx);
+             }
+         }
+         log.error("Cannot find LM to handle given FO for LengthBase. ("
+                 + fobjx.getContextInfo() + ")");
+         return 0;
+     }
 
-    /**
-     * Find the first ancestor area that is a block area
-     * and returns its IPD.
+     /**
+      * Find the first ancestor area that is a block area and returns its IPD.
+     * 
      * @return the ipd of the ancestor block area
-     */
-    protected int getAncestorBlockAreaIPD() {
-        LayoutManager lm = getParent();
-        while (lm != null) {
-            if (lm.getGeneratesBlockArea() && !lm.getGeneratesLineArea()) {
-                return lm.getContentAreaIPD();
-            }
-            lm = lm.getParent();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     protected int getAncestorBlockAreaIPD() {
+         LayoutManager lm = getParent();
+         while (lm != null) {
+             if (lm.getGeneratesBlockArea() && !lm.getGeneratesLineArea()) {
+                 return lm.getContentAreaIPD();
+             }
+             lm = lm.getParent();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * Find the first ancestor area that is a block area
-     * and returns its BPD.
+     /**
+      * Find the first ancestor area that is a block area and returns its BPD.
+     * 
      * @return the bpd of the ancestor block area
-     */
-    protected int getAncestorBlockAreaBPD() {
-        LayoutManager lm = getParent();
-        while (lm != null) {
-            if (lm.getGeneratesBlockArea() && !lm.getGeneratesLineArea()) {
-                return lm.getContentAreaBPD();
-            }
-            lm = lm.getParent();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     protected int getAncestorBlockAreaBPD() {
+         LayoutManager lm = getParent();
+         while (lm != null) {
+             if (lm.getGeneratesBlockArea() && !lm.getGeneratesLineArea()) {
+                 return lm.getContentAreaBPD();
+             }
+             lm = lm.getParent();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * Find the parent area and returns its IPD.
+     /**
+      * Find the parent area and returns its IPD.
+      * 
      * @return the ipd of the parent area
-     */
-    protected int getParentAreaIPD() {
-        LayoutManager lm = getParent();
-        if (lm != null) {
-            return lm.getContentAreaIPD();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     protected int getParentAreaIPD() {
+         final LayoutManager lm = getParent();
+         if (lm != null) {
+             return lm.getContentAreaIPD();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * Find the parent area and returns its BPD.
+     /**
+      * Find the parent area and returns its BPD.
+      * 
      * @return the bpd of the parent area
-     */
-    protected int getParentAreaBPD() {
-        LayoutManager lm = getParent();
-        if (lm != null) {
-            return lm.getContentAreaBPD();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     protected int getParentAreaBPD() {
+         final LayoutManager lm = getParent();
+         if (lm != null) {
+             return lm.getContentAreaBPD();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * Find the first ancestor area that is a reference area
-     * and returns its IPD.
+     /**
+      * Find the first ancestor area that is a reference area and returns its
+     * IPD.
+     * 
      * @return the ipd of the ancestor reference area
-     */
-    public int getReferenceAreaIPD() {
-        LayoutManager lm = getParent();
-        while (lm != null) {
-            if (lm.getGeneratesReferenceArea()) {
-                return lm.getContentAreaIPD();
-            }
-            lm = lm.getParent();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     public int getReferenceAreaIPD() {
+         LayoutManager lm = getParent();
+         while (lm != null) {
+             if (lm.getGeneratesReferenceArea()) {
+                 return lm.getContentAreaIPD();
+             }
+             lm = lm.getParent();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * Find the first ancestor area that is a reference area
-     * and returns its BPD.
+     /**
+      * Find the first ancestor area that is a reference area and returns its
+     * BPD.
+     * 
      * @return the bpd of the ancestor reference area
-     */
-    protected int getReferenceAreaBPD() {
-        LayoutManager lm = getParent();
-        while (lm != null) {
-            if (lm.getGeneratesReferenceArea()) {
-                return lm.getContentAreaBPD();
-            }
-            lm = lm.getParent();
-        }
-        LOG.error("No parent LM found");
-        return 0;
-    }
+      */
+     protected int getReferenceAreaBPD() {
+         LayoutManager lm = getParent();
+         while (lm != null) {
+             if (lm.getGeneratesReferenceArea()) {
+                 return lm.getContentAreaBPD();
+             }
+             lm = lm.getParent();
+         }
+         log.error("No parent LM found");
+         return 0;
+     }
 
-    /**
-     * {@inheritDoc}
-     * <i>NOTE: Should be overridden by subclasses.
-     * Default implementation throws an <code>UnsupportedOperationException</code>.</i>
-     */
-    public int getContentAreaIPD() {
-        throw new UnsupportedOperationException(
-                "getContentAreaIPD() called when it should have been overridden");
-    }
+     /**
+      * {@inheritDoc} <i>NOTE: Should be overridden by subclasses. Default
+     * implementation throws an <code>UnsupportedOperationException</code>.</i>
+      */
+     @Override
+     public int getContentAreaIPD() {
+         throw new UnsupportedOperationException(
+                 "getContentAreaIPD() called when it should have been overridden");
+     }
 
-    /**
-     * {@inheritDoc}
-     * <i>NOTE: Should be overridden by subclasses.
-     * Default implementation throws an <code>UnsupportedOperationException</code>.</i>
-     */
-    public int getContentAreaBPD() {
-        throw new UnsupportedOperationException(
-                "getContentAreaBPD() called when it should have been overridden");
-    }
+     /**
+      * {@inheritDoc} <i>NOTE: Should be overridden by subclasses. Default
+     * implementation throws an <code>UnsupportedOperationException</code>.</i>
+      */
+     @Override
+     public int getContentAreaBPD() {
+         throw new UnsupportedOperationException(
+                 "getContentAreaBPD() called when it should have been overridden");
+     }
 
-    /** {@inheritDoc} */
-    public boolean getGeneratesReferenceArea() {
-        return generatesReferenceArea;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean getGeneratesReferenceArea() {
+         return this.generatesReferenceArea;
+     }
 
-    /**
-     * Lets implementing LM set the flag indicating if they
-     * generate reference areas.
-     * @param generatesReferenceArea if true the areas generates by this LM are
-     * reference areas.
-     */
-    protected void setGeneratesReferenceArea(boolean generatesReferenceArea) {
-        this.generatesReferenceArea = generatesReferenceArea;
-    }
+     /**
+      * Lets implementing LM set the flag indicating if they generate reference
+     * areas.
+     * 
+     * @param generatesReferenceArea
+     *            if true the areas generates by this LM are reference areas.
+      */
+     protected void setGeneratesReferenceArea(
+            final boolean generatesReferenceArea) {
+         this.generatesReferenceArea = generatesReferenceArea;
+     }
 
-    /** {@inheritDoc} */
-    public boolean getGeneratesBlockArea() {
-        return generatesBlockArea;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean getGeneratesBlockArea() {
+         return this.generatesBlockArea;
+     }
 
-    /**
-     * Lets implementing LM set the flag indicating if they
-     * generate block areas.
-     * @param generatesBlockArea if true the areas generates by this LM are block areas.
-     */
-    protected void setGeneratesBlockArea(boolean generatesBlockArea) {
-        this.generatesBlockArea = generatesBlockArea;
-    }
+     /**
+      * Lets implementing LM set the flag indicating if they generate block
+     * areas.
+     * 
+     * @param generatesBlockArea
+     *            if true the areas generates by this LM are block areas.
+      */
+     protected void setGeneratesBlockArea(final boolean generatesBlockArea) {
+         this.generatesBlockArea = generatesBlockArea;
+     }
 
-    /** {@inheritDoc} */
-    public boolean getGeneratesLineArea() {
-        return false;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean getGeneratesLineArea() {
+         return false;
+     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public FObj getFObj() {
-        return fobj;
-    }
+     /**
+      * {@inheritDoc}
+      */
+     @Override
+     public FObj getFObj() {
+         return this.fobj;
+     }
 
-    /** {@inheritDoc} */
-    public void reset() {
-        throw new UnsupportedOperationException("Not implemented");
-    }
+     /** {@inheritDoc} */
+     @Override
+     public void reset() {
+         throw new UnsupportedOperationException("Not implemented");
+     }
 
-    /** {@inheritDoc} */
-    public boolean isRestartable() {
-        return false;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public boolean isRestartable() {
+         return false;
+     }
 
-    /** {@inheritDoc} */
-    public List getNextKnuthElements(LayoutContext context, int alignment, Stack lmStack,
-            Position positionAtIPDChange, LayoutManager restartAtLM) {
-        throw new UnsupportedOperationException("Not implemented");
-    }
+     /** {@inheritDoc} */
+     @Override
+     public List getNextKnuthElements(final LayoutContext context,
+            final int alignment, final Stack lmStack,
+             final Position positionAtIPDChange, final LayoutManager restartAtLM) {
+         throw new UnsupportedOperationException("Not implemented");
+     }
 
-}
+ }

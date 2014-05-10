@@ -284,7 +284,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
             if (length >= numChars) {
                 return input;
             }
-            StringBuffer returnString = new StringBuffer();
+            StringBuilder returnString = new StringBuilder();
             for (int i = 1; i <= numChars - length; i++) {
                 returnString.append("0");
             }

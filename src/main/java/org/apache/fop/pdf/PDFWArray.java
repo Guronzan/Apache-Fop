@@ -97,7 +97,7 @@ public class PDFWArray {
      * @return String the PDF code
      */
     public String toPDFString() {
-        StringBuffer p = new StringBuffer();
+        StringBuilder p = new StringBuilder();
         p.append("[ ");
         int len = entries.size();
         for (int i = 0; i < len; i++) {
@@ -127,7 +127,7 @@ public class PDFWArray {
             metrics = m;
         }
 
-        public void fillInPDF(StringBuffer p) {
+        public void fillInPDF(StringBuilder p) {
             // p.setLength(0);
             p.append(start);
             p.append(" [");

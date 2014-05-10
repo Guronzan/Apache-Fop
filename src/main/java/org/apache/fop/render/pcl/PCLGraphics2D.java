@@ -215,7 +215,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
             //Pen widths are set as absolute metric values (WU0;)
             Point2D ptDest = getTransform().deltaTransform(ptSrc, null);
             double transDist = UnitConv.pt2mm(ptDest.distance(0, 0));
-            //System.out.println("--" + ptDest.distance(0, 0) + " " + transDist);
+            //log.info("--" + ptDest.distance(0, 0) + " " + transDist);
             gen.writeText(";PW" + gen.formatDouble4(transDist) + ";");
 
         } else {
@@ -312,7 +312,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
         boolean penDown = false;
         double x = 0;
         double y = 0;
-        StringBuffer sb = new StringBuffer(256);
+        StringBuilder sb = new StringBuilder(256);
         penUp(sb);
         while (!iter.isDone()) {
             int type = iter.currentSegment(vals);
@@ -384,7 +384,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
         double x = 0;
         double y = 0;
         boolean pendingPM0 = true;
-        StringBuffer sb = new StringBuffer(256);
+        StringBuilder sb = new StringBuilder(256);
         penUp(sb);
         while (!iter.isDone()) {
             int type = iter.currentSegment(vals);
@@ -441,18 +441,18 @@ public class PCLGraphics2D extends AbstractGraphics2D {
         gen.writeText(sb.toString());
     }
 
-    private void fillPolygon(int windingRule, StringBuffer sb) {
+    private void fillPolygon(int windingRule, StringBuilder sb) {
         int fillMethod = (windingRule == PathIterator.WIND_EVEN_ODD ? 0 : 1);
         sb.append("FP").append(fillMethod).append(";");
     }
 
-    private void plotAbsolute(double x, double y, StringBuffer sb) {
+    private void plotAbsolute(double x, double y, StringBuilder sb) {
         sb.append("PA").append(gen.formatDouble4(x));
         sb.append(",").append(gen.formatDouble4(y)).append(";");
     }
 
     private void bezierAbsolute(double x1, double y1, double x2, double y2, double x3, double y3,
-            StringBuffer sb) {
+            StringBuilder sb) {
         sb.append("BZ").append(gen.formatDouble4(x1));
         sb.append(",").append(gen.formatDouble4(y1));
         sb.append(",").append(gen.formatDouble4(x2));
@@ -462,7 +462,7 @@ public class PCLGraphics2D extends AbstractGraphics2D {
     }
 
     private void quadraticBezierAbsolute(double originX, double originY,
-            double x1, double y1, double x2, double y2, StringBuffer sb) {
+            double x1, double y1, double x2, double y2, StringBuilder sb) {
         //Quadratic Bezier curve can be mapped to a normal bezier curve
         //See http://pfaedit.sourceforge.net/bezier.html
         double nx1 = originX + (2.0 / 3.0) * (x1 - originX);
@@ -474,11 +474,11 @@ public class PCLGraphics2D extends AbstractGraphics2D {
         bezierAbsolute(nx1, ny1, nx2, ny2, x2, y2, sb);
     }
 
-    private void penDown(StringBuffer sb) {
+    private void penDown(StringBuilder sb) {
         sb.append("PD;");
     }
 
-    private void penUp(StringBuffer sb) {
+    private void penUp(StringBuilder sb) {
         sb.append("PU;");
     }
 

@@ -173,7 +173,7 @@ public class BreakElement extends UnresolvedListElement {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer sb = new StringBuffer(64);
+        StringBuilder sb = new StringBuilder(64);
         sb.append("BreakPossibility[p:");
         sb.append(KnuthPenalty.valueOf(this.penaltyValue));
         if (isForcedBreak()) {

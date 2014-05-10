@@ -22,9 +22,10 @@ package org.apache.fop.render.afp;
 import java.awt.Rectangle;
 import java.io.IOException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
+import org.apache.fop.afp.AFPDataObjectInfo;
+import org.apache.fop.render.RenderingContext;
 import org.apache.xmlgraphics.image.loader.Image;
 import org.apache.xmlgraphics.image.loader.ImageFlavor;
 import org.apache.xmlgraphics.image.loader.impl.ImageRawEPS;
@@ -32,67 +33,63 @@ import org.apache.xmlgraphics.image.loader.impl.ImageRawJPEG;
 import org.apache.xmlgraphics.image.loader.impl.ImageRawStream;
 import org.apache.xmlgraphics.util.MimeConstants;
 
-import org.apache.fop.afp.AFPDataObjectInfo;
-import org.apache.fop.render.RenderingContext;
-
 /**
  * AFPImageHandler implementation which handles raw stream images.
  */
-public class AFPImageHandlerRawStream extends AbstractAFPImageHandlerRawStream {
+@Slf4j
+ public class AFPImageHandlerRawStream extends AbstractAFPImageHandlerRawStream {
 
-    private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
-        ImageFlavor.RAW_JPEG,
-        ImageFlavor.RAW_TIFF,
-        ImageFlavor.RAW_EPS,
-    };
-
-    /** logging instance */
-    private final Log log = LogFactory.getLog(AFPImageHandlerRawJPEG.class);
+     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {
+            ImageFlavor.RAW_JPEG, ImageFlavor.RAW_TIFF, ImageFlavor.RAW_EPS, };
 
     /** {@inheritDoc} */
-    public int getPriority() {
-        return 200;
-    }
+     @Override
+     public int getPriority() {
+         return 200;
+     }
 
-    /** {@inheritDoc} */
-    public Class getSupportedImageClass() {
-        return ImageRawStream.class;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Class getSupportedImageClass() {
+         return ImageRawStream.class;
+     }
 
-    /** {@inheritDoc} */
-    public ImageFlavor[] getSupportedImageFlavors() {
-        return FLAVORS;
-    }
+     /** {@inheritDoc} */
+     @Override
+     public ImageFlavor[] getSupportedImageFlavors() {
+         return FLAVORS;
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    protected AFPDataObjectInfo createDataObjectInfo() {
-        return new AFPDataObjectInfo();
-    }
+     /** {@inheritDoc} */
+     @Override
+     protected AFPDataObjectInfo createDataObjectInfo() {
+         return new AFPDataObjectInfo();
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void handleImage(RenderingContext context, Image image, Rectangle pos)
-            throws IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("Embedding undecoded image data (" + image.getInfo().getMimeType()
-                    + ") as data container...");
-        }
-        super.handleImage(context, image, pos);
-    }
+     /** {@inheritDoc} */
+     @Override
+     public void handleImage(final RenderingContext context, final Image image,
+            final Rectangle pos) throws IOException {
+         if (log.isDebugEnabled()) {
+             log.debug("Embedding undecoded image data ("
+                    + image.getInfo().getMimeType() + ") as data container...");
+         }
+         super.handleImage(context, image, pos);
+     }
 
-    /** {@inheritDoc} */
-    public boolean isCompatible(RenderingContext targetContext, Image image) {
-        if (targetContext instanceof AFPRenderingContext) {
-            AFPRenderingContext afpContext = (AFPRenderingContext)targetContext;
-            return (afpContext.getPaintingState().isNativeImagesSupported())
-                && (image == null
-                        || image instanceof ImageRawJPEG
-                        || image instanceof ImageRawEPS
-                        || ((image instanceof ImageRawStream)
-                                && (MimeConstants.MIME_TIFF.equals(
-                                        ((ImageRawStream)image).getMimeType()))));
-        }
-        return false;
-    }
-}
+     /** {@inheritDoc} */
+     @Override
+     public boolean isCompatible(final RenderingContext targetContext,
+            final Image image) {
+         if (targetContext instanceof AFPRenderingContext) {
+             final AFPRenderingContext afpContext = (AFPRenderingContext) targetContext;
+             return afpContext.getPaintingState().isNativeImagesSupported()
+                    && (image == null || image instanceof ImageRawJPEG
+                            || image instanceof ImageRawEPS || image instanceof ImageRawStream
+                            && MimeConstants.MIME_TIFF
+                                    .equals(((ImageRawStream) image)
+                                            .getMimeType()));
+         }
+         return false;
+     }
+ }

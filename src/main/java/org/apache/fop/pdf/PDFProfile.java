@@ -118,7 +118,7 @@ public class PDFProfile {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if (isPDFAActive() && isPDFXActive()) {
             sb.append("[").append(getPDFAMode()).append(",").append(getPDFXMode()).append("]");
         } else if (isPDFAActive()) {

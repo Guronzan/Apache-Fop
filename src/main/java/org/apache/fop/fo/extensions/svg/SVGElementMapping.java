@@ -23,93 +23,94 @@ import java.util.HashMap;
 
 import javax.xml.parsers.SAXParserFactory;
 
-import org.w3c.dom.DOMImplementation;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.batik.util.XMLResourceDescriptor;
-
 import org.apache.fop.fo.ElementMapping;
 import org.apache.fop.fo.FONode;
+import org.w3c.dom.DOMImplementation;
 
 /**
- * Setup the SVG element mapping.
- * This adds the svg element mappings used to create the objects
- * that create the SVG Document.
+ * Setup the SVG element mapping. This adds the svg element mappings used to
+ * create the objects that create the SVG Document.
  */
-public class SVGElementMapping extends ElementMapping {
+@Slf4j
+ public class SVGElementMapping extends ElementMapping {
 
-    /** the SVG namespace */
-    public static final String URI = SVGDOMImplementation.SVG_NAMESPACE_URI;
-
-    /** logging instance */
-    protected Log log = LogFactory.getLog(SVGElementMapping.class);
+     /** the SVG namespace */
+     public static final String URI = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
     private boolean batikAvailable = true;
 
-    /** Main constructor. */
-    public SVGElementMapping() {
-        namespaceURI = URI;
-    }
+     /** Main constructor. */
+     public SVGElementMapping() {
+         this.namespaceURI = URI;
+     }
 
-    /** {@inheritDoc} */
-    public DOMImplementation getDOMImplementation() {
-        return SVGDOMImplementation.getDOMImplementation();
-    }
+     /** {@inheritDoc} */
+     @Override
+     public DOMImplementation getDOMImplementation() {
+         return SVGDOMImplementation.getDOMImplementation();
+     }
 
-    /**
-     * Returns the fully qualified classname of an XML parser for
-     * Batik classes that apparently need it (error messages, perhaps)
+     /**
+      * Returns the fully qualified classname of an XML parser for Batik classes
+     * that apparently need it (error messages, perhaps)
+     * 
      * @return an XML parser classname
-     */
-    private String getAParserClassName() {
-        try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            return factory.newSAXParser().getXMLReader().getClass().getName();
-        } catch (Exception e) {
-            return null;
-        }
-    }
+      */
+     private String getAParserClassName() {
+         try {
+             final SAXParserFactory factory = SAXParserFactory.newInstance();
+             return factory.newSAXParser().getXMLReader().getClass().getName();
+         } catch (final Exception e) {
+             return null;
+         }
+     }
 
-    /** {@inheritDoc} */
-    protected void initialize() {
-        if (foObjs == null && batikAvailable) {
-            // this sets the parser that will be used
-            // by default (SVGBrokenLinkProvider)
-            // normally the user agent value is used
-            try {
-                XMLResourceDescriptor.setXMLParserClassName(
-                  getAParserClassName());
+     /** {@inheritDoc} */
+     @Override
+     protected void initialize() {
+         if (this.foObjs == null && this.batikAvailable) {
+             // this sets the parser that will be used
+             // by default (SVGBrokenLinkProvider)
+             // normally the user agent value is used
+             try {
+                 XMLResourceDescriptor
+                        .setXMLParserClassName(getAParserClassName());
 
-                foObjs = new HashMap<String, Maker>();
-                foObjs.put("svg", new SE());
-                foObjs.put(DEFAULT, new SVGMaker());
-            } catch (Throwable t) {
-                log.error("Error while initializing the Batik SVG extensions", t);
-                // if the classes are not available
-                // the DISPLAY is not checked
-                batikAvailable = false;
-            }
-        }
-    }
+                 this.foObjs = new HashMap<String, Maker>();
+                 this.foObjs.put("svg", new SE());
+                 this.foObjs.put(DEFAULT, new SVGMaker());
+             } catch (final Throwable t) {
+                 log.error("Error while initializing the Batik SVG extensions",
+                        t);
+                 // if the classes are not available
+                 // the DISPLAY is not checked
+                 this.batikAvailable = false;
+             }
+         }
+     }
 
-    /** {@inheritDoc} */
-    public String getStandardPrefix() {
-        return "svg";
-    }
+     /** {@inheritDoc} */
+     @Override
+     public String getStandardPrefix() {
+         return "svg";
+     }
 
-    static class SVGMaker extends ElementMapping.Maker {
-        public FONode make(FONode parent) {
-            return new SVGObj(parent);
-        }
-    }
+     static class SVGMaker extends ElementMapping.Maker {
+         @Override
+         public FONode make(final FONode parent) {
+             return new SVGObj(parent);
+         }
+     }
 
-    static class SE extends ElementMapping.Maker {
-        public FONode make(FONode parent) {
-            return new SVGElement(parent);
-        }
-    }
+     static class SE extends ElementMapping.Maker {
+         @Override
+         public FONode make(final FONode parent) {
+             return new SVGElement(parent);
+         }
+     }
 
-}
+ }

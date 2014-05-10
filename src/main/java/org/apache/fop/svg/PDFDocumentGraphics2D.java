@@ -234,7 +234,7 @@ public class PDFDocumentGraphics2D extends PDFGraphics2D {
      * @param col the background colour to fill
      */
     public void setBackgroundColor(Color col) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("q\n");
         this.colorHandler.establishColor(sb, col, true);
 

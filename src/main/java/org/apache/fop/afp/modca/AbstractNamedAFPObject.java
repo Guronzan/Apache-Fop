@@ -21,102 +21,110 @@ package org.apache.fop.afp.modca;
 
 import java.io.UnsupportedEncodingException;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.afp.AFPConstants;
 
 /**
- * This is the base class for all named data stream objects.
- * A named data stream object has an 8 byte EBCIDIC name.
+ * This is the base class for all named data stream objects. A named data stream
+ * object has an 8 byte EBCIDIC name.
  */
-public abstract class AbstractNamedAFPObject extends AbstractTripletStructuredObject {
+@Slf4j
+ public abstract class AbstractNamedAFPObject extends
+        AbstractTripletStructuredObject {
 
-    private static final int DEFAULT_NAME_LENGTH = 8;
+     private static final int DEFAULT_NAME_LENGTH = 8;
 
-    /**
-     * The actual name of the object
-     */
-    protected String name = null;
+     /**
+      * The actual name of the object
+      */
+     protected String name = null;
 
-    /**
-     * Default constructor
-     */
-    protected AbstractNamedAFPObject() {
-    }
+     /**
+      * Default constructor
+      */
+     protected AbstractNamedAFPObject() {
+     }
 
-    /**
-     * Constructor for the ActiveEnvironmentGroup, this takes a
-     * name parameter which should be 8 characters long.
+     /**
+      * Constructor for the ActiveEnvironmentGroup, this takes a name parameter
+     * which should be 8 characters long.
      *
-     * @param name the object name
-     */
-    protected AbstractNamedAFPObject(String name) {
-        this.name = name;
-    }
+      * @param name
+     *            the object name
+      */
+     protected AbstractNamedAFPObject(final String name) {
+         this.name = name;
+     }
 
-    /**
-     * Returns the name length
-     *
-     * @return the name length
-     */
-    protected int getNameLength() {
-        return DEFAULT_NAME_LENGTH;
-    }
+     /**
+      * Returns the name length
+      *
+      * @return the name length
+      */
+     protected int getNameLength() {
+         return DEFAULT_NAME_LENGTH;
+     }
 
-    /**
-     * Returns the name as a byte array in EBCIDIC encoding
-     *
-     * @return the name as a byte array in EBCIDIC encoding
-     */
-    public byte[] getNameBytes() {
-        int afpNameLen = getNameLength();
-        int nameLen = name.length();
-        if (nameLen < afpNameLen) {
-            name = (name + "       ").substring(0, afpNameLen);
-        } else if (name.length() > afpNameLen) {
-            String truncatedName = name.substring(nameLen - afpNameLen, nameLen);
-            LOG.warn("Constructor:: name '" + name + "'"
-                    + " truncated to " + afpNameLen + " chars"
-                    + " ('" + truncatedName + "')");
-            name = truncatedName;
-        }
-        byte[] nameBytes = null;
-        try {
-            nameBytes = name.getBytes(AFPConstants.EBCIDIC_ENCODING);
-        } catch (UnsupportedEncodingException usee) {
-            nameBytes = name.getBytes();
-            LOG.warn(
-                "Constructor:: UnsupportedEncodingException translating the name "
-                + name);
-        }
-        return nameBytes;
-    }
+     /**
+      * Returns the name as a byte array in EBCIDIC encoding
+      *
+      * @return the name as a byte array in EBCIDIC encoding
+      */
+     public byte[] getNameBytes() {
+         final int afpNameLen = getNameLength();
+         final int nameLen = this.name.length();
+         if (nameLen < afpNameLen) {
+             this.name = (this.name + "       ").substring(0, afpNameLen);
+         } else if (this.name.length() > afpNameLen) {
+             final String truncatedName = this.name.substring(nameLen
+                    - afpNameLen, nameLen);
+             log.warn("Constructor:: name '" + this.name + "'"
+                     + " truncated to " + afpNameLen + " chars" + " ('"
+                    + truncatedName + "')");
+             this.name = truncatedName;
+         }
+         byte[] nameBytes = null;
+         try {
+             nameBytes = this.name.getBytes(AFPConstants.EBCIDIC_ENCODING);
+         } catch (final UnsupportedEncodingException usee) {
+             nameBytes = this.name.getBytes();
+             log.warn("Constructor:: UnsupportedEncodingException translating the name "
+                    + this.name);
+         }
+         return nameBytes;
+     }
 
-    @Override
-    protected void copySF(byte[] data, byte type, byte category) {
-        super.copySF(data, type, category);
-        byte[] nameData = getNameBytes();
-        System.arraycopy(nameData, 0, data, 9, nameData.length);
-    }
+     @Override
+     protected void copySF(final byte[] data, final byte type,
+            final byte category) {
+         super.copySF(data, type, category);
+         final byte[] nameData = getNameBytes();
+         System.arraycopy(nameData, 0, data, 9, nameData.length);
+     }
 
-    /**
-     * Returns the name of this object
-     *
-     * @return the name of this object
-     */
-    public String getName() {
-        return this.name;
-    }
+     /**
+      * Returns the name of this object
+      *
+      * @return the name of this object
+      */
+     public String getName() {
+         return this.name;
+     }
 
-    /**
-     * Sets the name of this object
-     *
-     * @param name the object name
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+     /**
+      * Sets the name of this object
+      *
+      * @param name
+     *            the object name
+      */
+     public void setName(final String name) {
+         this.name = name;
+     }
 
-    /** {@inheritDoc} */
-    public String toString() {
-        return getName();
-    }
-}
+     /** {@inheritDoc} */
+     @Override
+     public String toString() {
+         return getName();
+     }
+ }

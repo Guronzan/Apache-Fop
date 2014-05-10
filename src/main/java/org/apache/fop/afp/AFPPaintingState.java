@@ -21,736 +21,776 @@ package org.apache.fop.afp;
 
 import java.awt.Point;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import org.apache.xmlgraphics.java2d.color.ColorConverter;
-import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.afp.fonts.AFPPageFonts;
 import org.apache.fop.util.AbstractPaintingState;
+import org.apache.xmlgraphics.java2d.color.ColorConverter;
+import org.apache.xmlgraphics.java2d.color.DefaultColorConverter;
 
 /**
  * This keeps information about the current painting state when writing to an
  * AFP datastream.
  */
-public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState implements
-        Cloneable {
+@Slf4j
+ public class AFPPaintingState extends org.apache.fop.util.AbstractPaintingState
+        implements Cloneable {
 
-    private static final long serialVersionUID = 8206711712452344473L;
-
-    private static Log log = LogFactory.getLog("org.apache.xmlgraphics.afp");
+     private static final long serialVersionUID = 8206711712452344473L;
 
     /** the portrait rotation */
-    private int portraitRotation = 0;
+     private int portraitRotation = 0;
 
-    /** the landscape rotation */
-    private int landscapeRotation = 270;
+     /** the landscape rotation */
+     private int landscapeRotation = 270;
 
-    /** color image support */
-    private boolean colorImages = false;
+     /** color image support */
+     private boolean colorImages = false;
 
-    /** dithering quality setting (0.0f..1.0f) */
-    private float ditheringQuality;
+     /** dithering quality setting (0.0f..1.0f) */
+     private float ditheringQuality;
 
-    /** image encoding quality setting (0.0f..1.0f) */
-    private float bitmapEncodingQuality;
+     /** image encoding quality setting (0.0f..1.0f) */
+     private float bitmapEncodingQuality;
 
-    /** color image handler */
-    private ColorConverter colorConverter = GrayScaleColorConverter.getInstance();
+     /** color image handler */
+     private ColorConverter colorConverter = GrayScaleColorConverter
+            .getInstance();
 
-    /**
-     * true if certain image formats may be embedded unchanged in their native
-     * format.
+     /**
+      * true if certain image formats may be embedded unchanged in their native
+      * format.
+      */
+     private boolean nativeImagesSupported = false;
+
+     private boolean canEmbedJpeg = false;
+
+     /**
+      * true if CMYK images (requires IOCA FS45 suppport on the target platform)
+      * may be generated
+      */
+     private boolean cmykImagesSupported;
+
+     /** default value for image depth */
+     private int bitsPerPixel = 8;
+
+     /** the output resolution */
+     private int resolution = 240; // 240 dpi
+
+     /**
+      * A configurable value to correct the line width so that the output matches
+     * the expected. Different devices may need different values.
+      */
+     private float lineWidthCorrection = AFPConstants.LINE_WIDTH_CORRECTION;
+
+     /** determines whether GOCA is enabled or disabled */
+     private boolean gocaEnabled = true;
+     /**
+     * determines whether to stroke text in GOCA mode or to use text operators
+     * where possible
      */
-    private boolean nativeImagesSupported = false;
+     private boolean strokeGocaText = false;
 
-    private boolean canEmbedJpeg = false;
+    /** use page segment with F11 and F45 images */
+     private boolean pSeg;
 
-    /**
-     * true if CMYK images (requires IOCA FS45 suppport on the target platform)
-     * may be generated
-     */
-    private boolean cmykImagesSupported;
+     /** use FS45 images */
+     private boolean fs45;
 
-    /** default value for image depth */
-    private int bitsPerPixel = 8;
+     /** the current page */
+     private transient AFPPagePaintingState pagePaintingState = new AFPPagePaintingState();
 
-    /** the output resolution */
-    private int resolution = 240; // 240 dpi
+     // /** reference orientation */
+     // private int orientation = 0;
 
-    /**
-     * A configurable value to correct the line width so that the output matches the expected. Different
-     * devices may need different values.
-     */
-    private float lineWidthCorrection = AFPConstants.LINE_WIDTH_CORRECTION;
+     /** a unit converter */
+     private final transient AFPUnitConverter unitConv = new AFPUnitConverter(
+            this);
 
-    /** determines whether GOCA is enabled or disabled  */
-    private boolean gocaEnabled = true;
-    /** determines whether to stroke text in GOCA mode or to use text operators where possible */
-    private boolean strokeGocaText = false;
+     /**
+      * Sets the rotation to be used for portrait pages, valid values are 0
+      * (default), 90, 180, 270.
+      *
+      * @param rotation
+      *            The rotation in degrees.
+      */
+     public void setPortraitRotation(final int rotation) {
+         if (rotation == 0 || rotation == 90 || rotation == 180
+                || rotation == 270) {
+             this.portraitRotation = rotation;
+         } else {
+             throw new IllegalArgumentException(
+                    "The portrait rotation must be one"
+                            + " of the values 0, 90, 180, 270");
 
+         }
+     }
 
-    /** use page segment with F11 and F45 images*/
-    private boolean pSeg;
+     /**
+      * Returns the rotation to be used for portrait pages
+      *
+      * @return the rotation to be used for portrait pages
+      */
+     protected int getPortraitRotation() {
+         return this.portraitRotation;
+     }
 
-    /** use FS45 images*/
-    private boolean fs45;
+     /**
+      * Sets the rotation to be used for landscape pages, valid values are 0, 90,
+      * 180, 270 (default).
+      *
+      * @param rotation
+      *            The rotation in degrees.
+      */
+     public void setLandscapeRotation(final int rotation) {
+         if (rotation == 0 || rotation == 90 || rotation == 180
+                || rotation == 270) {
+             this.landscapeRotation = rotation;
+         } else {
+             throw new IllegalArgumentException(
+                    "The landscape rotation must be one"
+                            + " of the values 0, 90, 180, 270");
+         }
+     }
 
-    /** the current page */
-    private transient AFPPagePaintingState pagePaintingState = new AFPPagePaintingState();
+     /**
+      * Returns the landscape rotation
+      *
+      * @return the landscape rotation
+      */
+     protected int getLandscapeRotation() {
+         return this.landscapeRotation;
+     }
 
-    // /** reference orientation */
-    // private int orientation = 0;
+     /**
+      * Sets the number of bits used per pixel
+      *
+      * @param bitsPerPixel
+      *            number of bits per pixel
+      */
+     public void setBitsPerPixel(final int bitsPerPixel) {
+         switch (bitsPerPixel) {
+            case 1:
+            case 4:
+            case 8:
+                this.bitsPerPixel = bitsPerPixel;
+                break;
+            default:
+                log.warn("Invalid bits_per_pixel value, must be 1, 4 or 8.");
+                this.bitsPerPixel = 8;
+                break;
+         }
+     }
 
-    /** a unit converter */
-    private final transient AFPUnitConverter unitConv = new AFPUnitConverter(this);
+     /**
+      * Returns the number of bits per pixel
+      *
+      * @return the number of bits per pixel
+      */
+     public int getBitsPerPixel() {
+         return this.bitsPerPixel;
+     }
 
-    /**
-     * Sets the rotation to be used for portrait pages, valid values are 0
-     * (default), 90, 180, 270.
-     *
-     * @param rotation
-     *            The rotation in degrees.
-     */
-    public void setPortraitRotation(int rotation) {
-        if (rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270) {
-            portraitRotation = rotation;
-        } else {
-            throw new IllegalArgumentException("The portrait rotation must be one"
-                    + " of the values 0, 90, 180, 270");
+     /**
+      * Sets whether images are color or not and instantiates a ColorHandler
+      *
+      * @param colorImages
+      *            color image output
+      */
+     public void setColorImages(final boolean colorImages) {
+         this.colorImages = colorImages;
 
-        }
-    }
+         if (colorImages) {
+             this.colorConverter = DefaultColorConverter.getInstance();
+         }
 
-    /**
-     * Returns the rotation to be used for portrait pages
-     *
-     * @return the rotation to be used for portrait pages
-     */
-    protected int getPortraitRotation() {
-        return this.portraitRotation;
-    }
+     }
 
-    /**
-     * Sets the rotation to be used for landscape pages, valid values are 0, 90,
-     * 180, 270 (default).
-     *
-     * @param rotation
-     *            The rotation in degrees.
-     */
-    public void setLandscapeRotation(int rotation) {
-        if (rotation == 0 || rotation == 90 || rotation == 180 || rotation == 270) {
-            landscapeRotation = rotation;
-        } else {
-            throw new IllegalArgumentException("The landscape rotation must be one"
-                    + " of the values 0, 90, 180, 270");
-        }
-    }
+     /**
+      * Returns true if color images are to be used
+      *
+      * @return true if color images are to be used
+      */
+     public boolean isColorImages() {
+         return this.colorImages;
+     }
 
-    /**
-     * Returns the landscape rotation
-     *
-     * @return the landscape rotation
-     */
-    protected int getLandscapeRotation() {
-        return this.landscapeRotation;
-    }
+     /**
+      * Used to convert color in respect of the colorImages flag
+      *
+      * @return the color converter
+      */
+     public ColorConverter getColorConverter() {
+         return this.colorConverter;
+     }
 
-    /**
-     * Sets the number of bits used per pixel
-     *
-     * @param bitsPerPixel
-     *            number of bits per pixel
-     */
-    public void setBitsPerPixel(int bitsPerPixel) {
-        switch (bitsPerPixel) {
-        case 1:
-        case 4:
-        case 8:
-            this.bitsPerPixel = bitsPerPixel;
-            break;
-        default:
-            log.warn("Invalid bits_per_pixel value, must be 1, 4 or 8.");
-            this.bitsPerPixel = 8;
-            break;
-        }
-    }
+     /**
+      * Sets whether images are natively supported or not in the AFP environment
+      *
+      * @param nativeImagesSupported
+      *            true if images are natively supported in this AFP environment
+      */
+     public void setNativeImagesSupported(final boolean nativeImagesSupported) {
+         this.nativeImagesSupported = nativeImagesSupported;
+     }
 
-    /**
-     * Returns the number of bits per pixel
-     *
-     * @return the number of bits per pixel
-     */
-    public int getBitsPerPixel() {
-        return this.bitsPerPixel;
-    }
+     /**
+      * Returns true if images are supported natively in this AFP environment
+      *
+      * @return true if images are supported natively in this AFP environment
+      */
+     public boolean isNativeImagesSupported() {
+         return this.nativeImagesSupported;
+     }
 
-    /**
-     * Sets whether images are color or not and instantiates a ColorHandler
-     *
-     * @param colorImages
-     *            color image output
-     */
-    public void setColorImages(boolean colorImages) {
-        this.colorImages = colorImages;
+     /**
+      * Set whether or not JPEG images can be embedded within an AFP document.
+      *
+      * @param canEmbed
+     *            true if the JPEG image can be embedded
+      */
+     public void setCanEmbedJpeg(final boolean canEmbed) {
+         this.canEmbedJpeg = canEmbed;
+     }
 
-        if (colorImages) {
-            this.colorConverter = DefaultColorConverter.getInstance();
-        }
+     /**
+      * Returns true if JPEGs can be embedded in an AFP document.
+      *
+      * @return true if JPEG embedding is allowed
+      */
+     public boolean canEmbedJpeg() {
+         return this.canEmbedJpeg;
+     }
 
-    }
+     /**
+      * Controls whether CMYK images (IOCA FS45) are enabled. By default, support
+      * is disabled for wider compatibility. When disabled, any CMYK image is
+      * converted to the selected color format.
+      *
+      * @param value
+      *            true to enabled CMYK images
+      */
+     public void setCMYKImagesSupported(final boolean value) {
+         this.cmykImagesSupported = value;
+     }
 
-    /**
-     * Returns true if color images are to be used
-     *
-     * @return true if color images are to be used
-     */
-    public boolean isColorImages() {
-        return this.colorImages;
-    }
+     /**
+      * Indicates whether CMYK images (IOCA FS45) are enabled.
+      *
+      * @return true if IOCA FS45 is enabled
+      */
+     public boolean isCMYKImagesSupported() {
+         return this.cmykImagesSupported;
+     }
 
-    /**
-     * Used to convert color in respect of the colorImages flag
-     *
-     * @return the color converter
-     */
-    public ColorConverter getColorConverter() {
-        return this.colorConverter;
-    }
-
-    /**
-     * Sets whether images are natively supported or not in the AFP environment
-     *
-     * @param nativeImagesSupported
-     *            true if images are natively supported in this AFP environment
-     */
-    public void setNativeImagesSupported(boolean nativeImagesSupported) {
-        this.nativeImagesSupported = nativeImagesSupported;
-    }
-
-    /**
-     * Returns true if images are supported natively in this AFP environment
-     *
-     * @return true if images are supported natively in this AFP environment
-     */
-    public boolean isNativeImagesSupported() {
-        return this.nativeImagesSupported;
-    }
-
-    /**
-     * Set whether or not JPEG images can be embedded within an AFP document.
-     *
-     * @param canEmbed true if the JPEG image can be embedded
-     */
-    public void setCanEmbedJpeg(boolean canEmbed) {
-        canEmbedJpeg = canEmbed;
-    }
-
-    /**
-     * Returns true if JPEGs can be embedded in an AFP document.
-     *
-     * @return true if JPEG embedding is allowed
-     */
-    public boolean canEmbedJpeg() {
-        return canEmbedJpeg;
-    }
-
-    /**
-     * Controls whether CMYK images (IOCA FS45) are enabled. By default, support
-     * is disabled for wider compatibility. When disabled, any CMYK image is
-     * converted to the selected color format.
-     *
-     * @param value
-     *            true to enabled CMYK images
-     */
-    public void setCMYKImagesSupported(boolean value) {
-        this.cmykImagesSupported = value;
-    }
-
-    /**
-     * Indicates whether CMYK images (IOCA FS45) are enabled.
-     *
-     * @return true if IOCA FS45 is enabled
-     */
-    public boolean isCMYKImagesSupported() {
-        return this.cmykImagesSupported;
-    }
-
-    /**
-     * Gets the dithering quality setting to use when converting images to monochrome images.
+     /**
+      * Gets the dithering quality setting to use when converting images to
+     * monochrome images.
+     * 
      * @return the dithering quality (a value between 0.0f and 1.0f)
-     */
-    public float getDitheringQuality() {
-        return this.ditheringQuality;
-    }
+      */
+     public float getDitheringQuality() {
+         return this.ditheringQuality;
+     }
 
-    /**
-     * Sets the dithering quality setting to use when converting images to monochrome images.
-     * @param quality Defines the desired quality level for the conversion.
-     *                  Valid values: a value between 0.0f (fastest) and 1.0f (best)
-     */
-    public void setDitheringQuality(float quality) {
-        quality = Math.max(quality, 0.0f);
-        quality = Math.min(quality, 1.0f);
-        this.ditheringQuality = quality;
-    }
+     /**
+      * Sets the dithering quality setting to use when converting images to
+     * monochrome images.
+     * 
+     * @param quality
+     *            Defines the desired quality level for the conversion. Valid
+     *            values: a value between 0.0f (fastest) and 1.0f (best)
+      */
+     public void setDitheringQuality(float quality) {
+         quality = Math.max(quality, 0.0f);
+         quality = Math.min(quality, 1.0f);
+         this.ditheringQuality = quality;
+     }
 
-    /**
-     * Gets the image encoding quality setting to use when encoding bitmap images.
-     * @return the encoding quality (a value between 0.0f and 1.0f, 1.0 meaning loss-less)
-     */
-    public float getBitmapEncodingQuality() {
-        return this.bitmapEncodingQuality;
-    }
+     /**
+      * Gets the image encoding quality setting to use when encoding bitmap
+     * images.
+     * 
+     * @return the encoding quality (a value between 0.0f and 1.0f, 1.0 meaning
+     *         loss-less)
+      */
+     public float getBitmapEncodingQuality() {
+         return this.bitmapEncodingQuality;
+     }
 
-    /**
-     * Sets the image encoding quality setting to use when encoding bitmap images.
-     * @param quality Defines the desired quality level for the conversion.
-     *                  Valid values: a value between 0.0f (lowest) and 1.0f (best, loss-less)
-     */
-    public void setBitmapEncodingQuality(float quality) {
-        quality = Math.max(quality, 0.0f);
-        quality = Math.min(quality, 1.0f);
-        this.bitmapEncodingQuality = quality;
-    }
+     /**
+      * Sets the image encoding quality setting to use when encoding bitmap
+     * images.
+     * 
+     * @param quality
+     *            Defines the desired quality level for the conversion. Valid
+     *            values: a value between 0.0f (lowest) and 1.0f (best,
+     *            loss-less)
+      */
+     public void setBitmapEncodingQuality(float quality) {
+         quality = Math.max(quality, 0.0f);
+         quality = Math.min(quality, 1.0f);
+         this.bitmapEncodingQuality = quality;
+     }
 
-    /**
-     * Sets the output/device resolution
-     *
-     * @param resolution
-     *            the output resolution (dpi)
-     */
-    public void setResolution(int resolution) {
-        if (log.isDebugEnabled()) {
-            log.debug("renderer-resolution set to: " + resolution + "dpi");
-        }
-        this.resolution = resolution;
-    }
+     /**
+      * Sets the output/device resolution
+      *
+      * @param resolution
+      *            the output resolution (dpi)
+      */
+     public void setResolution(final int resolution) {
+         if (log.isDebugEnabled()) {
+             log.debug("renderer-resolution set to: " + resolution + "dpi");
+         }
+         this.resolution = resolution;
+     }
 
-    /**
-     * Sets the line width correction
-     *
-     * @param correction the line width multiplying factor correction
-     */
-    public void setLineWidthCorrection(float correction) {
-        if (log.isDebugEnabled()) {
-            log.debug("line width correction set to: " + correction);
-        }
-        this.lineWidthCorrection = correction;
-    }
+     /**
+      * Sets the line width correction
+      *
+      * @param correction
+     *            the line width multiplying factor correction
+      */
+     public void setLineWidthCorrection(final float correction) {
+         if (log.isDebugEnabled()) {
+             log.debug("line width correction set to: " + correction);
+         }
+         this.lineWidthCorrection = correction;
+     }
 
-    /**
-     * Returns the output/device resolution.
-     *
-     * @return the resolution in dpi
-     */
-    public int getResolution() {
-        return this.resolution;
-    }
+     /**
+      * Returns the output/device resolution.
+      *
+      * @return the resolution in dpi
+      */
+     public int getResolution() {
+         return this.resolution;
+     }
 
-    /**
-     * Returns the line width correction.
+     /**
+      * Returns the line width correction.
+      * 
      * @return the correction
-     */
-    public float getLineWidthCorrection() {
-        return this.lineWidthCorrection;
-    }
+      */
+     public float getLineWidthCorrection() {
+         return this.lineWidthCorrection;
+     }
 
-    /**
-     * Controls whether GOCA is enabled or disabled.
-     * @param enabled true if GOCA is enabled, false if it is disabled
-     */
-    public void setGOCAEnabled(boolean enabled) {
-        this.gocaEnabled = enabled;
-    }
+     /**
+      * Controls whether GOCA is enabled or disabled.
+      * 
+     * @param enabled
+     *            true if GOCA is enabled, false if it is disabled
+      */
+     public void setGOCAEnabled(final boolean enabled) {
+         this.gocaEnabled = enabled;
+     }
 
-    /**
-     * Indicates whether GOCA is enabled or disabled.
+     /**
+      * Indicates whether GOCA is enabled or disabled.
+      * 
      * @return true if GOCA is enabled, false if GOCA is disabled
-     */
-    public boolean isGOCAEnabled() {
-        return this.gocaEnabled;
-    }
+      */
+     public boolean isGOCAEnabled() {
+         return this.gocaEnabled;
+     }
 
-    /**
-     * Controls whether to stroke text in GOCA mode or to use text operators where possible.
-     * @param stroke true to stroke, false to paint with text operators where possible
-     */
-    public void setStrokeGOCAText(boolean stroke) {
-        this.strokeGocaText = stroke;
-    }
+     /**
+      * Controls whether to stroke text in GOCA mode or to use text operators
+     * where possible.
+     * 
+     * @param stroke
+     *            true to stroke, false to paint with text operators where
+     *            possible
+      */
+     public void setStrokeGOCAText(final boolean stroke) {
+         this.strokeGocaText = stroke;
+     }
 
-    /**
-     * Indicates whether to stroke text in GOCA mode or to use text operators where possible.
+     /**
+      * Indicates whether to stroke text in GOCA mode or to use text operators
+     * where possible.
+     * 
      * @return true to stroke, false to paint with text operators where possible
-     */
-    public boolean isStrokeGOCAText() {
-        return this.strokeGocaText;
-    }
+      */
+     public boolean isStrokeGOCAText() {
+         return this.strokeGocaText;
+     }
 
-    /**
-     * Whether FS11 and SF45 non-inline images should be wrapped in a page segment
+     /**
+      * Whether FS11 and SF45 non-inline images should be wrapped in a page
+     * segment
+     * 
      * @return true iff images should be wrapped
-     */
-    public boolean getWrapPSeg() {
-        return pSeg;
-    }
+      */
+     public boolean getWrapPSeg() {
+         return this.pSeg;
+     }
+
+     /**
+      * Sets whether FS11 and FS45 non-inline images should be wrapped in a page
+     * segment
+     * 
+     * @param pSeg
+     *            true iff images should be wrapped
+      */
+     public void setWrapPSeg(final boolean pSeg) {
+         this.pSeg = pSeg;
+     }
 
     /**
-     * Sets whether FS11 and FS45 non-inline images should be wrapped in a page segment
-     * @param pSeg true iff images should be wrapped
-     */
-    public void setWrapPSeg(boolean pSeg) {
-        this.pSeg = pSeg;
-    }
-
-
-    /**
-     * gets whether images should be FS45
+      * gets whether images should be FS45
+      * 
      * @return true iff images should be FS45
-     */
-    public boolean getFS45() {
-        return fs45;
-    }
+      */
+     public boolean getFS45() {
+         return this.fs45;
+     }
 
-    /**
-     * sets whether images should be FS45
-     * @param fs45 true iff images should be FS45
-     */
-    public void setFS45(boolean fs45) {
-        this.fs45 = fs45;
-    }
-
-
-
-    /** {@inheritDoc} */
-    @Override
-    protected AbstractData instantiateData() {
-        return new AFPData();
-    }
+     /**
+      * sets whether images should be FS45
+      * 
+     * @param fs45
+     *            true iff images should be FS45
+      */
+     public void setFS45(final boolean fs45) {
+         this.fs45 = fs45;
+     }
 
     /** {@inheritDoc} */
-    @Override
-    protected AbstractPaintingState instantiate() {
-        return new AFPPaintingState();
-    }
+     @Override
+     protected AbstractData instantiateData() {
+         return new AFPData();
+     }
 
-    /**
-     * Returns the painting state of the current page
-     *
-     * @return the painting state of the current page
-     */
-    protected AFPPagePaintingState getPagePaintingState() {
-        return this.pagePaintingState;
-    }
+     /** {@inheritDoc} */
+     @Override
+     protected AbstractPaintingState instantiate() {
+         return new AFPPaintingState();
+     }
 
-    /**
-     * Gets the current page fonts
-     *
-     * @return the current page fonts
-     */
-    public AFPPageFonts getPageFonts() {
-        return pagePaintingState.getFonts();
-    }
+     /**
+      * Returns the painting state of the current page
+      *
+      * @return the painting state of the current page
+      */
+     protected AFPPagePaintingState getPagePaintingState() {
+         return this.pagePaintingState;
+     }
 
-    /**
-     * Sets the page width
-     *
-     * @param pageWidth
-     *            the page width
-     */
-    public void setPageWidth(int pageWidth) {
-        pagePaintingState.setWidth(pageWidth);
-    }
+     /**
+      * Gets the current page fonts
+      *
+      * @return the current page fonts
+      */
+     public AFPPageFonts getPageFonts() {
+         return this.pagePaintingState.getFonts();
+     }
 
-    /**
-     * Returns the page width
-     *
-     * @return the page width
-     */
-    public int getPageWidth() {
-        return pagePaintingState.getWidth();
-    }
+     /**
+      * Sets the page width
+      *
+      * @param pageWidth
+      *            the page width
+      */
+     public void setPageWidth(final int pageWidth) {
+         this.pagePaintingState.setWidth(pageWidth);
+     }
 
-    /**
-     * Sets the page height
-     *
-     * @param pageHeight
-     *            the page height
-     */
-    public void setPageHeight(int pageHeight) {
-        pagePaintingState.setHeight(pageHeight);
-    }
+     /**
+      * Returns the page width
+      *
+      * @return the page width
+      */
+     public int getPageWidth() {
+         return this.pagePaintingState.getWidth();
+     }
 
-    /**
-     * Returns the page height
-     *
-     * @return the page height
-     */
-    public int getPageHeight() {
-        return pagePaintingState.getHeight();
-    }
+     /**
+      * Sets the page height
+      *
+      * @param pageHeight
+      *            the page height
+      */
+     public void setPageHeight(final int pageHeight) {
+         this.pagePaintingState.setHeight(pageHeight);
+     }
 
-    /**
-     * Returns the page rotation
-     *
-     * @return the page rotation
-     */
-    public int getPageRotation() {
-        return pagePaintingState.getOrientation();
-    }
+     /**
+      * Returns the page height
+      *
+      * @return the page height
+      */
+     public int getPageHeight() {
+         return this.pagePaintingState.getHeight();
+     }
 
-    /**
-     * Sets the uri of the current image
-     *
-     * @param uri
-     *            the uri of the current image
-     */
-    public void setImageUri(String uri) {
-        ((AFPData) getData()).imageUri = uri;
-    }
+     /**
+      * Returns the page rotation
+      *
+      * @return the page rotation
+      */
+     public int getPageRotation() {
+         return this.pagePaintingState.getOrientation();
+     }
 
-    /**
-     * Gets the uri of the current image
-     *
-     * @return the uri of the current image
-     */
-    public String getImageUri() {
-        return ((AFPData) getData()).imageUri;
-    }
+     /**
+      * Sets the uri of the current image
+      *
+      * @param uri
+      *            the uri of the current image
+      */
+     public void setImageUri(final String uri) {
+         ((AFPData) getData()).imageUri = uri;
+     }
 
-    /**
-     * Returns the currently derived rotation
-     *
-     * @return the currently derived rotation
-     */
-    public int getRotation() {
-        return getData().getDerivedRotation();
-    }
+     /**
+      * Gets the uri of the current image
+      *
+      * @return the uri of the current image
+      */
+     public String getImageUri() {
+         return ((AFPData) getData()).imageUri;
+     }
 
-    /**
-     * Returns the unit converter
-     *
-     * @return the unit converter
-     */
-    public AFPUnitConverter getUnitConverter() {
-        return this.unitConv;
-    }
+     /**
+      * Returns the currently derived rotation
+      *
+      * @return the currently derived rotation
+      */
+     public int getRotation() {
+         return getData().getDerivedRotation();
+     }
 
-    /**
-     * Returns a point on the current page, taking the current painting state
-     * into account.
-     *
-     * @param x
-     *            the X-coordinate
-     * @param y
-     *            the Y-coordinate
-     * @return a point on the current page
-     */
-    public Point getPoint(int x, int y) {
-        Point p = new Point();
-        int rotation = getRotation();
-        switch (rotation) {
-        case 90:
-            p.x = y;
-            p.y = getPageWidth() - x;
-            break;
-        case 180:
-            p.x = getPageWidth() - x;
-            p.y = getPageHeight() - y;
-            break;
-        case 270:
-            p.x = getPageHeight() - y;
-            p.y = x;
-            break;
-        default:
-            p.x = x;
-            p.y = y;
-            break;
-        }
-        return p;
-    }
+     /**
+      * Returns the unit converter
+      *
+      * @return the unit converter
+      */
+     public AFPUnitConverter getUnitConverter() {
+         return this.unitConv;
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public Object clone() {
-        AFPPaintingState paintingState = (AFPPaintingState) super.clone();
-        paintingState.pagePaintingState = (AFPPagePaintingState) this.pagePaintingState.clone();
-        paintingState.portraitRotation = this.portraitRotation;
-        paintingState.landscapeRotation = this.landscapeRotation;
-        paintingState.bitsPerPixel = this.bitsPerPixel;
-        paintingState.colorImages = this.colorImages;
-        paintingState.colorConverter = this.colorConverter;
-        paintingState.resolution = this.resolution;
-        return paintingState;
-    }
+     /**
+      * Returns a point on the current page, taking the current painting state
+      * into account.
+      *
+      * @param x
+      *            the X-coordinate
+      * @param y
+      *            the Y-coordinate
+      * @return a point on the current page
+      */
+     public Point getPoint(final int x, final int y) {
+         final Point p = new Point();
+         final int rotation = getRotation();
+         switch (rotation) {
+            case 90:
+                p.x = y;
+                p.y = getPageWidth() - x;
+                break;
+            case 180:
+                p.x = getPageWidth() - x;
+                p.y = getPageHeight() - y;
+                break;
+            case 270:
+                p.x = getPageHeight() - y;
+                p.y = x;
+                break;
+            default:
+                p.x = x;
+                p.y = y;
+                break;
+         }
+         return p;
+     }
 
-    /** {@inheritDoc} */
-    @Override
-    public String toString() {
-        return "AFPPaintingState{" + "portraitRotation=" + portraitRotation
-                + ", landscapeRotation=" + landscapeRotation + ", colorImages=" + colorImages
-                + ", bitsPerPixel=" + bitsPerPixel + ", resolution=" + resolution + ", pageState="
-                + pagePaintingState + super.toString() + "}";
-    }
+     /** {@inheritDoc} */
+     @Override
+     public Object clone() {
+         final AFPPaintingState paintingState = (AFPPaintingState) super.clone();
+         paintingState.pagePaintingState = (AFPPagePaintingState) this.pagePaintingState
+                .clone();
+         paintingState.portraitRotation = this.portraitRotation;
+         paintingState.landscapeRotation = this.landscapeRotation;
+         paintingState.bitsPerPixel = this.bitsPerPixel;
+         paintingState.colorImages = this.colorImages;
+         paintingState.colorConverter = this.colorConverter;
+         paintingState.resolution = this.resolution;
+         return paintingState;
+     }
 
-    /**
-     * Page level state data
-     */
-    private class AFPPagePaintingState implements Cloneable {
-        /** page width */
-        private int width = 0;
+     /** {@inheritDoc} */
+     @Override
+     public String toString() {
+         return "AFPPaintingState{" + "portraitRotation="
+                + this.portraitRotation + ", landscapeRotation="
+                + this.landscapeRotation + ", colorImages=" + this.colorImages
+                 + ", bitsPerPixel=" + this.bitsPerPixel + ", resolution="
+                + this.resolution + ", pageState=" + this.pagePaintingState
+                + super.toString() + "}";
+     }
 
-        /** page height */
-        private int height = 0;
+     /**
+      * Page level state data
+      */
+     private class AFPPagePaintingState implements Cloneable {
+         /** page width */
+         private int width = 0;
 
-        /** page fonts */
-        private AFPPageFonts fonts = new AFPPageFonts();
+         /** page height */
+         private int height = 0;
 
-        /** page font count */
-        private int fontCount = 0;
+         /** page fonts */
+         private AFPPageFonts fonts = new AFPPageFonts();
 
-        /** page orientation */
-        private int orientation = 0;
+         /** page font count */
+         private int fontCount = 0;
 
-        /**
-         * Returns the page width
-         *
-         * @return the page width
-         */
-        protected int getWidth() {
-            return width;
-        }
+         /** page orientation */
+         private int orientation = 0;
 
-        /**
-         * Sets the page width
-         *
-         * @param width
-         *            the page width
-         */
-        protected void setWidth(int width) {
-            this.width = width;
-        }
+         /**
+          * Returns the page width
+          *
+          * @return the page width
+          */
+         protected int getWidth() {
+             return this.width;
+         }
 
-        /**
-         * Returns the page height
-         *
-         * @return the page height
-         */
-        protected int getHeight() {
-            return height;
-        }
+         /**
+          * Sets the page width
+          *
+          * @param width
+          *            the page width
+          */
+         protected void setWidth(final int width) {
+             this.width = width;
+         }
 
-        /**
-         * Sets the page height
-         *
-         * @param height
-         *            the page height
-         */
-        protected void setHeight(int height) {
-            this.height = height;
-        }
+         /**
+          * Returns the page height
+          *
+          * @return the page height
+          */
+         protected int getHeight() {
+             return this.height;
+         }
 
-        /**
-         * Returns the page fonts
-         *
-         * @return the page fonts
-         */
-        protected AFPPageFonts getFonts() {
-            return fonts;
-        }
+         /**
+          * Sets the page height
+          *
+          * @param height
+          *            the page height
+          */
+         protected void setHeight(final int height) {
+             this.height = height;
+         }
 
-        /**
-         * Sets the current page fonts
-         *
-         * @param fonts
-         *            the current page fonts
-         */
-        protected void setFonts(AFPPageFonts fonts) {
-            this.fonts = fonts;
-        }
+         /**
+          * Returns the page fonts
+          *
+          * @return the page fonts
+          */
+         protected AFPPageFonts getFonts() {
+             return this.fonts;
+         }
 
-        /**
-         * Increments and returns the current page font count
-         *
-         * @return increment and return the current page font count
-         */
-        protected int incrementFontCount() {
-            return ++fontCount;
-        }
+         /**
+          * Sets the current page fonts
+          *
+          * @param fonts
+          *            the current page fonts
+          */
+         protected void setFonts(final AFPPageFonts fonts) {
+             this.fonts = fonts;
+         }
 
-        /**
-         * Returns the current page orientation
-         *
-         * @return the current page orientation
-         */
-        protected int getOrientation() {
-            return orientation;
-        }
+         /**
+          * Increments and returns the current page font count
+          *
+          * @return increment and return the current page font count
+          */
+         protected int incrementFontCount() {
+             return ++this.fontCount;
+         }
 
-        /**
-         * Sets the current page orientation
-         *
-         * @param orientation
-         *            the current page orientation
-         */
-        protected void setOrientation(int orientation) {
-            this.orientation = orientation;
-        }
+         /**
+          * Returns the current page orientation
+          *
+          * @return the current page orientation
+          */
+         protected int getOrientation() {
+             return this.orientation;
+         }
 
-        /** {@inheritDoc} */
-        @Override
-        public Object clone() {
-            AFPPagePaintingState state = new AFPPagePaintingState();
-            state.width = this.width;
-            state.height = this.height;
-            state.orientation = this.orientation;
-            state.fonts = new AFPPageFonts(this.fonts);
-            state.fontCount = this.fontCount;
-            return state;
-        }
+         /**
+          * Sets the current page orientation
+          *
+          * @param orientation
+          *            the current page orientation
+          */
+         protected void setOrientation(final int orientation) {
+             this.orientation = orientation;
+         }
 
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return "AFPPagePaintingState{width=" + width + ", height=" + height + ", orientation="
-                    + orientation + ", fonts=" + fonts + ", fontCount=" + fontCount + "}";
-        }
-    }
+         /** {@inheritDoc} */
+         @Override
+         public Object clone() {
+             final AFPPagePaintingState state = new AFPPagePaintingState();
+             state.width = this.width;
+             state.height = this.height;
+             state.orientation = this.orientation;
+             state.fonts = new AFPPageFonts(this.fonts);
+             state.fontCount = this.fontCount;
+             return state;
+         }
 
-    /**
-     * Block level state data
-     */
-    private class AFPData extends org.apache.fop.util.AbstractPaintingState.AbstractData {
-        private static final long serialVersionUID = -1789481244175275686L;
-
-        /** The current fill status */
-        private boolean filled = false;
-
-        private String imageUri = null;
-
-        /** {@inheritDoc} */
-        @Override
-        public Object clone() {
-            AFPData obj = (AFPData) super.clone();
-            obj.filled = this.filled;
-            obj.imageUri = this.imageUri;
-            return obj;
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return "AFPData{" + super.toString() + ", filled=" + filled + ", imageUri=" + imageUri
+         /** {@inheritDoc} */
+         @Override
+         public String toString() {
+             return "AFPPagePaintingState{width=" + this.width + ", height="
+                    + this.height + ", orientation=" + this.orientation
+                    + ", fonts=" + this.fonts + ", fontCount=" + this.fontCount
                     + "}";
-        }
+         }
+     }
 
-        /** {@inheritDoc} */
-        @Override
-        protected AbstractData instantiate() {
-            return new AFPData();
-        }
-    }
+     /**
+      * Block level state data
+      */
+     private class AFPData extends
+            org.apache.fop.util.AbstractPaintingState.AbstractData {
+         private static final long serialVersionUID = -1789481244175275686L;
 
-}
+         /** The current fill status */
+         private boolean filled = false;
+
+         private String imageUri = null;
+
+         /** {@inheritDoc} */
+         @Override
+         public Object clone() {
+             final AFPData obj = (AFPData) super.clone();
+             obj.filled = this.filled;
+             obj.imageUri = this.imageUri;
+             return obj;
+         }
+
+         /** {@inheritDoc} */
+         @Override
+         public String toString() {
+             return "AFPData{" + super.toString() + ", filled=" + this.filled
+                    + ", imageUri=" + this.imageUri + "}";
+         }
+
+         /** {@inheritDoc} */
+         @Override
+         protected AbstractData instantiate() {
+             return new AFPData();
+         }
+     }
+
+ }

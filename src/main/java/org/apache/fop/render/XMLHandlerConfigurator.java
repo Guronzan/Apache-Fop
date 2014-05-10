@@ -19,76 +19,86 @@
 
 package org.apache.fop.render;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.avalon.framework.configuration.Configuration;
 import org.apache.avalon.framework.configuration.ConfigurationException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
 
 /**
  * Configurator for XMLHandler objects.
  */
-public class XMLHandlerConfigurator extends AbstractRendererConfigurator {
-
-    /** logger instance */
-    protected static final Log log = LogFactory.getLog(XMLHandlerConfigurator.class);
+@Slf4j
+ public class XMLHandlerConfigurator extends AbstractRendererConfigurator {
 
     /**
-     * Default constructor
-     * @param userAgent the user agent
-     */
-    public XMLHandlerConfigurator(FOUserAgent userAgent) {
-        super(userAgent);
-    }
+      * Default constructor
+      * 
+     * @param userAgent
+     *            the user agent
+      */
+     public XMLHandlerConfigurator(final FOUserAgent userAgent) {
+         super(userAgent);
+     }
 
-    /**
-     * Returns the configuration subtree for a specific renderer.
-     * @param cfg the renderer configuration
-     * @param namespace the namespace (i.e. the XMLHandler) for which the configuration should
-     *                  be returned
-     * @return the requested configuration subtree, null if there's no configuration
-     */
-    private Configuration getHandlerConfig(Configuration cfg, String namespace) {
-        if (cfg == null || namespace == null) {
-            return null;
-        }
-        Configuration handlerConfig = null;
+     /**
+      * Returns the configuration subtree for a specific renderer.
+      * 
+     * @param cfg
+     *            the renderer configuration
+     * @param namespace
+     *            the namespace (i.e. the XMLHandler) for which the
+     *            configuration should be returned
+     * @return the requested configuration subtree, null if there's no
+     *         configuration
+      */
+     private Configuration getHandlerConfig(final Configuration cfg,
+            final String namespace) {
+         if (cfg == null || namespace == null) {
+             return null;
+         }
+         Configuration handlerConfig = null;
 
-        Configuration[] children = cfg.getChildren("xml-handler");
-        for (int i = 0; i < children.length; ++i) {
-            try {
-                if (children[i].getAttribute("namespace").equals(namespace)) {
-                    handlerConfig = children[i];
-                    break;
-                }
-            } catch (ConfigurationException e) {
-                // silently pass over configurations without namespace
-            }
-        }
-        if (log.isDebugEnabled()) {
-            log.debug((handlerConfig == null ? "No" : "")
-                    + "XML handler configuration found for namespace " + namespace);
-        }
-        return handlerConfig;
-    }
+         final Configuration[] children = cfg.getChildren("xml-handler");
+         for (final Configuration element : children) {
+             try {
+                 if (element.getAttribute("namespace").equals(namespace)) {
+                     handlerConfig = element;
+                     break;
+                 }
+             } catch (final ConfigurationException e) {
+                 // silently pass over configurations without namespace
+             }
+         }
+         if (log.isDebugEnabled()) {
+             log.debug((handlerConfig == null ? "No" : "")
+                     + "XML handler configuration found for namespace "
+                    + namespace);
+         }
+         return handlerConfig;
+     }
 
-    /**
-     * Configures renderer context by setting the handler configuration on it.
-     * @param context the RendererContext (contains the user agent)
-     * @param ns the Namespace of the foreign object
-     * @throws FOPException if configuring the target objects fails
-     */
-    public void configure(RendererContext context, String ns) throws FOPException {
-        //Optional XML handler configuration
-        Configuration cfg = getRendererConfig(context.getRenderer());
-        if (cfg != null) {
-            cfg = getHandlerConfig(cfg, ns);
-            if (cfg != null) {
-                context.setProperty(RendererContextConstants.HANDLER_CONFIGURATION, cfg);
-            }
-        }
-    }
-}
+     /**
+      * Configures renderer context by setting the handler configuration on it.
+      * 
+     * @param context
+     *            the RendererContext (contains the user agent)
+     * @param ns
+     *            the Namespace of the foreign object
+     * @throws FOPException
+     *             if configuring the target objects fails
+      */
+     public void configure(final RendererContext context, final String ns)
+            throws FOPException {
+         // Optional XML handler configuration
+         Configuration cfg = getRendererConfig(context.getRenderer());
+         if (cfg != null) {
+             cfg = getHandlerConfig(cfg, ns);
+             if (cfg != null) {
+                 context.setProperty(
+                        RendererContextConstants.HANDLER_CONFIGURATION, cfg);
+             }
+         }
+     }
+ }

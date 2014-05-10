@@ -59,7 +59,7 @@ public final class ImageUtil {
      */
     public static int getInt (String value) {
         String retString = new String ();
-        StringBuffer s = new StringBuffer (value);
+        StringBuilder s = new StringBuilder (value);
         int len = s.length ();
 
         for (int i = 0; i < len; i++) {

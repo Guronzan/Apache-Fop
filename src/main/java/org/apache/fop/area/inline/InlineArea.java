@@ -22,318 +22,355 @@ package org.apache.fop.area.inline;
 import java.io.Serializable;
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.apache.fop.area.Area;
 import org.apache.fop.area.LineArea;
 import org.apache.fop.area.Trait;
 import org.apache.fop.complexscripts.bidi.InlineRun;
 
 /**
- * Inline Area
- * This area is for all inline areas that can be placed
- * in a line area.
+ * Inline Area This area is for all inline areas that can be placed in a line
+ * area.
  */
-public class InlineArea extends Area {
+@Slf4j
+ public class InlineArea extends Area {
 
-    private static final long serialVersionUID = -8940066479810170980L;
+     private static final long serialVersionUID = -8940066479810170980L;
 
-    /**
-     * this class stores information about potential adjustments
-     * that can be used in order to re-compute adjustments when a
-     * page-number or a page-number-citation is resolved
-     */
-    protected class InlineAdjustingInfo implements Serializable {
+     /**
+      * this class stores information about potential adjustments that can be
+     * used in order to re-compute adjustments when a page-number or a
+     * page-number-citation is resolved
+      */
+     protected class InlineAdjustingInfo implements Serializable {
 
-        private static final long serialVersionUID = -5601387735459712149L;
+         private static final long serialVersionUID = -5601387735459712149L;
 
-        /** stretch of the inline area */
-        protected int availableStretch;
-        /** shrink of the inline area */
-        protected int availableShrink;
-        /** total adjustment (= ipd - width of fixed elements) */
-        protected int adjustment;
+         /** stretch of the inline area */
+         protected int availableStretch;
+         /** shrink of the inline area */
+         protected int availableShrink;
+         /** total adjustment (= ipd - width of fixed elements) */
+         protected int adjustment;
 
-        /**
-         * Constructor
-         *
-         * @param stretch the available space for stretching
-         * @param shrink the available space for shrinking
-         * @param adj space adjustment type
-         */
-        protected InlineAdjustingInfo(int stretch, int shrink, int adj) {
-            availableStretch = stretch;
-            availableShrink = shrink;
-            adjustment = adj;
-        }
+         /**
+          * Constructor
+          *
+          * @param stretch
+         *            the available space for stretching
+         * @param shrink
+         *            the available space for shrinking
+         * @param adj
+         *            space adjustment type
+          */
+         protected InlineAdjustingInfo(final int stretch, final int shrink,
+                final int adj) {
+             this.availableStretch = stretch;
+             this.availableShrink = shrink;
+             this.adjustment = adj;
+         }
 
-        /**
-         * Apply the variation factor
-         *
-         * @param variationFactor the factor by which the adjustment is to be changed
+         /**
+          * Apply the variation factor
+          *
+          * @param variationFactor
+         *            the factor by which the adjustment is to be changed
          * @return the IPD increase
-         */
-        protected int applyVariationFactor(double variationFactor) {
-            int oldAdjustment = adjustment;
-            adjustment *= variationFactor;
-            return adjustment - oldAdjustment;
-        }
-    }
+          */
+         protected int applyVariationFactor(final double variationFactor) {
+             final int oldAdjustment = this.adjustment;
+             this.adjustment *= variationFactor;
+             return this.adjustment - oldAdjustment;
+         }
+     }
 
-    /**
-     * offset position from before edge of parent area
-     */
-    protected int blockProgressionOffset = 0;
+     /**
+      * offset position from before edge of parent area
+      */
+     protected int blockProgressionOffset = 0;
 
-    /**
-     * parent area
-     * it is needed in order to recompute adjust ratio and indents
+     /**
+      * parent area it is needed in order to recompute adjust ratio and indents
      * when a page-number or a page-number-citation is resolved
-     */
-    private Area parentArea = null;
+      */
+     private Area parentArea = null;
 
-    /**
-     * ipd variation of child areas: if this area has not already
-     * been added and cannot notify its parent area, store the variation
-     * and wait for the parent area to be set
-     */
-    private int storedIPDVariation = 0;
+     /**
+      * ipd variation of child areas: if this area has not already been added and
+     * cannot notify its parent area, store the variation and wait for the
+     * parent area to be set
+      */
+     private int storedIPDVariation = 0;
 
-    /**
-     * The adjustment information object
-     */
-    protected InlineAdjustingInfo adjustingInfo = null;
+     /**
+      * The adjustment information object
+      */
+     protected InlineAdjustingInfo adjustingInfo = null;
 
-    /**
-     * Default constructor for inline area.
-     */
-    public InlineArea() {
-        this (  0, -1 );
-    }
+     /**
+      * Default constructor for inline area.
+      */
+     public InlineArea() {
+         this(0, -1);
+     }
 
-    /**
-     * Instantiate inline area.
-     * @param blockProgressionOffset a block progression offset or zero
-     * @param bidiLevel a resolved bidi level or -1
-     */
-    protected InlineArea ( int blockProgressionOffset, int bidiLevel ) {
-        this.blockProgressionOffset = blockProgressionOffset;
-        setBidiLevel(bidiLevel);
-    }
+     /**
+      * Instantiate inline area.
+      * 
+     * @param blockProgressionOffset
+     *            a block progression offset or zero
+     * @param bidiLevel
+     *            a resolved bidi level or -1
+      */
+     protected InlineArea(final int blockProgressionOffset, final int bidiLevel) {
+         this.blockProgressionOffset = blockProgressionOffset;
+         setBidiLevel(bidiLevel);
+     }
 
-    /**
-     * @return the adjustment information object
-     */
-    public InlineAdjustingInfo getAdjustingInfo() {
-        return adjustingInfo;
-    }
+     /**
+      * @return the adjustment information object
+      */
+     public InlineAdjustingInfo getAdjustingInfo() {
+         return this.adjustingInfo;
+     }
 
-    /**
-     * Create a new adjustment information object
-     * @param stretch the available space for stretching
-     * @param shrink the available space for shrinking
-     * @param adjustment space adjustment type
-     */
-    public void setAdjustingInfo(int stretch, int shrink, int adjustment) {
-        adjustingInfo = new InlineAdjustingInfo(stretch, shrink, adjustment);
-    }
+     /**
+      * Create a new adjustment information object
+      * 
+     * @param stretch
+     *            the available space for stretching
+     * @param shrink
+     *            the available space for shrinking
+     * @param adjustment
+     *            space adjustment type
+      */
+     public void setAdjustingInfo(final int stretch, final int shrink,
+            final int adjustment) {
+         this.adjustingInfo = new InlineAdjustingInfo(stretch, shrink,
+                adjustment);
+     }
 
-    /**
-     * Modify the adjustment value in the adjustment information object
-     * @param adjustment the new adjustment value
-     */
-    public void setAdjustment(int adjustment) {
-        if (adjustingInfo != null) {
-            adjustingInfo.adjustment = adjustment;
-        }
-    }
+     /**
+      * Modify the adjustment value in the adjustment information object
+      * 
+     * @param adjustment
+     *            the new adjustment value
+      */
+     public void setAdjustment(final int adjustment) {
+         if (this.adjustingInfo != null) {
+             this.adjustingInfo.adjustment = adjustment;
+         }
+     }
 
-    /**
-     * Increase the inline progression dimensions of this area.
-     * This is used for inline parent areas that contain mulitple child areas.
+     /**
+      * Increase the inline progression dimensions of this area. This is used for
+     * inline parent areas that contain mulitple child areas.
      *
-     * @param ipd the inline progression to increase by
-     */
-    public void increaseIPD(int ipd) {
-        this.ipd += ipd;
-    }
+      * @param ipd
+     *            the inline progression to increase by
+      */
+     public void increaseIPD(final int ipd) {
+         this.ipd += ipd;
+     }
 
-    /**
-     * Set the block progression offset of this inline area.
-     * This is used to set the offset of the inline area
-     * which is relative to the before edge of the parent area.
+     /**
+      * Set the block progression offset of this inline area. This is used to set
+     * the offset of the inline area which is relative to the before edge of the
+     * parent area.
      *
-     * @param blockProgressionOffset the offset
-     */
-    public void setBlockProgressionOffset(int blockProgressionOffset) {
-        this.blockProgressionOffset = blockProgressionOffset;
-    }
+      * @param blockProgressionOffset
+     *            the offset
+      */
+     public void setBlockProgressionOffset(final int blockProgressionOffset) {
+         this.blockProgressionOffset = blockProgressionOffset;
+     }
 
-    /**
-     * Get the block progression offset of this inline area.
-     * This returns the offset of the inline area
-     * relative to the before edge of the parent area.
+     /**
+      * Get the block progression offset of this inline area. This returns the
+     * offset of the inline area relative to the before edge of the parent area.
      *
-     * @return the blockProgressionOffset
-     */
-    public int getBlockProgressionOffset() {
-        return blockProgressionOffset;
-    }
+      * @return the blockProgressionOffset
+      */
+     public int getBlockProgressionOffset() {
+         return this.blockProgressionOffset;
+     }
 
-    /**
-     * @param parentArea The parentArea to set.
-     */
-    public void setParentArea(Area parentArea) {
-        this.parentArea = parentArea;
-    }
+     /**
+      * @param parentArea
+     *            The parentArea to set.
+      */
+     public void setParentArea(final Area parentArea) {
+         this.parentArea = parentArea;
+     }
 
-    /**
-     * @return Returns the parentArea.
-     */
-    public Area getParentArea() {
-        return parentArea;
-    }
+     /**
+      * @return Returns the parentArea.
+      */
+     public Area getParentArea() {
+         return this.parentArea;
+     }
 
-    /**
-     * Set the parent for the child area.
-     *
-     * {@inheritDoc}
-     */
-    @Override
-    public void addChildArea(Area childArea) {
-        super.addChildArea(childArea);
-        if (childArea instanceof InlineArea) {
-            ((InlineArea) childArea).setParentArea(this);
-        }
-    }
+     /**
+      * Set the parent for the child area.
+      *
+      * {@inheritDoc}
+      */
+     @Override
+     public void addChildArea(final Area childArea) {
+         super.addChildArea(childArea);
+         if (childArea instanceof InlineArea) {
+             ((InlineArea) childArea).setParentArea(this);
+         }
+     }
 
-    /** @return true if the inline area is underlined. */
-    public boolean hasUnderline() {
-        return getTraitAsBoolean(Trait.UNDERLINE);
-    }
+     /** @return true if the inline area is underlined. */
+     public boolean hasUnderline() {
+         return getTraitAsBoolean(Trait.UNDERLINE);
+     }
 
-    /** @return true if the inline area is overlined. */
-    public boolean hasOverline() {
-        return getTraitAsBoolean(Trait.OVERLINE);
-    }
+     /** @return true if the inline area is overlined. */
+     public boolean hasOverline() {
+         return getTraitAsBoolean(Trait.OVERLINE);
+     }
 
-    /** @return true if the inline area has a line through. */
-    public boolean hasLineThrough() {
-        return getTraitAsBoolean(Trait.LINETHROUGH);
-    }
+     /** @return true if the inline area has a line through. */
+     public boolean hasLineThrough() {
+         return getTraitAsBoolean(Trait.LINETHROUGH);
+     }
 
-    /** @return true if the inline area is blinking. */
-    public boolean isBlinking() {
-        return getTraitAsBoolean(Trait.BLINK);
-    }
+     /** @return true if the inline area is blinking. */
+     public boolean isBlinking() {
+         return getTraitAsBoolean(Trait.BLINK);
+     }
 
-    /**
-     * recursively apply the variation factor to all descendant areas
-     * @param variationFactor the variation factor that must be applied to adjustments
-     * @param lineStretch     the total stretch of the line
-     * @param lineShrink      the total shrink of the line
+     /**
+      * recursively apply the variation factor to all descendant areas
+      * 
+     * @param variationFactor
+     *            the variation factor that must be applied to adjustments
+     * @param lineStretch
+     *            the total stretch of the line
+     * @param lineShrink
+     *            the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
-     */
-    public boolean applyVariationFactor(double variationFactor,
-                                        int lineStretch, int lineShrink) {
-        // default behaviour: update the IPD and return false
-        if (adjustingInfo != null) {
-            setIPD(getIPD() + adjustingInfo.applyVariationFactor(variationFactor));
-        }
-        return false;
-    }
+      */
+     public boolean applyVariationFactor(final double variationFactor,
+            final int lineStretch, final int lineShrink) {
+         // default behaviour: update the IPD and return false
+         if (this.adjustingInfo != null) {
+             setIPD(getIPD()
+                    + this.adjustingInfo.applyVariationFactor(variationFactor));
+         }
+         return false;
+     }
 
-    /**
-     * Apply IPD variation.
-     * @param ipdVariation the variation
-     */
-    public void handleIPDVariation(int ipdVariation) {
-        if (log.isTraceEnabled()) {
-            log.trace("Handling IPD variation for " + getClass().getSimpleName()
-                    + ": increase by " + ipdVariation + " mpt.");
-        }
+     /**
+      * Apply IPD variation.
+      * 
+     * @param ipdVariation
+     *            the variation
+      */
+     public void handleIPDVariation(final int ipdVariation) {
+         if (log.isTraceEnabled()) {
+             log.trace("Handling IPD variation for "
+                    + getClass().getSimpleName() + ": increase by "
+                    + ipdVariation + " mpt.");
+         }
 
-        increaseIPD(ipdVariation);
-        notifyIPDVariation(ipdVariation);
-    }
+         increaseIPD(ipdVariation);
+         notifyIPDVariation(ipdVariation);
+     }
 
-    /**
-     * notify the parent area about the ipd variation of this area
-     * or of a descendant area
-     * @param ipdVariation the difference between new and old ipd
-     */
-    protected void notifyIPDVariation(int ipdVariation) {
-        if (getParentArea() instanceof InlineArea) {
-            ((InlineArea) getParentArea()).handleIPDVariation(ipdVariation);
-        } else if (getParentArea() instanceof LineArea) {
-            ((LineArea) getParentArea()).handleIPDVariation(ipdVariation);
-        } else if (getParentArea() == null) {
-            // parent area not yet set: store the variations
-            storedIPDVariation += ipdVariation;
-        }
-    }
+     /**
+      * notify the parent area about the ipd variation of this area or of a
+     * descendant area
+     * 
+     * @param ipdVariation
+     *            the difference between new and old ipd
+      */
+     protected void notifyIPDVariation(final int ipdVariation) {
+         if (getParentArea() instanceof InlineArea) {
+             ((InlineArea) getParentArea()).handleIPDVariation(ipdVariation);
+         } else if (getParentArea() instanceof LineArea) {
+             ((LineArea) getParentArea()).handleIPDVariation(ipdVariation);
+         } else if (getParentArea() == null) {
+             // parent area not yet set: store the variations
+             this.storedIPDVariation += ipdVariation;
+         }
+     }
 
-    /**
-     * Returns the offset that this area would have if its offset and size were taking
-     * children areas into account. The bpd of an inline area is taken from its nominal
-     * font and doesn't depend on the bpds of its children elements. However, in the case
-     * of a basic-link element we want the active area to cover all of the children
-     * elements.
+     /**
+      * Returns the offset that this area would have if its offset and size were
+     * taking children areas into account. The bpd of an inline area is taken
+     * from its nominal font and doesn't depend on the bpds of its children
+     * elements. However, in the case of a basic-link element we want the active
+     * area to cover all of the children elements.
      *
-     * @return the offset that this area would have if the before-edge of its
-     * content-rectangle were coinciding with the <q>beforest</q> before-edge of its
-     * children allocation-rectangles.
+      * @return the offset that this area would have if the before-edge of its
+     *         content-rectangle were coinciding with the <q>beforest</q>
+     *         before-edge of its children allocation-rectangles.
      * @see #getVirtualBPD()
-     * @see BasicLinkArea
-     */
-    int getVirtualOffset() {
-        return getBlockProgressionOffset();
-    }
+      * @see BasicLinkArea
+      */
+     int getVirtualOffset() {
+         return getBlockProgressionOffset();
+     }
 
-    /**
-     * Returns the block-progression-dimension that this area would have if it were taking
-     * its children elements into account. See {@linkplain #getVirtualOffset()}.
-     *
-     * @return the bpd
-     */
-    int getVirtualBPD() {
-        return getBPD();
-    }
+     /**
+      * Returns the block-progression-dimension that this area would have if it
+     * were taking its children elements into account. See
+     * {@linkplain #getVirtualOffset()}.
+      *
+      * @return the bpd
+      */
+     int getVirtualBPD() {
+         return getBPD();
+     }
 
-    /**
-     * Collection bidi inline runs.
-     * @param runs current list of inline runs
+     /**
+      * Collection bidi inline runs.
+      * 
+     * @param runs
+     *            current list of inline runs
      * @return modified list of inline runs, having appended new run
-     */
-    public List collectInlineRuns ( List runs ) {
-        assert runs != null;
-        runs.add ( new InlineRun ( this, new int[] {getBidiLevel()}) );
-        return runs;
-    }
+      */
+     public List collectInlineRuns(final List runs) {
+         assert runs != null;
+         runs.add(new InlineRun(this, new int[] { getBidiLevel() }));
+         return runs;
+     }
 
-    /**
-     * Determine if inline area IA is an ancestor inline area or same as this area.
-     * @param ia inline area to test
+     /**
+      * Determine if inline area IA is an ancestor inline area or same as this
+     * area.
+     * 
+     * @param ia
+     *            inline area to test
      * @return true if specified inline area is an ancestor or same as this area
-     */
-    public boolean isAncestorOrSelf ( InlineArea ia ) {
-        return ( ia == this ) || isAncestor ( ia );
-    }
+      */
+     public boolean isAncestorOrSelf(final InlineArea ia) {
+         return ia == this || isAncestor(ia);
+     }
 
-    /**
-     * Determine if inline area IA is an ancestor inline area of this area.
-     * @param ia inline area to test
+     /**
+      * Determine if inline area IA is an ancestor inline area of this area.
+      * 
+     * @param ia
+     *            inline area to test
      * @return true if specified inline area is an ancestor of this area
-     */
-    public boolean isAncestor ( InlineArea ia ) {
-        for ( Area p = getParentArea(); p != null;) {
-            if ( p == ia ) {
-                return true;
-            } else if ( p instanceof InlineArea ) {
-                p = ( (InlineArea) p ).getParentArea();
-            } else {
-                p = null;
-            }
-        }
-        return false;
-    }
+      */
+     public boolean isAncestor(final InlineArea ia) {
+         for (Area p = getParentArea(); p != null;) {
+             if (p == ia) {
+                 return true;
+             } else if (p instanceof InlineArea) {
+                 p = ((InlineArea) p).getParentArea();
+             } else {
+                 p = null;
+             }
+         }
+         return false;
+     }
 
-}
+ }

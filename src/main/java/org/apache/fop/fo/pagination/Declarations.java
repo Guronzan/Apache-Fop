@@ -22,120 +22,131 @@ package org.apache.fop.fo.pagination;
 // Java
 import java.util.Map;
 
-import org.xml.sax.Locator;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.fo.FONode;
 import org.apache.fop.fo.FObj;
 import org.apache.fop.fo.PropertyList;
 import org.apache.fop.fo.ValidationException;
+import org.xml.sax.Locator;
 
 /**
  * Class modelling the <a href="http://www.w3.org/TR/xsl/#fo_declarations">
  * <code>fo:declarations</code></a> object.
  *
- * A declarations formatting object holds a set of color-profiles
- * and optionally additional non-XSL namespace elements.
- * The color-profiles are held in a hashmap for use with color-profile
- * references.
+ * A declarations formatting object holds a set of color-profiles and optionally
+ * additional non-XSL namespace elements. The color-profiles are held in a
+ * hashmap for use with color-profile references.
  */
-public class Declarations extends FObj {
+@Slf4j
+ public class Declarations extends FObj {
 
-    private Map<String, ColorProfile> colorProfiles = null;
+     private Map<String, ColorProfile> colorProfiles = null;
 
-    /**
-     * @param parent FONode that is the parent of this object
-     */
-    public Declarations(FONode parent) {
-        super(parent);
-        ((Root) parent).setDeclarations(this);
-    }
+     /**
+      * @param parent
+     *            FONode that is the parent of this object
+      */
+     public Declarations(final FONode parent) {
+         super(parent);
+         ((Root) parent).setDeclarations(this);
+     }
 
-    /** {@inheritDoc} */
-    public void bind(PropertyList pList) throws FOPException {
-        // No properties defined for fo:declarations
-    }
+     /** {@inheritDoc} */
+     @Override
+     public void bind(final PropertyList pList) throws FOPException {
+         // No properties defined for fo:declarations
+     }
 
-    /**
-     * {@inheritDoc}
-     * <br>XSL 1.0: (color-profile)+ (and non-XSL NS nodes)
-     * <br>FOP/XSL 1.1: (color-profile)* (and non-XSL NS nodes)
-     */
-    protected void validateChildNode(Locator loc, String nsURI, String localName)
-                throws ValidationException {
-        if (FO_URI.equals(nsURI)) {
-            if (!localName.equals("color-profile")) {
-                invalidChildError(loc, nsURI, localName);
-            }
-        } // anything outside of XSL namespace is OK.
-    }
+     /**
+      * {@inheritDoc} <br>
+     * XSL 1.0: (color-profile)+ (and non-XSL NS nodes) <br>
+     * FOP/XSL 1.1: (color-profile)* (and non-XSL NS nodes)
+      */
+     @Override
+     protected void validateChildNode(final Locator loc, final String nsURI,
+            final String localName) throws ValidationException {
+         if (FO_URI.equals(nsURI)) {
+             if (!localName.equals("color-profile")) {
+                 invalidChildError(loc, nsURI, localName);
+             }
+         } // anything outside of XSL namespace is OK.
+     }
 
-    /**
-     * At the end of this element sort out the children into
-     * a hashmap of color profiles and a list of extension attachments.
-     * @throws FOPException if there's a problem during processing
-     */
-    protected void endOfNode() throws FOPException {
-        if (firstChild != null) {
-            for (FONodeIterator iter = getChildNodes(); iter.hasNext();) {
-                FONode node = iter.nextNode();
-                if (node.getName().equals("fo:color-profile")) {
-                    ColorProfile cp = (ColorProfile)node;
-                    if (!"".equals(cp.getColorProfileName())) {
-                        addColorProfile(cp);
-                    } else {
-                        getFOValidationEventProducer().missingProperty(this,
-                                cp.getName(), "color-profile-name", locator);
-                    }
-                } else {
-                    log.debug("Ignoring element " + node.getName()
-                            + " inside fo:declarations.");
-                }
-            }
-        }
-        firstChild = null;
-    }
+     /**
+      * At the end of this element sort out the children into a hashmap of color
+     * profiles and a list of extension attachments.
+     * 
+     * @throws FOPException
+     *             if there's a problem during processing
+      */
+     @Override
+     protected void endOfNode() throws FOPException {
+         if (this.firstChild != null) {
+             for (final FONodeIterator iter = getChildNodes(); iter.hasNext();) {
+                 final FONode node = iter.nextNode();
+                 if (node.getName().equals("fo:color-profile")) {
+                     final ColorProfile cp = (ColorProfile) node;
+                     if (!"".equals(cp.getColorProfileName())) {
+                         addColorProfile(cp);
+                     } else {
+                         getFOValidationEventProducer().missingProperty(this,
+                                 cp.getName(), "color-profile-name",
+                                this.locator);
+                     }
+                 } else {
+                     log.debug("Ignoring element " + node.getName()
+                             + " inside fo:declarations.");
+                 }
+             }
+         }
+         this.firstChild = null;
+     }
 
-    private void addColorProfile(ColorProfile cp) {
-        if (colorProfiles == null) {
-            colorProfiles = new java.util.HashMap<String, ColorProfile>();
-        }
-        if (colorProfiles.get(cp.getColorProfileName()) != null) {
-            // duplicate names
-            getFOValidationEventProducer().colorProfileNameNotUnique(this,
-                    cp.getName(), cp.getColorProfileName(), locator);
-        }
-        colorProfiles.put(cp.getColorProfileName(), cp);
-    }
+     private void addColorProfile(final ColorProfile cp) {
+         if (this.colorProfiles == null) {
+             this.colorProfiles = new java.util.HashMap<String, ColorProfile>();
+         }
+         if (this.colorProfiles.get(cp.getColorProfileName()) != null) {
+             // duplicate names
+             getFOValidationEventProducer().colorProfileNameNotUnique(this,
+                     cp.getName(), cp.getColorProfileName(), this.locator);
+         }
+         this.colorProfiles.put(cp.getColorProfileName(), cp);
+     }
 
-    /** {@inheritDoc} */
-    public String getLocalName() {
-        return "declarations";
-    }
+     /** {@inheritDoc} */
+     @Override
+     public String getLocalName() {
+         return "declarations";
+     }
 
-    /**
-     * {@inheritDoc}
+     /**
+      * {@inheritDoc}
+      * 
      * @return {@link org.apache.fop.fo.Constants#FO_DECLARATIONS}
-     */
-    public int getNameId() {
-        return FO_DECLARATIONS;
-    }
+      */
+     @Override
+     public int getNameId() {
+         return FO_DECLARATIONS;
+     }
 
-    /**
-     * Return ColorProfile with given name.
-     *
-     * @param cpName Name of ColorProfile, i.e. the value of the color-profile-name attribute of
-     *               the fo:color-profile element
-     * @return The org.apache.fop.fo.pagination.ColorProfile object associated with this
-     *         color-profile-name or null
-     */
-    public ColorProfile getColorProfile(String cpName) {
-        ColorProfile profile = null;
-        if (this.colorProfiles != null) {
-            profile = this.colorProfiles.get(cpName);
-        }
-        return profile;
-    }
-
+     /**
+      * Return ColorProfile with given name.
+      *
+      * @param cpName
+     *            Name of ColorProfile, i.e. the value of the color-profile-name
+     *            attribute of the fo:color-profile element
+     * @return The org.apache.fop.fo.pagination.ColorProfile object associated
+     *         with this color-profile-name or null
+      */
+     public ColorProfile getColorProfile(final String cpName) {
+         ColorProfile profile = null;
+         if (this.colorProfiles != null) {
+             profile = this.colorProfiles.get(cpName);
+         }
+         return profile;
+     }
 
 }

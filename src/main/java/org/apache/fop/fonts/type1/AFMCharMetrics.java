@@ -151,7 +151,7 @@ public class AFMCharMetrics {
 
     /** {@inheritDoc} */
     public String toString() {
-        StringBuffer sb = new StringBuffer("AFM Char: ");
+        StringBuilder sb = new StringBuilder("AFM Char: ");
         sb.append(getCharCode());
         sb.append(" (");
         if (getUnicodeSequence() != null) {

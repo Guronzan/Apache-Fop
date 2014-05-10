@@ -99,7 +99,7 @@ public class PDFFunction extends PDFObject {
      * Required For Type 4: Postscript Calculator function
      * composed of arithmetic, boolean, and stack operators + boolean constants
      */
-    protected StringBuffer functionDataStream = null;
+    protected StringBuilder functionDataStream = null;
 
     /**
      * Required (possibly) For Type 0: A vector of Strings for the
@@ -215,7 +215,7 @@ public class PDFFunction extends PDFObject {
             int theFunctionType, List theDomain,
             List theRange, List theSize, int theBitsPerSample,
             int theOrder, List theEncode, List theDecode,
-            StringBuffer theFunctionDataStream, List theFilter) {
+            StringBuilder theFunctionDataStream, List theFilter) {
         super();
 
         this.functionType = 0;      // dang well better be 0;
@@ -351,7 +351,7 @@ public class PDFFunction extends PDFObject {
      * a Postscript calculator function
      */
     public PDFFunction(int theFunctionType, List theDomain,
-                       List theRange, StringBuffer theFunctionDataStream) {
+                       List theRange, StringBuilder theFunctionDataStream) {
         super();
 
         this.functionType = 4;    // dang well better be 4;
@@ -379,7 +379,7 @@ public class PDFFunction extends PDFObject {
         int vectorSize = 0;
         int numberOfFunctions = 0;
         int tempInt = 0;
-        StringBuffer p = new StringBuffer(256);
+        StringBuilder p = new StringBuilder(256);
         p.append("<< \n/FunctionType " + this.functionType + " \n");
 
         // FunctionType 0

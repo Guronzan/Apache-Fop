@@ -29,7 +29,7 @@ import java.util.Set;
  */
 public class DoubleByteFont extends AbstractOutlineFont {
 
-    //private static final Log LOG = LogFactory.getLog(DoubleByteFont.class);
+    //private static final Log log = LogFactory.getLog(DoubleByteFont.class);
 
     //See also http://unicode.org/reports/tr11/ which we've not closely looked at, yet
     //TODO the Unicode block listed here is probably not complete (ex. Hiragana, Katakana etc.)

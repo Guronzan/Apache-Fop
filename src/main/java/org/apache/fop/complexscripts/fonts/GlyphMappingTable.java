@@ -230,7 +230,7 @@ public class GlyphMappingTable {
         }
         /** {@inheritDoc} */
         public String toString() {
-            StringBuffer sb = new StringBuffer();
+            StringBuilder sb = new StringBuilder();
             sb.append('{');
             for ( int i = 0, n = sa.length; i < n; i++ ) {
                 if ( i > 0 ) {

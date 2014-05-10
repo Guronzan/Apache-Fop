@@ -260,7 +260,7 @@ public class CharUtilities {
      * @return a string representing a numeric character reference
      */
     public static String charToNCRef ( int c ) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for ( int i = 0, nDigits = ( c > 0xFFFF ) ? 6 : 4; i < nDigits; i++, c >>= 4 ) {
             int d = c & 0xF;
             char hd;
@@ -281,7 +281,7 @@ public class CharUtilities {
      * ASCII characters
      */
     public static String toNCRefs ( String s ) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         if ( s != null ) {
             for ( int i = 0; i < s.length(); i++ ) {
                 char c = s.charAt(i);
@@ -311,7 +311,7 @@ public class CharUtilities {
      * @return padded string
      */
     public static String padLeft ( String s, int width, char pad ) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for ( int i = s.length(); i < width; i++ ) {
             sb.append(pad);
         }

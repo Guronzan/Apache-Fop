@@ -63,7 +63,7 @@ public class IfFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
-    public void write(StringBuffer sb, Map params) {
+    public void write(StringBuilder sb, Map params) {
         boolean isTrue = isTrue(params);
         if (isTrue) {
             sb.append(ifValue);

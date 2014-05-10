@@ -212,7 +212,7 @@ public class Span extends Area {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer(super.toString());
+        StringBuilder sb = new StringBuilder(super.toString());
         if (colCount > 1) {
             sb.append(" {colCount=").append(colCount);
             sb.append(", colWidth=").append(colWidth);

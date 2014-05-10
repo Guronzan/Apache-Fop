@@ -134,7 +134,7 @@ public class IFGraphicContext extends GraphicContext {
 
         /** {@inheritDoc} */
         public String toString() {
-            StringBuffer sb = new StringBuffer("group: ");
+            StringBuilder sb = new StringBuilder("group: ");
             IFUtil.toString(getTransforms(), sb);
             return sb.toString();
         }
@@ -191,7 +191,7 @@ public class IFGraphicContext extends GraphicContext {
 
         /** {@inheritDoc} */
         public String toString() {
-            StringBuffer sb = new StringBuffer("viewport: ");
+            StringBuilder sb = new StringBuilder("viewport: ");
             IFUtil.toString(getTransforms(), sb);
             sb.append(", ").append(getSize());
             if (getClipRect() != null) {
