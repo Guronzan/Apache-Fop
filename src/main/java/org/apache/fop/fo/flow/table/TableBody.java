@@ -38,18 +38,21 @@ public class TableBody extends TablePart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-body";
     }
@@ -58,6 +61,7 @@ public class TableBody extends TablePart {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_BODY}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_BODY;
     }

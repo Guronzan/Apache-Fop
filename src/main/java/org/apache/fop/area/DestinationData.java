@@ -67,6 +67,7 @@ public class DestinationData extends AbstractOffDocumentItem implements Resolvab
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getIDRefs() {
         return idRefs;
     }
@@ -87,6 +88,7 @@ public class DestinationData extends AbstractOffDocumentItem implements Resolvab
      *
      * @return true if this object has been resolved
      */
+    @Override
     public boolean isResolved() {
         return true;
     }
@@ -99,12 +101,14 @@ public class DestinationData extends AbstractOffDocumentItem implements Resolvab
      * TODO check to make sure it works if multiple bookmark-items
      * have the same idref
      */
+    @Override
     public void resolveIDRef(String id, List<PageViewport> pages) {
         pageRef = pages.get(0);
         // TODO get rect area of id on page
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getName() {
         return "Destination";
     }

@@ -29,11 +29,13 @@ import org.apache.fop.fo.properties.StringProperty;
 public abstract class FunctionBase implements Function {
 
     /** {@inheritDoc} */
+    @Override
     public int getOptionalArgsCount() {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property getOptionalArgDefault(int index, PropertyInfo pi) throws PropertyException {
         if ( index >= getOptionalArgsCount() ) {
             PropertyException e = new PropertyException ( new IndexOutOfBoundsException ( "illegal optional argument index" ) );
@@ -45,11 +47,13 @@ public abstract class FunctionBase implements Function {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasVariableArgs() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PercentBase getPercentBase() {
         return null;
     }

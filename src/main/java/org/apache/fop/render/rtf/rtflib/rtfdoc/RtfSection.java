@@ -66,6 +66,7 @@ implements
      * @return new RtfExternalGraphic object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfExternalGraphic newImage() throws IOException {
         closeAll();
         externalGraphic = new RtfExternalGraphic(this, writer);
@@ -78,6 +79,7 @@ implements
      * @return new RtfParagraph object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfParagraph newParagraph(RtfAttributes attrs) throws IOException {
         closeAll();
         paragraph = new RtfParagraph(this, writer, attrs);
@@ -89,6 +91,7 @@ implements
      * @return new RtfParagraph
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfParagraph newParagraph() throws IOException {
         return newParagraph(null);
     }
@@ -98,6 +101,7 @@ implements
      * @return new RtfParagraphKeepTogether
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfParagraphKeepTogether newParagraphKeepTogether() throws IOException {
         return new RtfParagraphKeepTogether(this, writer);
     }
@@ -109,6 +113,7 @@ implements
      * @return new RtfTable object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfTable newTable(ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, tc);
@@ -123,6 +128,7 @@ implements
      * @return new RtfTable object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfTable newTable(RtfAttributes attrs, ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, attrs, tc);
@@ -135,6 +141,7 @@ implements
      * @return new RtfList
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfList newList(RtfAttributes attrs) throws IOException {
         closeAll();
         list = new RtfList(this, writer, attrs);
@@ -147,6 +154,7 @@ implements
      * @return new RtfBefore object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfBefore newBefore(RtfAttributes attrs) throws IOException {
         closeAll();
         before = new RtfBefore(this, writer, attrs);
@@ -159,6 +167,7 @@ implements
      * @return new RtfAfter object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfAfter newAfter(RtfAttributes attrs) throws IOException {
         closeAll();
         after = new RtfAfter(this, writer, attrs);
@@ -171,6 +180,7 @@ implements
      * @return the new RtfJforCmd
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfJforCmd newJforCmd(RtfAttributes attrs) throws IOException {
         jforCmd  = new RtfJforCmd(this, writer, attrs);
         return jforCmd;
@@ -182,6 +192,7 @@ implements
      * Can be overridden to write RTF prefix code, what comes before our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
         writeAttributes(attrib, RtfPage.PAGE_ATTR);
         newLine();
@@ -192,6 +203,7 @@ implements
      * Can be overridden to write RTF suffix code, what comes after our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         // write suffix /sect only if this section is not last section (see bug #51484)
         List siblings = parent.getChildren();
@@ -244,6 +256,7 @@ implements
      * @return Current RtfTextrun
      * @throws IOException Thrown when an IO-problem occurs.
      */
+    @Override
     public RtfTextrun getTextrun()
     throws IOException {
         return RtfTextrun.getTextrun(this, writer, null);

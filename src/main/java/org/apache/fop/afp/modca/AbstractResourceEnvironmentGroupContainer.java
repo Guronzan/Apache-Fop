@@ -78,6 +78,7 @@ public abstract class AbstractResourceEnvironmentGroupContainer
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeContent(OutputStream os) throws IOException {
         super.writeContent(os);
         if (resourceEnvironmentGroup != null) {

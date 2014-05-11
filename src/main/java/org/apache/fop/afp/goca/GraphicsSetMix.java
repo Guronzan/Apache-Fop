@@ -46,6 +46,7 @@ public class GraphicsSetMix extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
            0x0C, // GSMX order code
@@ -55,16 +56,19 @@ public class GraphicsSetMix extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsSetMix{mode=" + mode + "}";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x0C;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }

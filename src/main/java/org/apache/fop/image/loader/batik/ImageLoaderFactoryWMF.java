@@ -35,21 +35,25 @@ public class ImageLoaderFactoryWMF extends AbstractImageLoaderFactory {
         ImageWMF.MIME_WMF};
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMIMETypes() {
         return MIMES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedFlavors(String mime) {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageLoader newImageLoader(ImageFlavor targetFlavor) {
         return new ImageLoaderWMF(targetFlavor);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isAvailable() {
         return BatikUtil.isBatikAvailable();
     }

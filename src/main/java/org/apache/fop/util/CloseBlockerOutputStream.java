@@ -38,6 +38,7 @@ public class CloseBlockerOutputStream extends ProxyOutputStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void close() throws IOException {
         try {
             flush();

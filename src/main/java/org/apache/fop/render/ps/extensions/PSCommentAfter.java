@@ -47,6 +47,7 @@ public class PSCommentAfter extends PSExtensionAttachment {
     /**
      * @return the element name
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }

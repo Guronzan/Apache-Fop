@@ -54,12 +54,14 @@ public abstract class PDFXObject extends AbstractPDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void populateStreamDict(Object lengthEntry) {
         put("Type", new PDFName("XObject"));
         super.populateStreamDict(lengthEntry);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected int getSizeHint() throws IOException {
         return 0;
     }

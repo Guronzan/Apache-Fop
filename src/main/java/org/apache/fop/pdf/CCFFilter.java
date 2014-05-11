@@ -33,6 +33,7 @@ public class CCFFilter extends NullFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getName() {
         return "/CCITTFaxDecode";
     }
@@ -40,6 +41,7 @@ public class CCFFilter extends NullFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public PDFObject getDecodeParms() {
         return this.decodeParms;
     }

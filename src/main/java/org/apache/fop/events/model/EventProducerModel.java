@@ -89,6 +89,7 @@ public class EventProducerModel implements Serializable, XMLizable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         atts.addAttribute("", "name", "name", "CDATA", getInterfaceName());

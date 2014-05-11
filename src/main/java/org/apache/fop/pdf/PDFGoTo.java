@@ -109,6 +109,7 @@ public class PDFGoTo extends PDFAction {
      *
      * @return the PDF reference for the action
      */
+    @Override
     public String getAction() {
         return referencePDF();
     }
@@ -116,6 +117,7 @@ public class PDFGoTo extends PDFAction {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toPDFString() {
         String dest;
         if (destination == null) {
@@ -138,6 +140,7 @@ public class PDFGoTo extends PDFAction {
      */
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

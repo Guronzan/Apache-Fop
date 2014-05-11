@@ -97,6 +97,7 @@ public class ResourceObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeStart(OutputStream os) throws IOException {
         super.writeStart(os);
 
@@ -120,6 +121,7 @@ public class ResourceObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeContent(OutputStream os) throws IOException {
         if (namedObject != null) {
             namedObject.writeToStream(os);
@@ -127,6 +129,7 @@ public class ResourceObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeEnd(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.END, Category.NAME_RESOURCE);
@@ -134,6 +137,7 @@ public class ResourceObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return this.getName();
     }

@@ -45,11 +45,13 @@ public abstract class AbstractMetadataElement extends FONode implements ObjectBu
     /**
      * {@inheritDoc}
      */
+    @Override
     public ContentHandlerFactory getContentHandlerFactory() {
         return new XMPContentHandlerFactory();
     }
 
     /** {@inheritDoc} */
+    @Override
     public ExtensionAttachment getExtensionAttachment() {
         if (parent instanceof FObj) {
             if (attachment == null) {
@@ -62,6 +64,7 @@ public abstract class AbstractMetadataElement extends FONode implements ObjectBu
     }
 
     /** {@inheritDoc} */
+    @Override
     public void notifyObjectBuilt(Object obj) {
         attachment.setMetadata((Metadata)obj);
     }

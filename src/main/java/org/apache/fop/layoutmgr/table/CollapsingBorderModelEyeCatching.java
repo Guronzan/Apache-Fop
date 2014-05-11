@@ -32,6 +32,7 @@ import org.apache.fop.fo.properties.CommonBorderPaddingBackground.BorderInfo;
 public class CollapsingBorderModelEyeCatching extends CollapsingBorderModel {
 
     /** {@inheritDoc} */
+    @Override
     public BorderSpecification determineWinner(BorderSpecification border1,
             BorderSpecification border2, boolean discard) {
         BorderInfo bi1 = border1.getBorderInfo();
@@ -53,6 +54,7 @@ public class CollapsingBorderModelEyeCatching extends CollapsingBorderModel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public BorderSpecification determineWinner(BorderSpecification border1,
             BorderSpecification border2) {
         BorderInfo bi1 = border1.getBorderInfo();

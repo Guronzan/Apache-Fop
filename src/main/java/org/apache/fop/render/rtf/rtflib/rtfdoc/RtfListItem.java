@@ -55,6 +55,7 @@ public class RtfListItem extends RtfContainer
             super(rli, rli.writer, attrs);
         }
 
+        @Override
         protected void writeRtfPrefix() throws IOException {
             super.writeRtfPrefix();
             getRtfListStyle().writeParagraphPrefix(this);
@@ -85,6 +86,7 @@ public class RtfListItem extends RtfContainer
          * @return The RtfTextrun object
          * @throws IOException Thrown when an IO-problem occurs
          */
+        @Override
         public RtfTextrun getTextrun() throws IOException {
             return this;
         }
@@ -94,6 +96,7 @@ public class RtfListItem extends RtfContainer
          * @param s Content of the list item label.
          * @throws IOException Thrown when an IO-problem occurs
          */
+        @Override
         public void addString(String s) throws IOException {
 
             final String label = s.trim();
@@ -117,6 +120,7 @@ public class RtfListItem extends RtfContainer
      * @return new RtfParagraph
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public RtfParagraph newParagraph(RtfAttributes attrs) throws IOException {
         if (paragraph != null) {
             paragraph.close();
@@ -130,6 +134,7 @@ public class RtfListItem extends RtfContainer
      * @return new RtfParagraph
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public RtfParagraph newParagraph() throws IOException {
         return newParagraph(null);
     }
@@ -146,6 +151,7 @@ public class RtfListItem extends RtfContainer
      * @return current RtfTextrun object
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public RtfTextrun getTextrun() throws IOException {
         RtfTextrun textrun = RtfTextrun.getTextrun(this, writer, null);
         textrun.setRtfListItem(this);
@@ -158,6 +164,7 @@ public class RtfListItem extends RtfContainer
      * @return new RtfList
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfList newList(RtfAttributes attrs) throws IOException {
         RtfList list = new RtfList(this, writer, attrs);
         return list;
@@ -167,6 +174,7 @@ public class RtfListItem extends RtfContainer
      * Overridden to setup the list: start a group with appropriate attributes
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
 
         // pard causes word97 (and sometimes 2000 too) to crash if the list is nested in a table
@@ -196,6 +204,7 @@ public class RtfListItem extends RtfContainer
      * End the list group
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         super.writeRtfSuffix();
 

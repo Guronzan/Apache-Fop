@@ -33,6 +33,7 @@ public class PNGDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     private static final String[] MIMES = new String[] {MimeConstants.MIME_PNG};
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         PNGDocumentHandler handler = new PNGDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -40,11 +41,13 @@ public class PNGDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

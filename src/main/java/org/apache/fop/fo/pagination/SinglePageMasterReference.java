@@ -62,6 +62,7 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         masterReference = pList.get(PR_MASTER_REFERENCE).getString();
 
@@ -71,6 +72,7 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         PageSequenceMaster pageSequenceMaster = (PageSequenceMaster) parent;
         pageSequenceMaster.addSubsequenceSpecifier(this);
@@ -80,6 +82,7 @@ public class SinglePageMasterReference extends FObj
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -88,6 +91,7 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public SimplePageMaster getNextPageMaster(boolean isOddPage,
                                         boolean isFirstPage,
                                         boolean isLastPage,
@@ -101,11 +105,13 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void reset() {
         this.state = FIRST;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean goToPrevious() {
         if (state == FIRST) {
             return false;
@@ -116,16 +122,19 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasPagePositionLast() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasPagePositionOnly() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "single-page-master-reference";
     }
@@ -134,11 +143,13 @@ public class SinglePageMasterReference extends FObj
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_SINGLE_PAGE_MASTER_REFERENCE}
      */
+    @Override
     public int getNameId() {
         return FO_SINGLE_PAGE_MASTER_REFERENCE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void resolveReferences(LayoutMasterSet layoutMasterSet) throws ValidationException {
         master = layoutMasterSet.getSimplePageMaster(masterReference);
         if (master == null) {
@@ -149,17 +160,20 @@ public class SinglePageMasterReference extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean canProcess(String flowName) {
         assert master != null;
         return master.getRegion(FO_REGION_BODY).getRegionName().equals(flowName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInfinite() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isReusable() {
         return true;
     }

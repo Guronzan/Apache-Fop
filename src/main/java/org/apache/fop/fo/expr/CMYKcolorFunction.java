@@ -28,11 +28,13 @@ import org.apache.fop.fo.properties.Property;
 class CMYKColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 4;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         StringBuilder sb = new StringBuilder();
         sb.append("cmyk(" + args[0] + "," + args[1] + "," + args[2] + "," + args[3] + ")");

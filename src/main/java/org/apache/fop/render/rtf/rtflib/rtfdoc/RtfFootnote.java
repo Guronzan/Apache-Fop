@@ -51,6 +51,7 @@ public class RtfFootnote extends RtfContainer
      * @return a text run
      * @throws IOException if not caught
      */
+    @Override
     public RtfTextrun getTextrun() throws IOException {
         if (bBody) {
             RtfTextrun textrun = RtfTextrun.getTextrun(body, writer, null);
@@ -66,6 +67,7 @@ public class RtfFootnote extends RtfContainer
     * write RTF code of all our children
     * @throws IOException for I/O problems
     */
+    @Override
     protected void writeRtfContent() throws IOException {
         textrunInline.writeRtfContent();
 
@@ -83,6 +85,7 @@ public class RtfFootnote extends RtfContainer
      * @return an rtf list
      * @throws IOException if not caught
      */
+    @Override
     public RtfList newList(RtfAttributes attrs) throws IOException {
         if (list != null) {
             list.close();

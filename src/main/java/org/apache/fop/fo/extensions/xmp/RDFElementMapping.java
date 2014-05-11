@@ -39,11 +39,13 @@ public class RDFElementMapping extends ElementMapping {
     }
 
     /** {@inheritDoc} */
+    @Override
     public DOMImplementation getDOMImplementation() {
         return getDefaultDOMImplementation();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initialize() {
         if (foObjs == null) {
             foObjs = new HashMap<String, Maker>();
@@ -52,6 +54,7 @@ public class RDFElementMapping extends ElementMapping {
     }
 
     static class RDFElementMaker extends ElementMapping.Maker {
+        @Override
         public FONode make(FONode parent) {
             return new RDFElement(parent);
         }

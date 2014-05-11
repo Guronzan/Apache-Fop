@@ -201,6 +201,7 @@ extends RtfContainer {
      * overridden to write RTF prefix code, what comes before our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
         writeGroupMark(true);
         writeControlWord("rtf1");
@@ -210,6 +211,7 @@ extends RtfContainer {
      * overridden to write RTF suffix code, what comes after our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         writeGroupMark(false);
     }

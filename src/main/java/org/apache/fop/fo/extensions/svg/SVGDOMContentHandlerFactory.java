@@ -53,11 +53,13 @@ public class SVGDOMContentHandlerFactory implements ContentHandlerFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return new String[] {SVGDOMImplementation.SVG_NAMESPACE_URI};
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new Handler();
     }
@@ -77,16 +79,19 @@ public class SVGDOMContentHandlerFactory implements ContentHandlerFactory {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Object getObject() {
             return getDocument();
         }
 
         /** {@inheritDoc} */
+        @Override
         public void setObjectBuiltListener(ObjectBuiltListener listener) {
             this.obListener = listener;
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startDocument() throws SAXException {
             // Suppress startDocument() call if doc has not been set, yet. It
             // will be done later.
@@ -114,6 +119,7 @@ public class SVGDOMContentHandlerFactory implements ContentHandlerFactory {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts)
                 throws SAXException {
             if (doc == null) {
@@ -139,6 +145,7 @@ public class SVGDOMContentHandlerFactory implements ContentHandlerFactory {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocument() throws SAXException {
             super.endDocument();
             if (obListener != null) {

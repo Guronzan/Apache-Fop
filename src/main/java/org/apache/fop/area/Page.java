@@ -258,6 +258,7 @@ public class Page extends AreaTreeObject implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         Page p = (Page) super.clone();
         if (regionBefore != null) {

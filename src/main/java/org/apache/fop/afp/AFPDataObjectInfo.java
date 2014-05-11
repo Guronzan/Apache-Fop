@@ -271,6 +271,7 @@ public class AFPDataObjectInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "AFPDataObjectInfo{"
             + "mimeType=" + mimeType

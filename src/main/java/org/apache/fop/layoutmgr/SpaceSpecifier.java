@@ -47,6 +47,7 @@ public class SpaceSpecifier implements Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object clone() {
         try {
             SpaceSpecifier ss = (SpaceSpecifier) super.clone();
@@ -157,6 +158,7 @@ public class SpaceSpecifier implements Cloneable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "Space Specifier (resolved at begin/end of ref. area:):\n"
                 + resolve(false) + "\n" + resolve(true);

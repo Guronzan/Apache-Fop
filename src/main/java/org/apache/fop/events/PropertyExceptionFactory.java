@@ -30,6 +30,7 @@ import org.apache.fop.fo.expr.PropertyException;
 public class PropertyExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
+    @Override
     public Throwable createException(Event event) {
         String msg = EventFormatter.format(event, Locale.ENGLISH);
         PropertyException ex = new PropertyException(msg);
@@ -40,6 +41,7 @@ public class PropertyExceptionFactory implements ExceptionFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class<PropertyException> getExceptionClass() {
         return PropertyException.class;
     }

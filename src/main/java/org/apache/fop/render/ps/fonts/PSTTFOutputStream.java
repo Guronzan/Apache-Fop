@@ -43,18 +43,22 @@ public class PSTTFOutputStream implements TTFOutputStream {
         this.ttfGen = new PSTTFGenerator(gen);
     }
 
+    @Override
     public void startFontStream() throws IOException {
         ttfGen.write("/sfnts[");
     }
 
+    @Override
     public TTFTableOutputStream getTableOutputStream() {
         return new PSTTFTableOutputStream(ttfGen);
     }
 
+    @Override
     public TTFGlyphOutputStream getGlyphOutputStream() {
         return new PSTTFGlyphOutputStream(ttfGen);
     }
 
+    @Override
     public void endFontStream() throws IOException {
         ttfGen.writeln("] def");
     }

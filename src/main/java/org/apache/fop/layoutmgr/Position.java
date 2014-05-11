@@ -120,6 +120,7 @@ public class Position {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Position:").append(getIndex()).append("(");

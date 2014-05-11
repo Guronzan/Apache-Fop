@@ -84,6 +84,7 @@ public class PageProductionException extends RuntimeException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalizedMessage() {
         if (this.localizedMessage != null) {
             return this.localizedMessage;
@@ -96,6 +97,7 @@ public class PageProductionException extends RuntimeException {
     public static class PageProductionExceptionFactory implements ExceptionFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Throwable createException(Event event) {
             Object obj = event.getParam("loc");
             Locator loc = (obj instanceof Locator ? (Locator)obj : null);
@@ -108,6 +110,7 @@ public class PageProductionException extends RuntimeException {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Class<PageProductionException> getExceptionClass() {
             return PageProductionException.class;
         }

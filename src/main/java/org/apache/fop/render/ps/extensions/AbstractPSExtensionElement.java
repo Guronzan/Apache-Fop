@@ -57,6 +57,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
      * @throws ValidationException if incoming node not valid for parent
      * @see org.apache.fop.fo.FONode#validateChildNode(Locator, String, String)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -65,6 +66,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void characters(char[] data, int start, int length,
                                  PropertyList pList, Locator locator) {
         PSExtensionAttachment a = (PSExtensionAttachment)getExtensionAttachment();
@@ -81,6 +83,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
      * @return a String representation of this object
      * @see org.apache.fop.fo.FONode#getNamespaceURI()
      */
+    @Override
     public String getNamespaceURI() {
         return PSExtensionElementMapping.NAMESPACE;
     }
@@ -89,6 +92,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
      * @return a String representation of this object
      * @see org.apache.fop.fo.FONode#getNormalNamespacePrefix()
      */
+    @Override
     public String getNormalNamespacePrefix() {
         return "ps";
     }
@@ -97,6 +101,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
      * @see org.apache.fop.fo.FONode#endOfNode()
      * @throws FOPException if there's a problem during processing
      */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         String s = ((PSExtensionAttachment)getExtensionAttachment()).getContent();
@@ -109,6 +114,7 @@ public abstract class AbstractPSExtensionElement extends FONode {
      * @return the extension attachment if one is created by the extension element, null otherwise.
      * @see org.apache.fop.fo.FONode#getExtensionAttachment()
      */
+    @Override
     public ExtensionAttachment getExtensionAttachment() {
         if (attachment == null) {
             this.attachment = (PSExtensionAttachment)instantiateExtensionAttachment();

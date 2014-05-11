@@ -64,6 +64,7 @@ public class PropertyException extends FOPException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMessage() {
         if (propertyName != null) {
             return super.getMessage() + "; property:'" + propertyName + "'";

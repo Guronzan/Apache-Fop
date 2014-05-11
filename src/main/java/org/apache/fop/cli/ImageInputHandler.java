@@ -43,12 +43,14 @@ public class ImageInputHandler extends InputHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Source createMainSource() {
         return new StreamSource(new StringReader(
                 "<image>" + this.sourcefile.toURI().toASCIIString() + "</image>"));
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Source createXSLTSource() {
         Source src = super.createXSLTSource();
         if (src == null) {

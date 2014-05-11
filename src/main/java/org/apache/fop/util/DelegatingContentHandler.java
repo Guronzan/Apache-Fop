@@ -126,6 +126,7 @@ public class DelegatingContentHandler
     // ==== EntityResolver
 
     /** {@inheritDoc} */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId)
             throws SAXException, IOException {
         if (entityResolver != null) {
@@ -138,6 +139,7 @@ public class DelegatingContentHandler
     // ==== DTDHandler
 
     /** {@inheritDoc} */
+    @Override
     public void notationDecl(String name, String publicId, String systemId) throws SAXException {
         if (dtdHandler != null) {
             dtdHandler.notationDecl(name, publicId, systemId);
@@ -145,6 +147,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void unparsedEntityDecl(String name, String publicId, String systemId,
             String notationName) throws SAXException {
         if (dtdHandler != null) {
@@ -155,57 +158,68 @@ public class DelegatingContentHandler
     // ==== ContentHandler
 
     /** {@inheritDoc} */
+    @Override
     public void setDocumentLocator(Locator locator) {
         delegate.setDocumentLocator(locator);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws SAXException {
         delegate.startDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws SAXException {
         delegate.endDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         delegate.startPrefixMapping(prefix, uri);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPrefixMapping(String prefix) throws SAXException {
         delegate.endPrefixMapping(prefix);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startElement(String uri, String localName, String qName,
                 Attributes atts) throws SAXException {
         delegate.startElement(uri, localName, qName, atts);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         delegate.endElement(uri, localName, qName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         delegate.characters(ch, start, length);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         delegate.ignorableWhitespace(ch, start, length);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         delegate.processingInstruction(target, data);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void skippedEntity(String name) throws SAXException {
         delegate.skippedEntity(name);
     }
@@ -213,6 +227,7 @@ public class DelegatingContentHandler
     // ==== LexicalHandler
 
     /** {@inheritDoc} */
+    @Override
     public void startDTD(String name, String publicId, String systemId) throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.startDTD(name, publicId, systemId);
@@ -221,6 +236,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDTD() throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.endDTD();
@@ -228,6 +244,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startEntity(String name) throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.startEntity(name);
@@ -235,6 +252,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endEntity(String name) throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.endEntity(name);
@@ -242,6 +260,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startCDATA() throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.startCDATA();
@@ -249,6 +268,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCDATA() throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.endCDATA();
@@ -256,6 +276,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void comment(char[] ch, int start, int length) throws SAXException {
         if (lexicalHandler != null) {
             lexicalHandler.comment(ch, start, length);
@@ -265,6 +286,7 @@ public class DelegatingContentHandler
     // ==== ErrorHandler
 
     /** {@inheritDoc} */
+    @Override
     public void warning(SAXParseException exception) throws SAXException {
         if (errorHandler != null) {
             errorHandler.warning(exception);
@@ -272,6 +294,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void error(SAXParseException exception) throws SAXException {
         if (errorHandler != null) {
             errorHandler.error(exception);
@@ -279,6 +302,7 @@ public class DelegatingContentHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fatalError(SAXParseException exception) throws SAXException {
         if (errorHandler != null) {
             errorHandler.fatalError(exception);

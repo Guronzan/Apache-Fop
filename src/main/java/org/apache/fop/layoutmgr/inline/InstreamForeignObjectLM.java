@@ -40,6 +40,7 @@ public class InstreamForeignObjectLM extends AbstractGraphicsLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Area getChildArea() {
         XMLObj child = ((InstreamForeignObject) fobj).getChildXMLObj();
 

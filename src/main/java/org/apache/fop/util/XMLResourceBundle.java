@@ -134,10 +134,12 @@ public class XMLResourceBundle extends ResourceBundle {
     }
 
     static class MissingBundle extends ResourceBundle {
+        @Override
         public Enumeration getKeys() {
             return null;
         }
 
+        @Override
         public Object handleGetObject(String name) {
             return null;
         }
@@ -183,6 +185,7 @@ public class XMLResourceBundle extends ResourceBundle {
         final String fileName = bundleName.replace('.', '/') + ".xml";
         InputStream stream = (InputStream)AccessController
                 .doPrivileged(new PrivilegedAction() {
+                    @Override
                     public Object run() {
                         return loader == null
                             ? ClassLoader.getSystemResourceAsStream(fileName)
@@ -264,11 +267,13 @@ public class XMLResourceBundle extends ResourceBundle {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Locale getLocale() {
         return this.locale;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Enumeration getKeys() {
         if (parent == null) {
             return getLocalKeys();
@@ -293,6 +298,7 @@ public class XMLResourceBundle extends ResourceBundle {
                 return false;
             }
 
+            @Override
             public boolean hasMoreElements() {
                 if (local.hasMoreElements()) {
                     return true;
@@ -300,6 +306,7 @@ public class XMLResourceBundle extends ResourceBundle {
                 return findNext();
             }
 
+            @Override
             public Object nextElement() {
                 if (local.hasMoreElements()) {
                     return local.nextElement();
@@ -316,6 +323,7 @@ public class XMLResourceBundle extends ResourceBundle {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Object handleGetObject(String key) {
         if (key == null) {
             throw new NullPointerException("key must not be null");
@@ -324,6 +332,7 @@ public class XMLResourceBundle extends ResourceBundle {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "XMLResourceBundle: " + getLocale();
     }
@@ -346,6 +355,7 @@ public class XMLResourceBundle extends ResourceBundle {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes atts) throws SAXException {
             super.startElement(uri, localName, qName, atts);
@@ -369,6 +379,7 @@ public class XMLResourceBundle extends ResourceBundle {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             super.endElement(uri, localName, qName);
             elementStack.pop();
@@ -390,6 +401,7 @@ public class XMLResourceBundle extends ResourceBundle {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             super.characters(ch, start, length);
             valueBuffer.append(ch, start, length);

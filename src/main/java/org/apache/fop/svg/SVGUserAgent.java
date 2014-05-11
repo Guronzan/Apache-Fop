@@ -61,6 +61,7 @@ public class SVGUserAgent extends SimpleSVGUserAgent {
      * Displays an error message.
      * @param message the message to display
      */
+    @Override
     public void displayError(String message) {
         this.eventProducer.error(this, message, null);
     }
@@ -69,6 +70,7 @@ public class SVGUserAgent extends SimpleSVGUserAgent {
      * Displays an error resulting from the specified Exception.
      * @param ex the exception to display
      */
+    @Override
     public void displayError(Exception ex) {
         this.lastException = ex;
         this.eventProducer.error(this, ex.getLocalizedMessage(), ex);
@@ -79,6 +81,7 @@ public class SVGUserAgent extends SimpleSVGUserAgent {
      * The given message is typically displayed in a status bar.
      * @param message the message to display
      */
+    @Override
     public void displayMessage(String message) {
         this.eventProducer.info(this, message);
     }
@@ -87,6 +90,7 @@ public class SVGUserAgent extends SimpleSVGUserAgent {
      * Shows an alert dialog box.
      * @param message the message to display
      */
+    @Override
     public void showAlert(String message) {
         this.eventProducer.alert(this, message);
     }

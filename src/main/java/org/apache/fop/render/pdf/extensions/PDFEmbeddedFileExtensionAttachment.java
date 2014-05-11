@@ -118,11 +118,13 @@ public class PDFEmbeddedFileExtensionAttachment extends PDFExtensionAttachment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "PDFEmbeddedFile(name=" + getFilename() + ", " + getSrc() + ")";
     }
@@ -130,11 +132,13 @@ public class PDFEmbeddedFileExtensionAttachment extends PDFExtensionAttachment {
     /**
      * @return the element name
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (filename != null && filename.length() > 0) {

@@ -33,6 +33,7 @@ import org.apache.fop.fo.properties.TableColLength;
 public class ProportionalColumnWidthFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 1;
     }
@@ -44,6 +45,7 @@ public class ProportionalColumnWidthFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         Number d = args[0].getNumber();
         if (d == null) {
@@ -68,11 +70,13 @@ public class ProportionalColumnWidthFunction extends FunctionBase {
     private static class ProportionalColumnWidthPercentBase implements PercentBase {
 
         /** {@inheritDoc} */
+        @Override
         public int getBaseLength(PercentBaseContext context) throws PropertyException {
             return 0;
         }
 
         /** {@inheritDoc} */
+        @Override
         public double getBaseValue() {
             //make sure percentage-arguments are interpreted
             //as numerics (1% = 1 * 0.01)
@@ -80,6 +84,7 @@ public class ProportionalColumnWidthFunction extends FunctionBase {
         }
 
         /** {@inheritDoc} */
+        @Override
         public int getDimension() {
             return 0;
         }

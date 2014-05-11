@@ -49,6 +49,7 @@ public class ObjectAreaDescriptor extends AbstractDescriptor {
     private static final byte OBJECT_AREA_POSITION_ID = 0x01;
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[9];
         copySF(data, Type.DESCRIPTOR, Category.OBJECT_AREA);

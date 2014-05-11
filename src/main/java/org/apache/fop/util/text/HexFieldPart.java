@@ -40,12 +40,14 @@ public class HexFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGenerated(Map params) {
         Object obj = params.get(fieldName);
         return obj != null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(StringBuilder sb, Map params) {
         if (!params.containsKey(fieldName)) {
             throw new IllegalArgumentException(
@@ -63,6 +65,7 @@ public class HexFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "{" + this.fieldName + ",hex}";
     }
@@ -71,11 +74,13 @@ public class HexFieldPart implements Part {
     public static class Factory implements PartFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Part newPart(String fieldName, String values) {
             return new HexFieldPart(fieldName);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getFormat() {
             return "hex";
         }

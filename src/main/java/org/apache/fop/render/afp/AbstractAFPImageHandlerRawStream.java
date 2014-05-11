@@ -84,6 +84,7 @@ public abstract class AbstractAFPImageHandlerRawStream extends AFPImageHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
             throws IOException {
         AFPRenderingContext afpContext = (AFPRenderingContext)context;

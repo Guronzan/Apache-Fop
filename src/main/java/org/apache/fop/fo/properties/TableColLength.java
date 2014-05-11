@@ -68,6 +68,7 @@ public class TableColLength extends LengthProperty {
      * Return false because table-col-units are a relative numeric.
      * {@inheritDoc}
      */
+    @Override
     public boolean isAbsolute() {
         return false;
     }
@@ -76,6 +77,7 @@ public class TableColLength extends LengthProperty {
      * Return the value as a numeric value.
      * {@inheritDoc}
      */
+    @Override
     public double getNumericValue() {
         throw new UnsupportedOperationException(
                 "Must call getNumericValue with PercentBaseContext");
@@ -84,6 +86,7 @@ public class TableColLength extends LengthProperty {
     /**
      * {@inheritDoc}
      */
+    @Override
     public double getNumericValue(PercentBaseContext context) {
         return tcolUnits * context.getBaseLength(LengthBase.TABLE_UNITS, column);
     }
@@ -92,6 +95,7 @@ public class TableColLength extends LengthProperty {
      * Return the value as a length.
      * {@inheritDoc}
      */
+    @Override
     public int getValue() {
         throw new UnsupportedOperationException(
                 "Must call getValue with PercentBaseContext");
@@ -100,6 +104,7 @@ public class TableColLength extends LengthProperty {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getValue(PercentBaseContext context) {
         return (int) (tcolUnits * context.getBaseLength(LengthBase.TABLE_UNITS, column));
     }
@@ -108,6 +113,7 @@ public class TableColLength extends LengthProperty {
      * Convert this to a String
      * @return the string representation of this
      */
+    @Override
     public String toString() {
         return (Double.toString(tcolUnits) + " table-column-units");
     }

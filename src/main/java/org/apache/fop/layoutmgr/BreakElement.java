@@ -90,6 +90,7 @@ public class BreakElement extends UnresolvedListElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isConditional() {
         return false; //Does not really apply here
     }
@@ -119,6 +120,7 @@ public class BreakElement extends UnresolvedListElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isForcedBreak() {
         return penaltyValue == -KnuthElement.INFINITE;
     }
@@ -172,6 +174,7 @@ public class BreakElement extends UnresolvedListElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("BreakPossibility[p:");

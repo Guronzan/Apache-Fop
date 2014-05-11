@@ -36,11 +36,13 @@ public class PDFJavaScriptLaunchAction extends PDFAction {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getAction() {
         return this.referencePDF();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toPDFString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("<<\n/S /JavaScript\n/JS (");
@@ -50,6 +52,7 @@ public class PDFJavaScriptLaunchAction extends PDFAction {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

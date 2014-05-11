@@ -114,12 +114,14 @@ public class PositionIterator implements Iterator<Position> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasNext() {
         return (hasNext && checkNext());
     }
 
 
     /** {@inheritDoc} */
+    @Override
     public Position next() throws NoSuchElementException {
         if (hasNext) {
             Position retPos = getPos(nextObj);
@@ -136,6 +138,7 @@ public class PositionIterator implements Iterator<Position> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void remove() throws UnsupportedOperationException {
         throw new UnsupportedOperationException("PositionIterator doesn't support remove");
     }

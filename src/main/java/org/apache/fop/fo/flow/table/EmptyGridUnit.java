@@ -36,6 +36,7 @@ public class EmptyGridUnit extends GridUnit {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void setBordersFromCell() {
         borderBefore = ConditionalBorder.getDefaultBorder(collapsingBorderModel);
         borderAfter = ConditionalBorder.getDefaultBorder(collapsingBorderModel);
@@ -44,22 +45,26 @@ public class EmptyGridUnit extends GridUnit {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PrimaryGridUnit getPrimary() {
         throw new UnsupportedOperationException();
 //        return this; TODO
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPrimary() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isLastGridUnitColSpan() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isLastGridUnitRowSpan() {
         return true;
     }

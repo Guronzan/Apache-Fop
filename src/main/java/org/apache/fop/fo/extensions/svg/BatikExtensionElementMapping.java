@@ -47,6 +47,7 @@ public class BatikExtensionElementMapping extends ElementMapping {
     }
 
     /** {@inheritDoc} */
+    @Override
     public DOMImplementation getDOMImplementation() {
         return null; //no DOMImplementation necessary here
     }
@@ -67,6 +68,7 @@ public class BatikExtensionElementMapping extends ElementMapping {
     }
 
     /** initialize mapping */
+    @Override
     protected void initialize() {
         if (foObjs == null && batikAvail) {
             // this sets the parser that will be used
@@ -88,12 +90,14 @@ public class BatikExtensionElementMapping extends ElementMapping {
     }
 
     static class SVGMaker extends ElementMapping.Maker {
+        @Override
         public FONode make(FONode parent) {
             return new SVGObj(parent);
         }
     }
 
     static class SE extends ElementMapping.Maker {
+        @Override
         public FONode make(FONode parent) {
             return new SVGElement(parent);
         }

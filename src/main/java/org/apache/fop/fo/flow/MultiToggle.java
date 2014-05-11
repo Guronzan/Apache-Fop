@@ -57,6 +57,7 @@ public class MultiToggle extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         // prSwitchTo = pList.get(PR_SWITCH_TO);
 
@@ -66,6 +67,7 @@ public class MultiToggle extends FObj {
      * {@inheritDoc}
      * <br>XSL Content Model: (#PCDATA|%inline;|%block;)*
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -76,6 +78,7 @@ public class MultiToggle extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "multi-toggle";
     }
@@ -84,6 +87,7 @@ public class MultiToggle extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_TOGGLE}
      */
+    @Override
     public int getNameId() {
         return FO_MULTI_TOGGLE;
     }

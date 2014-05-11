@@ -518,6 +518,7 @@ public class AlignmentContext implements Constants {
     }*/
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("areaHeight=").append(areaHeight);

@@ -148,6 +148,7 @@ public final class Keep {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return (strength == STRENGTH_AUTO) ? "auto"
                 : (strength == STRENGTH_ALWAYS) ? "always"

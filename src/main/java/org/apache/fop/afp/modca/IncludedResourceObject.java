@@ -52,6 +52,7 @@ public class IncludedResourceObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         InputStream in = resourceAccessor.createInputStream(this.uri);
         try {

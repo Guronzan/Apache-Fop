@@ -49,6 +49,7 @@ public class PSSetPageDeviceElement extends AbstractPSExtensionElement {
      * @throws FOPException if there's a problem during processing
      * @see org.apache.fop.fo.FONode#startOfNode()
      */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if ( !((parent.getNameId() == Constants.FO_DECLARATIONS)
@@ -69,6 +70,7 @@ public class PSSetPageDeviceElement extends AbstractPSExtensionElement {
      * @throws FOPException if there's a problem during processing
      * @see org.apache.fop.fo.FONode#processNode
      */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -81,6 +83,7 @@ public class PSSetPageDeviceElement extends AbstractPSExtensionElement {
     /**
      * @return local name
      * @see org.apache.fop.fo.FONode#getLocalName() */
+    @Override
     public String getLocalName() {
         return ELEMENT;
     }
@@ -90,6 +93,7 @@ public class PSSetPageDeviceElement extends AbstractPSExtensionElement {
      * @see org.apache.fop.render.ps.extensions.AbstractPSExtensionElement
      * #instantiateExtensionAttachment()
      */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new PSSetPageDevice();
     }

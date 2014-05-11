@@ -42,6 +42,7 @@ public class InvokeMediumMap extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
 
         byte[] data = new byte[17];

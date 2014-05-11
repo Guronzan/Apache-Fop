@@ -33,11 +33,13 @@ public class DefaultMonochromeBitmapConverter implements
         MonochromeBitmapConverter {
 
     /** {@inheritDoc} */
+    @Override
     public void setHint(String name, String value) {
         //ignore, not supported
     }
 
     /** {@inheritDoc} */
+    @Override
     public RenderedImage convertToMonochrome(BufferedImage img) {
         BufferedImage buf = new BufferedImage(img.getWidth(), img.getHeight(),
                 BufferedImage.TYPE_BYTE_BINARY);

@@ -46,6 +46,7 @@ public class CustomFontCollection implements FontCollection {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int setup(int num, FontInfo fontInfo) {
         if (embedFontInfoList == null) {
             return num; //No fonts to process

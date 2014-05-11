@@ -97,6 +97,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return a copy of this paragraphs attributes
      * @throws FOPException if attributes cannot be cloned
      */
+    @Override
     public RtfAttributes getTextContainerAttributes() throws FOPException {
         if (attrib == null) {
             return null;
@@ -112,6 +113,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * Overridden to write our attributes before our content
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
 
         //Reset paragraph properties if needed
@@ -165,6 +167,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * Overridden to close paragraph
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         // sometimes the end of paragraph mark must be suppressed in table cells
         boolean writeMark = true;
@@ -188,6 +191,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return the new RtfText object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfText newText(String str) throws IOException {
         return newText(str, null);
     }
@@ -199,6 +203,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return the new RtfText object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfText newText(String str, RtfAttributes attr) throws IOException {
         closeAll();
         text = new RtfText(this, writer, str, attr);
@@ -209,6 +214,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * add a page break
      * @throws IOException for I/O problems
      */
+    @Override
     public void newPageBreak() throws IOException {
         writeForBreak = true;
         new RtfPageBreak(this, writer);
@@ -218,6 +224,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * add a line break
      * @throws IOException for I/O problems
      */
+    @Override
     public void newLineBreak() throws IOException {
         new RtfLineBreak(this, writer);
     }
@@ -227,6 +234,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return new RtfPageNumber object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfPageNumber newPageNumber()throws IOException {
         pageNumber = new RtfPageNumber(this, writer);
         return pageNumber;
@@ -238,6 +246,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return the new RtfPageNumberCitation object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfPageNumberCitation newPageNumberCitation(String id) throws IOException {
        pageNumberCitation = new RtfPageNumberCitation(this, writer, id);
        return pageNumberCitation;
@@ -250,6 +259,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return the new RtfHyperLink object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfHyperLink newHyperLink(String str, RtfAttributes attr) throws IOException {
         hyperlink = new RtfHyperLink(this, writer, str, attr);
         return hyperlink;
@@ -260,6 +270,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * @return the new RtfExternalGraphic
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfExternalGraphic newImage() throws IOException {
         closeAll();
         externalGraphic = new RtfExternalGraphic(this, writer);
@@ -287,6 +298,7 @@ implements IRtfTextContainer, IRtfPageBreakContainer, IRtfHyperLinkContainer,
      * Depending on RtfOptions, do not emit any RTF for empty paragraphs
      * @return true if RTF should be written
      */
+    @Override
     protected boolean okToWriteRtf() {
         boolean result = super.okToWriteRtf();
 

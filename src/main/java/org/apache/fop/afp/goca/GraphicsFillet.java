@@ -36,6 +36,7 @@ public final class GraphicsFillet extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         if (isRelative()) {
             return (byte)0x85;

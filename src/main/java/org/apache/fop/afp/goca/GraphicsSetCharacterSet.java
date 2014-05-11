@@ -40,6 +40,7 @@ public class GraphicsSetCharacterSet extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             getOrderCode(), // GSCS order code
@@ -49,16 +50,19 @@ public class GraphicsSetCharacterSet extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsSetCharacterSet(" + fontReference + ")";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x38;
     }

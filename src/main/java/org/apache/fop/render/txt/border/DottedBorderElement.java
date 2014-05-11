@@ -33,6 +33,7 @@ public class DottedBorderElement extends AbstractBorderElement {
      * @param e instance of AbstractBorderElement
      * @return instance of DottedBorderElement
      */
+    @Override
     public AbstractBorderElement merge(AbstractBorderElement e) {
         return this;
     }
@@ -40,6 +41,7 @@ public class DottedBorderElement extends AbstractBorderElement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public char convert2Char() {
         return MIDDLE_DOT;
     }

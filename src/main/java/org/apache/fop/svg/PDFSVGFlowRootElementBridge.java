@@ -43,6 +43,7 @@ public class PDFSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected GraphicsNode instantiateGraphicsNode() {
         GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {

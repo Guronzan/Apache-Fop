@@ -41,18 +41,21 @@ public class PageNumberCitation extends AbstractPageNumberCitation {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startPageNumberCitation(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endPageNumberCitation(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "page-number-citation";
     }
@@ -61,6 +64,7 @@ public class PageNumberCitation extends AbstractPageNumberCitation {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_PAGE_NUMBER_CITATION}
      */
+    @Override
     public int getNameId() {
         return FO_PAGE_NUMBER_CITATION;
     }

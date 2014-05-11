@@ -113,11 +113,13 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getName() {
         return this.name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public final char mapChar(char c) {
         if (c < 256) {
             char latin1 = latin1Map[c];
@@ -154,6 +156,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
     }
 
     /** {@inheritDoc} */
+    @Override
     public final char[] getUnicodeCharMap() {
         char[] copy = new char[this.unicodeMap.length];
         System.arraycopy(this.unicodeMap, 0, copy, 0, this.unicodeMap.length);
@@ -180,6 +183,7 @@ public class AbstractCodePointMapping implements SingleByteEncoding {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getCharNameMap() {
         if (this.charNameMap != null) {
             String[] copy = new String[this.charNameMap.length];

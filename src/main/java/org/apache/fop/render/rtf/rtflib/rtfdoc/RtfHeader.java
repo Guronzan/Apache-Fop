@@ -53,6 +53,7 @@ class RtfHeader extends RtfContainer {
     }
 
     /** Overridden to write our own data before our children's data */
+    @Override
     protected void writeRtfContent() throws IOException {
         writeControlWord(charset);
         writeUserProperties();

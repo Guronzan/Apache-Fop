@@ -112,6 +112,7 @@ public class DashedBorderElement extends AbstractBorderElement {
      * @param e instance of AbstractBorderElement
      * @return instance of AbstractBorderElement
      */
+    @Override
     public AbstractBorderElement merge(AbstractBorderElement e) {
         AbstractBorderElement abe = this;
         if (e instanceof SolidAndDoubleBorderElement) {
@@ -127,6 +128,7 @@ public class DashedBorderElement extends AbstractBorderElement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public char convert2Char() {
         int key = 0;
         key += data[UP] * UP2;

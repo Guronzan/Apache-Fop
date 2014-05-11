@@ -97,6 +97,7 @@ public class PDFGoToRemote extends PDFAction {
      *
      * @return the action String
      */
+    @Override
     public String getAction() {
         return this.referencePDF();
     }
@@ -104,6 +105,7 @@ public class PDFGoToRemote extends PDFAction {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toPDFString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("<<\n/S /GoToR\n/F ");
@@ -138,6 +140,7 @@ public class PDFGoToRemote extends PDFAction {
      */
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

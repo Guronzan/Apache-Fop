@@ -110,6 +110,7 @@ public class PresentationTextData extends AbstractAFPObject implements PtocaCons
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         assert getBytesAvailable() >= 0;
         byte[] data = baos.toByteArray();

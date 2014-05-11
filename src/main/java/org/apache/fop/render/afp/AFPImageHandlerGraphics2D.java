@@ -57,16 +57,19 @@ public class AFPImageHandlerGraphics2D extends AFPImageHandler implements ImageH
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
@@ -78,6 +81,7 @@ public class AFPImageHandlerGraphics2D extends AFPImageHandler implements ImageH
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
             throws IOException {
         AFPRenderingContext afpContext = (AFPRenderingContext)context;
@@ -122,6 +126,7 @@ public class AFPImageHandlerGraphics2D extends AFPImageHandler implements ImageH
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         boolean supported = (image == null || image instanceof ImageGraphics2D)
                 && targetContext instanceof AFPRenderingContext;

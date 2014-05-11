@@ -137,6 +137,7 @@ public class AFPResourceInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "AFPResourceInfo{uri=" + uri
             + (imageDimension != null
@@ -148,6 +149,7 @@ public class AFPResourceInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -165,6 +167,7 @@ public class AFPResourceInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 31 * hash + (null == uri ? 0 : uri.hashCode());

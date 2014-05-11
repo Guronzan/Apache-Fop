@@ -89,6 +89,7 @@ public class CommonMarginBlock {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "CommonMarginBlock:\n"
             + "Margins (top, bottom, left, right): ("

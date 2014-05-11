@@ -40,6 +40,7 @@ public class GraphicsLine extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         if (isRelative()) {
             return (byte)0x81;
@@ -49,6 +50,7 @@ public class GraphicsLine extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         os.write(data);

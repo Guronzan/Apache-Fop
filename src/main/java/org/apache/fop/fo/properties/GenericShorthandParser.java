@@ -51,6 +51,7 @@ public class GenericShorthandParser implements ShorthandParser {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property getValueForProperty(int propId,
                                         Property property,
                                         PropertyMaker maker,

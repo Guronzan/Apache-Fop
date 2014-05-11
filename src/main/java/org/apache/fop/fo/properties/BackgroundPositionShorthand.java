@@ -57,6 +57,7 @@ public class BackgroundPositionShorthand extends ListProperty {
          * specified, <code>background-position-vertical</code> is set
          * to "50%".
          */
+        @Override
         public Property make(PropertyList propertyList, String value, FObj fo)
                 throws PropertyException {
             Property p = super.make(propertyList, value, fo);
@@ -74,16 +75,19 @@ public class BackgroundPositionShorthand extends ListProperty {
 
         private static final class Dimension1PercentBase implements PercentBase {
             /** {@inheritDoc} */
+            @Override
             public int getBaseLength(PercentBaseContext context) throws PropertyException {
                 return 0;
             }
 
             /** {@inheritDoc} */
+            @Override
             public double getBaseValue() {
                 return 0;
             }
 
             /** {@inheritDoc} */
+            @Override
             public int getDimension() {
                 return 1;
             }
@@ -97,6 +101,7 @@ public class BackgroundPositionShorthand extends ListProperty {
          * Returns a {@link org.apache.fop.datatypes.PercentBase} whose
          * <code>getDimension()</code> returns 1.
          */
+        @Override
         public PercentBase getPercentBase(PropertyList pl) {
             return DIMENSION_1_PERCENT_BASE;
         }
@@ -110,6 +115,7 @@ public class BackgroundPositionShorthand extends ListProperty {
     public static class Parser extends GenericShorthandParser {
 
         /** {@inheritDoc} */
+        @Override
         public Property getValueForProperty(int propId,
                                             Property property,
                                             PropertyMaker maker,

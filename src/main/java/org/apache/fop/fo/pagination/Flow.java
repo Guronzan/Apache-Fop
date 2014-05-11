@@ -52,6 +52,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         flowName = pList.get(PR_FLOW_NAME).getString();
@@ -59,6 +60,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         if (flowName == null || flowName.equals("")) {
             missingPropertyError("flow-name");
@@ -85,6 +87,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!blockItemFound) {
             missingChildElementError("marker* (%block;)+");
@@ -96,6 +99,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (%block;)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -115,6 +119,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return true (Flow can generate reference areas)
      */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
@@ -124,11 +129,13 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
         return flowName;
     }
 
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "flow";
     }
@@ -137,6 +144,7 @@ public class Flow extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_FLOW}
      */
+    @Override
     public int getNameId() {
         return FO_FLOW;
     }

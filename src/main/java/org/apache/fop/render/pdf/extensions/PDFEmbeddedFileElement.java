@@ -49,6 +49,7 @@ public class PDFEmbeddedFileElement extends AbstractPDFExtensionElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (parent.getNameId() != Constants.FO_DECLARATIONS) {
@@ -58,6 +59,7 @@ public class PDFEmbeddedFileElement extends AbstractPDFExtensionElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -95,11 +97,13 @@ public class PDFEmbeddedFileElement extends AbstractPDFExtensionElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return ELEMENT;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new PDFEmbeddedFileExtensionAttachment();
     }

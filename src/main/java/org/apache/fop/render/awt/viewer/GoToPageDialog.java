@@ -68,12 +68,14 @@ public class GoToPageDialog extends JDialog {
         pgNbLabel.setText(translator.getString("Label.Page.number"));
         okButton.setText(translator.getString("Button.Ok"));
         okButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 okButtonActionPerformed(e);
             }
         });
         cancelButton.setText(translator.getString("Button.Cancel"));
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 cancelButtonActionPerformed(e);
             }

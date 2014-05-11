@@ -42,6 +42,7 @@ public class OneCharIterator extends CharIterator {
      * iterate (since this iterator only handles one character, this will return
      * false if it is past that character).
      */
+    @Override
     public boolean hasNext() {
         return bFirst;
     }
@@ -51,6 +52,7 @@ public class OneCharIterator extends CharIterator {
      * character over which to iterate, it must be the first character).
      * @throws NoSuchElementException if past the first character
      */
+    @Override
     public char nextChar() throws NoSuchElementException {
         if (bFirst) {
             bFirst = false;

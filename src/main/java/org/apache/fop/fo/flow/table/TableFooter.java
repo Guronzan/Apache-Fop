@@ -41,18 +41,21 @@ public class TableFooter extends TablePart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startFooter(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endFooter(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-footer";
     }
@@ -61,6 +64,7 @@ public class TableFooter extends TablePart {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_FOOTER}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_FOOTER;
     }

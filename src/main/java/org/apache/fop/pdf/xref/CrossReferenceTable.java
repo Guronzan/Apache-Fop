@@ -41,6 +41,7 @@ public class CrossReferenceTable extends CrossReferenceObject {
         this.objectReferences = location;
     }
 
+    @Override
     public void output(OutputStream stream) throws IOException {
         outputXref();
         writeTrailer(stream);

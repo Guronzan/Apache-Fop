@@ -33,6 +33,7 @@ public class PDFDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     private static final String[] MIMES = new String[] {MimeConstants.MIME_PDF};
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         PDFDocumentHandler handler = new PDFDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -43,11 +44,13 @@ public class PDFDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

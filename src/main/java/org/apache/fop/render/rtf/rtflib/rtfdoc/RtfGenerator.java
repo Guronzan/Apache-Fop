@@ -40,6 +40,7 @@ public class RtfGenerator extends RtfElement {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         newLine();
         writeGroupMark(true);
@@ -52,6 +53,7 @@ public class RtfGenerator extends RtfElement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

@@ -56,6 +56,7 @@ public class PSGraphics2DAdapter extends AbstractGraphics2DAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void paintImage(Graphics2DImagePainter painter,
             RendererContext context,
             int x, int y, int width, int height) throws IOException {

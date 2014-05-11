@@ -91,6 +91,7 @@ public class RtfBookmarkContainerImpl extends RtfContainer implements IRtfBookma
      *
      * @throws IOException On eror
      */
+    @Override
     public RtfBookmark newBookmark (String bookmark) throws IOException {
         if (mBookmark != null) {
             mBookmark.close ();

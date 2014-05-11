@@ -46,6 +46,7 @@ import org.apache.xmlgraphics.image.loader.impl.ImageXMLDOM;
 public class ImageConverterG2D2SVG extends AbstractImageConverter {
 
     /** {@inheritDoc} */
+    @Override
     public Image convert(Image src, Map hints) throws ImageException {
         checkSourceFlavor(src);
         ImageGraphics2D g2dImage = (ImageGraphics2D)src;
@@ -82,11 +83,13 @@ public class ImageConverterG2D2SVG extends AbstractImageConverter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor getSourceFlavor() {
         return ImageFlavor.GRAPHICS2D;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor getTargetFlavor() {
         return BatikImageFlavors.SVG_DOM;
     }

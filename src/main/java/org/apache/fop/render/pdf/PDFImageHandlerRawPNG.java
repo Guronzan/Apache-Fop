@@ -42,21 +42,25 @@ public class PDFImageHandlerRawPNG extends AbstractPDFImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 100;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class<ImageRawPNG> getSupportedImageClass() {
         return ImageRawPNG.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         return (image == null || image instanceof ImageRawPNG)
                 && targetContext instanceof PDFRenderingContext;

@@ -87,6 +87,7 @@ class GenericFOPBridgeContext extends AbstractFOPBridgeContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void registerSVGBridges() {
         super.registerSVGBridges();
 
@@ -100,6 +101,7 @@ class GenericFOPBridgeContext extends AbstractFOPBridgeContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public BridgeContext createBridgeContext() {
         return new GenericFOPBridgeContext(getUserAgent(), getDocumentLoader(),
                 fontInfo,

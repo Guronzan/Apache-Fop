@@ -39,6 +39,7 @@ public class SpacePropertyMaker extends CorrespondingPropertyMaker {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property compute(PropertyList propertyList) throws PropertyException {
         Property prop = super.compute(propertyList);
         if (prop != null && prop instanceof SpaceProperty) {

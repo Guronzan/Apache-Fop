@@ -41,6 +41,7 @@ public class ExternalGraphicLayoutManager extends AbstractGraphicsLayoutManager 
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Area getChildArea() {
         return new Image(((ExternalGraphic) fobj).getSrc());
     }

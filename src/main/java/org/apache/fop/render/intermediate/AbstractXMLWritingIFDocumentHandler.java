@@ -46,6 +46,7 @@ public abstract class AbstractXMLWritingIFDocumentHandler extends AbstractIFDocu
     protected GenerationHelperContentHandler handler;
 
     /** {@inheritDoc} */
+    @Override
     public void setResult(Result result) throws IFException {
         if (result instanceof SAXResult) {
             SAXResult saxResult = (SAXResult)result;

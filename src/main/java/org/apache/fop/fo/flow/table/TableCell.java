@@ -74,6 +74,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -94,6 +95,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startCell(this);
@@ -104,12 +106,14 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
      * FOEventHandler that we are at the end of the table-cell.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endCell(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void finalizeNode() throws FOPException {
 
         if (!blockItemFound) {
@@ -128,6 +132,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (%block;)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -144,11 +149,13 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -158,6 +165,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
      * attached to this TableCell.
      * @return the {@link CommonBorderPaddingBackground} instance
      */
+    @Override
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
         return this.commonBorderPaddingBackground;
     }
@@ -235,6 +243,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-cell";
     }
@@ -243,6 +252,7 @@ public class TableCell extends TableFObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_CELL}
      */
+    @Override
     public final int getNameId() {
         return FO_TABLE_CELL;
     }

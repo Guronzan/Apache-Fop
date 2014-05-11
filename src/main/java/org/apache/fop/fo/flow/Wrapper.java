@@ -79,6 +79,7 @@ public class Wrapper extends FObjMixed implements CommonAccessibilityHolder {
      * fo:multi-properties is only permitted to have children that would
      * be permitted in place of the fo:multi-properties."</i>
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -108,6 +109,7 @@ public class Wrapper extends FObjMixed implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) throws FOPException {
         super.addChildNode(child);
         /* If the child is a text node, and it generates areas
@@ -133,6 +135,7 @@ public class Wrapper extends FObjMixed implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "wrapper";
     }
@@ -141,10 +144,12 @@ public class Wrapper extends FObjMixed implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_WRAPPER}
      */
+    @Override
     public int getNameId() {
         return FO_WRAPPER;
     }
 
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

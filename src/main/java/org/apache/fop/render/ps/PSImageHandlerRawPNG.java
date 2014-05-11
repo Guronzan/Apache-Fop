@@ -45,6 +45,7 @@ public class PSImageHandlerRawPNG implements PSImageHandler {
     private static final ImageFlavor[] FLAVORS = new ImageFlavor[] {ImageFlavor.RAW_PNG};
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos) throws IOException {
         PSRenderingContext psContext = (PSRenderingContext) context;
         PSGenerator gen = psContext.getGenerator();
@@ -66,6 +67,7 @@ public class PSImageHandlerRawPNG implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void generateForm(RenderingContext context, Image image, PSImageFormResource form)
             throws IOException {
         PSRenderingContext psContext = (PSRenderingContext) context;
@@ -82,21 +84,25 @@ public class PSImageHandlerRawPNG implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class<ImageRawPNG> getSupportedImageClass() {
         return ImageRawPNG.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         if (targetContext instanceof PSRenderingContext) {
             PSRenderingContext psContext = (PSRenderingContext) targetContext;

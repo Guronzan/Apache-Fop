@@ -136,6 +136,7 @@ public class RtfLeader extends RtfContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeRtfContent() throws IOException {
 
         int thickness = LEADER_STANDARD_WIDTH;
@@ -210,6 +211,7 @@ public class RtfLeader extends RtfContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isEmpty() {
         return false;
     }

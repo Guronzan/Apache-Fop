@@ -59,6 +59,7 @@ public abstract class AbstractOffDocumentItem implements OffDocumentItem {
      * Get an indicator of when this item should be processed
      * @return int constant (IMMEDIATELY, AFTER_PAGE, START_OF_DOC, END_OF_DOC)
      */
+    @Override
     public int getWhenToProcess() {
         return whenToProcess;
     }
@@ -67,5 +68,6 @@ public abstract class AbstractOffDocumentItem implements OffDocumentItem {
      * Return a human-readable name for this ODI (for error messages, etc.)
      * @return String name of ODI
      */
+    @Override
     public abstract String getName();
 }

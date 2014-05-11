@@ -56,6 +56,7 @@ public abstract class PSExtensionAttachment implements ExtensionAttachment, XMLi
      * @return the category URI
      * @see org.apache.fop.fo.extensions.ExtensionAttachment#getCategory()
      */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
@@ -80,6 +81,7 @@ public abstract class PSExtensionAttachment implements ExtensionAttachment, XMLi
      * @throws SAXException if there's a problem generating the SAX events
      * @see org.apache.xmlgraphics.util.XMLizable#toSAX(org.xml.sax.ContentHandler)
      */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         String element = getElement();
@@ -101,6 +103,7 @@ public abstract class PSExtensionAttachment implements ExtensionAttachment, XMLi
      * @return a string representation of this object
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return getType() + ": content=" + content;
     }

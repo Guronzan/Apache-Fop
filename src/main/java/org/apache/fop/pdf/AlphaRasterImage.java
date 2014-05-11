@@ -72,46 +72,55 @@ public class AlphaRasterImage implements PDFImage {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setup(PDFDocument doc) {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getKey() {
         return key;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getWidth() {
         return alpha.getWidth();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getHeight() {
         return alpha.getHeight();
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFDeviceColorSpace getColorSpace() {
         return colorSpace;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getBitsPerComponent() {
         return bitsPerComponent;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isTransparent() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFColor getTransparentColor() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMask() {
         return null;
     }
@@ -122,16 +131,19 @@ public class AlphaRasterImage implements PDFImage {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFReference getSoftMaskReference() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInverted() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void outputContents(OutputStream out) throws IOException {
         int w = getWidth();
         int h = getHeight();
@@ -188,31 +200,37 @@ public class AlphaRasterImage implements PDFImage {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void populateXObjectDictionary(PDFDictionary dict) {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFICCStream getICCStream() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPS() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFilterHint() {
         return PDFFilterList.IMAGE_FILTER;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFFilter getPDFFilter() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean multipleFiltersAllowed() {
         return true;
     }

@@ -64,6 +64,7 @@ public class AFPSVGHandler extends AbstractGenericSVGHandler {
     private boolean paintAsBitmap = false;
 
     /** {@inheritDoc} */
+    @Override
     public void handleXML(RendererContext context,
                 Document doc, String ns) throws Exception {
         if (SVGDOMImplementation.SVG_NAMESPACE_URI.equals(ns)) {
@@ -78,6 +79,7 @@ public class AFPSVGHandler extends AbstractGenericSVGHandler {
      * @param doc the SVG document
      * @throws IOException In case of an I/O error while painting the image
      */
+    @Override
     protected void renderSVGDocument(final RendererContext rendererContext,
             final Document doc) throws IOException {
 
@@ -208,11 +210,13 @@ public class AFPSVGHandler extends AbstractGenericSVGHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsRenderer(Renderer renderer) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void updateRendererContext(RendererContext context) {
         //Work around a problem in Batik: Gradients cannot be done in ColorSpace.CS_GRAY
         context.setProperty(AFPRendererContextConstants.AFP_GRAYSCALE, Boolean.FALSE);

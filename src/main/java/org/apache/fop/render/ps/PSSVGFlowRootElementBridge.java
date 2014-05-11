@@ -47,6 +47,7 @@ public class PSSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected GraphicsNode instantiateGraphicsNode() {
         GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {
@@ -75,6 +76,7 @@ public class PSSVGFlowRootElementBridge extends SVGFlowRootElementBridge {
         }
 
         /** {@inheritDoc} */
+        @Override
         public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
             //Text runs are delegated to the normal FlowTextPainter, we just paint the text.
             FlowTextPainter delegate = (FlowTextPainter)FlowTextPainter.getInstance();

@@ -129,6 +129,7 @@ public abstract class AbstractTextArea extends InlineParent {
      * @param lineShrink      the total shrink of the line
      * @return true if there is an UnresolvedArea descendant
      */
+    @Override
     public boolean applyVariationFactor(double variationFactor,
                                         int lineStretch, int lineShrink) {
         if (textAdjustingInfo != null) {

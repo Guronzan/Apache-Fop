@@ -51,11 +51,13 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonAccessibility = CommonAccessibility.getInstance(pList);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         getFOEventHandler().startFootnote(this);
     }
@@ -66,6 +68,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
      *
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         if (footnoteCitation == null || footnoteBody == null) {
@@ -83,6 +86,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
      *      permitted to have as a descendant a fo:block-container that
      *      generates an absolutely positioned area.
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -103,6 +107,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addChildNode(FONode child) {
         if (child.getNameId() == FO_INLINE) {
             footnoteCitation = (Inline) child;
@@ -112,6 +117,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -135,6 +141,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "footnote";
     }
@@ -143,6 +150,7 @@ public class Footnote extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_FOOTNOTE}
      */
+    @Override
     public int getNameId() {
         return FO_FOOTNOTE;
     }

@@ -80,6 +80,7 @@ public class PSSetPageDevice extends PSExtensionAttachment {
      * @return a string representation of this object
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return "PSSetPageDevice(name=" + getName() + ", content='" + getContent() + "')";
     }
@@ -88,6 +89,7 @@ public class PSSetPageDevice extends PSExtensionAttachment {
      * @return a string representation of this object
      * @see org.apache.fop.render.ps.extensions.PSExtensionAttachment#getElement()
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }
@@ -98,6 +100,7 @@ public class PSSetPageDevice extends PSExtensionAttachment {
      * @throws SAXException if there's a problem generating the SAX events
      * @see org.apache.xmlgraphics.util.XMLizable#toSAX(org.xml.sax.ContentHandler)
      */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (name != null && name.length() > 0) {

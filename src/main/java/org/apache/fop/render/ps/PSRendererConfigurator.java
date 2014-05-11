@@ -51,6 +51,7 @@ public class PSRendererConfigurator extends PrintRendererConfigurator
      *
      * @param renderer not used
      */
+    @Override
     public void configure(Renderer renderer) {
         throw new UnsupportedOperationException();
     }
@@ -81,6 +82,7 @@ public class PSRendererConfigurator extends PrintRendererConfigurator
     }
 
     /** {@inheritDoc} */
+    @Override
     public void configure(IFDocumentHandler documentHandler) throws FOPException {
         Configuration cfg = super.getRendererConfig(documentHandler.getMimeType());
         if (cfg != null) {

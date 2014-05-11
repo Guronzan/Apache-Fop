@@ -124,11 +124,13 @@ public abstract class TableCellContainer extends TableFObj
     abstract TablePart getTablePart();
 
     /** {@inheritDoc} */
+    @Override
     public ColumnNumberManager getColumnNumberManager() {
         return columnNumberManager;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

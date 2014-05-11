@@ -86,6 +86,7 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 12 + this.componentsSize;
     }
@@ -97,6 +98,7 @@ public class GraphicsSetProcessColor extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         float[] colorComponents = color.getColorComponents(null);
 

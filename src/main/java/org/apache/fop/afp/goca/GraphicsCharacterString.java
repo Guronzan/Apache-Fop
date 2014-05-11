@@ -57,6 +57,7 @@ public class GraphicsCharacterString extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         if (isRelative()) {
             return (byte)0x83;
@@ -66,11 +67,13 @@ public class GraphicsCharacterString extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return super.getDataLength() + str.length();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         byte[] strData = getStringAsBytes();
@@ -90,6 +93,7 @@ public class GraphicsCharacterString extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsCharacterString{"
             + (coords != null ? "x=" + coords[0] + ", y=" + coords[1] : "")

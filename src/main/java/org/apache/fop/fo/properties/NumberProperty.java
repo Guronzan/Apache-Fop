@@ -51,6 +51,7 @@ public final class NumberProperty extends Property implements Numeric {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Property convertProperty(Property p,
                                         PropertyList propertyList, FObj fo)
                     throws PropertyException {
@@ -87,6 +88,7 @@ public final class NumberProperty extends Property implements Numeric {
          *
          * {@inheritDoc}
          */
+        @Override
         public Property convertProperty(Property p,
                                         PropertyList propertyList, FObj fo)
                     throws PropertyException {
@@ -182,6 +184,7 @@ public final class NumberProperty extends Property implements Numeric {
      * Plain number always has a dimension of 0.
      * @return a dimension of 0.
      */
+    @Override
     public int getDimension() {
         return 0;
     }
@@ -190,6 +193,7 @@ public final class NumberProperty extends Property implements Numeric {
      * Return the value of this Numeric.
      * @return The value as a double.
      */
+    @Override
     public double getNumericValue() {
         return number.doubleValue();
     }
@@ -199,11 +203,13 @@ public final class NumberProperty extends Property implements Numeric {
      * @param context Evaluation context
      * @return The value as a double.
      */
+    @Override
     public double getNumericValue(PercentBaseContext context) {
         return getNumericValue();
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getValue() {
         return number.intValue();
     }
@@ -213,6 +219,7 @@ public final class NumberProperty extends Property implements Numeric {
      * @param context Evaluation context
      * @return The value as an int.
      */
+    @Override
     public int getValue(PercentBaseContext context) {
         return getValue();
     }
@@ -221,6 +228,7 @@ public final class NumberProperty extends Property implements Numeric {
      * Return true because all numbers are absolute.
      * @return true.
      */
+    @Override
     public boolean isAbsolute() {
         return true;
     }
@@ -228,6 +236,7 @@ public final class NumberProperty extends Property implements Numeric {
     /**
      * @return this.number cast as a Number
      */
+    @Override
     public Number getNumber() {
         return this.number;
     }
@@ -235,6 +244,7 @@ public final class NumberProperty extends Property implements Numeric {
     /**
      * @return this.number cast as an Object
      */
+    @Override
     public Object getObject() {
         return this.number;
     }
@@ -243,11 +253,13 @@ public final class NumberProperty extends Property implements Numeric {
      * Convert NumberProperty to Numeric object
      * @return Numeric object corresponding to this
      */
+    @Override
     public Numeric getNumeric() {
         return this;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Length getLength() {
         //Assume pixels (like in HTML) when there's no unit
         return FixedLength.getInstance(getNumericValue(), "px");
@@ -258,6 +270,7 @@ public final class NumberProperty extends Property implements Numeric {
      * @param foUserAgent FOUserAgent
      * @return Color that corresponds to black
      */
+    @Override
     public Color getColor(FOUserAgent foUserAgent) {
         // TODO: Implement somehow
         // Convert numeric value to color ???

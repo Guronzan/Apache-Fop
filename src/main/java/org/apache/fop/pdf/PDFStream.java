@@ -140,12 +140,14 @@ public class PDFStream extends AbstractPDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected int getSizeHint() throws IOException {
         flush();
         return data.getSize();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void outputRawStreamData(OutputStream out) throws IOException {
         flush();
         data.outputContents(out);
@@ -154,6 +156,7 @@ public class PDFStream extends AbstractPDFStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int output(OutputStream stream) throws IOException {
         final int len = super.output(stream);
 

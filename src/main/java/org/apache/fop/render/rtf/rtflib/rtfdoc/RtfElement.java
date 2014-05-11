@@ -274,6 +274,7 @@ public abstract class RtfElement {
      * minimal debugging display
      * @return String representation of object
      */
+    @Override
     public String toString() {
         return (this == null) ? "null" : (this.getClass().getName() + " #" + id);
     }

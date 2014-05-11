@@ -26,11 +26,13 @@ import org.apache.fop.fo.properties.Property;
 class RoundFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         Number dbl = args[0].getNumber();
         if (dbl == null) {

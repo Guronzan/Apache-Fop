@@ -95,6 +95,7 @@ implements IRtfTextContainer,
      *
      * @exception IOException On error
      */
+    @Override
     public void writeRtfPrefix () throws IOException {
         super.writeGroupMark (true);
         super.writeControlWord ("field");
@@ -120,6 +121,7 @@ implements IRtfTextContainer,
      *
      * @exception IOException On error
      */
+    @Override
     public void writeRtfSuffix () throws IOException {
         if (attrib != null && attrib.isSet ("cs")) {
             writeGroupMark (false);
@@ -139,6 +141,7 @@ implements IRtfTextContainer,
      * @throws IOException for I/O problems
      * @return new RtfText object
      */
+    @Override
     public RtfText newText (String str) throws IOException {
         return newText (str, null);
     }
@@ -150,6 +153,7 @@ implements IRtfTextContainer,
      * @throws IOException for I/O problems
      * @return the new RtfText object
      */
+    @Override
     public RtfText newText (String str, RtfAttributes attr) throws IOException {
         closeAll ();
         mText = new RtfText (this, writer, str, attr);
@@ -161,6 +165,7 @@ implements IRtfTextContainer,
      * @return a copy of our attributes
      * @throws FOPException if attributes cannot be cloned
      */
+    @Override
     public RtfAttributes getTextContainerAttributes() throws FOPException {
         if (attrib == null) {
             return null;
@@ -177,6 +182,7 @@ implements IRtfTextContainer,
      * add a line break
      * @throws IOException for I/O problems
      */
+    @Override
     public void newLineBreak () throws IOException {
         new RtfLineBreak (this, writer);
     }
@@ -227,6 +233,7 @@ implements IRtfTextContainer,
      *
      * @return false (always)
      */
+    @Override
     public boolean isEmpty () {
         return false;
     }
@@ -235,6 +242,7 @@ implements IRtfTextContainer,
      * @return a text run
      * @throws IOException if not caught
      */
+    @Override
     public RtfTextrun getTextrun() throws IOException {
         RtfTextrun textrun = RtfTextrun.getTextrun(this, writer, null);
         return textrun;

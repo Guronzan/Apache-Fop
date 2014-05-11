@@ -50,6 +50,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "inline-progression-direction" trait.
      */
+    @Override
     public Direction getInlineProgressionDirection() {
         return inlineProgressionDirection;
     }
@@ -57,6 +58,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param direction the "inline-progression-direction" trait.
      */
+    @Override
     public void setInlineProgressionDirection ( Direction direction ) {
         this.inlineProgressionDirection = direction;
     }
@@ -64,6 +66,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "block-progression-direction" trait.
      */
+    @Override
     public Direction getBlockProgressionDirection() {
         return blockProgressionDirection;
     }
@@ -71,6 +74,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param direction the "block-progression-direction" trait.
      */
+    @Override
     public void setBlockProgressionDirection ( Direction direction ) {
         this.blockProgressionDirection = direction;
     }
@@ -78,6 +82,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "column-progression-direction" trait.
      */
+    @Override
     public Direction getColumnProgressionDirection() {
         return columnProgressionDirection;
     }
@@ -85,6 +90,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param direction the "column-progression-direction" trait.
      */
+    @Override
     public void setColumnProgressionDirection ( Direction direction ) {
         this.columnProgressionDirection = direction;
     }
@@ -92,6 +98,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "row-progression-direction" trait.
      */
+    @Override
     public Direction getRowProgressionDirection() {
         return rowProgressionDirection;
     }
@@ -99,6 +106,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param direction the "row-progression-direction" trait.
      */
+    @Override
     public void setRowProgressionDirection ( Direction direction ) {
         this.rowProgressionDirection = direction;
     }
@@ -106,6 +114,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "shift-direction" trait.
      */
+    @Override
     public Direction getShiftDirection() {
         return shiftDirection;
     }
@@ -113,6 +122,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param direction the "shift-direction" trait.
      */
+    @Override
     public void setShiftDirection ( Direction direction ) {
         this.shiftDirection = direction;
     }
@@ -120,6 +130,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @return the "writing-mode" trait.
      */
+    @Override
     public WritingMode getWritingMode() {
         return writingMode;
     }
@@ -127,6 +138,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param writingMode the "writing-mode" trait.
      */
+    @Override
     public void setWritingMode ( WritingMode writingMode ) {
         this.writingMode = writingMode;
     }
@@ -134,6 +146,7 @@ public class WritingModeTraits implements WritingModeTraitsSetter {
     /**
      * @param writingMode the "writing-mode" trait.
      */
+    @Override
     public void assignWritingModeTraits ( WritingMode writingMode ) {
         writingMode.assignWritingModeTraits ( this );
     }

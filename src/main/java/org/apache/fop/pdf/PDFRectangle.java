@@ -96,6 +96,7 @@ public class PDFRectangle implements PDFWritable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void outputInline(OutputStream out, StringBuilder textBuffer) throws IOException {
         format(textBuffer);
     }

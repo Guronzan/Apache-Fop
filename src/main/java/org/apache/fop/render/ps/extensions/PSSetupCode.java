@@ -69,11 +69,13 @@ public class PSSetupCode extends PSExtensionAttachment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "PSSetupCode(name=" + getName() + ", content='" + getContent() + "')";
     }
@@ -82,11 +84,13 @@ public class PSSetupCode extends PSExtensionAttachment {
      * @return the element name
      * @see org.apache.fop.render.ps.extensions.PSExtensionAttachment#getElement()
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (name != null && name.length() > 0) {

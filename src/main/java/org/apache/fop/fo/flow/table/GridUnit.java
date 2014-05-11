@@ -441,6 +441,7 @@ public class GridUnit {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();
         if (isEmpty()) {

@@ -42,6 +42,7 @@ public abstract class AbstractPSCommentElement extends AbstractPSExtensionElemen
      * @throws FOPException if there's a problem during processing
      * @see org.apache.fop.fo.FONode#startOfNode()
      */
+    @Override
     protected void startOfNode() throws FOPException {
         if (parent.getNameId() != Constants.FO_DECLARATIONS
                 && parent.getNameId() != Constants.FO_SIMPLE_PAGE_MASTER) {

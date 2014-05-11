@@ -55,6 +55,7 @@ public class BidiOverride extends Inline {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         letterSpacing = pList.get(PR_LETTER_SPACING);
@@ -84,6 +85,7 @@ public class BidiOverride extends Inline {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "bidi-override";
     }
@@ -92,6 +94,7 @@ public class BidiOverride extends Inline {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_BIDI_OVERRIDE}
      */
+    @Override
     public int getNameId() {
         return FO_BIDI_OVERRIDE;
     }

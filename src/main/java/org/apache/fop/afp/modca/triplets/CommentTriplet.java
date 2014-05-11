@@ -42,11 +42,13 @@ public class CommentTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2 + commentString.length();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         byte[] strData = commentString.getBytes(AFPConstants.EBCIDIC_ENCODING);

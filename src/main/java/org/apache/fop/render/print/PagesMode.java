@@ -62,6 +62,7 @@ public final class PagesMode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "PagesMode:" + name;
     }

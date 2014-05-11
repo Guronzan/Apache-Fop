@@ -59,6 +59,7 @@ public class FopCharacterSet extends CharacterSet {
      * ascender, ascender height and baseline offset are equal.
      * @return the ascender value in millipoints
      */
+    @Override
     public int getAscender() {
         return charSet.getAscender(1);
     }
@@ -69,6 +70,7 @@ public class FopCharacterSet extends CharacterSet {
      * usually the height of the uppercase M.
      * @return the cap height value in millipoints
      */
+    @Override
     public int getCapHeight() {
         return charSet.getCapHeight(1);
     }
@@ -79,6 +81,7 @@ public class FopCharacterSet extends CharacterSet {
      * that all of the graphic character is above the character baseline.
      * @return the descender value in millipoints
      */
+    @Override
     public int getDescender() {
         return charSet.getDescender(1);
     }
@@ -87,6 +90,7 @@ public class FopCharacterSet extends CharacterSet {
      * The first character in the character set
      * @return the first character
      */
+    @Override
     public char getFirstChar() {
         return 0;
     }
@@ -95,6 +99,7 @@ public class FopCharacterSet extends CharacterSet {
      * The last character in the character set
      * @return the last character
      */
+    @Override
     public char getLastChar() {
         return 0;
     }
@@ -103,6 +108,7 @@ public class FopCharacterSet extends CharacterSet {
      * Get the width (in 1/1000ths of a point size) of all characters
      * @return the widths of all characters
      */
+    @Override
     public int[] getWidths() {
         return charSet.getWidths();
     }
@@ -111,6 +117,7 @@ public class FopCharacterSet extends CharacterSet {
      * XHeight refers to the height of the lower case letters above the baseline.
      * @return the typical height of characters
      */
+    @Override
     public int getXHeight() {
         return charSet.getXHeight(1);
     }
@@ -121,6 +128,7 @@ public class FopCharacterSet extends CharacterSet {
      * @param character the character from which the width will be calculated
      * @return the width of the character
      */
+    @Override
     public int getWidth(char character) {
         return charSet.getWidth(character, 1);
     }
@@ -130,6 +138,7 @@ public class FopCharacterSet extends CharacterSet {
      * @param c character to map
      * @return the mapped character
      */
+    @Override
     public char mapChar(char c) {
         return charSet.mapChar(c);
     }

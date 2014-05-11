@@ -338,6 +338,7 @@ public class PDFShading extends PDFObject {
      *
      * @return the PDF string.
      */
+    @Override
     public String toPDFString() {                               // CSOK: MethodLength
         int vectorSize;
         int tempInt;
@@ -533,6 +534,7 @@ public class PDFShading extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (obj == null) {
             return false;

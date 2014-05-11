@@ -67,16 +67,19 @@ public abstract class CustomFont extends Typeface
     protected CMapSegment[] cmap;
 
     /** {@inheritDoc} */
+    @Override
     public String getFontName() {
         return fontName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEmbedFontName() {
         return getFontName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFullName() {
         return fullName;
     }
@@ -85,6 +88,7 @@ public abstract class CustomFont extends Typeface
      * Returns the font family names.
      * @return the font family names (a Set of Strings)
      */
+    @Override
     public Set<String> getFamilyNames() {
         return Collections.unmodifiableSet(this.familyNames);
     }
@@ -153,6 +157,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getAscender() {
         return ascender;
     }
@@ -160,6 +165,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getDescender() {
         return descender;
     }
@@ -167,6 +173,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getCapHeight() {
         return capHeight;
     }
@@ -174,6 +181,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getAscender(int size) {
         return size * ascender;
     }
@@ -181,6 +189,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getDescender(int size) {
         return size * descender;
     }
@@ -188,6 +197,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getCapHeight(int size) {
         return size * capHeight;
     }
@@ -195,6 +205,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getXHeight(int size) {
         return size * xHeight;
     }
@@ -202,16 +213,19 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int[] getFontBBox() {
         return fontBBox;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getFlags() {
         return flags;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isSymbolicFont() {
         return ((getFlags() & 4) != 0) || "ZapfDingbatsEncoding".equals(getEncodingName());
         //Note: The check for ZapfDingbats is necessary as the PFM does not reliably indicate
@@ -230,6 +244,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStemV() {
         return stemV;
     }
@@ -237,6 +252,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getItalicAngle() {
         return italicAngle;
     }
@@ -252,6 +268,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public FontType getFontType() {
         return fontType;
     }
@@ -283,6 +300,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public final boolean hasKerningInfo() {
         return (isKerningEnabled() && (kerning != null) && !kerning.isEmpty());
     }
@@ -290,6 +308,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public final Map<Integer, Map<Integer, Integer>> getKerningInfo() {
         if (hasKerningInfo()) {
             return kerning;
@@ -310,16 +329,19 @@ public abstract class CustomFont extends Typeface
     /* ---- MutableFont interface ---- */
 
     /** {@inheritDoc} */
+    @Override
     public void setFontName(String name) {
         this.fontName = name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setFullName(String name) {
         this.fullName = name;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setFamilyNames(Set<String> names) {
         this.familyNames = new HashSet<String>(names);
     }
@@ -335,6 +357,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setEmbedFileName(String path) {
         this.embedFileName = path;
     }
@@ -342,6 +365,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setEmbedResourceName(String name) {
         this.embedResourceName = name;
     }
@@ -349,6 +373,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setEmbeddingMode(EmbeddingMode embeddingMode) {
         this.embeddingMode = embeddingMode;
     }
@@ -356,6 +381,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setCapHeight(int capHeight) {
         this.capHeight = capHeight;
     }
@@ -371,6 +397,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setAscender(int ascender) {
         this.ascender = ascender;
     }
@@ -378,6 +405,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setDescender(int descender) {
         this.descender = descender;
     }
@@ -385,6 +413,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setFontBBox(int[] bbox) {
         this.fontBBox = bbox;
     }
@@ -392,6 +421,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setFlags(int flags) {
         this.flags = flags;
     }
@@ -410,6 +440,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setStemV(int stemV) {
         this.stemV = stemV;
     }
@@ -417,6 +448,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setItalicAngle(int italicAngle) {
         this.italicAngle = italicAngle;
     }
@@ -424,6 +456,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setMissingWidth(int width) {
         this.missingWidth = width;
     }
@@ -431,6 +464,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setFontType(FontType fontType) {
         this.fontType = fontType;
     }
@@ -438,6 +472,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setFirstChar(int index) {
         this.firstChar = index;
     }
@@ -445,6 +480,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setLastChar(int index) {
         this.lastChar = index;
     }
@@ -452,6 +488,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setKerningEnabled(boolean enabled) {
         this.useKerning = enabled;
     }
@@ -459,6 +496,7 @@ public abstract class CustomFont extends Typeface
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setAdvancedEnabled(boolean enabled) {
         this.useAdvanced = enabled;
     }
@@ -472,6 +510,7 @@ public abstract class CustomFont extends Typeface
     }
 
     /** {@inheritDoc} */
+    @Override
     public void putKerningEntry(Integer key, Map<Integer, Integer> value) {
         if (kerning == null) {
             kerning = new HashMap<Integer, Map<Integer, Integer>>();

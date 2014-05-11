@@ -51,6 +51,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Returns a customized the pixel to mm factor.
      * @return the pixel unit to millimeter conversion factor
      */
+    @Override
     public float getPixelUnitToMillimeter() {
         return pixelUnitToMillimeter;
     }
@@ -59,6 +60,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Returns the language settings.
      * @return the languages supported
      */
+    @Override
     public String getLanguages() {
         return "en"; // userLanguages;
     }
@@ -67,6 +69,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Returns the media type for this rendering.
      * @return the media for FO documents is "print"
      */
+    @Override
     public String getMedia() {
         return "print";
     }
@@ -75,6 +78,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Returns the user stylesheet URI.
      * @return null if no user style sheet was specified.
      */
+    @Override
     public String getUserStyleSheetURI() {
         return null; // userStyleSheetURI;
     }
@@ -83,6 +87,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Returns the class name of the XML parser.
      * @return the XML parser class name
      */
+    @Override
     public String getXMLParserClassName() {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -96,6 +101,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Is the XML parser validating.
      * @return true if the XML parser is validating
      */
+    @Override
     public boolean isXMLParserValidating() {
         return false;
     }
@@ -104,11 +110,13 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * Get the transform of the SVG document.
      * @return the transform
      */
+    @Override
     public AffineTransform getTransform() {
         return currentTransform;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setTransform(AffineTransform at) {
         this.currentTransform = at;
     }
@@ -118,6 +126,7 @@ public class SimpleSVGUserAgent extends UserAgentAdapter {
      * This returns a default value of 100x100.
      * @return the default viewport size
      */
+    @Override
     public Dimension2D getViewportSize() {
         return new Dimension(100, 100);
     }

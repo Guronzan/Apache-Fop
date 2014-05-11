@@ -46,6 +46,7 @@ public class AttributeQualifierTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         byte[] id = BinaryUtils.convert(seqNumber, 4);
@@ -56,11 +57,13 @@ public class AttributeQualifierTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 10;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "seqNumber=" + seqNumber + ", levNumber=" + levNumber;
     }

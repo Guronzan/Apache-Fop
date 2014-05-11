@@ -49,6 +49,7 @@ public class PageSequenceWrapper extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         indexClass = pList.get(PR_INDEX_CLASS).getString();
@@ -59,6 +60,7 @@ public class PageSequenceWrapper extends FObj {
      * {@inheritDoc}
      *  <br>XSL/FOP: (bookmark+)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -86,6 +88,7 @@ public class PageSequenceWrapper extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "page-sequence-wrapper";
     }
@@ -94,6 +97,7 @@ public class PageSequenceWrapper extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_PAGE_SEQUENCE_WRAPPER}
      */
+    @Override
     public int getNameId() {
         return FO_PAGE_SEQUENCE_WRAPPER;
     }

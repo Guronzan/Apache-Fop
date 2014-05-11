@@ -66,6 +66,7 @@ public abstract class AbstractPageSequence extends FObj implements CommonAccessi
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         initialPageNumber = pList.get(PR_INITIAL_PAGE_NUMBER).getNumeric();
@@ -82,6 +83,7 @@ public abstract class AbstractPageSequence extends FObj implements CommonAccessi
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         this.pageNumberGenerator = new PageNumberGenerator(
                 format, groupingSeparator, groupingSize, letterValue,
@@ -133,6 +135,7 @@ public abstract class AbstractPageSequence extends FObj implements CommonAccessi
         return pageNumberGenerator.makeFormattedPageNumber(pageNumber);
     }
 
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -141,6 +144,7 @@ public abstract class AbstractPageSequence extends FObj implements CommonAccessi
      * Public accessor for the ancestor Root.
      * @return the ancestor Root
      */
+    @Override
     public Root getRoot() {
         return (Root)this.getParent();
     }

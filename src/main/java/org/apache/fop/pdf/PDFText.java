@@ -54,6 +54,7 @@ public class PDFText extends PDFObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected String toPDFString() {
         if (getText() == null) {
             throw new IllegalArgumentException(

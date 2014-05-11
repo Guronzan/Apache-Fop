@@ -28,18 +28,21 @@ import org.xml.sax.SAXException;
 public class IFContentHandler implements ContentHandler {
 
     /** {@inheritDoc} */
+    @Override
     public void characters(char[] arg0, int arg1, int arg2) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endElement(String arg0, String arg1, String arg2)
             throws SAXException {
         // TODO Auto-generated method stub
@@ -47,12 +50,14 @@ public class IFContentHandler implements ContentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPrefixMapping(String arg0) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void ignorableWhitespace(char[] arg0, int arg1, int arg2)
             throws SAXException {
         // TODO Auto-generated method stub
@@ -60,6 +65,7 @@ public class IFContentHandler implements ContentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processingInstruction(String arg0, String arg1)
             throws SAXException {
         // TODO Auto-generated method stub
@@ -67,24 +73,28 @@ public class IFContentHandler implements ContentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDocumentLocator(Locator arg0) {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void skippedEntity(String arg0) throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws SAXException {
         // TODO Auto-generated method stub
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startElement(String arg0, String arg1, String arg2,
             Attributes arg3) throws SAXException {
         // TODO Auto-generated method stub
@@ -92,6 +102,7 @@ public class IFContentHandler implements ContentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPrefixMapping(String arg0, String arg1)
             throws SAXException {
         // TODO Auto-generated method stub

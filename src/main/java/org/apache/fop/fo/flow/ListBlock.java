@@ -73,6 +73,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -89,6 +90,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startList(this);
@@ -100,6 +102,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
      * of the list-block.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!hasListItem) {
             missingChildElementError("marker* (list-item)+");
@@ -111,6 +114,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (list-item)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
             throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -127,6 +131,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -142,11 +147,13 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
     }
 
     /** @return the "break-after" property */
+    @Override
     public int getBreakAfter() {
         return breakAfter;
     }
 
     /** @return the "break-before" property */
+    @Override
     public int getBreakBefore() {
         return breakBefore;
     }
@@ -177,6 +184,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-block";
     }
@@ -185,6 +193,7 @@ public class ListBlock extends FObj implements BreakPropertySet, CommonAccessibi
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_BLOCK}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_BLOCK;
     }

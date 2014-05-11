@@ -59,6 +59,7 @@ public class AFPRenderingContext extends AbstractRenderingContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_AFP;
     }

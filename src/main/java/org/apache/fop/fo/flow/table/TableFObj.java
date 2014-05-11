@@ -66,6 +66,7 @@ public abstract class TableFObj extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         borderAfterPrecedence = pList.get(PR_BORDER_AFTER_PRECEDENCE).getNumeric();
@@ -138,6 +139,7 @@ public abstract class TableFObj extends FObj {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Property make(PropertyList propertyList)
                 throws PropertyException {
             FObj fo = propertyList.getFObj();
@@ -151,6 +153,7 @@ public abstract class TableFObj extends FObj {
          * {@inheritDoc}
          * Check the value of the column-number property.
          */
+        @Override
         public Property make(PropertyList propertyList, String value, FObj fo)
                     throws PropertyException {
 
@@ -190,6 +193,7 @@ public abstract class TableFObj extends FObj {
          * If the value is not positive, return a property whose value
          * is the next column number.
          */
+        @Override
         public Property convertProperty(Property p,
                                         PropertyList propertyList, FObj fo)
                     throws PropertyException {
@@ -227,6 +231,7 @@ public abstract class TableFObj extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator, Attributes attlist,
             PropertyList pList) throws FOPException {
         super.processNode(elementName, locator, attlist, pList);

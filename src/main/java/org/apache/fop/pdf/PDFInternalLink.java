@@ -41,6 +41,7 @@ public class PDFInternalLink extends PDFAction {
      *
      * @return the action to place next to /A within a Link
      */
+    @Override
     public String getAction() {
         return goToReference;
     }
@@ -48,6 +49,7 @@ public class PDFInternalLink extends PDFAction {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected String toPDFString() {
         throw new UnsupportedOperationException("This method should not be called");
     }

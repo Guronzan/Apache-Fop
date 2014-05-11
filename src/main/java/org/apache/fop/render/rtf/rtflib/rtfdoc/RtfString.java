@@ -48,6 +48,7 @@ public class RtfString extends RtfElement {
     /**
     * @return true if this element would generate no "useful" RTF content
     */
+    @Override
     public boolean isEmpty() {
         return text.trim().equals("");
     }
@@ -56,6 +57,7 @@ public class RtfString extends RtfElement {
     * write RTF code of all our children
     * @throws IOException for I/O problems
     */
+    @Override
     protected void writeRtfContent() throws IOException {
         RtfStringConverter.getInstance().writeRtfString(writer, text);
     }

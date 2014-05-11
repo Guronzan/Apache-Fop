@@ -33,6 +33,7 @@ public class TIFFDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     private static final String[] MIMES = new String[] {MimeConstants.MIME_TIFF};
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         TIFFDocumentHandler handler = new TIFFDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -40,11 +41,13 @@ public class TIFFDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

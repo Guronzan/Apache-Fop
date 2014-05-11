@@ -313,6 +313,7 @@ public final class MinOptMax implements Serializable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -329,6 +330,7 @@ public final class MinOptMax implements Serializable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int hashCode() {
         int result = min;
         result = 31 * result + opt;
@@ -339,6 +341,7 @@ public final class MinOptMax implements Serializable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         return "MinOptMax[min = " + min + ", opt = " + opt + ", max = " + max + "]";
     }

@@ -64,6 +64,7 @@ public class URIAction extends AbstractAction implements DocumentNavigationExten
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isSame(AbstractAction other) {
         if (other == null) {
             throw new NullPointerException("other must not be null");
@@ -82,11 +83,13 @@ public class URIAction extends AbstractAction implements DocumentNavigationExten
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getIDPrefix() {
         return "fop-" + GOTO_URI.getLocalName();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (hasID()) {

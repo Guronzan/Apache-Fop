@@ -51,6 +51,7 @@ public abstract class PCLRenderingContext extends AbstractRenderingContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_PCL; //not applicable
     }

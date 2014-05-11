@@ -95,6 +95,7 @@ public abstract class AbstractPageNumberCitation extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -115,6 +116,7 @@ public abstract class AbstractPageNumberCitation extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode
         (String elementName, Locator locator, Attributes attlist, PropertyList pList)
         throws FOPException {
@@ -128,6 +130,7 @@ public abstract class AbstractPageNumberCitation extends FObj
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -136,6 +139,7 @@ public abstract class AbstractPageNumberCitation extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -161,6 +165,7 @@ public abstract class AbstractPageNumberCitation extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement getStructureTreeElement() {
         return structureTreeElement;
     }

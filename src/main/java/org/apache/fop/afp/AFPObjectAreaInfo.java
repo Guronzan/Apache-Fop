@@ -144,6 +144,7 @@ public class AFPObjectAreaInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "x=" + x
                 + ", y=" + y

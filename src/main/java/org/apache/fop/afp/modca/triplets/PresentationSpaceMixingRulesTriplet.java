@@ -67,11 +67,13 @@ public class PresentationSpaceMixingRulesTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2 + rules.length;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         System.arraycopy(rules, 0, data, 2, rules.length);

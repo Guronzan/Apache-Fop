@@ -50,6 +50,7 @@ public class SpaceProperty extends LengthRangeProperty {
          * Create a new empty instance of SpaceProperty.
          * @return the new instance.
          */
+        @Override
         public Property makeNewProperty() {
             return new SpaceProperty();
         }
@@ -57,6 +58,7 @@ public class SpaceProperty extends LengthRangeProperty {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Property convertProperty(Property p,
                                         PropertyList propertyList,
                                         FObj fo) throws PropertyException {
@@ -72,6 +74,7 @@ public class SpaceProperty extends LengthRangeProperty {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setComponent(int cmpId, Property cmpnValue,
                              boolean bIsDefault) {
         if (cmpId == CP_PRECEDENCE) {
@@ -86,6 +89,7 @@ public class SpaceProperty extends LengthRangeProperty {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property getComponent(int cmpId) {
         if (cmpId == CP_PRECEDENCE) {
             return getPrecedence();
@@ -138,6 +142,7 @@ public class SpaceProperty extends LengthRangeProperty {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "Space["
         + "min:" + getMinimum(null).getObject()
@@ -150,6 +155,7 @@ public class SpaceProperty extends LengthRangeProperty {
     /**
      * @return the Space (datatype) object contained here
      */
+    @Override
     public SpaceProperty getSpace() {
         return this;
     }
@@ -158,6 +164,7 @@ public class SpaceProperty extends LengthRangeProperty {
      * Space extends LengthRange.
      * @return the Space (datatype) object contained here
      */
+    @Override
     public LengthRangeProperty getLengthRange() {
         return this;
     }
@@ -165,6 +172,7 @@ public class SpaceProperty extends LengthRangeProperty {
     /**
      * @return the Space (datatype) object contained here
      */
+    @Override
     public Object getObject() {
         return this;
     }

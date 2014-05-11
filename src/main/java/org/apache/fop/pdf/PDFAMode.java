@@ -77,6 +77,7 @@ public final class PDFAMode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return name;
     }

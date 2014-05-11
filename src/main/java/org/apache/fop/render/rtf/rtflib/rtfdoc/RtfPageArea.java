@@ -63,6 +63,7 @@ extends RtfContainer {
     /**
      * @return true
      */
+    @Override
     protected boolean okToWriteRtf() {
         return true;
     }

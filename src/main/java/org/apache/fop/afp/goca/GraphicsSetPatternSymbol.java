@@ -91,11 +91,13 @@ public class GraphicsSetPatternSymbol extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             getOrderCode(), // GSPT order code
@@ -105,12 +107,14 @@ public class GraphicsSetPatternSymbol extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsSetPatternSymbol(fill="
             + (pattern == SOLID_FILL ? true : false)  + ")";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x28;
     }

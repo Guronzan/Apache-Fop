@@ -50,6 +50,7 @@ public class PageNumberLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize() {
         FontInfo fi = fobj.getFOEventHandler().getFontInfo();
         FontTriplet[] fontkeys = fobj.getCommonFont().getFontState(fi);
@@ -61,6 +62,7 @@ public class PageNumberLayoutManager extends LeafNodeLayoutManager {
      * {@inheritDoc}
      *                                                      #makeAlignmentContext(LayoutContext)
      */
+    @Override
     protected AlignmentContext makeAlignmentContext(LayoutContext context) {
         return new AlignmentContext(
                 font
@@ -74,6 +76,7 @@ public class PageNumberLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InlineArea get(LayoutContext context) {
         // get page string from parent, build area
         TextArea text = new TextArea();
@@ -92,6 +95,7 @@ public class PageNumberLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected InlineArea getEffectiveArea() {
         TextArea baseArea = (TextArea)curArea;
         //TODO Maybe replace that with a clone() call or better, a copy constructor

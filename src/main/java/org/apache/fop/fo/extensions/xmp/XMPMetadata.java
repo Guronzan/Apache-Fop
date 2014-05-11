@@ -85,11 +85,13 @@ public class XMPMetadata implements ExtensionAttachment, Serializable, XMLizable
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         getMetadata().toSAX(handler);
     }

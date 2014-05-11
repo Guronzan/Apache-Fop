@@ -44,6 +44,7 @@ public abstract class PDFTextUtil extends org.apache.fop.pdf.PDFTextUtil {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initValues() {
         super.initValues();
         this.font = null;

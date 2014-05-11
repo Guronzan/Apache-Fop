@@ -32,11 +32,13 @@ import org.apache.fop.render.RendererContext;
 public class PCLSVGHandler extends AbstractGenericSVGHandler {
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsRenderer(Renderer renderer) {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void updateRendererContext(RendererContext context) {
         //Work around a problem in Batik: Gradients cannot be done in ColorSpace.CS_GRAY
         context.setProperty(PCLRendererContextConstants.PCL_COLOR_CANVAS,

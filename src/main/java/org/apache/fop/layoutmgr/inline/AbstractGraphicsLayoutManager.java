@@ -111,6 +111,7 @@ public abstract class AbstractGraphicsLayoutManager extends LeafNodeLayoutManage
     }
 
     /** {@inheritDoc} */
+    @Override
     public List getNextKnuthElements(LayoutContext context,
                                            int alignment) {
         InlineViewport areaCurrent = getInlineArea();
@@ -119,6 +120,7 @@ public abstract class AbstractGraphicsLayoutManager extends LeafNodeLayoutManage
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AlignmentContext makeAlignmentContext(LayoutContext context) {
         final AbstractGraphics fobj = (AbstractGraphics)this.fobj;
         return new AlignmentContext(
@@ -143,6 +145,7 @@ public abstract class AbstractGraphicsLayoutManager extends LeafNodeLayoutManage
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getBaseLength(int lengthBase, FObj fobj) {
         switch (lengthBase) {
         case LengthBase.IMAGE_INTRINSIC_WIDTH:

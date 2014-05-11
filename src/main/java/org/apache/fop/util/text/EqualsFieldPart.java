@@ -43,6 +43,7 @@ public class EqualsFieldPart extends IfFieldPart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void parseValues(String values) {
         String[] parts = AdvancedMessageFormat.COMMA_SEPARATOR_REGEX.split(values, 3);
         this.equalsValue = parts[0];
@@ -59,6 +60,7 @@ public class EqualsFieldPart extends IfFieldPart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean isTrue(Map params) {
         Object obj = params.get(fieldName);
         if (obj != null) {
@@ -69,6 +71,7 @@ public class EqualsFieldPart extends IfFieldPart {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "{" + this.fieldName + ", equals " + this.equalsValue + "}";
     }
@@ -79,11 +82,13 @@ public class EqualsFieldPart extends IfFieldPart {
     public static class Factory implements PartFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Part newPart(String fieldName, String values) {
             return new EqualsFieldPart(fieldName, values);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getFormat() {
             return "equals";
         }

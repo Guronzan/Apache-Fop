@@ -38,11 +38,13 @@ public class SVGObj extends XMLObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return SVGElementMapping.URI;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "svg";
     }

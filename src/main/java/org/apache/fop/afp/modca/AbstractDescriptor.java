@@ -56,6 +56,7 @@ public abstract class AbstractDescriptor extends AbstractTripletStructuredObject
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "width=" + width
         + ", height=" + height

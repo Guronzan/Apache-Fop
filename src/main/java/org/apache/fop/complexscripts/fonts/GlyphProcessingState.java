@@ -89,9 +89,12 @@ public class GlyphProcessingState {
         this.indexLast = gs.getGlyphCount();
         this.sct = sct;
         this.gct = ( sct != null ) ? sct.getTester ( feature ) : null;
-        this.ignoreBase = new GlyphTester() { public boolean test(int gi, int flags) { return isIgnoredBase(gi, flags); } };
-        this.ignoreLigature = new GlyphTester() { public boolean test(int gi, int flags) { return isIgnoredLigature(gi, flags); } };
-        this.ignoreMark = new GlyphTester() { public boolean test(int gi, int flags) { return isIgnoredMark(gi, flags); } };
+        this.ignoreBase = new GlyphTester() { @Override
+        public boolean test(int gi, int flags) { return isIgnoredBase(gi, flags); } };
+        this.ignoreLigature = new GlyphTester() { @Override
+        public boolean test(int gi, int flags) { return isIgnoredLigature(gi, flags); } };
+        this.ignoreMark = new GlyphTester() { @Override
+        public boolean test(int gi, int flags) { return isIgnoredMark(gi, flags); } };
     }
 
     /**

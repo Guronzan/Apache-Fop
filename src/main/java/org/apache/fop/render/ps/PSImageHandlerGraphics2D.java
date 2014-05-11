@@ -48,6 +48,7 @@ public class PSImageHandlerGraphics2D implements PSImageHandler {
     };
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -97,6 +98,7 @@ public class PSImageHandlerGraphics2D implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void generateForm(RenderingContext context, Image image, final PSImageFormResource form)
             throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -108,21 +110,25 @@ public class PSImageHandlerGraphics2D implements PSImageHandler {
         formGen.generate(gen);
     }
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         if (targetContext instanceof PSRenderingContext) {
             return (image == null || image instanceof ImageGraphics2D);

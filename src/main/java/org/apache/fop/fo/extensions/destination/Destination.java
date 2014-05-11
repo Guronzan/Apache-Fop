@@ -50,6 +50,7 @@ public class Destination extends FONode {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void processNode(String elementName, Locator locator,
             Attributes attlist, PropertyList pList) throws FOPException {
         internalDestination = attlist.getValue("internal-destination");
@@ -61,6 +62,7 @@ public class Destination extends FONode {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         root.addDestination(this);
     }
@@ -69,6 +71,7 @@ public class Destination extends FONode {
      * {@inheritDoc}
         XSL/FOP: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
             invalidChildError(loc, nsURI, localName);
@@ -83,16 +86,19 @@ public class Destination extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return ExtensionElementMapping.URI;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "fox";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "destination";
     }

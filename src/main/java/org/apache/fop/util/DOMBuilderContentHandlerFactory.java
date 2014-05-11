@@ -53,11 +53,13 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return new String[] {namespaceURI};
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new Handler();
     }
@@ -79,6 +81,7 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Object getObject() {
             return getDocument();
         }
@@ -86,6 +89,7 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void setObjectBuiltListener(ObjectBuiltListener listener) {
             this.obListener = listener;
         }
@@ -93,6 +97,7 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void startDocument() throws SAXException {
             //Suppress startDocument() call if doc has not been set, yet. It will be done later.
             if (doc != null) {
@@ -103,6 +108,7 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts)
                     throws SAXException {
             if (doc == null) {
@@ -127,6 +133,7 @@ public class DOMBuilderContentHandlerFactory implements ContentHandlerFactory {
         /**
          * {@inheritDoc}
          */
+        @Override
         public void endDocument() throws SAXException {
             super.endDocument();
             if (obListener != null) {

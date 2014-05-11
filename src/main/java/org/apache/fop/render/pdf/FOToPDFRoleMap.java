@@ -217,6 +217,7 @@ final class FOToPDFRoleMap {
             this.structureType = structureType;
         }
 
+        @Override
         public PDFName getStructureType(PDFObject parent) {
             return structureType;
         }
@@ -225,6 +226,7 @@ final class FOToPDFRoleMap {
 
     private static class TableCellMapper implements Mapper {
 
+        @Override
         public PDFName getStructureType(PDFObject parent) {
             PDFStructElem grandParent = ((PDFStructElem) parent).getParentStructElem();
             //TODO What to do with cells from table-footer? Currently they are mapped on TD.

@@ -45,6 +45,7 @@ public class BasicLinkLayoutManager extends InlineLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected InlineArea createArea(boolean bInlineParent) {
         InlineArea area = super.createArea(bInlineParent);
         setupBasicLinkArea(area);

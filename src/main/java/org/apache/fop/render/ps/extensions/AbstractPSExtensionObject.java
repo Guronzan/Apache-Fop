@@ -45,6 +45,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -53,6 +54,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void characters(char[] data, int start, int length,
                                  PropertyList pList, Locator locator) {
         String content = setupCode.getContent();
@@ -66,16 +68,19 @@ public abstract class AbstractPSExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return PSExtensionElementMapping.NAMESPACE;
     }
 
     /**{@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "ps";
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -86,6 +91,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         String s = setupCode.getContent();
@@ -95,6 +101,7 @@ public abstract class AbstractPSExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ExtensionAttachment getExtensionAttachment() {
         return this.setupCode;
     }

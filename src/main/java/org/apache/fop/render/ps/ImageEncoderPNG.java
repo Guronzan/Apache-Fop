@@ -62,6 +62,7 @@ public class ImageEncoderPNG implements ImageEncoder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeTo(OutputStream out) throws IOException {
         // TODO: refactor this code with equivalent PDF code
         InputStream in = ((ImageRawStream) image).createInputStream();
@@ -104,6 +105,7 @@ public class ImageEncoderPNG implements ImageEncoder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getImplicitFilter() {
         String filter = "<< /Predictor 15 /Columns " + image.getSize().getWidthPx();
         filter += " /Colors " + (numberOfInterleavedComponents > 2 ? 3 : 1);

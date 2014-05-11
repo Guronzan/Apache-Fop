@@ -50,6 +50,7 @@ public class FontSizePropertyMaker
      * here already: if the property evaluates to a {@link PercentLength},
      * it is immediately replaced by the resolved {@link FixedLength}.
      */
+    @Override
     public Property make(PropertyList propertyList, String value, FObj fo)
             throws PropertyException {
         Property p = super.make(propertyList, value, fo);
@@ -66,6 +67,7 @@ public class FontSizePropertyMaker
      * {@inheritDoc}
      * Implements the parts of 7.8.4 relevant to relative font sizes
      */
+    @Override
     public Property convertProperty(Property p,
                                     PropertyList propertyList,
                                     FObj fo) throws PropertyException {

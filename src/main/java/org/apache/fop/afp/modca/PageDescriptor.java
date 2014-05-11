@@ -45,6 +45,7 @@ public class PageDescriptor extends AbstractDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[24];
         copySF(data, Type.DESCRIPTOR, Category.PAGE);

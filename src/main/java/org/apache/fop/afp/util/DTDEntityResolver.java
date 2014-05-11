@@ -73,6 +73,7 @@ public class DTDEntityResolver implements EntityResolver {
      * @return An input source to the entity or null if not handled
      * @throws IOException an error reading the stream
      */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId)
     throws IOException {
 

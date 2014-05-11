@@ -40,11 +40,13 @@ public class GraphicsSetFractionalLineWidth extends AbstractGraphicsDrawingOrder
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 4;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         int integral = (int) multiplier;
         int fractional = (int) ((multiplier - (float) integral) * 256);
@@ -58,11 +60,13 @@ public class GraphicsSetFractionalLineWidth extends AbstractGraphicsDrawingOrder
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsSetFractionalLineWidth{multiplier=" + multiplier + "}";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x11;
     }

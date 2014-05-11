@@ -35,16 +35,19 @@ public class NonLeafPosition extends Position {
     }
 
     /** @return the sub position */
+    @Override
     public Position getPosition() {
         return subPos;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesAreas() {
         return (subPos != null ? subPos.generatesAreas() : false);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("NonLeafPos:").append(getIndex()).append("(");

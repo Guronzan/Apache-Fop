@@ -37,16 +37,19 @@ public class RDFElement extends AbstractMetadataElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "RDF";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "rdf";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return XMPConstants.RDF_NAMESPACE;
     }

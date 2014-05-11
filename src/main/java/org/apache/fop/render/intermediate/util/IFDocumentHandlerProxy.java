@@ -51,148 +51,177 @@ public class IFDocumentHandlerProxy implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsPagesOutOfOrder() {
         return this.delegate.supportsPagesOutOfOrder();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return this.delegate.getMimeType();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setContext(IFContext context) {
         this.delegate.setContext(context);
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFContext getContext() {
         return this.delegate.getContext();
     }
 
     /** {@inheritDoc} */
+    @Override
     public FontInfo getFontInfo() {
         return this.delegate.getFontInfo();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setFontInfo(FontInfo fontInfo) {
         this.delegate.setFontInfo(fontInfo);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDefaultFontInfo(FontInfo fontInfo) {
         this.delegate.setDefaultFontInfo(fontInfo);
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return this.delegate.getConfigurator();
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentNavigationHandler getDocumentNavigationHandler() {
         return this.delegate.getDocumentNavigationHandler();
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeEventHandler getStructureTreeEventHandler() {
         return this.delegate.getStructureTreeEventHandler();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setResult(Result result) throws IFException {
         this.delegate.setResult(result);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws IFException {
         this.delegate.startDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDocumentLocale(Locale locale) {
          this.delegate.setDocumentLocale(locale);
 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocumentHeader() throws IFException {
         this.delegate.startDocumentHeader();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocumentHeader() throws IFException {
         this.delegate.endDocumentHeader();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageSequence(String id) throws IFException {
         this.delegate.startPageSequence(id);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPage(int index, String name, String pageMasterName, Dimension size)
             throws IFException {
         this.delegate.startPage(index, name, pageMasterName, size);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageHeader() throws IFException {
         this.delegate.startPageHeader();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageHeader() throws IFException {
         this.delegate.endPageHeader();
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFPainter startPageContent() throws IFException {
         return this.delegate.startPageContent();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageContent() throws IFException {
         this.delegate.endPageContent();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageTrailer() throws IFException {
         this.delegate.startPageTrailer();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageTrailer() throws IFException {
         this.delegate.endPageTrailer();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPage() throws IFException {
         this.delegate.endPage();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageSequence() throws IFException {
         this.delegate.endPageSequence();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocumentTrailer() throws IFException {
         this.delegate.startDocumentTrailer();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocumentTrailer() throws IFException {
         this.delegate.endDocumentTrailer();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws IFException {
         this.delegate.endDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleExtensionObject(Object extension) throws IFException {
         this.delegate.handleExtensionObject(extension);
     }

@@ -36,18 +36,21 @@ public class ListItemBody extends AbstractListItemPart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startListBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endListBody(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-item-body";
     }
@@ -56,6 +59,7 @@ public class ListItemBody extends AbstractListItemPart {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM_BODY}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_ITEM_BODY;
     }

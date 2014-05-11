@@ -84,6 +84,7 @@ public class PDFNumber extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String toPDFString() {
         if (getNumber() == null) {
             throw new IllegalArgumentException(

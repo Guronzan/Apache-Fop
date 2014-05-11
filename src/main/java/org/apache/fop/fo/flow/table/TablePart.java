@@ -69,6 +69,7 @@ public abstract class TablePart extends TableCellContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected Object clone() {
         TablePart clone = (TablePart) super.clone();
         clone.rowGroups = new LinkedList(rowGroups);
@@ -76,12 +77,14 @@ public abstract class TablePart extends TableCellContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
         super.bind(pList);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList pList)
                     throws FOPException {
@@ -104,6 +107,7 @@ public abstract class TablePart extends TableCellContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void finalizeNode() throws FOPException {
         if (!inMarker()) {
             pendingSpans = null;
@@ -119,6 +123,7 @@ public abstract class TablePart extends TableCellContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     TablePart getTablePart() {
         return this;
     }
@@ -148,6 +153,7 @@ public abstract class TablePart extends TableCellContainer {
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (table-row+|table-cell+)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -176,6 +182,7 @@ public abstract class TablePart extends TableCellContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) throws FOPException {
         if (!inMarker()) {
             switch (child.getNameId()) {
@@ -227,6 +234,7 @@ public abstract class TablePart extends TableCellContainer {
      * to this TableBody.
      * @return the {@link CommonBorderPaddingBackground} instance.
      */
+    @Override
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
         return commonBorderPaddingBackground;
     }

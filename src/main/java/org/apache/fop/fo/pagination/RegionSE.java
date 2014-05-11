@@ -47,6 +47,7 @@ public abstract class RegionSE extends SideRegion {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
     }

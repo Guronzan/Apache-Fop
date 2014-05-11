@@ -77,6 +77,7 @@ public class AFPBase12FontCollection implements FontCollection {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int setup(int start, FontInfo fontInfo) {
 
         /**

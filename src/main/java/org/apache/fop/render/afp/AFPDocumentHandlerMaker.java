@@ -36,6 +36,7 @@ public class AFPDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     };
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         AFPDocumentHandler handler = new AFPDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -43,11 +44,13 @@ public class AFPDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

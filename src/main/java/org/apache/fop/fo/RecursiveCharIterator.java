@@ -72,6 +72,7 @@ public class RecursiveCharIterator extends CharIterator {
     /**
      * @return a clone of this
      */
+    @Override
     public Object clone() {
         RecursiveCharIterator ci = (RecursiveCharIterator) super.clone();
         ci.childIter = fobj.getChildNodes(ci.curChild);
@@ -87,6 +88,7 @@ public class RecursiveCharIterator extends CharIterator {
      * @param c the character which should be used to replace the current
      * character
      */
+    @Override
     public void replaceChar(char c) {
         if (curCharIter != null) {
             curCharIter.replaceChar(c);
@@ -111,6 +113,7 @@ public class RecursiveCharIterator extends CharIterator {
     /**
      * @return true if there are more items in the CharIterator
      */
+    @Override
     public boolean hasNext() {
         while (curCharIter != null) {
             if (!curCharIter.hasNext()) {
@@ -125,6 +128,7 @@ public class RecursiveCharIterator extends CharIterator {
     /**
      * {@inheritDoc}
      */
+    @Override
     public char nextChar() throws NoSuchElementException {
         if (curCharIter != null) {
             return curCharIter.nextChar();
@@ -136,6 +140,7 @@ public class RecursiveCharIterator extends CharIterator {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove() {
         if (curCharIter != null) {
             curCharIter.remove();

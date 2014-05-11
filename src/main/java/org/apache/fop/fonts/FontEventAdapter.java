@@ -47,26 +47,31 @@ public class FontEventAdapter implements FontEventListener {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fontSubstituted(Object source, FontTriplet requested, FontTriplet effective) {
         getEventProducer().fontSubstituted(source, requested, effective);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fontLoadingErrorAtAutoDetection(Object source, String fontURL, Exception e) {
         getEventProducer().fontLoadingErrorAtAutoDetection(source, fontURL, e);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void glyphNotAvailable(Object source, char ch, String fontName) {
         getEventProducer().glyphNotAvailable(source, ch, fontName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fontDirectoryNotFound(Object source, String dir) {
         getEventProducer().fontDirectoryNotFound(source, dir);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void svgTextStrokedAsShapes(Object source, String fontFamily) {
         getEventProducer().svgTextStrokedAsShapes(source, fontFamily);
     }

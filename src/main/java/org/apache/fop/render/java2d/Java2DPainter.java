@@ -96,6 +96,7 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFContext getContext() {
         return this.ifContext;
     }
@@ -120,6 +121,7 @@ public class Java2DPainter extends AbstractIFPainter {
 
 
     /** {@inheritDoc} */
+    @Override
     public void startViewport(AffineTransform transform, Dimension size, Rectangle clipRect)
             throws IFException {
         saveGraphicsState();
@@ -132,11 +134,13 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endViewport() throws IFException {
         restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startGroup(AffineTransform transform) throws IFException {
         saveGraphicsState();
         try {
@@ -147,16 +151,19 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endGroup() throws IFException {
         restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(String uri, Rectangle rect) throws IFException {
         drawImageUsingURI(uri, rect);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected RenderingContext createRenderingContext() {
         Java2DRenderingContext java2dContext = new Java2DRenderingContext(
                 getUserAgent(), g2dState.getGraph(), getFontInfo());
@@ -164,16 +171,19 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(Document doc, Rectangle rect) throws IFException {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void clipRect(Rectangle rect) throws IFException {
         getState().updateClip(rect);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fillRect(Rectangle rect, Paint fill) throws IFException {
         if (fill == null) {
             return;
@@ -185,6 +195,7 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawBorderRect(Rectangle rect, BorderProps top, BorderProps bottom,
             BorderProps left, BorderProps right) throws IFException {
         if (top != null || bottom != null || left != null || right != null) {
@@ -198,12 +209,14 @@ public class Java2DPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawLine(Point start, Point end, int width, Color color, RuleStyle style)
             throws IFException {
         this.borderPainter.drawLine(start, end, width, color, style);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawText(int x, int y, int letterSpacing, int wordSpacing, int[][] dp, String text)
             throws IFException {
         g2dState.updateColor(state.getTextColor());

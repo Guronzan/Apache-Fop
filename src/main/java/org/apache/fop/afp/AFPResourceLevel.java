@@ -172,11 +172,13 @@ public class AFPResourceLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return NAMES[level] +  (isExternal() ? ", file=" + extFilePath : "");
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -192,6 +194,7 @@ public class AFPResourceLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         int hash = 7;
         hash = 31 * hash + level;

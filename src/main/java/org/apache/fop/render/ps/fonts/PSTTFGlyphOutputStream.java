@@ -47,10 +47,12 @@ public class PSTTFGlyphOutputStream implements TTFGlyphOutputStream {
         this.ttfGen = ttfGen;
     }
 
+    @Override
     public void startGlyphStream() throws IOException {
         ttfGen.startString();
     }
 
+    @Override
     public void streamGlyph(byte[] glyphData, int offset, int size) throws IOException {
         if (size > PSTTFGenerator.MAX_BUFFER_SIZE) {
             throw new UnsupportedOperationException("The glyph is " + size
@@ -68,6 +70,7 @@ public class PSTTFGlyphOutputStream implements TTFGlyphOutputStream {
         byteCounter += size;
     }
 
+    @Override
     public void endGlyphStream() throws IOException {
         ttfGen.endString();
     }

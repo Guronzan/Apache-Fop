@@ -40,6 +40,7 @@ public class RtfListStyleBullet extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeListPrefix(RtfListItem item) throws IOException {
         // bulleted list
         item.writeControlWord("pnlvlblt");
@@ -62,6 +63,7 @@ public class RtfListStyleBullet extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeParagraphPrefix(RtfElement element) throws IOException {
         element.writeGroupMark(true);
         element.writeControlWord("pntext");
@@ -75,6 +77,7 @@ public class RtfListStyleBullet extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeLevelGroup(RtfElement element) throws IOException {
         element.attrib.set(RtfListTable.LIST_NUMBER_TYPE, 23);
         element.writeGroupMark(true);

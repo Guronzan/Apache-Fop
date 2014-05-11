@@ -42,6 +42,7 @@ public class PDFImageElementBridge extends AbstractFOPImageElementBridge {
                                                 BatikImageFlavors.SVG_DOM};
 
     /** {@inheritDoc} */
+    @Override
     protected ImageFlavor[] getSupportedFlavours() {
         return supportedFlavors;
     }

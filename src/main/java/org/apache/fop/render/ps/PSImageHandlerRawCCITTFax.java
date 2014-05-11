@@ -45,6 +45,7 @@ public class PSImageHandlerRawCCITTFax implements PSImageHandler {
     };
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -67,6 +68,7 @@ public class PSImageHandlerRawCCITTFax implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void generateForm(RenderingContext context, Image image, PSImageFormResource form)
                 throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -86,21 +88,25 @@ public class PSImageHandlerRawCCITTFax implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRawCCITTFax.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         if (targetContext instanceof PSRenderingContext) {
             PSRenderingContext psContext = (PSRenderingContext)targetContext;

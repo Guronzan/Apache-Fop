@@ -59,6 +59,7 @@ public class PDFAElementBridge extends AbstractGraphicsNodeBridge {
      * Returns 'a'.
      * @return the name of this node
      */
+    @Override
     public String getLocalName() {
         return SVG_A_TAG;
     }
@@ -67,6 +68,7 @@ public class PDFAElementBridge extends AbstractGraphicsNodeBridge {
      * Creates a {@link org.apache.batik.gvt.CompositeGraphicsNode}.
      * @return a new PDFANode
      */
+    @Override
     protected GraphicsNode instantiateGraphicsNode() {
         return new PDFANode();
     }
@@ -79,6 +81,7 @@ public class PDFAElementBridge extends AbstractGraphicsNodeBridge {
      * @param e the element that describes the graphics node to build
      * @return node the new graphics node
      */
+    @Override
     public GraphicsNode createGraphicsNode(BridgeContext ctx, Element e) {
         PDFANode aNode = (PDFANode)super.createGraphicsNode(ctx, e);
         aNode.setDestination(((SVGAElement)e).getHref().getBaseVal());
@@ -90,6 +93,7 @@ public class PDFAElementBridge extends AbstractGraphicsNodeBridge {
      * Returns true as the &lt;a> element is a container.
      * @return true if the a element is a container
      */
+    @Override
     public boolean isComposite() {
         return true;
     }

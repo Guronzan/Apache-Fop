@@ -155,6 +155,7 @@ public class RtfContainer extends RtfElement {
      * write RTF code of all our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent()
     throws IOException {
         for (Iterator it = children.iterator(); it.hasNext();) {
@@ -188,6 +189,7 @@ public class RtfContainer extends RtfElement {
     }
 
     /** debugging to given Writer */
+    @Override
     void dump(Writer w, int indent)
     throws IOException {
         super.dump(w, indent);
@@ -201,6 +203,7 @@ public class RtfContainer extends RtfElement {
      * minimal debugging display
      * @return String representation of object contents
      */
+    @Override
     public String toString() {
         return super.toString() + " (" + getChildCount() + " children)";
     }
@@ -208,6 +211,7 @@ public class RtfContainer extends RtfElement {
     /**
      * @return false if empty or if our options block writing
      */
+    @Override
     protected boolean okToWriteRtf() {
         boolean result = super.okToWriteRtf() && !isEmpty();
         if (result && !options.renderContainer(this)) {
@@ -220,6 +224,7 @@ public class RtfContainer extends RtfElement {
      * @return true if this element would generate no "useful" RTF content,
      * i.e. (for RtfContainer) true if it has no children where isEmpty() is false
      */
+    @Override
     public boolean isEmpty() {
         boolean result = true;
         for (Iterator it = children.iterator(); it.hasNext();) {

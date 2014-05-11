@@ -69,6 +69,7 @@ public class CommonAbsolutePosition {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CommonAbsolutePosition{");
         sb.append(" absPos=");

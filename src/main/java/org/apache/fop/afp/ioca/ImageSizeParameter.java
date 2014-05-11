@@ -52,6 +52,7 @@ public class ImageSizeParameter extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             (byte)0x94, // ID = Image Size Parameter

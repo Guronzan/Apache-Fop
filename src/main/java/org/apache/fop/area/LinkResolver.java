@@ -49,6 +49,7 @@ public class LinkResolver implements Resolvable, Serializable {
     /**
      * @return true if this link is resolved
      */
+    @Override
     public boolean isResolved() {
         return resolved;
     }
@@ -58,6 +59,7 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * @return the String array of references.
      */
+    @Override
     public String[] getIDRefs() {
         return new String[] {idRef};
     }
@@ -67,6 +69,7 @@ public class LinkResolver implements Resolvable, Serializable {
      *
      * {@inheritDoc}
      */
+    @Override
     public void resolveIDRef(String id, List<PageViewport> pages) {
         resolveIDRef(id, pages.get(0));
     }

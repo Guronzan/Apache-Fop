@@ -44,6 +44,7 @@ public class Java2DRendererConfigurator extends PrintRendererConfigurator {
      * @param renderer java 2d renderer
      * @throws FOPException fop exception
      */
+    @Override
     public void configure(Renderer renderer) throws FOPException {
         Configuration cfg = super.getRendererConfig(renderer);
         if (cfg != null) {

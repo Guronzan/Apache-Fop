@@ -51,6 +51,7 @@ public class PSTextElementBridge extends SVGTextElementBridge {
      * @param e the svg element
      * @return the text graphics node created by the super class
      */
+    @Override
     public GraphicsNode createGraphicsNode(BridgeContext ctx, Element e) {
         GraphicsNode node = super.createGraphicsNode(ctx, e);
         ((TextNode)node).setTextPainter(getTextPainter());

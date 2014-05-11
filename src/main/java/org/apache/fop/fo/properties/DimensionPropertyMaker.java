@@ -60,6 +60,7 @@ public class DimensionPropertyMaker extends CorrespondingPropertyMaker {
      * @param propertyList the property list to use
      * @return true if it is forced
      */
+    @Override
     public boolean isCorrespondingForced(PropertyList propertyList) {
         if (super.isCorrespondingForced(propertyList)) {
             return true;
@@ -74,6 +75,7 @@ public class DimensionPropertyMaker extends CorrespondingPropertyMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property compute(PropertyList propertyList) throws PropertyException {
         // Based on [width|height]
         Property p = super.compute(propertyList);

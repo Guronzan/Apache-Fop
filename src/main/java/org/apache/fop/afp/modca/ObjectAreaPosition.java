@@ -81,6 +81,7 @@ public class ObjectAreaPosition extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[33];
         copySF(data, Type.POSITION, Category.OBJECT_AREA);
@@ -130,6 +131,7 @@ public class ObjectAreaPosition extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "ObjectAreaPosition{"
             + "x=" + x

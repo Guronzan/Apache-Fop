@@ -68,6 +68,7 @@ public class BitmapImage implements PDFImage {
      *
      * @param doc the pdf document this will be inserted into
      */
+    @Override
     public void setup(PDFDocument doc) {
         this.pdfDoc = doc;
     }
@@ -80,6 +81,7 @@ public class BitmapImage implements PDFImage {
      *
      * @return the unique key to identify this image
      */
+    @Override
     public String getKey() {
         return key;
     }
@@ -89,6 +91,7 @@ public class BitmapImage implements PDFImage {
      *
      * @return the width of the image
      */
+    @Override
     public int getWidth() {
         return width;
     }
@@ -98,6 +101,7 @@ public class BitmapImage implements PDFImage {
      *
      * @return the height of the image
      */
+    @Override
     public int getHeight() {
         return height;
     }
@@ -117,11 +121,13 @@ public class BitmapImage implements PDFImage {
      *
      * @return the pdf doclor space
      */
+    @Override
     public PDFDeviceColorSpace getColorSpace() {
         return colorSpace;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getBitsPerComponent() {
         return bitsPerComponent;
     }
@@ -140,6 +146,7 @@ public class BitmapImage implements PDFImage {
      *
      * @return true if it has a transparent color
      */
+    @Override
     public boolean isTransparent() {
         return transparent != null;
     }
@@ -149,6 +156,7 @@ public class BitmapImage implements PDFImage {
      *
      * @return the transparent color if any
      */
+    @Override
     public PDFColor getTransparentColor() {
         return transparent;
     }
@@ -159,26 +167,31 @@ public class BitmapImage implements PDFImage {
      *
      * @return the bitmap mask reference
      */
+    @Override
     public String getMask() {
         return null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFReference getSoftMaskReference() {
         return maskRef;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInverted() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void outputContents(OutputStream out) throws IOException {
         out.write(bitmaps);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void populateXObjectDictionary(PDFDictionary dict) {
         //nop
     }
@@ -187,6 +200,7 @@ public class BitmapImage implements PDFImage {
      * Get the ICC stream.
      * @return always returns null since this has no icc color space
      */
+    @Override
     public PDFICCStream getICCStream() {
         return null;
     }
@@ -195,6 +209,7 @@ public class BitmapImage implements PDFImage {
      * Check if this is a postscript image.
      * @return always returns false
      */
+    @Override
     public boolean isPS() {
         return false;
     }
@@ -202,6 +217,7 @@ public class BitmapImage implements PDFImage {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getFilterHint() {
         return PDFFilterList.IMAGE_FILTER;
     }
@@ -209,6 +225,7 @@ public class BitmapImage implements PDFImage {
     /**
      * {@inheritDoc}
      */
+    @Override
     public PDFFilter getPDFFilter() {
         return pdfFilter;
     }
@@ -218,6 +235,7 @@ public class BitmapImage implements PDFImage {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean multipleFiltersAllowed() {
         return multipleFiltersAllowed;
     }

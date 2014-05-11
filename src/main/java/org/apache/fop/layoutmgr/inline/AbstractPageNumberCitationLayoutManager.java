@@ -56,6 +56,7 @@ public abstract class AbstractPageNumberCitationLayoutManager extends LeafNodeLa
     }
 
     /** {@inheritDoc} */
+    @Override
     public void initialize() {
         FontInfo fi = fobj.getFOEventHandler().getFontInfo();
         FontTriplet[] fontkeys = fobj.getCommonFont().getFontState(fi);
@@ -66,6 +67,7 @@ public abstract class AbstractPageNumberCitationLayoutManager extends LeafNodeLa
     /**
      * {@inheritDoc}
      */
+    @Override
     protected AlignmentContext makeAlignmentContext(LayoutContext context) {
         return new AlignmentContext(
                 font
@@ -79,12 +81,14 @@ public abstract class AbstractPageNumberCitationLayoutManager extends LeafNodeLa
     }
 
     /** {@inheritDoc} */
+    @Override
     public abstract InlineArea get(LayoutContext context);
 
     /**
      * {@inheritDoc}
      *                                                                      , LayoutContext)
      */
+    @Override
     public void addAreas(PositionIterator posIter, LayoutContext context) {
         super.addAreas(posIter, context);
         if (!resolved) {

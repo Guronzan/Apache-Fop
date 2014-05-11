@@ -31,6 +31,7 @@ public class XMLLangShorthandParser extends GenericShorthandParser {
     private static final char HYPHEN_MINUS = '-';
 
     /** {@inheritDoc} */
+    @Override
     public Property getValueForProperty(int propId,
                                         Property property,
                                         PropertyMaker maker,

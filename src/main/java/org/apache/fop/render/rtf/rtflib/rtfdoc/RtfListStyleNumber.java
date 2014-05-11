@@ -40,6 +40,7 @@ public class RtfListStyleNumber extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeListPrefix(RtfListItem item)
     throws IOException {
         item.writeControlWord("pnlvlbody");
@@ -59,6 +60,7 @@ public class RtfListStyleNumber extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeParagraphPrefix(RtfElement element)
     throws IOException {
         element.writeGroupMark(true);
@@ -76,6 +78,7 @@ public class RtfListStyleNumber extends RtfListStyle {
      * {@inheritDoc}
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public void writeLevelGroup(RtfElement element)
     throws IOException {
         element.writeOneAttributeNS(

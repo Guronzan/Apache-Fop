@@ -121,6 +121,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startViewport(AffineTransform transform, Dimension size, Rectangle clipRect)
             throws IFException {
         //AFP doesn't support clipping, so we treat viewport like a group
@@ -134,6 +135,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endViewport() throws IFException {
         try {
             restoreGraphicsState();
@@ -149,6 +151,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startGroup(AffineTransform transform) throws IFException {
         try {
             saveGraphicsState();
@@ -159,6 +162,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endGroup() throws IFException {
         try {
             restoreGraphicsState();
@@ -191,6 +195,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(String uri, Rectangle rect) throws IFException {
         PageSegmentDescriptor pageSegment = documentHandler.getPageSegmentNameFor(uri);
 
@@ -226,11 +231,13 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(Document doc, Rectangle rect) throws IFException {
         drawImageUsingDocument(doc, rect);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void clipRect(Rectangle rect) throws IFException {
         //Not supported!
     }
@@ -240,6 +247,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fillRect(Rectangle rect, Paint fill) throws IFException {
         if (fill == null) {
             return;
@@ -356,6 +364,7 @@ public class AFPPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawText(                                        // CSOK: MethodLength
             int x, int y, final int letterSpacing, final int wordSpacing,
             final int[][] dp, final String text) throws IFException {
@@ -397,6 +406,7 @@ public class AFPPainter extends AbstractIFPainter {
         try {
             pto.createControlSequences(new PtocaProducer() {
 
+                @Override
                 public void produce(PtocaBuilder builder) throws IOException {
                     Point p = getPaintingState().getPoint(coords[X], coords[Y]);
                     builder.setTextOrientation(getPaintingState().getRotation());

@@ -58,6 +58,7 @@ public class NamedCharacter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -66,6 +67,7 @@ public class NamedCharacter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -127,6 +129,7 @@ public class NamedCharacter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(this.unicodeSequence);
         sb.append(" (");

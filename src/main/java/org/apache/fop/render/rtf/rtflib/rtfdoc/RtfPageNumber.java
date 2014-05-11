@@ -76,6 +76,7 @@ public class RtfPageNumber extends RtfContainer {
      * Write our attributes and content
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         /*
         writeGroupMark(true);
@@ -98,6 +99,7 @@ public class RtfPageNumber extends RtfContainer {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

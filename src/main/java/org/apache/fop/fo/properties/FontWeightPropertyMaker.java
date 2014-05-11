@@ -42,6 +42,7 @@ public class FontWeightPropertyMaker extends EnumProperty.Maker {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property make(PropertyList pList, String value, FObj fo)
                         throws PropertyException {
         if ("inherit".equals(value)) {

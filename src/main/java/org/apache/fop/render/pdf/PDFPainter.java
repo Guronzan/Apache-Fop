@@ -105,6 +105,7 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startViewport(AffineTransform transform, Dimension size, Rectangle clipRect)
             throws IFException {
         generator.saveGraphicsState();
@@ -115,22 +116,26 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endViewport() throws IFException {
         generator.restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startGroup(AffineTransform transform) throws IFException {
         generator.saveGraphicsState();
         generator.concatenate(toPoints(transform));
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endGroup() throws IFException {
         generator.restoreGraphicsState();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(String uri, Rectangle rect)
             throws IFException {
         PDFXObject xobject = getPDFDoc().getXObject(uri);
@@ -195,6 +200,7 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawImage(Document doc, Rectangle rect) throws IFException {
         if (accessEnabled) {
             PDFStructElem structElem = (PDFStructElem) getContext().getStructureTreeElement();
@@ -223,12 +229,14 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void clipRect(Rectangle rect) throws IFException {
         generator.endTextObject();
         generator.clipRect(rect);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void fillRect(Rectangle rect, Paint fill) throws IFException {
         if (fill == null) {
             return;
@@ -293,6 +301,7 @@ public class PDFPainter extends AbstractIFPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void drawText(int x, int y, int letterSpacing, int wordSpacing, int[][] dp,
             String text)
             throws IFException {

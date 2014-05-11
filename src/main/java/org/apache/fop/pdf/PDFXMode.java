@@ -56,6 +56,7 @@ public final class PDFXMode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return name;
     }

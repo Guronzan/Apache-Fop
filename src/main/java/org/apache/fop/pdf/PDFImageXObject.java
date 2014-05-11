@@ -61,6 +61,7 @@ public class PDFImageXObject extends PDFXObject {
      * @throws IOException if there is an error writing the data
      * @return the length of the data written
      */
+    @Override
     public int output(OutputStream stream) throws IOException {
         int length = super.output(stream);
 
@@ -72,6 +73,7 @@ public class PDFImageXObject extends PDFXObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void populateStreamDict(Object lengthEntry) {
         super.populateStreamDict(lengthEntry);
         if (pdfimage.isPS()) {
@@ -141,16 +143,19 @@ public class PDFImageXObject extends PDFXObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void outputRawStreamData(OutputStream out) throws IOException {
         pdfimage.outputContents(out);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected int getSizeHint() throws IOException {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void prepareImplicitFilters() {
         PDFFilter pdfFilter = pdfimage.getPDFFilter();
         if (pdfFilter != null) {
@@ -162,11 +167,13 @@ public class PDFImageXObject extends PDFXObject {
      * {@inheritDoc}
      * This class uses the PDFImage instance to determine the default filter.
      */
+    @Override
     protected String getDefaultFilterName() {
         return pdfimage.getFilterHint();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean multipleFiltersAllowed() {
         return pdfimage.multipleFiltersAllowed();
     }

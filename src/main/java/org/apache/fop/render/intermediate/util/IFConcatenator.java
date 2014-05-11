@@ -116,21 +116,25 @@ public class IFConcatenator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startDocument() throws IFException {
             //ignore
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startDocumentHeader() throws IFException {
             //ignore
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocumentHeader() throws IFException {
             //ignore
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startPageSequence(String id) throws IFException {
             assert !this.inPageSequence;
             this.inPageSequence = true;
@@ -139,6 +143,7 @@ public class IFConcatenator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startPage(int index, String name, String pageMasterName, Dimension size)
                 throws IFException {
             //Adjust page indices
@@ -147,6 +152,7 @@ public class IFConcatenator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endPageSequence() throws IFException {
             super.endPageSequence();
 
@@ -155,22 +161,26 @@ public class IFConcatenator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void startDocumentTrailer() throws IFException {
             //ignore
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocumentTrailer() throws IFException {
             //ignore
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocument() throws IFException {
             //ignore
             inFirstDocument = false;
         }
 
         /** {@inheritDoc} */
+        @Override
         public void handleExtensionObject(Object extension) throws IFException {
             if (inPageSequence || inFirstDocument) {
                 //Only pass through when inside page-sequence
@@ -181,6 +191,7 @@ public class IFConcatenator {
         }
 
         /** {@inheritDoc} */
+        @Override
         public IFDocumentNavigationHandler getDocumentNavigationHandler() {
             return null; //Document Navigation is filtered!!!
         }

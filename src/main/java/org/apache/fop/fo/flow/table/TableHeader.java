@@ -40,18 +40,21 @@ public class TableHeader extends TablePart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startHeader(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endHeader(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-header";
     }
@@ -60,6 +63,7 @@ public class TableHeader extends TablePart {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_HEADER}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_HEADER;
     }

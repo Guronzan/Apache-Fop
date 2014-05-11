@@ -56,11 +56,13 @@ public class DelegatingFragmentContentHandler extends DelegatingContentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws SAXException {
         //nop/ignore
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws SAXException {
         //nop/ignore
     }

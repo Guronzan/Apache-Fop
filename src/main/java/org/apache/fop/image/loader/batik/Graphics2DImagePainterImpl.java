@@ -53,6 +53,7 @@ public class Graphics2DImagePainterImpl implements Graphics2DImagePainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Dimension getImageSize() {
         return imageSize;
     }
@@ -78,6 +79,7 @@ public class Graphics2DImagePainterImpl implements Graphics2DImagePainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void paint(Graphics2D g2d, Rectangle2D area) {
         prepare(g2d, area);
         root.paint(g2d);

@@ -55,6 +55,7 @@ public class MultiPropertySet extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         // activeState = pList.get(PR_ACTIVE_STATE);
@@ -64,6 +65,7 @@ public class MultiPropertySet extends FObj {
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -72,6 +74,7 @@ public class MultiPropertySet extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "multi-property-set";
     }
@@ -80,6 +83,7 @@ public class MultiPropertySet extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_PROPERTY_SET}
      */
+    @Override
     public int getNameId() {
         return FO_MULTI_PROPERTY_SET;
     }

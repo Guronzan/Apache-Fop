@@ -174,16 +174,19 @@ public class FullyQualifiedNameTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return this.fqName;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 4 + fqName.length();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         data[2] = type;

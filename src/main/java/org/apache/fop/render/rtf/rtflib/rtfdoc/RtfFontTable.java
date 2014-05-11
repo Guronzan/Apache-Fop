@@ -43,11 +43,13 @@ class RtfFontTable extends RtfElement {
     }
 
     /** write our contents to m_writer. */
+    @Override
     protected void writeRtfContent() throws IOException {
         RtfFontManager.getInstance ().writeFonts ((RtfHeader)parent);
     }
 
     /** true if this element would generate no "useful" RTF content */
+    @Override
     public boolean isEmpty() {
         return false;
     }

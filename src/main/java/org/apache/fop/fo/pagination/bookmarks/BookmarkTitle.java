@@ -67,6 +67,7 @@ public class BookmarkTitle extends FObj implements CommonAccessibilityHolder {
      * @param pList currently applicable PropertyList
      * @param locator location in fo source file.
      */
+    @Override
     protected void characters(char[] data, int start, int length,
                                  PropertyList pList,
                                  Locator locator) {
@@ -77,6 +78,7 @@ public class BookmarkTitle extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL/FOP: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -85,6 +87,7 @@ public class BookmarkTitle extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -99,6 +102,7 @@ public class BookmarkTitle extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "bookmark-title";
     }
@@ -107,6 +111,7 @@ public class BookmarkTitle extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_BOOKMARK_TITLE}
      */
+    @Override
     public int getNameId() {
         return FO_BOOKMARK_TITLE;
     }

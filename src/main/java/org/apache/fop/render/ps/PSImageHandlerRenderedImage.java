@@ -50,6 +50,7 @@ public class PSImageHandlerRenderedImage implements PSImageHandler {
     };
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         PSRenderingContext psContext = (PSRenderingContext) context;
@@ -73,6 +74,7 @@ public class PSImageHandlerRenderedImage implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void generateForm(RenderingContext context, Image image, PSImageFormResource form)
             throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -90,21 +92,25 @@ public class PSImageHandlerRenderedImage implements PSImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 300;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRendered.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         return (image == null || image instanceof ImageRendered)
                 && targetContext instanceof PSRenderingContext;

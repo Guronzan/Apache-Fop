@@ -67,6 +67,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected CMapBuilder createCMapBuilder(Writer writer) {
         return new ToUnicodeCMapBuilder(writer);
     }
@@ -81,6 +82,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
          * Writes the CMap to a Writer.
          * @throws IOException if an I/O error occurs
          */
+        @Override
         public void writeCMap() throws IOException {
             writeCIDInit();
             writeCIDSystemInfo("Adobe", "UCS", 0);
@@ -94,6 +96,7 @@ public class PDFToUnicodeCMap extends PDFCMap {
         /**
          * Writes the character mappings for this font.
          */
+        @Override
         protected void writeBFEntries() throws IOException {
             if (unicodeCharMap != null) {
                 writeBFCharEntries(unicodeCharMap);

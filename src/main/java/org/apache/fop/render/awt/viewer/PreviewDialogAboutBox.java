@@ -94,6 +94,7 @@ public class PreviewDialogAboutBox extends Dialog implements ActionListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     protected void processWindowEvent(WindowEvent e) {
         if (e.getID() == WindowEvent.WINDOW_CLOSING) {
             cancel();
@@ -108,6 +109,7 @@ public class PreviewDialogAboutBox extends Dialog implements ActionListener {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == okButton) {
             cancel();

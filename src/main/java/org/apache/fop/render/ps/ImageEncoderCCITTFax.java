@@ -43,11 +43,13 @@ public class ImageEncoderCCITTFax implements ImageEncoder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeTo(OutputStream out) throws IOException {
         ccitt.writeTo(out);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getImplicitFilter() {
         PSDictionary dict = new PSDictionary();
         dict.put("/Columns", new Integer(ccitt.getSize().getWidthPx()));

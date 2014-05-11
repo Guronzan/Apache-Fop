@@ -49,6 +49,7 @@ public class AFPFontCollection implements FontCollection {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int setup(int start, FontInfo fontInfo) {
         int num = 1;
         if (fontInfoList != null && fontInfoList.size() > 0) {

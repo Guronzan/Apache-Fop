@@ -37,21 +37,25 @@ public class ImageLoaderFactorySVG extends AbstractImageLoaderFactory {
         MimeConstants.MIME_SVG};
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMIMETypes() {
         return MIMES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedFlavors(String mime) {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageLoader newImageLoader(ImageFlavor targetFlavor) {
         return new ImageLoaderSVG(targetFlavor);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isAvailable() {
         return BatikUtil.isBatikAvailable();
     }

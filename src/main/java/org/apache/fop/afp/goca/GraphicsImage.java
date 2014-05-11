@@ -65,16 +65,19 @@ public class GraphicsImage extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         //TODO:
         return 0;
     }
 
+    @Override
     byte getOrderCode() {
         return (byte)0xD1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] xcoord = BinaryUtils.convert(x, 2);
         byte[] ycoord = BinaryUtils.convert(y, 2);
@@ -110,6 +113,7 @@ public class GraphicsImage extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsImage{x=" + x
             + ", y=" + y

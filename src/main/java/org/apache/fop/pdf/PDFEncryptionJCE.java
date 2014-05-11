@@ -409,6 +409,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
          *
          * @return the empty string
          */
+        @Override
         public String getName() {
             return "";
         }
@@ -418,11 +419,13 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
          *
          * @return null, this filter has no parameters
          */
+        @Override
         public PDFObject getDecodeParms() {
             return null;
         }
 
         /** {@inheritDoc} */
+        @Override
         public OutputStream applyFilter(OutputStream out) throws IOException {
             byte[] key = createEncryptionKey(streamNumber, streamGeneration);
             Cipher cipher = initCipher(key);
@@ -457,6 +460,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
     }
 
     /** {@inheritDoc} */
+    @Override
     public byte[] encrypt(byte[] data, PDFObject refObj) {
         PDFObject o = refObj;
         while (o != null && !o.hasObjectNumber()) {
@@ -470,6 +474,7 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void applyFilter(AbstractPDFStream stream) {
         stream.getFilterList().addFilter(
                 new EncryptionFilter(stream.getObjectNumber(), stream.getGeneration()));
@@ -480,12 +485,14 @@ public final class PDFEncryptionJCE extends PDFObject implements PDFEncryption {
      *
      *  @return the encryption dictionary as a byte array
      */
+    @Override
     public byte[] toPDF() {
         assert encryptionDictionary != null;
         return encode(this.encryptionDictionary);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTrailerEntry() {
         return "/Encrypt " + getObjectNumber() + " " + getGeneration() + " R\n";
     }

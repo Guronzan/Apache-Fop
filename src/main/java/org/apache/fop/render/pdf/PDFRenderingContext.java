@@ -53,6 +53,7 @@ public class PDFRenderingContext extends AbstractRenderingContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_PDF;
     }

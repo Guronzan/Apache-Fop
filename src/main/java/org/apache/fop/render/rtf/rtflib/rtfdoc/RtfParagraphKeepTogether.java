@@ -53,6 +53,7 @@ public class RtfParagraphKeepTogether extends RtfContainer {
      * Write the content
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
 
         //First reet paragraph properties
@@ -85,6 +86,7 @@ public class RtfParagraphKeepTogether extends RtfContainer {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

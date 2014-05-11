@@ -42,21 +42,25 @@ public class PDFImageHandlerRawCCITTFax extends AbstractPDFImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 100;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRawCCITTFax.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         return (image == null || image instanceof ImageRawCCITTFax)
                 && targetContext instanceof PDFRenderingContext;

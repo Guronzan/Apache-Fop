@@ -31,6 +31,7 @@ import org.apache.fop.fo.properties.Property;
 class CIELabColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 6;
     }
@@ -42,6 +43,7 @@ class CIELabColorFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
 
         float red = args[0].getNumber().floatValue();
@@ -73,14 +75,17 @@ class CIELabColorFunction extends FunctionBase {
     }
 
     private static class CIELabPercentBase implements PercentBase {
+        @Override
         public int getDimension() {
             return 0;
         }
 
+        @Override
         public double getBaseValue() {
             return 1.0f;
         }
 
+        @Override
         public int getBaseLength(PercentBaseContext context) {
             return 0;
         }

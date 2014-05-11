@@ -57,6 +57,7 @@ public class AFPPageSegmentElement extends AFPPageSetupElement {
 
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -74,6 +75,7 @@ public class AFPPageSegmentElement extends AFPPageSetupElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPPageSegmentSetup(getLocalName());
     }
@@ -114,6 +116,7 @@ public class AFPPageSegmentElement extends AFPPageSetupElement {
 
 
         /** {@inheritDoc} */
+        @Override
         public void toSAX(ContentHandler handler) throws SAXException {
             AttributesImpl atts = new AttributesImpl();
             if (name != null && name.length() > 0) {
@@ -136,6 +139,7 @@ public class AFPPageSegmentElement extends AFPPageSetupElement {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return "AFPPageSegmentSetup(element-name=" + getElementName()
                 + " name=" + getName()

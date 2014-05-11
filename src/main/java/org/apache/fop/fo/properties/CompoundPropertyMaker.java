@@ -51,6 +51,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void useGeneric(PropertyMaker generic) {
         super.useGeneric(generic);
         if (generic instanceof CompoundPropertyMaker) {
@@ -68,6 +69,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * Add a subproperty to this maker.
      * @param subproperty the sub property
      */
+    @Override
     public void addSubpropMaker(PropertyMaker subproperty) {
         // Place the base propId in the propId of the subproperty.
         subproperty.propId &= Constants.COMPOUND_MASK;
@@ -93,6 +95,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * space.optimum='10pt'.
      * @return the Maker object specified
      */
+    @Override
     public PropertyMaker getSubpropMaker(int subpropertyId) {
         return subproperties[getSubpropIndex(subpropertyId)];
     }
@@ -115,6 +118,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * @return the Property encapsulating the enumerated equivalent of the
      * input value
      */
+    @Override
     protected Property checkEnumValues(String value) {
         Property result = null;
         if (shorthandMaker != null) {
@@ -139,6 +143,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * @return the property
      * @throws PropertyException if a property exception occurs
      */
+    @Override
     public Property get(int subpropertyId, PropertyList propertyList, boolean tryInherit,
             boolean tryDefault) throws PropertyException {
         Property p = super.get(subpropertyId, propertyList, tryInherit, tryDefault);
@@ -159,6 +164,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * can't be converted to the correct type.
      * @throws PropertyException for invalid or inconsistent FO input
      */
+    @Override
     protected Property convertProperty(Property p,
                                     PropertyList propertyList,
                                     FObj fo) throws PropertyException {
@@ -185,6 +191,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * @return the Property object corresponding to the parameters
      * @throws PropertyException for invalid or inconsisten FO input
      */
+    @Override
     public Property make(PropertyList propertyList) throws PropertyException {
         if (defaultValue != null) {
             return make(propertyList, defaultValue, propertyList.getParentFObj());
@@ -201,6 +208,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * @return The initialized Property object.
      * @throws PropertyException for invalid or inconsistent FO input
      */
+    @Override
     public Property make(PropertyList propertyList, String value,
                          FObj fo) throws PropertyException {
         Property p = super.make(propertyList, value, fo);
@@ -222,6 +230,7 @@ public class CompoundPropertyMaker extends PropertyMaker {
      * the new subproperty added
      * @throws PropertyException for invalid or inconsistent FO input
      */
+    @Override
     public Property make(Property baseProperty, int subpropertyId,
                          PropertyList propertyList, String value,
                          FObj fo) throws PropertyException {

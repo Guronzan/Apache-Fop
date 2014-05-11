@@ -52,6 +52,7 @@ public class RtfJforCmd extends RtfContainer {
      *
      * @return true (alway)
      */
+    @Override
     public boolean isEmpty() {
         return true;
     }

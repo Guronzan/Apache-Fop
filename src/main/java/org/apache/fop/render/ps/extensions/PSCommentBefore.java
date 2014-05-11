@@ -47,6 +47,7 @@ public class PSCommentBefore extends PSExtensionAttachment {
     /**
      * @return element name
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }

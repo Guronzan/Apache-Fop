@@ -79,6 +79,7 @@ public class IndentPropertyMaker extends CorrespondingPropertyMaker {
      * @throws PropertyException if a property exception occurs
      * @see CorrespondingPropertyMaker#compute(PropertyList)
      */
+    @Override
     public Property compute(PropertyList propertyList) throws PropertyException {
         if (propertyList.getFObj().getUserAgent()
                     .isBreakIndentInheritanceOnReferenceAreaBoundary()) {

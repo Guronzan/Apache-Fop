@@ -30,6 +30,7 @@ import org.apache.fop.fo.expr.PropertyException;
 public class BorderSpacingShorthandParser extends GenericShorthandParser {
 
     /** {@inheritDoc} */
+    @Override
     protected Property convertValueForProperty(int propId, Property property,
             PropertyMaker maker, PropertyList propertyList)
             throws PropertyException {

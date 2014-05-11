@@ -59,6 +59,7 @@ public class IFInputHandler extends InputHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void renderTo(FOUserAgent userAgent, String outputFormat, OutputStream out)
                 throws FOPException {
         IFDocumentHandler documentHandler

@@ -38,6 +38,7 @@ import org.apache.fop.fo.properties.Property;
 public class FromTableColumnFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 0;
     }
@@ -59,6 +60,7 @@ public class FromTableColumnFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
 
         FObj fo = pInfo.getPropertyList().getFObj();

@@ -45,6 +45,7 @@ public abstract class ExtensionObj extends FObj {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList pList)
         throws FOPException {
@@ -57,6 +58,7 @@ public abstract class ExtensionObj extends FObj {
      * @return property list
      * @throws FOPException in case of exception
      */
+    @Override
     protected PropertyList createPropertyList(PropertyList parent,
                 FOEventHandler foEventHandler) throws FOPException {
         return null;

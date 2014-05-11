@@ -37,21 +37,25 @@ public final class GraphicsBox extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 12;
     }
 
     /** {@inheritDoc} */
+    @Override
     int getCoordinateDataStartIndex() {
         return 4;
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return (byte)0xC0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         data[2] = (byte)0x20; // CONTROL draw control flags

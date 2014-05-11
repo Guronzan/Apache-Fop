@@ -47,6 +47,7 @@ public class SpacingPropertyMaker extends SpaceProperty.Maker {
      * @return the converted property
      * @throws PropertyException if a property conversion exception occurs
      */
+    @Override
     public Property convertProperty(Property p,
                                        PropertyList propertyList,
                                        FObj fo) throws PropertyException {

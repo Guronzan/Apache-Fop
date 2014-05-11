@@ -42,6 +42,7 @@ public class OldExtensionElementMapping extends ElementMapping {
     /**
      * Initialize the data structures.
      */
+    @Override
     protected void initialize() {
         if (foObjs == null) {
             foObjs = new HashMap<String, Maker>();

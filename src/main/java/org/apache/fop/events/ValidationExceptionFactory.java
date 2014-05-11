@@ -32,6 +32,7 @@ import org.apache.fop.fo.ValidationException;
 public class ValidationExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
+    @Override
     public Throwable createException(Event event) {
         Locator loc = (Locator)event.getParam("loc");
         String msg = EventFormatter.format(event, Locale.ENGLISH);
@@ -43,6 +44,7 @@ public class ValidationExceptionFactory implements ExceptionFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class<ValidationException> getExceptionClass() {
         return ValidationException.class;
     }

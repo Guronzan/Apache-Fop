@@ -51,6 +51,7 @@ public class AFPAttribute extends StringProperty.Maker {
      * @param propertyList the property list from which to make the property
      * @return property The property object.
      */
+    @Override
     public Property make(PropertyList propertyList) {
         if (property == null) {
             property = make(propertyList, "", propertyList.getParentFObj());

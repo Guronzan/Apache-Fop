@@ -43,6 +43,7 @@ public class RegionStart extends RegionSE {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Rectangle getViewportRectangle (FODimension reldims) {
         /* Special rules apply to resolving extent as values are resolved relative
          * to the page size and reference orientation.
@@ -74,11 +75,13 @@ public class RegionStart extends RegionSE {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-start";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-start";
     }
@@ -87,6 +90,7 @@ public class RegionStart extends RegionSE {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_START}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_START;
     }

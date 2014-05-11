@@ -64,6 +64,7 @@ public class InitialPropertySet extends FObj implements CommonAccessibilityHolde
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -76,6 +77,7 @@ public class InitialPropertySet extends FObj implements CommonAccessibilityHolde
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -89,6 +91,7 @@ public class InitialPropertySet extends FObj implements CommonAccessibilityHolde
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "initial-property-set";
     }
@@ -97,11 +100,13 @@ public class InitialPropertySet extends FObj implements CommonAccessibilityHolde
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_INITIAL_PROPERTY_SET}
      */
+    @Override
     public int getNameId() {
         return FO_INITIAL_PROPERTY_SET;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

@@ -62,11 +62,13 @@ public class PDFICCBasedColorSpace extends PDFObject implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getNumComponents() {
         return this.numComponents;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getName() {
         if (explicitName != null) {
             return explicitName;
@@ -76,21 +78,25 @@ public class PDFICCBasedColorSpace extends PDFObject implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isDeviceColorSpace() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isRGBColorSpace() {
         return getNumComponents() == 3;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCMYKColorSpace() {
         return getNumComponents() == 4;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGrayColorSpace() {
         return getNumComponents() == 1;
     }

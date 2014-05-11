@@ -65,6 +65,7 @@ public class PDFStructElem extends PDFDictionary implements StructureTreeElement
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setParent(PDFObject parent) {
         if (parent != null && parent.hasObjectNumber()) {
            put("P", new PDFReference(parent));

@@ -131,6 +131,7 @@ public class IncludeObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[36];
         super.copySF(data, Type.INCLUDE, Category.DATA_RESOURCE);
@@ -194,6 +195,7 @@ public class IncludeObject extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "IncludeObject{name=" + this.getName()
             + ", objectType=" + getObjectTypeName()

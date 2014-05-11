@@ -32,6 +32,7 @@ import org.apache.fop.fo.properties.Property;
 class RGBNamedColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 5;
     }
@@ -43,6 +44,7 @@ class RGBNamedColorFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         // Map color profile NCNAME to src from declarations/color-profile element
         String colorProfileName = args[3].getString();
@@ -95,16 +97,19 @@ class RGBNamedColorFunction extends FunctionBase {
     private static final class RGBNamedPercentBase implements PercentBase {
 
         /** {@inheritDoc} */
+        @Override
         public int getBaseLength(PercentBaseContext context) throws PropertyException {
             return 0;
         }
 
         /** {@inheritDoc} */
+        @Override
         public double getBaseValue() {
             return 255f;
         }
 
         /** {@inheritDoc} */
+        @Override
         public int getDimension() {
             return 0;
         }

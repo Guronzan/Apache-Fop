@@ -30,6 +30,7 @@ import org.apache.fop.fo.properties.Property;
 public class FromParentFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 0;
     }
@@ -51,6 +52,7 @@ public class FromParentFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         String propName = args[0].getString();
         if (propName == null) {

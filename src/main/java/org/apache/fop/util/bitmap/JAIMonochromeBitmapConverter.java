@@ -48,6 +48,7 @@ public class JAIMonochromeBitmapConverter implements
     private boolean isErrorDiffusion = false;
 
     /** {@inheritDoc} */
+    @Override
     public void setHint(String name, String value) {
         if ("quality".equalsIgnoreCase(name)) {
             isErrorDiffusion = "true".equalsIgnoreCase(value);
@@ -55,6 +56,7 @@ public class JAIMonochromeBitmapConverter implements
     }
 
     /** {@inheritDoc} */
+    @Override
     public RenderedImage convertToMonochrome(BufferedImage img) {
         return convertToMonochromePlanarImage(img);
     }

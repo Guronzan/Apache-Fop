@@ -72,6 +72,7 @@ public abstract class PDFFontNonBase14 extends PDFFont {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void validate() {
         if (getDocumentSafely().getProfile().isFontEmbeddingRequired()) {
             if (this.getDescriptor().getFontFile() == null) {

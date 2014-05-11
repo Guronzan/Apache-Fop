@@ -95,6 +95,7 @@ public class PDFName extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PDFName)) {
             return false;
@@ -104,6 +105,7 @@ public class PDFName extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         return name.hashCode();
     }

@@ -42,6 +42,7 @@ public class WrapperLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InlineArea get(LayoutContext context) {
         // Create a zero-width, zero-height dummy area so this node can
         // participate in the ID handling. Otherwise, addId() wouldn't
@@ -62,6 +63,7 @@ public class WrapperLayoutManager extends LeafNodeLayoutManager {
      * @param posIter the position iterator
      * @param context the layout context for adding the area
      */
+    @Override
     public void addAreas(PositionIterator posIter, LayoutContext context) {
         if (fobj.hasId()) {
             addId();
@@ -81,6 +83,7 @@ public class WrapperLayoutManager extends LeafNodeLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addId() {
         getPSLM().addIDToPage(fobj.getId());
     }

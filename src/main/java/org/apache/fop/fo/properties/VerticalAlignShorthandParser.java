@@ -32,6 +32,7 @@ public class VerticalAlignShorthandParser implements ShorthandParser, Constants 
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property getValueForProperty(int propId,
                                         Property property,
                                         PropertyMaker maker,

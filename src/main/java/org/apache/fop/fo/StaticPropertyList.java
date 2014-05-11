@@ -46,6 +46,7 @@ public class StaticPropertyList extends PropertyList {
      * @param propId The ID of the property whose value is desired.
      * @return The value if the property is explicitly set, otherwise null.
      */
+    @Override
     public Property getExplicit(int propId) {
         return explicit[propId];
     }
@@ -55,6 +56,7 @@ public class StaticPropertyList extends PropertyList {
      * @param propId The ID of the property whose value is desired.
      * @param value The value of the property to set.
      */
+    @Override
     public void putExplicit(int propId, Property value) {
         explicit[propId] = value;
         if (values[propId] != null) { // if the cached value is set overwrite it
@@ -67,6 +69,7 @@ public class StaticPropertyList extends PropertyList {
      * retrieved property values.
      * {@inheritDoc}
      */
+    @Override
     public Property get(int propId, boolean bTryInherit, boolean bTryDefault)
         throws PropertyException {
         Property p = values[propId];

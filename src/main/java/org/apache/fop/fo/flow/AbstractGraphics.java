@@ -91,6 +91,7 @@ public abstract class AbstractGraphics extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonAccessibility = CommonAccessibility.getInstance(pList);
         commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
@@ -122,6 +123,7 @@ public abstract class AbstractGraphics extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -129,6 +131,7 @@ public abstract class AbstractGraphics extends FObj
     /**
      * @return the "id" property.
      */
+    @Override
     public String getId() {
         return id;
     }
@@ -144,51 +147,61 @@ public abstract class AbstractGraphics extends FObj
     }
 
     /** @return the "inline-progression-dimension" property */
+    @Override
     public LengthRangeProperty getInlineProgressionDimension() {
         return inlineProgressionDimension;
     }
 
     /** @return the "block-progression-dimension" property */
+    @Override
     public LengthRangeProperty getBlockProgressionDimension() {
         return blockProgressionDimension;
     }
 
     /** @return the "height" property */
+    @Override
     public Length getHeight() {
         return height;
     }
 
     /** @return the "width" property */
+    @Override
     public Length getWidth() {
         return width;
     }
 
     /** @return the "content-height" property */
+    @Override
     public Length getContentHeight() {
         return contentHeight;
     }
 
     /** @return the "content-width" property */
+    @Override
     public Length getContentWidth() {
         return contentWidth;
     }
 
     /** @return the "scaling" property */
+    @Override
     public int getScaling() {
         return scaling;
     }
 
     /** @return the "overflow" property */
+    @Override
     public int getOverflow() {
         return overflow;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDisplayAlign() {
         return displayAlign;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getTextAlign() {
         return textAlign;
     }
@@ -235,6 +248,7 @@ public abstract class AbstractGraphics extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement getStructureTreeElement() {
         return structureTreeElement;
     }

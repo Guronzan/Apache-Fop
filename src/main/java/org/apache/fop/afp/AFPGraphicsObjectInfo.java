@@ -97,11 +97,13 @@ public class AFPGraphicsObjectInfo extends AFPDataObjectInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsObjectInfo{" + super.toString() + "}";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_SVG;
     }

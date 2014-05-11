@@ -28,6 +28,7 @@ import org.apache.fop.apps.MimeConstants;
 public class IFSerializerMaker extends AbstractIFDocumentHandlerMaker {
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         IFSerializer handler = new IFSerializer();
         handler.setContext(new IFContext(ua));
@@ -38,11 +39,13 @@ public class IFSerializerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return new String[] {MimeConstants.MIME_FOP_IF};
     }

@@ -82,6 +82,7 @@ public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2 + (coords != null ? coords.length * 2 : 0);
     }
@@ -100,6 +101,7 @@ public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder
      *
      * @return the coordinate data
      */
+    @Override
     byte[] getData() {
         byte[] data = super.getData();
         if (coords != null) {
@@ -109,6 +111,7 @@ public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         os.write(getData());
     }
@@ -129,6 +132,7 @@ public abstract class AbstractGraphicsCoord extends AbstractGraphicsDrawingOrder
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         String coordsStr = "";
         for (int i = 0; i < coords.length; ++i) {

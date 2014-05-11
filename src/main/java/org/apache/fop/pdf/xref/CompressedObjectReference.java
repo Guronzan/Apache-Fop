@@ -48,6 +48,7 @@ public class CompressedObjectReference implements ObjectReference {
         this.index = index;
     }
 
+    @Override
     public void output(DataOutputStream out) throws IOException {
         out.write(2);
         out.writeLong(objectStreamNumber);

@@ -61,6 +61,7 @@ public abstract class AbstractStructuredObject extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         writeStart(os);
         writeContent(os);

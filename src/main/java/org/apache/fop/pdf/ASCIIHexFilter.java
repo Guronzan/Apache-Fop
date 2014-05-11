@@ -35,6 +35,7 @@ public class ASCIIHexFilter extends PDFFilter {
      *
      * @return the name of this filter for pdf
      */
+    @Override
     public String getName() {
         return "/ASCIIHexDecode";
     }
@@ -42,6 +43,7 @@ public class ASCIIHexFilter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isASCIIFilter() {
         return true;
     }
@@ -51,6 +53,7 @@ public class ASCIIHexFilter extends PDFFilter {
      *
      * @return always null
      */
+    @Override
     public PDFObject getDecodeParms() {
         return null;
     }
@@ -58,6 +61,7 @@ public class ASCIIHexFilter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public OutputStream applyFilter(OutputStream out) throws IOException {
         if (isApplied()) {
             return out;

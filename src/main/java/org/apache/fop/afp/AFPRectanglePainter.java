@@ -38,6 +38,7 @@ public class AFPRectanglePainter extends AbstractAFPPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void paint(PaintingInfo paintInfo) {
         RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo)paintInfo;
         int pageWidth = dataStream.getCurrentPage().getWidth();

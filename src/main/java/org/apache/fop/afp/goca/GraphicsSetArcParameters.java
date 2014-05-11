@@ -37,11 +37,13 @@ public class GraphicsSetArcParameters extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected byte getOrderCode() {
         return 0x22;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getName() + "{xmaj=" + coords[0]
             + ",ymin=" + coords[1]

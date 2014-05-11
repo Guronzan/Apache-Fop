@@ -51,6 +51,7 @@ class PDFGraphicsDevice extends GraphicsDevice {
      * @param gct the template configuration
      * @return the best configuration which is the only one
      */
+    @Override
     public GraphicsConfiguration getBestConfiguration(
       GraphicsConfigTemplate gct) {
         return gc;
@@ -61,6 +62,7 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return an array containing the one graphics configuration
      */
+    @Override
     public GraphicsConfiguration[] getConfigurations() {
         return new GraphicsConfiguration[] {gc};
     }
@@ -70,6 +72,7 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the graphics configuration that created this object
      */
+    @Override
     public GraphicsConfiguration getDefaultConfiguration() {
         return gc;
     }
@@ -79,6 +82,7 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the ID string for this device, uses toString
      */
+    @Override
     public String getIDstring() {
         return toString();
     }
@@ -88,6 +92,7 @@ class PDFGraphicsDevice extends GraphicsDevice {
      *
      * @return the type which is always printer
      */
+    @Override
     public int getType() {
         return GraphicsDevice.TYPE_PRINTER;
     }

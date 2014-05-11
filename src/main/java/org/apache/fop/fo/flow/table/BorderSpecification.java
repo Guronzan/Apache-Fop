@@ -76,6 +76,7 @@ public/*TODO*/ class BorderSpecification {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         String holderName = "";
         switch (holder) {

@@ -375,6 +375,7 @@ public class PDFFunction extends PDFObject {
      *
      * @return the PDF string.
      */
+    @Override
     public byte[] toPDF() {                                     // CSOK: MethodLength
         int vectorSize = 0;
         int numberOfFunctions = 0;
@@ -692,6 +693,7 @@ public class PDFFunction extends PDFObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (obj == null) {
             return false;

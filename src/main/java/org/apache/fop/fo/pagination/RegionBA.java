@@ -48,6 +48,7 @@ public abstract class RegionBA extends SideRegion {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         precedence = pList.get(PR_PRECEDENCE).getEnum();

@@ -38,6 +38,7 @@ public class NormalFlow extends BlockParent {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void addBlock(Block block) {
         super.addBlock(block);
         if (block.isStacked()) {

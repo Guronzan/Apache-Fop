@@ -97,6 +97,7 @@ public class AFPFontAttributes {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "fontReference=" + fontReference
             + ", fontKey=" + fontKey

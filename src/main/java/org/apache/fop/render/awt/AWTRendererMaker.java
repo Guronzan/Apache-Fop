@@ -33,16 +33,19 @@ public class AWTRendererMaker extends AbstractRendererMaker {
 
 
     /** {@inheritDoc} */
+    @Override
     public Renderer makeRenderer(FOUserAgent ua) {
         return new AWTRenderer(ua);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

@@ -199,11 +199,13 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Shape getOutline() {
             return getPrimitiveBounds();
         }
 
         /** {@inheritDoc} */
+        @Override
         public void primitivePaint(Graphics2D g2d) {
             if (g2d instanceof NativeImageHandler) {
                 NativeImageHandler nativeImageHandler = (NativeImageHandler) g2d;
@@ -230,11 +232,13 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getGeometryBounds() {
             return getPrimitiveBounds();
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getPrimitiveBounds() {
             return new Rectangle2D.Double(0, 0,
                        image.getSize().getWidthPx(),
@@ -242,6 +246,7 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getSensitiveBounds() {
             //No interactive features, just return primitive bounds
             return getPrimitiveBounds();
@@ -265,11 +270,13 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Shape getOutline() {
             return getPrimitiveBounds();
         }
 
         /** {@inheritDoc} */
+        @Override
         public void primitivePaint(Graphics2D g2d) {
             int width = image.getSize().getWidthPx();
             int height = image.getSize().getHeightPx();
@@ -279,11 +286,13 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getGeometryBounds() {
             return getPrimitiveBounds();
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getPrimitiveBounds() {
             return new Rectangle2D.Double(0, 0,
                     image.getSize().getWidthPx(),
@@ -291,6 +300,7 @@ public abstract class AbstractFOPImageElementBridge extends SVGImageElementBridg
         }
 
         /** {@inheritDoc} */
+        @Override
         public Rectangle2D getSensitiveBounds() {
             //No interactive features, just return primitive bounds
             return getPrimitiveBounds();

@@ -132,6 +132,7 @@ public class RtfTableRow extends RtfContainer implements ITableAttributes {
     /**
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
         newLine();
         writeGroupMark(true);
@@ -141,6 +142,7 @@ public class RtfTableRow extends RtfContainer implements ITableAttributes {
      * Overridden to write trowd and cell definitions before writing our cells
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         if (getTable().isNestedTable()) {
             //nested table
@@ -306,6 +308,7 @@ public class RtfTableRow extends RtfContainer implements ITableAttributes {
      * Overridden to write RTF suffix code, what comes after our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         if (getTable().isNestedTable()) {
             //nested table

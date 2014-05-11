@@ -54,6 +54,7 @@ public class RetrieveMarker extends AbstractRetrieveMarker {
      * <i>NOTE: An <code>fo:retrieve-marker</code> is only permitted as a descendant
      * of an <code>fo:static-content</code>.</i>
      */
+    @Override
     public void processNode(String elementName,
                             Locator locator,
                             Attributes attlist,
@@ -68,6 +69,7 @@ public class RetrieveMarker extends AbstractRetrieveMarker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         this.retrievePosition = pList.get(PR_RETRIEVE_POSITION).getEnum();
@@ -100,6 +102,7 @@ public class RetrieveMarker extends AbstractRetrieveMarker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "retrieve-marker";
     }
@@ -108,6 +111,7 @@ public class RetrieveMarker extends AbstractRetrieveMarker {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_RETRIEVE_MARKER}
      */
+    @Override
     public int getNameId() {
         return FO_RETRIEVE_MARKER;
     }

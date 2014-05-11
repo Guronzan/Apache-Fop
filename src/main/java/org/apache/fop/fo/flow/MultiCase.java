@@ -56,6 +56,7 @@ public class MultiCase extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         startingState = pList.get(PR_STARTING_STATE).getEnum();
@@ -69,6 +70,7 @@ public class MultiCase extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "multi-case";
     }
@@ -77,6 +79,7 @@ public class MultiCase extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_CASE}
      */
+    @Override
     public int getNameId() {
         return FO_MULTI_CASE;
     }

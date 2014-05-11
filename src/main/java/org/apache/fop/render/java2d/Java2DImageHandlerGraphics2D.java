@@ -40,16 +40,19 @@ import org.apache.fop.render.RenderingContext;
 public class Java2DImageHandlerGraphics2D implements ImageHandler {
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return new ImageFlavor[] {
             ImageFlavor.GRAPHICS2D
@@ -57,6 +60,7 @@ public class Java2DImageHandlerGraphics2D implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
             throws IOException {
         Java2DRenderingContext java2dContext = (Java2DRenderingContext)context;
@@ -77,6 +81,7 @@ public class Java2DImageHandlerGraphics2D implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         return (image == null || image instanceof ImageGraphics2D)
                 && targetContext instanceof Java2DRenderingContext;

@@ -42,7 +42,7 @@ import org.xml.sax.Locator;
  */
 @Slf4j
 public class RepeatablePageMasterAlternatives extends FObj implements
-SubSequenceSpecifier {
+        SubSequenceSpecifier {
     // The value of properties relevant for
     // fo:repeatable-page-master-alternatives.
     private Property maximumRepeats;
@@ -225,7 +225,7 @@ SubSequenceSpecifier {
         boolean willTerminate = true;
 
         // Look for rest spm that cannot terminate
-        final ArrayList<ConditionalPageMasterReference> rest = new ArrayList<ConditionalPageMasterReference>();
+        final ArrayList<ConditionalPageMasterReference> rest = new ArrayList<>();
         for (final ConditionalPageMasterReference cpmr : this.conditionalPageMasterRefs) {
             if (cpmr.isValid(true, false, false, false)
                     || cpmr.isValid(false, false, false, false)) {

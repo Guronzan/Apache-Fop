@@ -72,6 +72,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
      *
      * @param block the block to render the traits
      */
+    @Override
     protected void handleBlockTraits(Block block) {
         float borderPaddingStart = block.getBorderAndPaddingWidthStart() / 1000f;
         float borderPaddingEnd = block.getBorderAndPaddingWidthEnd() / 1000f;
@@ -106,6 +107,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
      * (See Sect. 6.4.1.2 of XSL-FO spec.)
      * @param region the RegionViewport whose region is to be drawn
      */
+    @Override
     protected void handleRegionTraits(RegionViewport region) {
         Rectangle2D viewArea = region.getViewArea();
         RegionReference referenceArea = region.getRegionReference();
@@ -519,6 +521,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
      * @param area the inline area for which the background, border and padding is to be
      * rendered
      */
+    @Override
     protected void renderInlineAreaBackAndBorders(InlineArea area) {
         float borderPaddingStart = area.getBorderAndPaddingWidthStart() / 1000f;
         float borderPaddingEnd = area.getBorderAndPaddingWidthEnd() / 1000f;
@@ -543,6 +546,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
             = new QName(ExtensionElementMapping.URI, "fox:transform");
 
     /** {@inheritDoc} */
+    @Override
     protected void renderBlockViewport(BlockViewport bv, List children) {
         // clip and position viewport if necessary
 
@@ -686,6 +690,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void renderReferenceArea(Block block) {
         // save position and offset
         int saveIP = currentIPPosition;
@@ -720,6 +725,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void renderFlow(NormalFlow flow) {
         // save position and offset
         int saveIP = currentIPPosition;
@@ -758,6 +764,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
      * This renders an inline viewport by clipping if necessary.
      * @param viewport the viewport to handle
      */
+    @Override
     public void renderInlineViewport(InlineViewport viewport) {
         int level = viewport.getBidiLevel();
         float x = currentIPPosition / 1000f;
@@ -939,6 +946,7 @@ public abstract class AbstractPathOrientedRenderer extends PrintRenderer {
             boolean startOrBefore, int style, Color col);
 
     /** {@inheritDoc} */
+    @Override
     public void renderForeignObject(ForeignObject fo, Rectangle2D pos) {
         endTextObject();
         Document doc = fo.getDocument();

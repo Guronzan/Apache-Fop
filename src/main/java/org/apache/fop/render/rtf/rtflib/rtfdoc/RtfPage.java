@@ -83,6 +83,7 @@ extends RtfContainer {
      * PAGE_ATTR, if not null
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         writeAttributes(attrib, PAGE_ATTR);
 
@@ -111,6 +112,7 @@ extends RtfContainer {
      * Therefore must make this true to print.
      * @return true
      */
+    @Override
     protected boolean okToWriteRtf() {
         return true;
     }

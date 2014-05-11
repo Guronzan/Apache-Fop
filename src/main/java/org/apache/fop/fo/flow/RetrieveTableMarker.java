@@ -52,6 +52,7 @@ public class RetrieveTableMarker extends AbstractRetrieveMarker {
      * <i>NOTE: An <code>fo:retrieve-table-marker</code> is only permitted as a descendant
      * of an <code>fo:table-header</code> or an <code>fo:table-footer</code>.</i>
      */
+    @Override
     public void processNode
         (String elementName, Locator locator, Attributes attlist, PropertyList pList)
         throws FOPException {
@@ -65,6 +66,7 @@ public class RetrieveTableMarker extends AbstractRetrieveMarker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         this.retrievePositionWithinTable
@@ -99,6 +101,7 @@ public class RetrieveTableMarker extends AbstractRetrieveMarker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "retrieve-table-marker";
     }
@@ -107,6 +110,7 @@ public class RetrieveTableMarker extends AbstractRetrieveMarker {
      * {@inheritDoc}
      * @return  {@link org.apache.fop.fo.Constants#FO_RETRIEVE_TABLE_MARKER}
      */
+    @Override
     public int getNameId() {
         return FO_RETRIEVE_TABLE_MARKER;
     }

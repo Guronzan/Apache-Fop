@@ -40,6 +40,7 @@ public class AFPInvokeMediumMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (parent.getNameId() != Constants.FO_PAGE_SEQUENCE
@@ -51,6 +52,7 @@ public class AFPInvokeMediumMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPInvokeMediumMap();
     }

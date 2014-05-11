@@ -28,6 +28,7 @@ import java.io.OutputStream;
 public class GraphicsAreaEnd extends AbstractGraphicsDrawingOrder {
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             getOrderCode(), // GEAR order code
@@ -37,16 +38,19 @@ public class GraphicsAreaEnd extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsAreaEnd";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x60;
     }

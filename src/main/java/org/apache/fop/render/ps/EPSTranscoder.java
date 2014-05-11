@@ -58,6 +58,7 @@ public class EPSTranscoder extends AbstractPSTranscoder {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected AbstractPSDocumentGraphics2D createDocumentGraphics2D() {
         return new EPSDocumentGraphics2D(false);
     }

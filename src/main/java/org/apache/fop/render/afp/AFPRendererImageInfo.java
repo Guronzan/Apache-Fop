@@ -148,6 +148,7 @@ public class AFPRendererImageInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "AFPRendererImageInfo{\n"
             + "\turi=" + uri + ",\n"

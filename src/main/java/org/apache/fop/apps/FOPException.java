@@ -132,6 +132,7 @@ public class FOPException extends SAXException {
      * (the format used by most GNU tools)
      * @return the detail message string of this FOP exception
      */
+    @Override
     public String getMessage() {
         if (isLocationSet()) {
             return systemId + ":" + line + ":" + column + ": " + super.getMessage();
@@ -163,6 +164,7 @@ public class FOPException extends SAXException {
     /**
      * Prints this FOP exception and its backtrace to the standard error stream.
      */
+    @Override
     public void printStackTrace() {
         synchronized (System.err) {
             super.printStackTrace();
@@ -181,6 +183,7 @@ public class FOPException extends SAXException {
      * Prints this FOP exception and its backtrace to the specified print stream.
      * @param stream PrintStream to use for output
      */
+    @Override
     public void printStackTrace(java.io.PrintStream stream) {
         synchronized (stream) {
             super.printStackTrace(stream);
@@ -199,6 +202,7 @@ public class FOPException extends SAXException {
      * Prints this FOP exception and its backtrace to the specified print writer.
      * @param writer PrintWriter to use for output
      */
+    @Override
     public void printStackTrace(java.io.PrintWriter writer) {
         synchronized (writer) {
             super.printStackTrace(writer);
@@ -222,6 +226,7 @@ public class FOPException extends SAXException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalizedMessage() {
         if (this.localizedMessage != null) {
             return this.localizedMessage;

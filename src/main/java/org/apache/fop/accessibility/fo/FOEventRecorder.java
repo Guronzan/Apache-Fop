@@ -67,6 +67,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startPageNumber(final PageNumber pagenum) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startPageNumber(pagenum);
             }
@@ -76,6 +77,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endPageNumber(final PageNumber pagenum) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endPageNumber(pagenum);
             }
@@ -85,6 +87,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startPageNumberCitation(final PageNumberCitation pageCite) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startPageNumberCitation(pageCite);
             }
@@ -94,6 +97,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endPageNumberCitation(final PageNumberCitation pageCite) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endPageNumberCitation(pageCite);
             }
@@ -103,6 +107,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startPageNumberCitationLast(final PageNumberCitationLast pageLast) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startPageNumberCitationLast(pageLast);
             }
@@ -112,6 +117,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endPageNumberCitationLast(final PageNumberCitationLast pageLast) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endPageNumberCitationLast(pageLast);
             }
@@ -121,6 +127,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startBlock(final Block bl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startBlock(bl);
             }
@@ -130,6 +137,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endBlock(final Block bl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endBlock(bl);
             }
@@ -139,6 +147,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startBlockContainer(final BlockContainer blc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startBlockContainer(blc);
             }
@@ -148,6 +157,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endBlockContainer(final BlockContainer blc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endBlockContainer(blc);
             }
@@ -157,6 +167,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startInline(final Inline inl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startInline(inl);
             }
@@ -166,6 +177,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endInline(final Inline inl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endInline(inl);
             }
@@ -175,6 +187,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startTable(final Table tbl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startTable(tbl);
             }
@@ -184,6 +197,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endTable(final Table tbl) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endTable(tbl);
             }
@@ -193,6 +207,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startColumn(final TableColumn tc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startColumn(tc);
             }
@@ -202,6 +217,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endColumn(final TableColumn tc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endColumn(tc);
             }
@@ -211,6 +227,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startHeader(final TableHeader header) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startHeader(header);
             }
@@ -220,6 +237,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endHeader(final TableHeader header) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endHeader(header);
             }
@@ -229,6 +247,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startFooter(final TableFooter footer) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startFooter(footer);
             }
@@ -238,6 +257,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endFooter(final TableFooter footer) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endFooter(footer);
             }
@@ -247,6 +267,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startBody(final TableBody body) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startBody(body);
             }
@@ -256,6 +277,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endBody(final TableBody body) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endBody(body);
             }
@@ -265,6 +287,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startRow(final TableRow tr) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startRow(tr);
             }
@@ -274,6 +297,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endRow(final TableRow tr) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endRow(tr);
             }
@@ -283,6 +307,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startCell(final TableCell tc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startCell(tc);
             }
@@ -292,6 +317,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endCell(final TableCell tc) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endCell(tc);
             }
@@ -301,6 +327,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startList(final ListBlock lb) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startList(lb);
             }
@@ -310,6 +337,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endList(final ListBlock lb) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endList(lb);
             }
@@ -319,6 +347,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startListItem(final ListItem li) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startListItem(li);
             }
@@ -328,6 +357,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endListItem(final ListItem li) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endListItem(li);
             }
@@ -337,6 +367,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startListLabel(final ListItemLabel listItemLabel) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startListLabel(listItemLabel);
             }
@@ -346,6 +377,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endListLabel(final ListItemLabel listItemLabel) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endListLabel(listItemLabel);
             }
@@ -355,6 +387,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startListBody(final ListItemBody listItemBody) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startListBody(listItemBody);
             }
@@ -364,6 +397,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endListBody(final ListItemBody listItemBody) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endListBody(listItemBody);
             }
@@ -373,6 +407,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startLink(final BasicLink basicLink) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startLink(basicLink);
             }
@@ -382,6 +417,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endLink(final BasicLink basicLink) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endLink(basicLink);
             }
@@ -391,6 +427,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void image(final ExternalGraphic eg) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.image(eg);
             }
@@ -400,6 +437,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startInstreamForeignObject(final InstreamForeignObject ifo) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startInstreamForeignObject(ifo);
             }
@@ -409,6 +447,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endInstreamForeignObject(final InstreamForeignObject ifo) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endInstreamForeignObject(ifo);
             }
@@ -418,6 +457,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startFootnote(final Footnote footnote) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startFootnote(footnote);
             }
@@ -427,6 +467,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endFootnote(final Footnote footnote) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endFootnote(footnote);
             }
@@ -436,6 +477,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startFootnoteBody(final FootnoteBody body) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startFootnoteBody(body);
             }
@@ -445,6 +487,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endFootnoteBody(final FootnoteBody body) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endFootnoteBody(body);
             }
@@ -454,6 +497,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startLeader(final Leader l) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startLeader(l);
             }
@@ -463,6 +507,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endLeader(final Leader l) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endLeader(l);
             }
@@ -472,6 +517,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void startWrapper(final Wrapper wrapper) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.startWrapper(wrapper);
             }
@@ -481,6 +527,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void endWrapper(final Wrapper wrapper) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.endWrapper(wrapper);
             }
@@ -490,6 +537,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void character(final Character c) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.character(c);
             }
@@ -499,6 +547,7 @@ final class FOEventRecorder extends FOEventHandler {
     @Override
     public void characters(final FOText foText) {
         events.add(new Event() {
+            @Override
             public void replay(FOEventHandler target) {
                 target.characters(foText);
             }

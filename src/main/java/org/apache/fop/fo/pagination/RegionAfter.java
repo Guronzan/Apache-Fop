@@ -43,6 +43,7 @@ public class RegionAfter extends RegionBA {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Rectangle getViewportRectangle (FODimension reldims) {
         /* Special rules apply to resolving extent as values are resolved relative
          * to the page size and reference orientation.
@@ -75,11 +76,13 @@ public class RegionAfter extends RegionBA {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-after";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-after";
     }
@@ -88,6 +91,7 @@ public class RegionAfter extends RegionBA {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_AFTER}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_AFTER;
     }

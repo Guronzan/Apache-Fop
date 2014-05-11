@@ -63,6 +63,7 @@ public class PDFMetadata extends PDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultFilterName() {
         return PDFFilterList.METADATA_FILTER;
     }
@@ -79,6 +80,7 @@ public class PDFMetadata extends PDFStream {
      * byte arrays around so much
      * {@inheritDoc}
      */
+    @Override
     public int output(java.io.OutputStream stream)
                 throws java.io.IOException {
         int length = super.output(stream);
@@ -87,6 +89,7 @@ public class PDFMetadata extends PDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void outputRawStreamData(OutputStream out) throws IOException {
         try {
             XMPSerializer.writeXMPPacket(xmpMetadata, out, this.readOnly);
@@ -100,6 +103,7 @@ public class PDFMetadata extends PDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void populateStreamDict(Object lengthEntry) {
         final String filterEntry = getFilterList().buildFilterDictEntries();
         if (getDocumentSafely().getProfile().getPDFAMode().isPDFA1LevelB()

@@ -46,6 +46,7 @@ public class RtfAfter extends RtfAfterBeforeBase {
      *
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeMyAttributes() throws IOException {
         writeAttributes(attrib, FOOTER_ATTR);
     }

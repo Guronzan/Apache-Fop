@@ -36,11 +36,13 @@ public class XMPContentHandlerFactory implements ContentHandlerFactory {
                                          {XMPConstants.XMP_NAMESPACE, XMPConstants.RDF_NAMESPACE};
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() throws SAXException {
         return new FOPXMPHandler();
     }
@@ -52,16 +54,19 @@ public class XMPContentHandlerFactory implements ContentHandlerFactory {
 
         private ObjectBuiltListener obListener;
 
+        @Override
         public Object getObject() {
             return getMetadata();
         }
 
         /** {@inheritDoc} */
+        @Override
         public void setObjectBuiltListener(ObjectBuiltListener listener) {
             this.obListener = listener;
         }
 
         /** {@inheritDoc} */
+        @Override
         public void endDocument() throws SAXException {
             if (obListener != null) {
                 obListener.notifyObjectBuilt(getObject());

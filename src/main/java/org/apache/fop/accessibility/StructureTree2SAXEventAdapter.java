@@ -53,6 +53,7 @@ public final class StructureTree2SAXEventAdapter implements StructureTreeEventHa
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageSequence(Locale locale, String role) {
         try {
             AttributesImpl attributes = new AttributesImpl();
@@ -72,6 +73,7 @@ public final class StructureTree2SAXEventAdapter implements StructureTreeEventHa
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageSequence() {
         try {
             contentHandler.endElement(IFConstants.NAMESPACE, IFConstants.EL_STRUCTURE_TREE,
@@ -87,6 +89,7 @@ public final class StructureTree2SAXEventAdapter implements StructureTreeEventHa
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement startNode(String name, Attributes attributes) {
         try {
             if (name.equals("#PCDATA")) {
@@ -105,6 +108,7 @@ public final class StructureTree2SAXEventAdapter implements StructureTreeEventHa
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endNode(String name) {
         try {
             contentHandler.endElement(FOElementMapping.URI, name,
@@ -115,11 +119,13 @@ public final class StructureTree2SAXEventAdapter implements StructureTreeEventHa
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement startImageNode(String name, Attributes attributes) {
         return startNode(name, attributes);
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement startReferencedNode(String name, Attributes attributes) {
         return startNode(name, attributes);
     }

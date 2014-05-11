@@ -76,6 +76,7 @@ public class TableColumn extends TableFObj {
 
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
         columnNumber = pList.get(PR_COLUMN_NUMBER).getNumeric().getValue();
@@ -123,6 +124,7 @@ public class TableColumn extends TableFObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startColumn(this);
@@ -134,6 +136,7 @@ public class TableColumn extends TableFObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endOfNode() throws FOPException {
         getFOEventHandler().endColumn(this);
     }
@@ -142,6 +145,7 @@ public class TableColumn extends TableFObj {
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc,
                         String nsURI, String localName)
         throws ValidationException {
@@ -155,6 +159,7 @@ public class TableColumn extends TableFObj {
      * attached to this TableColumn.
      * @return the {@link CommonBorderPaddingBackground} instance
      */
+    @Override
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
         return commonBorderPaddingBackground;
     }
@@ -203,6 +208,7 @@ public class TableColumn extends TableFObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-column";
     }
@@ -211,6 +217,7 @@ public class TableColumn extends TableFObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_COLUMN}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_COLUMN;
     }
@@ -228,6 +235,7 @@ public class TableColumn extends TableFObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("fo:table-column");
         sb.append(" column-number=").append(getColumnNumber());

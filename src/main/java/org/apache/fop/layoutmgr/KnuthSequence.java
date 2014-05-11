@@ -209,6 +209,7 @@ public abstract class KnuthSequence extends ArrayList {
     public abstract boolean isInlineSequence();
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "<KnuthSequence " + super.toString() + ">";
     }

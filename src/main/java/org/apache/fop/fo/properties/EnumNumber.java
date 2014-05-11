@@ -30,130 +30,130 @@ import org.apache.fop.util.CompareUtil;
  * A number quantity in XSL which is specified as an enum, such as "no-limit".
  */
 @Slf4j
- public final class EnumNumber extends Property implements Numeric {
+public final class EnumNumber extends Property implements Numeric {
 
-     /** cache holding all canonical EnumNumber instances */
-     private static final PropertyCache<EnumNumber> CACHE = new PropertyCache<EnumNumber>();
+    /** cache holding all canonical EnumNumber instances */
+    private static final PropertyCache<EnumNumber> CACHE = new PropertyCache<>();
 
-     private final EnumProperty enumProperty;
+    private final EnumProperty enumProperty;
 
-     /**
-      * Constructor
-      * 
+    /**
+     * Constructor
+     *
      * @param enumProperty
      *            the base EnumProperty
-      */
-     private EnumNumber(final Property enumProperty) {
-         this.enumProperty = (EnumProperty) enumProperty;
-     }
+     */
+    private EnumNumber(final Property enumProperty) {
+        this.enumProperty = (EnumProperty) enumProperty;
+    }
 
-     /**
-      * Returns the canonical EnumNumber instance corresponding to the given
+    /**
+     * Returns the canonical EnumNumber instance corresponding to the given
      * Property
      *
-      * @param enumProperty
+     * @param enumProperty
      *            the base EnumProperty
      * @return the canonical instance
-      */
-     public static EnumNumber getInstance(final Property enumProperty) {
-         return CACHE.fetch(new EnumNumber(enumProperty));
-     }
+     */
+    public static EnumNumber getInstance(final Property enumProperty) {
+        return CACHE.fetch(new EnumNumber(enumProperty));
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public int getEnum() {
-         return this.enumProperty.getEnum();
-     }
+    /** {@inheritDoc} */
+    @Override
+    public int getEnum() {
+        return this.enumProperty.getEnum();
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public String getString() {
-         return this.enumProperty.toString();
-     }
+    /** {@inheritDoc} */
+    @Override
+    public String getString() {
+        return this.enumProperty.toString();
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public Object getObject() {
-         return this.enumProperty.getObject();
-     }
+    /** {@inheritDoc} */
+    @Override
+    public Object getObject() {
+        return this.enumProperty.getObject();
+    }
 
-     @Override
-     public boolean equals(final Object obj) {
-         if (this == obj) {
-             return true;
-         }
-         if (!(obj instanceof EnumNumber)) {
-             return false;
-         }
-         final EnumNumber other = (EnumNumber) obj;
-         return CompareUtil.equal(this.enumProperty, other.enumProperty);
-     }
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof EnumNumber)) {
+            return false;
+        }
+        final EnumNumber other = (EnumNumber) obj;
+        return CompareUtil.equal(this.enumProperty, other.enumProperty);
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public int hashCode() {
-         return this.enumProperty.hashCode();
-     }
+    /** {@inheritDoc} */
+    @Override
+    public int hashCode() {
+        return this.enumProperty.hashCode();
+    }
 
-     /** {@inheritDoc} */
-     @Override
-     public int getDimension() {
-         return 0;
-     }
+    /** {@inheritDoc} */
+    @Override
+    public int getDimension() {
+        return 0;
+    }
 
-     /**
-      * {@inheritDoc} Always <code>true</code> for instances of this type
-      */
-     @Override
-     public boolean isAbsolute() {
-         return true;
-     }
+    /**
+     * {@inheritDoc} Always <code>true</code> for instances of this type
+     */
+    @Override
+    public boolean isAbsolute() {
+        return true;
+    }
 
-     /**
-      * {@inheritDoc} logs an error, because it's not supposed to be called
-      */
-     @Override
-     public double getNumericValue(final PercentBaseContext context)
+    /**
+     * {@inheritDoc} logs an error, because it's not supposed to be called
+     */
+    @Override
+    public double getNumericValue(final PercentBaseContext context)
             throws PropertyException {
-         log.error("getNumericValue() called on " + this.enumProperty
+        log.error("getNumericValue() called on " + this.enumProperty
                 + " number");
-         return 0;
-     }
+        return 0;
+    }
 
-     /**
-      * {@inheritDoc} logs an error, because it's not supposed to be called
-      */
-     @Override
-     public int getValue(final PercentBaseContext context) {
-         log.error("getValue() called on " + this.enumProperty + " number");
-         return 0;
-     }
+    /**
+     * {@inheritDoc} logs an error, because it's not supposed to be called
+     */
+    @Override
+    public int getValue(final PercentBaseContext context) {
+        log.error("getValue() called on " + this.enumProperty + " number");
+        return 0;
+    }
 
-     /**
-      * {@inheritDoc} logs an error, because it's not supposed to be called
-      */
-     @Override
-     public int getValue() {
-         log.error("getValue() called on " + this.enumProperty + " number");
-         return 0;
-     }
+    /**
+     * {@inheritDoc} logs an error, because it's not supposed to be called
+     */
+    @Override
+    public int getValue() {
+        log.error("getValue() called on " + this.enumProperty + " number");
+        return 0;
+    }
 
-     /**
-      * {@inheritDoc} logs an error, because it's not supposed to be called
-      */
-     @Override
-     public double getNumericValue() {
-         log.error("getNumericValue() called on " + this.enumProperty
+    /**
+     * {@inheritDoc} logs an error, because it's not supposed to be called
+     */
+    @Override
+    public double getNumericValue() {
+        log.error("getNumericValue() called on " + this.enumProperty
                 + " number");
-         return 0;
-     }
+        return 0;
+    }
 
-     /**
-      * {@inheritDoc}
-      */
-     @Override
-     public Numeric getNumeric() {
-         return this;
-     }
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Numeric getNumeric() {
+        return this;
+    }
 
- }
+}

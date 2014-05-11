@@ -55,6 +55,7 @@ public class InMemoryStreamCache implements StreamCache {
      * @throws IOException if there is an error getting the output stream
      * @return the output stream containing the data
      */
+    @Override
     public OutputStream getOutputStream() throws IOException {
         if (output == null) {
             if (this.hintSize <= 0) {
@@ -69,6 +70,7 @@ public class InMemoryStreamCache implements StreamCache {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(byte[] data) throws IOException {
         getOutputStream().write(data);
     }
@@ -79,6 +81,7 @@ public class InMemoryStreamCache implements StreamCache {
      * @return the number of bytes written
      * @throws IOException if there is an IO error writing to the output stream
      */
+    @Override
     public int outputContents(OutputStream out) throws IOException {
         if (output == null) {
             return 0;
@@ -93,6 +96,7 @@ public class InMemoryStreamCache implements StreamCache {
      * @throws IOException if there is an error getting the size
      * @return the length of the stream
      */
+    @Override
     public int getSize() throws IOException {
         if (output == null) {
             return 0;
@@ -105,6 +109,7 @@ public class InMemoryStreamCache implements StreamCache {
      * Clears and resets the cache.
      * @throws IOException if there is an error closing the stream
      */
+    @Override
     public void clear() throws IOException {
         if (output != null) {
             output.close();

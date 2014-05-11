@@ -40,6 +40,7 @@ public class StaticContent extends Flow {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         if (getFlowName() == null || getFlowName().equals("")) {
             missingPropertyError("flow-name");
@@ -52,6 +53,7 @@ public class StaticContent extends Flow {
      * FOEventHandler that we are at the end of the flow.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         if (firstChild == null && getUserAgent().validateStrictly()) {
             missingChildElementError("(%block;)+");
@@ -63,6 +65,7 @@ public class StaticContent extends Flow {
      * {@inheritDoc}
      * <br>XSL Content Model: (%block;)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -73,6 +76,7 @@ public class StaticContent extends Flow {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "static-content";
     }
@@ -81,6 +85,7 @@ public class StaticContent extends Flow {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_STATIC_CONTENT}
      */
+    @Override
     public int getNameId() {
         return FO_STATIC_CONTENT;
     }

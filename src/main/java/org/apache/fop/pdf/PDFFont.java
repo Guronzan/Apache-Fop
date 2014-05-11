@@ -174,6 +174,7 @@ public class PDFFont extends PDFDictionary {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int output(OutputStream stream) throws IOException {
         validate();
         return super.output(stream);

@@ -78,11 +78,13 @@ public class RtfExtraRowSet extends RtfContainer {
         }
 
         /** debugging dump */
+        @Override
         public String toString() {
             return "PositionedCell: row " + rowIndex + ", offset " + xOffset;
         }
 
         /** cells need to be sorted by row index and then by x offset */
+        @Override
         public int compareTo(Object o) {
             int result = 0;
             if (o == null) {
@@ -105,6 +107,7 @@ public class RtfExtraRowSet extends RtfContainer {
             return result;
         }
 
+        @Override
         public int hashCode() {
             int hc = super.hashCode();
             hc ^= ( hc * 11 ) + xOffset;
@@ -112,6 +115,7 @@ public class RtfExtraRowSet extends RtfContainer {
             return hc;
         }
 
+        @Override
         public boolean equals(Object o) {
             return o != null && this.compareTo(o) == 0;
         }
@@ -176,6 +180,7 @@ public class RtfExtraRowSet extends RtfContainer {
      * contain
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         // sort cells by rowIndex and xOffset
         Collections.sort(cells);
@@ -297,6 +302,7 @@ public class RtfExtraRowSet extends RtfContainer {
      * writeRow makes the decision about rendering specific rows
      * @return false (always)
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

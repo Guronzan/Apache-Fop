@@ -43,6 +43,7 @@ public class RTFFOEventHandlerMaker extends AbstractFOEventHandlerMaker {
      * @param out OutputStream
      * @return created RTFHandler
      */
+    @Override
     public FOEventHandler makeFOEventHandler(FOUserAgent ua, OutputStream out) {
         return new RTFHandler(ua, out);
     }
@@ -51,6 +52,7 @@ public class RTFFOEventHandlerMaker extends AbstractFOEventHandlerMaker {
      * {@inheritDoc}
      * @return true, if an outputstream is needed
      */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
@@ -59,6 +61,7 @@ public class RTFFOEventHandlerMaker extends AbstractFOEventHandlerMaker {
      * {@inheritDoc}
      * @return array of MIME types
      */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

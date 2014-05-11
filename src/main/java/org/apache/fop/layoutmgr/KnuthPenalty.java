@@ -110,6 +110,7 @@ public class KnuthPenalty extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isPenalty() {
         return true;
     }
@@ -117,6 +118,7 @@ public class KnuthPenalty extends KnuthElement {
     /**
      * @return the penalty value of this penalty.
      */
+    @Override
     public int getPenalty() {
         return penalty;
     }
@@ -135,6 +137,7 @@ public class KnuthPenalty extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isForcedBreak() {
         return penalty == -KnuthElement.INFINITE;
     }
@@ -148,6 +151,7 @@ public class KnuthPenalty extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(64);
         if (isAuxiliary()) {

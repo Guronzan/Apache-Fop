@@ -55,16 +55,19 @@ public class InlineKnuthSequence extends KnuthSequence  {
      * Is this an inline or a block sequence?
      * @return false
      */
+    @Override
     public boolean isInlineSequence() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean canAppendSequence(KnuthSequence sequence) {
         return sequence.isInlineSequence() && !isClosed;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean appendSequence(KnuthSequence sequence) {
         if (!canAppendSequence(sequence)) {
             return false;
@@ -83,6 +86,7 @@ public class InlineKnuthSequence extends KnuthSequence  {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean appendSequence(KnuthSequence sequence, boolean keepTogether,
                                   BreakElement breakElement) {
         return appendSequence(sequence);
@@ -90,6 +94,7 @@ public class InlineKnuthSequence extends KnuthSequence  {
 
 
     /** {@inheritDoc} */
+    @Override
     public KnuthSequence endSequence() {
         if (!isClosed) {
             add(new KnuthPenalty(0, -KnuthElement.INFINITE, false, null, false));

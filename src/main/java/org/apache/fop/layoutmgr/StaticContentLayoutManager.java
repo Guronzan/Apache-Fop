@@ -76,6 +76,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List getNextKnuthElements(LayoutContext context, int alignment) {
         throw new IllegalStateException();
     }
@@ -83,6 +84,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addAreas(PositionIterator parentIter, LayoutContext layoutContext) {
         AreaAdditionUtil.addAreas(this, parentIter, layoutContext);
 
@@ -97,6 +99,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
      * at any one time. The actual work is done by BlockStackingLM.
      * {@inheritDoc}
      */
+    @Override
     public void addChildArea(Area childArea) {
         if (getStaticContentFO().getFlowName().equals("xsl-footnote-separator")) {
             targetBlock.addBlock((Block)childArea);
@@ -108,6 +111,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Area getParentArea(Area childArea) {
         if (getStaticContentFO().getFlowName().equals("xsl-footnote-separator")) {
             return targetBlock;
@@ -181,6 +185,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
         }
 
         /** {@inheritDoc} */
+        @Override
         protected void observeElementList(List elementList) {
             String elementListID = getStaticContentFO().getFlowName();
             String pageSequenceID = ((PageSequence)lm.getParent().getFObj()).getId();
@@ -191,6 +196,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
         }
 
         /** {@inheritDoc} */
+        @Override
         protected boolean isPartOverflowRecoveryActivated() {
             //For side regions, this must be disabled because of wanted overflow.
             return false;
@@ -205,9 +211,11 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
         }
 
         /** {@inheritDoc} */
+        @Override
         protected PageBreakingLayoutListener createLayoutListener() {
             return new PageBreakingLayoutListener() {
 
+                @Override
                 public void notifyOverflow(int part, int amount, FObj obj) {
                     if (StaticContentBreaker.this.overflow == 0) {
                         StaticContentBreaker.this.overflow = amount;
@@ -217,16 +225,19 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
             };
         }
 
+        @Override
         protected LayoutManager getTopLevelLM() {
             return lm;
         }
 
+        @Override
         protected LayoutContext createLayoutContext() {
             LayoutContext lc = super.createLayoutContext();
             lc.setRefIPD(ipd);
             return lc;
         }
 
+        @Override
         protected List getNextKnuthElements(LayoutContext context, int alignment) {
             LayoutManager curLM; // currently active LM
             List returnList = new LinkedList();
@@ -252,18 +263,22 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
             return returnList;
         }
 
+        @Override
         protected int getCurrentDisplayAlign() {
             return displayAlign;
         }
 
+        @Override
         protected boolean hasMoreContent() {
             return !lm.isFinished();
         }
 
+        @Override
         protected void addAreas(PositionIterator posIter, LayoutContext context) {
             AreaAdditionUtil.addAreas(lm, posIter, context);
         }
 
+        @Override
         protected void doPhase3(PageBreakingAlgorithm alg, int partCount,
                 BlockSequence originalList, BlockSequence effectiveList) {
             if (partCount > 1) {
@@ -279,10 +294,12 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
             this.addAreas(alg, 1, originalList, effectiveList);
         }
 
+        @Override
         protected void finishPart(PageBreakingAlgorithm alg, PageBreakPosition pbp) {
             //nop for static content
         }
 
+        @Override
         protected LayoutManager getCurrentChildLM() {
             return null; //TODO NYI
         }
@@ -292,11 +309,13 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
      * Returns the IPD of the content area
      * @return the IPD of the content area
      */
+    @Override
     public int getContentAreaIPD() {
         return contentAreaIPD;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void setContentAreaIPD(int contentAreaIPD) {
         this.contentAreaIPD = contentAreaIPD;
     }
@@ -305,6 +324,7 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
      * Returns the BPD of the content area
      * @return the BPD of the content area
      */
+    @Override
     public int getContentAreaBPD() {
         return contentAreaBPD;
     }
@@ -314,16 +334,19 @@ public class StaticContentLayoutManager extends BlockStackingLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepTogether() {
         return Keep.KEEP_AUTO;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithNext() {
         return Keep.KEEP_AUTO;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithPrevious() {
         return Keep.KEEP_AUTO;
     }

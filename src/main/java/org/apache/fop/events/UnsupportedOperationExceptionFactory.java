@@ -29,6 +29,7 @@ import org.apache.fop.events.EventExceptionManager.ExceptionFactory;
 public class UnsupportedOperationExceptionFactory implements ExceptionFactory {
 
     /** {@inheritDoc} */
+    @Override
     public Throwable createException(Event event) {
         String msg = EventFormatter.format(event, Locale.ENGLISH);
         UnsupportedOperationException ex = new UnsupportedOperationException(msg);
@@ -36,6 +37,7 @@ public class UnsupportedOperationExceptionFactory implements ExceptionFactory {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class<UnsupportedOperationException> getExceptionClass() {
         return UnsupportedOperationException.class;
     }

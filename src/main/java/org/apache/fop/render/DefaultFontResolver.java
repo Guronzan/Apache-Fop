@@ -40,11 +40,13 @@ public class DefaultFontResolver implements FontResolver {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Source resolve(String href) {
         return userAgent.resolveURI(href, userAgent.getFactory().getFontManager().getFontBaseURL());
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplexScriptFeaturesEnabled() {
         return userAgent.isComplexScriptFeaturesEnabled();
     }

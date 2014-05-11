@@ -55,31 +55,37 @@ public class TransformerDefaultHandler extends DefaultHandler2 {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDocumentLocator(Locator locator) {
         transformerHandler.setDocumentLocator(locator);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws SAXException {
         transformerHandler.startDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocument() throws SAXException {
         transformerHandler.endDocument();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPrefixMapping(String prefix, String uri) throws SAXException {
         transformerHandler.startPrefixMapping(prefix, uri);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPrefixMapping(String string) throws SAXException {
         transformerHandler.endPrefixMapping(string);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startElement(String uri, String localName, String qName, Attributes attrs)
             throws SAXException {
         AttributesImpl ai = new AttributesImpl(attrs);
@@ -87,72 +93,86 @@ public class TransformerDefaultHandler extends DefaultHandler2 {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         transformerHandler.endElement(uri, localName, qName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
         transformerHandler.characters(ch, start, length);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
         transformerHandler.ignorableWhitespace(ch, start, length);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processingInstruction(String target, String data) throws SAXException {
         transformerHandler.processingInstruction(target, data);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void skippedEntity(String name) throws SAXException {
         transformerHandler.skippedEntity(name);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void notationDecl(String name, String publicId, String systemId) throws SAXException {
         transformerHandler.notationDecl(name, publicId, systemId);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void unparsedEntityDecl(String name, String publicId, String systemId,
             String notationName) throws SAXException {
         transformerHandler.unparsedEntityDecl(name, publicId, systemId, notationName);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDTD(String name, String pid, String lid) throws SAXException {
         transformerHandler.startDTD(name, pid, lid);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDTD() throws SAXException {
         transformerHandler.endDTD();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startEntity(String name) throws SAXException {
         transformerHandler.startEntity(name);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endEntity(String name) throws SAXException {
         transformerHandler.endEntity(name);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startCDATA() throws SAXException {
         transformerHandler.startCDATA();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endCDATA() throws SAXException {
         transformerHandler.endCDATA();
     }
 
     /** {@inheritDoc} */
+    @Override
     public void comment(char[] charArray, int start, int length) throws SAXException {
         transformerHandler.comment(charArray, start, length);
     }

@@ -52,6 +52,7 @@ public class AFPGraphics2DAdapter extends AbstractGraphics2DAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void paintImage(Graphics2DImagePainter painter,
             RendererContext rendererContext,
             int x, int y, int width, int height) throws IOException {
@@ -100,6 +101,7 @@ public class AFPGraphics2DAdapter extends AbstractGraphics2DAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected int mpt2px(int unit, int resolution) {
         return Math.round(paintingState.getUnitConverter().mpt2units(unit));
     }

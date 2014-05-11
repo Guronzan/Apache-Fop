@@ -44,6 +44,7 @@ public class GraphicsAreaBegin extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             getOrderCode(), // GBAR order code
@@ -53,16 +54,19 @@ public class GraphicsAreaBegin extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsAreaBegin{drawBoundary=" + drawBoundary + "}";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x68;
     }

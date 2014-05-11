@@ -150,6 +150,7 @@ public class RtfExternalGraphic extends RtfElement {
             return ImageUtil.compareHexValues(pattern, data, 0, true);
         }
 
+        @Override
         public int getType() {
             return ImageConstants.I_GIF;
         }
@@ -163,10 +164,12 @@ public class RtfExternalGraphic extends RtfElement {
             return ImageUtil.compareHexValues(pattern, data, 0, true);
         }
 
+        @Override
         public int getType() {
             return ImageConstants.I_EMF;
         }
 
+        @Override
         public String getRtfTag() {
             return "emfblip";
         }
@@ -179,6 +182,7 @@ public class RtfExternalGraphic extends RtfElement {
             return ImageUtil.compareHexValues(pattern, data, 0, true);
         }
 
+        @Override
         public int getType() {
             return ImageConstants.I_BMP;
         }
@@ -192,10 +196,12 @@ public class RtfExternalGraphic extends RtfElement {
             return ImageUtil.compareHexValues(pattern, data, 0, true);
         }
 
+        @Override
         public int getType() {
             return ImageConstants.I_JPG;
         }
 
+        @Override
         public String getRtfTag() {
             return "jpegblip";
         }
@@ -209,10 +215,12 @@ public class RtfExternalGraphic extends RtfElement {
             return ImageUtil.compareHexValues(pattern, data, 1, true);
         }
 
+        @Override
         public int getType() {
             return ImageConstants.I_PNG;
         }
 
+        @Override
         public String getRtfTag() {
             return "pngblip";
         }
@@ -327,6 +335,7 @@ public class RtfExternalGraphic extends RtfElement {
          * message to the document if image cannot be read
          * @throws IOException for I/O problems
          */
+    @Override
     protected void writeRtfContent() throws IOException {
             try {
                 writeRtfContentWithException();
@@ -685,6 +694,7 @@ public class RtfExternalGraphic extends RtfElement {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return url == null;
     }

@@ -67,11 +67,13 @@ public class GraphicsSetLineType extends AbstractGraphicsDrawingOrder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[] {
             getOrderCode(), // GSLW order code
@@ -86,11 +88,13 @@ public class GraphicsSetLineType extends AbstractGraphicsDrawingOrder {
     };
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsSetLineType{type=" + TYPES[type] + "}";
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return 0x18;
     }

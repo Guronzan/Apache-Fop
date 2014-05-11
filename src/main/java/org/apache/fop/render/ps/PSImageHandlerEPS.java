@@ -47,6 +47,7 @@ public class PSImageHandlerEPS implements ImageHandler {
     };
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         PSRenderingContext psContext = (PSRenderingContext)context;
@@ -80,21 +81,25 @@ public class PSImageHandlerEPS implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRawEPS.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         if (targetContext instanceof PSRenderingContext) {
             PSRenderingContext psContext = (PSRenderingContext)targetContext;

@@ -39,6 +39,7 @@ public class UnclosableInputStream extends FilterInputStream {
     /**
      * Does <strong>not</strong> close the original stream.
      */
+    @Override
     public void close() {
         // ignore
     }

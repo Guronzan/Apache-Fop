@@ -33,6 +33,7 @@ public class DCTFilter extends NullFilter {
      * Get filter name.
      * @return the pdf name for the DCT filter
      */
+    @Override
     public String getName() {
         return "/DCTDecode";
     }
@@ -41,6 +42,7 @@ public class DCTFilter extends NullFilter {
      * Get the decode params for this filter.
      * @return the DCT filter has no decode params
      */
+    @Override
     public PDFObject getDecodeParms() {
         return null;
     }

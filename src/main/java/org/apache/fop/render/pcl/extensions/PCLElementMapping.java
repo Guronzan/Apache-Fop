@@ -54,6 +54,7 @@ public class PCLElementMapping extends ElementMapping {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void initialize() {
 
         if (foObjs == null) {

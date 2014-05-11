@@ -53,6 +53,7 @@ public class FOPEventListenerProxy implements EventListener {
     }
 
     /** {@inheritDoc} */
+    @Override
     public synchronized void processEvent(Event event) {
         if (event.getEventID().startsWith(FOVALIDATION_EVENT_ID_PREFIX)) {
             Boolean canRecover = (Boolean)event.getParam("canRecover");

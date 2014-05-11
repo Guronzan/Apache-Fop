@@ -60,6 +60,7 @@ public class AreaTreeInputHandler extends InputHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void renderTo(FOUserAgent userAgent, String outputFormat, OutputStream out)
                 throws FOPException {
         FontInfo fontInfo = new FontInfo();

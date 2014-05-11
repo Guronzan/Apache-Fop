@@ -29,12 +29,14 @@ import org.apache.fop.util.text.AdvancedMessageFormat.ObjectFormatter;
 public class LocatorFormatter implements ObjectFormatter {
 
     /** {@inheritDoc} */
+    @Override
     public void format(StringBuilder sb, Object obj) {
         Locator loc = (Locator)obj;
         sb.append(loc.getLineNumber()).append(":").append(loc.getColumnNumber());
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsObject(Object obj) {
         return obj instanceof Locator;
     }

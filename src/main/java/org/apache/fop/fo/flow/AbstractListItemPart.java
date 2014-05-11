@@ -57,6 +57,7 @@ public abstract class AbstractListItemPart extends FObj implements CommonAccessi
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -67,6 +68,7 @@ public abstract class AbstractListItemPart extends FObj implements CommonAccessi
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (%block;)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -83,6 +85,7 @@ public abstract class AbstractListItemPart extends FObj implements CommonAccessi
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!this.blockItemFound) {
             String contentModel = "marker* (%block;)+";
@@ -92,6 +95,7 @@ public abstract class AbstractListItemPart extends FObj implements CommonAccessi
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

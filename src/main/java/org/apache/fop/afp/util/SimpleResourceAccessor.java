@@ -67,6 +67,7 @@ public class SimpleResourceAccessor implements ResourceAccessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createInputStream(URI uri) throws IOException {
         URI resolved = resolveAgainstBase(uri);
         URL url = resolved.toURL();

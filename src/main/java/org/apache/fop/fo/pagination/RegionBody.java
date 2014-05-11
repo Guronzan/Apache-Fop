@@ -54,6 +54,7 @@ public class RegionBody extends Region {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonMarginBlock = pList.getMarginBlockProps();
@@ -97,6 +98,7 @@ public class RegionBody extends Region {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Rectangle getViewportRectangle (FODimension reldims) {
         /* Special rules apply to resolving margins in the page context.
          * Contrary to normal margins in this case top and bottom margin
@@ -141,11 +143,13 @@ public class RegionBody extends Region {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-body";
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-body";
     }
@@ -154,6 +158,7 @@ public class RegionBody extends Region {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_BODY}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_BODY;
     }

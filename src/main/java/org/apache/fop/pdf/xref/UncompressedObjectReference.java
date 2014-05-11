@@ -38,6 +38,7 @@ class UncompressedObjectReference implements ObjectReference {
         this.offset = offset;
     }
 
+    @Override
     public void output(DataOutputStream out) throws IOException {
         out.write(1);
         out.writeLong(offset);

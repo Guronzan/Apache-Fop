@@ -62,6 +62,7 @@ public class PSRenderingContext extends AbstractRenderingContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_POSTSCRIPT;
     }

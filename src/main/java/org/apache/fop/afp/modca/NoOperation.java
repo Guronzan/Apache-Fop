@@ -62,6 +62,7 @@ public class NoOperation extends AbstractAFPObject implements Completable {
      * @param os The outputsteam stream
      * @throws java.io.IOException if an I/O exception occurs during processing
      */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] contentData = content.getBytes(AFPConstants.EBCIDIC_ENCODING);
         int contentLen = contentData.length;
@@ -99,11 +100,13 @@ public class NoOperation extends AbstractAFPObject implements Completable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplete() {
         return true; //always complete
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setComplete(boolean complete) {
         //ignore
     }

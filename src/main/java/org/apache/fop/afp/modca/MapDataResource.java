@@ -37,6 +37,7 @@ public class MapDataResource extends AbstractTripletStructuredObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         super.writeStart(os);
         byte[] data = new byte[11];

@@ -96,6 +96,7 @@ public class TagLogicalElement extends AbstractTripletStructuredObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         setFullyQualifiedName(
                 FullyQualifiedNameTriplet.TYPE_ATTRIBUTE_GID,

@@ -30,6 +30,7 @@ import org.apache.fop.fo.properties.Property;
 class RGBColorFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 3;
     }
@@ -41,6 +42,7 @@ class RGBColorFunction extends FunctionBase {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
       return ColorProperty.getInstance(pInfo.getUserAgent(),
                                        "rgb(" + args[0] + ","
@@ -49,14 +51,17 @@ class RGBColorFunction extends FunctionBase {
     }
 
     private static class RGBPercentBase implements PercentBase {
+        @Override
         public int getDimension() {
             return 0;
         }
 
+        @Override
         public double getBaseValue() {
             return 255f;
         }
 
+        @Override
         public int getBaseLength(PercentBaseContext context) {
             return 0;
         }

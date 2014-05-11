@@ -53,6 +53,7 @@ public class AFPDitheredRectanglePainter extends AbstractAFPPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void paint(PaintingInfo paintInfo) throws IOException {
         RectanglePaintingInfo rectanglePaintInfo = (RectanglePaintingInfo)paintInfo;
         if (rectanglePaintInfo.getWidth() <= 0 || rectanglePaintInfo.getHeight() <= 0) {

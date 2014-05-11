@@ -57,6 +57,7 @@ public class MultiSwitch extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         // autoRestore = pList.get(PR_AUTO_RESTORE);
@@ -64,6 +65,7 @@ public class MultiSwitch extends FObj {
 
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (firstChild == null) {
             missingChildElementError("(multi-case+)");
@@ -74,6 +76,7 @@ public class MultiSwitch extends FObj {
      * {@inheritDoc}
      * <br>XSL Content Model: (multi-case+)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -84,6 +87,7 @@ public class MultiSwitch extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "multi-switch";
     }
@@ -92,6 +96,7 @@ public class MultiSwitch extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_SWITCH}
      */
+    @Override
     public int getNameId() {
         return FO_MULTI_SWITCH;
     }

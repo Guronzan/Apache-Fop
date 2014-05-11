@@ -60,6 +60,7 @@ public class ImageDataDescriptor extends AbstractDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[22];
         copySF(data, Type.DESCRIPTOR, Category.IMAGE);

@@ -65,6 +65,7 @@ public class AFPIncludeFormMap extends AFPExtensionAttachment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (name != null && name.length() > 0) {
@@ -78,6 +79,7 @@ public class AFPIncludeFormMap extends AFPExtensionAttachment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getClass().getName() + "(element-name=" + getElementName()
             + " name=" + getName() + " src=" + getSrc() + ")";

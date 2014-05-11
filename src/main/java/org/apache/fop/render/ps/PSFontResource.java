@@ -32,10 +32,12 @@ abstract class PSFontResource {
     static PSFontResource createFontResource(final PSResource fontResource) {
         return new PSFontResource() {
 
+            @Override
             String getName() {
                 return fontResource.getName();
             }
 
+            @Override
             void notifyResourceUsageOnPage(ResourceTracker resourceTracker) {
                 resourceTracker.notifyResourceUsageOnPage(fontResource);
             }
@@ -47,10 +49,12 @@ abstract class PSFontResource {
             final PSResource cidFontResource) {
         return new PSFontResource() {
 
+            @Override
             String getName() {
                 return fontResource.getName();
             }
 
+            @Override
             void notifyResourceUsageOnPage(ResourceTracker resourceTracker) {
                 resourceTracker.notifyResourceUsageOnPage(fontResource);
                 resourceTracker.notifyResourceUsageOnPage(procsetCIDInitResource);

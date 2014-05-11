@@ -39,11 +39,13 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setContext(IFContext context) {
         this.ifContext = context;
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFContext getContext() {
         return this.ifContext;
     }
@@ -57,16 +59,19 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeEventHandler getStructureTreeEventHandler() {
         return DummyStructureTreeEventHandler.INSTANCE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentNavigationHandler getDocumentNavigationHandler() {
         return null; //By default, this is not supported
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocument() throws IFException {
         if (getUserAgent() == null) {
             throw new IllegalStateException(
@@ -75,45 +80,54 @@ public abstract class AbstractIFDocumentHandler implements IFDocumentHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setDocumentLocale(Locale locale) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocumentHeader() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocumentHeader() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startDocumentTrailer() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endDocumentTrailer() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageHeader() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageHeader() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPageTrailer() throws IFException {
         //nop
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPageTrailer() throws IFException {
         //nop
     }

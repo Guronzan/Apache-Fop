@@ -245,6 +245,7 @@ public class PDFColor extends PDFPathPaint {
      *
      * @param theColorSpace the new color space
      */
+    @Override
     public void setColorSpace(int theColorSpace) {
         int theOldColorSpace = this.colorSpace.getColorSpace();
         if (theOldColorSpace != theColorSpace) {
@@ -283,6 +284,7 @@ public class PDFColor extends PDFPathPaint {
      * @param fillNotStroke whether to return fill or stroke command
      * @return the PDF string for setting the fill/stroke color
      */
+    @Override
     public String getColorSpaceOut(boolean fillNotStroke) {
         StringBuilder p = new StringBuilder("");
 
@@ -454,11 +456,13 @@ public class PDFColor extends PDFPathPaint {
      *
      * @return the bytes for the pdf
      */
+    @Override
     public byte[] toPDF() {
         return (new byte[0]);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (!(obj instanceof PDFColor)) {
             return false;

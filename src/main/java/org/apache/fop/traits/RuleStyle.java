@@ -91,6 +91,7 @@ public final class RuleStyle extends TraitEnum {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "RuleStyle:" + getName();
     }

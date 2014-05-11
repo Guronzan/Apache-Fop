@@ -43,6 +43,7 @@ public class ContainerDataDescriptor extends AbstractDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[21];
         copySF(data, Type.DESCRIPTOR, Category.OBJECT_CONTAINER);

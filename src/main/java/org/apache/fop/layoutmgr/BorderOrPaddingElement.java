@@ -46,6 +46,7 @@ public abstract class BorderOrPaddingElement extends UnresolvedListElementWithLe
     }
 
     /** {@inheritDoc} */
+    @Override
     public abstract void notifyLayoutManager(MinOptMax effectiveLength);
 
 }

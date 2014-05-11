@@ -76,6 +76,7 @@ public class PDFContentGenerator {
         this.currentStream = document.getFactory()
                 .makeStream(PDFFilterList.CONTENT_FILTER, false);
         this.textutil = new PDFTextUtil() {
+            @Override
             protected void write(String code) {
                 currentStream.add(code);
             }

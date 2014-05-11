@@ -35,21 +35,25 @@ public class PNGRendererMaker extends AbstractRendererMaker {
 
 
     /** {@inheritDoc} */
+    @Override
     public Renderer makeRenderer(FOUserAgent ua) {
         return new PNGRenderer(ua);
     }
 
     /** {@inheritDoc} */
+    @Override
     public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
         return new Java2DRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

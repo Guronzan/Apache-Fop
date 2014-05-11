@@ -29,16 +29,19 @@ import org.apache.fop.render.intermediate.IFDocumentHandlerConfigurator;
 public class PNGDocumentHandler extends AbstractBitmapDocumentHandler {
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MimeConstants.MIME_PNG;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getDefaultExtension() {
         return "png";
     }
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandlerConfigurator getConfigurator() {
         return new BitmapRendererConfigurator(getUserAgent());
     }

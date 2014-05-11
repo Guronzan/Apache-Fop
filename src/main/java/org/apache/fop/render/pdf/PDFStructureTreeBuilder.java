@@ -68,6 +68,7 @@ class PDFStructureTreeBuilder implements StructureTreeEventHandler {
         this.eventBroadcaster = eventBroadcaster;
     }
 
+    @Override
     public void startPageSequence(Locale language, String role) {
         ancestors = new LinkedList<PDFStructElem>();
         PDFStructElem structElem = createStructureElement("page-sequence", rootStructureElement, role);
@@ -83,9 +84,11 @@ class PDFStructureTreeBuilder implements StructureTreeEventHandler {
         return pdfFactory.getDocument().makeStructureElement(structureType, parent);
     }
 
+    @Override
     public void endPageSequence() {
     }
 
+    @Override
     public StructureTreeElement startNode(String name, Attributes attributes) {
         PDFStructElem parent = ancestors.getFirst();
         String role = attributes.getValue("role");
@@ -95,6 +98,7 @@ class PDFStructureTreeBuilder implements StructureTreeEventHandler {
         return structElem;
     }
 
+    @Override
     public void endNode(String name) {
         removeFirstAncestor();
     }
@@ -103,6 +107,7 @@ class PDFStructureTreeBuilder implements StructureTreeEventHandler {
         ancestors.removeFirst();
     }
 
+    @Override
     public StructureTreeElement startImageNode(String name, Attributes attributes) {
         PDFStructElem parent = ancestors.getFirst();
         String role = attributes.getValue("role");
@@ -118,6 +123,7 @@ class PDFStructureTreeBuilder implements StructureTreeEventHandler {
         return structElem;
     }
 
+    @Override
     public StructureTreeElement startReferencedNode(String name, Attributes attributes) {
         PDFStructElem parent = ancestors.getFirst();
         String role = attributes.getValue("role");

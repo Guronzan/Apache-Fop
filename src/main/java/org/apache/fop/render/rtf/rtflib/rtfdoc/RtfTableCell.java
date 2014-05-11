@@ -100,6 +100,7 @@ public class RtfTableCell
      * @return new RtfParagraph object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfParagraph newParagraph(RtfAttributes attrs) throws IOException {
         closeAll();
 
@@ -133,6 +134,7 @@ public class RtfTableCell
      * @throws IOException for I/O problems
      * @return new RtfExternalGraphic object
      */
+    @Override
     public RtfExternalGraphic newImage() throws IOException {
         closeAll();
         externalGraphic = new RtfExternalGraphic(this, writer);
@@ -145,6 +147,7 @@ public class RtfTableCell
      * @return new RtfParagraph object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfParagraph newParagraph() throws IOException {
         return newParagraph(null);
     }
@@ -155,6 +158,7 @@ public class RtfTableCell
      * @return new RtfList object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfList newList(RtfAttributes attrib) throws IOException {
         closeAll();
         list = new RtfList(this, writer, attrib);
@@ -167,6 +171,7 @@ public class RtfTableCell
      * @return new RtfTable object
      * @throws IOException for I/O problems
      */
+    @Override
     public RtfTable newTable(ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, tc);
@@ -181,6 +186,7 @@ public class RtfTableCell
      * @throws IOException for I/O problems
      */
     // Modified by Boris Poudérous on 07/22/2002
+    @Override
     public RtfTable newTable(RtfAttributes attrs, ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, attrs, tc); // Added tc Boris Poudérous 07/22/2002
@@ -282,6 +288,7 @@ public class RtfTableCell
      * Overriden to avoid writing any it's a merged cell.
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
        // Never write horizontally merged cells.
        if (hMerge == MERGE_WITH_PREVIOUS) {
@@ -296,6 +303,7 @@ public class RtfTableCell
      * any it's a merged cell.
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
         // Never write horizontally merged cells.
         if (hMerge == MERGE_WITH_PREVIOUS) {
@@ -309,6 +317,7 @@ public class RtfTableCell
      * The "cell" control word marks the end of a cell
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         // Never write horizontally merged cells.
         if (hMerge == MERGE_WITH_PREVIOUS) {
@@ -474,6 +483,7 @@ public class RtfTableCell
      * TODO: containsText could use the original isEmpty implementation?
      * @return false (always)
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }
@@ -512,6 +522,7 @@ public class RtfTableCell
      * @return The RtfTextrun object
      * @throws IOException Thrown when an IO-problem occurs
      */
+    @Override
     public RtfTextrun getTextrun() throws IOException {
         RtfAttributes attrs = new RtfAttributes();
 

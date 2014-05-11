@@ -34,6 +34,7 @@ public class WhiteSpaceShorthandParser implements ShorthandParser {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property getValueForProperty(int propId, Property property,
             PropertyMaker maker, PropertyList propertyList)
             throws PropertyException {

@@ -87,6 +87,7 @@ public class TTFFontLoader extends FontLoader {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void read() throws IOException {
         read(this.subFontName);
     }

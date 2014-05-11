@@ -52,6 +52,7 @@ public class StreamedResourceGroup extends ResourceGroup implements Completable 
      * @param namedObject a named object
      * @throws IOException thrown if an I/O exception of some sort has occurred.
      */
+    @Override
     public void addObject(AbstractNamedAFPObject namedObject) throws IOException {
         if (!started) {
             writeStart(os);
@@ -84,11 +85,13 @@ public class StreamedResourceGroup extends ResourceGroup implements Completable 
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setComplete(boolean complete) {
         this.complete = complete;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplete() {
         return this.complete;
     }

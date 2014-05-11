@@ -107,6 +107,7 @@ public class PDFPages extends PDFObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toPDFString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("<< /Type /Pages\n/Count ")

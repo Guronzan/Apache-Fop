@@ -102,6 +102,7 @@ public class PDFReference implements PDFWritable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void outputInline(OutputStream out, StringBuilder textBuffer) {
         textBuffer.append(getObjectNumber()).append(' ').append(getGeneration()).append(" R");
     }

@@ -707,6 +707,7 @@ public class NumberConverter {
         EnglishNumberAsWordFormatter ( int caseType ) {
             this.caseType = caseType;
         }
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             List<String> wl = new ArrayList<String>();
             if ( number >= 1000000000000L ) {
@@ -816,6 +817,7 @@ public class NumberConverter {
         FrenchNumberAsWordFormatter ( int caseType ) {
             this.caseType = caseType;
         }
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             List<String> wl = new ArrayList<String>();
             if ( number >= 1000000000000L ) {
@@ -950,6 +952,7 @@ public class NumberConverter {
         SpanishNumberAsWordFormatter ( int caseType ) {
             this.caseType = caseType;
         }
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             List<String> wl = new ArrayList<String>();
             if ( number >= 1000000000000L ) {
@@ -1150,6 +1153,7 @@ public class NumberConverter {
         "\u2160"
     };
     private static class RomanNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             List<Integer> sl = new ArrayList<Integer>();
             if ( number == 0 ) {
@@ -1196,6 +1200,7 @@ public class NumberConverter {
      * Isopsephry (Greek) Numerals
      */
     private static class IsopsephryNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             return null;
         }
@@ -1237,6 +1242,7 @@ public class NumberConverter {
         0x05E5, // FINAL TSADHI
     };
     private class GematriaNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             if ( one == 0x05D0 ) {
                 if ( letterValue == LETTER_VALUE_ALPHABETIC ) {
@@ -1375,6 +1381,7 @@ public class NumberConverter {
         0x0649, // ALEF MAQSURA
     };
     private class ArabicNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             if ( one == 0x0627 ) {
                 int[] map;
@@ -1532,6 +1539,7 @@ public class NumberConverter {
         0x30F3, // N
     };
     private class KanaNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             if ( ( one == 0x3042 ) && ( letterValue == LETTER_VALUE_ALPHABETIC ) ) {
                 return formatNumberAsSequence ( number, one, hiraganaGojuonAlphabeticMap.length, hiraganaGojuonAlphabeticMap );
@@ -1595,6 +1603,7 @@ public class NumberConverter {
         0x0E2E,
     };
     private class ThaiNumeralsFormatter implements SpecialNumberFormatter {
+        @Override
         public Integer[] format ( long number, int one, int letterValue, String features, String language, String country ) {
             if ( ( one == 0x0E01 ) && ( letterValue == LETTER_VALUE_ALPHABETIC ) ) {
                 return formatNumberAsSequence ( number, one, thaiAlphabeticMap.length, thaiAlphabeticMap );

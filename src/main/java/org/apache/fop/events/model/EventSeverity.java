@@ -75,6 +75,7 @@ public final class EventSeverity implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "EventSeverity:" + name;
     }

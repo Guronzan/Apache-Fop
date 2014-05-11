@@ -106,16 +106,19 @@ public class KnuthGlue extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGlue() {
         return true;
     }
 
     /** @return the stretchability of this glue. */
+    @Override
     public int getStretch() {
         return stretch;
     }
 
     /** @return the shrinkability of this glue. */
+    @Override
     public int getShrink() {
         return shrink;
     }
@@ -126,6 +129,7 @@ public class KnuthGlue extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(64);
         if (isAuxiliary()) {

@@ -101,11 +101,13 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
      *
      * @return the number of components
      */
+    @Override
     public int getNumComponents() {
         return numComponents;
     }
 
     /** @return the name of the color space */
+    @Override
     public String getName() {
         switch (currentColorSpace) {
         case DEVICE_CMYK:
@@ -120,21 +122,25 @@ public class PDFDeviceColorSpace implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isDeviceColorSpace() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isRGBColorSpace() {
         return getColorSpace() == DEVICE_RGB;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCMYKColorSpace() {
         return getColorSpace() == DEVICE_CMYK;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGrayColorSpace() {
         return getColorSpace() == DEVICE_GRAY;
     }

@@ -41,6 +41,7 @@ public class ReferenceOrientationMaker extends Maker {
      *
      * {@inheritDoc}
      */
+    @Override
     public Property get(int subpropId, PropertyList propertyList,
                         boolean tryInherit, boolean tryDefault)
             throws PropertyException {

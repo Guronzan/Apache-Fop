@@ -71,6 +71,7 @@ public class AFPImageHandlerSVG implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         AFPRenderingContext afpContext = (AFPRenderingContext)context;
@@ -147,21 +148,25 @@ public class AFPImageHandlerSVG implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 400;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageXMLDOM.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         boolean supported = (image == null || (image instanceof ImageXMLDOM
                 && image.getFlavor().isCompatible(BatikImageFlavors.SVG_DOM)))

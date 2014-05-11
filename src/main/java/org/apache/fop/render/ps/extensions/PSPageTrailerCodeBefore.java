@@ -43,6 +43,7 @@ public class PSPageTrailerCodeBefore extends PSExtensionAttachment {
     /**
      * @return element name
      */
+    @Override
     protected String getElement() {
         return ELEMENT;
     }

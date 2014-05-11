@@ -51,11 +51,13 @@ public class LeafPosition extends Position {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesAreas() {
         return getLM() != null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("LeafPos:").append(getIndex()).append("(");

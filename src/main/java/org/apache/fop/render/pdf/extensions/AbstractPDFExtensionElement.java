@@ -42,11 +42,13 @@ public abstract class AbstractPDFExtensionElement extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return PDFElementMapping.NAMESPACE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return "pdf";
     }
@@ -56,6 +58,7 @@ public abstract class AbstractPDFExtensionElement extends FONode {
      * @return the extension attachment if one is created by the extension element, null otherwise.
      * @see org.apache.fop.fo.FONode#getExtensionAttachment()
      */
+    @Override
     public ExtensionAttachment getExtensionAttachment() {
         if (attachment == null) {
             this.attachment = (PDFExtensionAttachment)instantiateExtensionAttachment();

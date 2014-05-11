@@ -60,6 +60,7 @@ public abstract class InlineLevel extends FObjMixed implements CommonAccessibili
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -73,6 +74,7 @@ public abstract class InlineLevel extends FObjMixed implements CommonAccessibili
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

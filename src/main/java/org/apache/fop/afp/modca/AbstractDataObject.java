@@ -109,11 +109,13 @@ public abstract class AbstractDataObject extends AbstractNamedAFPObject
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeStart(OutputStream os) throws IOException {
         setStarted(true);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeContent(OutputStream os) throws IOException {
         writeTriplets(os);
         if (objectEnvironmentGroup != null) {
@@ -122,21 +124,25 @@ public abstract class AbstractDataObject extends AbstractNamedAFPObject
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setStarted(boolean started) {
         this.started = started;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isStarted() {
         return this.started;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setComplete(boolean complete) {
         this.complete = complete;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplete() {
         return this.complete;
     }

@@ -49,11 +49,13 @@ public class ImageWMF extends AbstractImage {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor getFlavor() {
         return WMF_IMAGE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCacheable() {
         return true;
     }

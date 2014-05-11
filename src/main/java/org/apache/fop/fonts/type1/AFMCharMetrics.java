@@ -150,6 +150,7 @@ public class AFMCharMetrics {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("AFM Char: ");
         sb.append(getCharCode());

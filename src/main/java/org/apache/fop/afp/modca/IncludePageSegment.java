@@ -67,6 +67,7 @@ public class IncludePageSegment extends AbstractNamedAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[23]; //(9 +14)
         copySF(data, Type.INCLUDE, Category.PAGE_SEGMENT);

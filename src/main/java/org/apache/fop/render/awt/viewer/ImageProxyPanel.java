@@ -70,6 +70,7 @@ public class ImageProxyPanel extends JPanel {
     /**
      * @return the size of the page plus the border.
      */
+    @Override
     public Dimension getMinimumSize() {
         return getPreferredSize();
     }
@@ -77,6 +78,7 @@ public class ImageProxyPanel extends JPanel {
     /**
      * @return the size of the page plus the border.
      */
+    @Override
     public Dimension getPreferredSize() {
         if (size == null) {
             try {
@@ -111,6 +113,7 @@ public class ImageProxyPanel extends JPanel {
      * @see javax.swing.JComponent#paintComponent(Graphics)
      * @see org.apache.fop.render.java2d.Java2DRenderer#getPageImage(int)
      */
+    @Override
     public synchronized void paintComponent(Graphics graphics) {
         try {
             if (isOpaque()) { //paint background

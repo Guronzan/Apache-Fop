@@ -189,6 +189,7 @@ public class ConditionalBorder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "{normal: " + normal + ", leading: " + leadingTrailing + ", rest: " + rest + "}";
     }

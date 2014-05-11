@@ -107,11 +107,13 @@ class TableContentPosition extends Position {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesAreas() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("TableContentPosition:");
         sb.append(getIndex());

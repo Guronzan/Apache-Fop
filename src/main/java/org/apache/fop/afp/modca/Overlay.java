@@ -60,6 +60,7 @@ public class Overlay extends PageObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeStart(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.OVERLAY);
@@ -67,6 +68,7 @@ public class Overlay extends PageObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeContent(OutputStream os) throws IOException {
         super.writeContent(os);
 
@@ -77,6 +79,7 @@ public class Overlay extends PageObject {
 
 
     /** {@inheritDoc} */
+    @Override
     protected void writeEnd(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.END, Category.OVERLAY);

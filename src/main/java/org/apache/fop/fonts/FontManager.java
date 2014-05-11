@@ -233,11 +233,13 @@ public class FontManager {
             this.useComplexScriptFeatures = useComplexScriptFeatures;
         }
         /** {@inheritDoc} */
+        @Override
         public Source resolve(String href) {
             //Minimal functionality here
             return new StreamSource(href);
         }
         /** {@inheritDoc} */
+        @Override
         public boolean isComplexScriptFeaturesEnabled() {
             return useComplexScriptFeatures;
         }

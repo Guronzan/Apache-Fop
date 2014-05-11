@@ -34,6 +34,7 @@ public class GraphicsSetCurrentPosition extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected byte getOrderCode() {
         return (byte)0x21;
     }

@@ -57,16 +57,19 @@ public final class Adjustment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         return this == obj;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         return super.hashCode();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return name;
     }

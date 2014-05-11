@@ -165,6 +165,7 @@ public class ObjectClassificationTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 96;
     }
@@ -174,6 +175,7 @@ public class ObjectClassificationTriplet extends AbstractTriplet {
     private static final int COMPANY_NAME_LEN = 32;
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         data[2] = 0x00; // reserved (must be zero)

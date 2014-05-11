@@ -64,6 +64,7 @@ public class GraphicsDataDescriptor extends AbstractDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] headerData = new byte[9];
         copySF(headerData, Type.DESCRIPTOR, Category.GRAPHICS);

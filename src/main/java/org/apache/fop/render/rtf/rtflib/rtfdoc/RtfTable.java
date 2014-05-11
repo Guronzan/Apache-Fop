@@ -117,6 +117,7 @@ public class RtfTable extends RtfContainer {
      * Overridden to write RTF prefix code, what comes before our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfPrefix() throws IOException {
         if (isNestedTable()) {
             writeControlWordNS("pard");
@@ -129,6 +130,7 @@ public class RtfTable extends RtfContainer {
      * Overridden to write RTF suffix code, what comes after our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfSuffix() throws IOException {
         writeGroupMark(false);
 
@@ -178,6 +180,7 @@ public class RtfTable extends RtfContainer {
      * @return the table-header attributes if they are present, otherwise the
      * parent's attributes are returned normally.
      */
+    @Override
     public RtfAttributes getRtfAttributes() {
         if (headerAttribs != null) {
             return headerAttribs;

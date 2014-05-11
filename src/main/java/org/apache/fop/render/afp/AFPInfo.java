@@ -296,6 +296,7 @@ public final class AFPInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "AFPInfo{width=" + width
             + ", height=" + height

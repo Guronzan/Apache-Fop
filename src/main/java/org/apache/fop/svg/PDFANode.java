@@ -54,6 +54,7 @@ public class PDFANode extends CompositeGraphicsNode {
      * Set the current transform of this node.
      * @param tf the transform
      */
+    @Override
     public void setTransform(AffineTransform tf) {
         transform = tf;
     }
@@ -63,6 +64,7 @@ public class PDFANode extends CompositeGraphicsNode {
      *
      * @param g2d the Graphics2D to use
      */
+    @Override
     public void paint(Graphics2D g2d) {
         if (isVisible) {
             super.paint(g2d);

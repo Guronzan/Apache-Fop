@@ -75,6 +75,7 @@ public class SimplePageMaster extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonMarginBlock = pList.getMarginBlockProps();
         masterName = pList.get(PR_MASTER_NAME).getString();
@@ -89,6 +90,7 @@ public class SimplePageMaster extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         LayoutMasterSet layoutMasterSet = (LayoutMasterSet) parent;
 
@@ -103,6 +105,7 @@ public class SimplePageMaster extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!hasRegionBody) {
             missingChildElementError(
@@ -114,6 +117,7 @@ public class SimplePageMaster extends FObj {
      * {@inheritDoc}
      * <br>XSL Content Model: (region-body,region-before?,region-after?,region-start?,region-end?)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
             throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -174,11 +178,13 @@ public class SimplePageMaster extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) throws FOPException {
         if (child instanceof Region) {
             addRegion((Region)child);
@@ -296,6 +302,7 @@ public class SimplePageMaster extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "simple-page-master";
     }
@@ -304,6 +311,7 @@ public class SimplePageMaster extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_SIMPLE_PAGE_MASTER}
      */
+    @Override
     public int getNameId() {
         return FO_SIMPLE_PAGE_MASTER;
     }

@@ -27,6 +27,7 @@ public interface Length extends Numeric {
      * Returns the length in 1/1000ths of a point (millipoints)
      * @return the length in millipoints
      */
+    @Override
     int getValue();
 
     /**
@@ -34,6 +35,7 @@ public interface Length extends Numeric {
      * @param context The context for the length calculation (for percentage based lengths)
      * @return the length in millipoints
      */
+    @Override
     int getValue(PercentBaseContext context);
 
 }

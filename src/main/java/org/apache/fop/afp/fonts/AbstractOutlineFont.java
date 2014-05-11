@@ -56,6 +56,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size ignored
      * @return the character set
      */
+    @Override
     public CharacterSet getCharacterSet(int size) {
         return charSet;
     }
@@ -84,6 +85,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size the font size (in mpt)
      * @return the ascender for the given size
      */
+    @Override
     public int getAscender(int size) {
         return charSet.getAscender() * size;
     }
@@ -94,6 +96,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size the font size (in mpt)
      * @return the cap height for the given size
      */
+    @Override
     public int getCapHeight(int size) {
         return charSet.getCapHeight() * size;
     }
@@ -106,6 +109,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size the font size (in mpt)
      * @return the descender for the given size
      */
+    @Override
     public int getDescender(int size) {
         return charSet.getDescender() * size;
     }
@@ -116,6 +120,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size the font size (in mpt)
      * @return the x height for the given size
      */
+    @Override
     public int getXHeight(int size) {
         return charSet.getXHeight() * size;
     }
@@ -126,6 +131,7 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param size the font size (in mpt)
      * @return the width of the character for the specified point size
      */
+    @Override
     public int getWidth(int character, int size) {
         return charSet.getWidth(toUnicodeCodepoint(character)) * size;
     }
@@ -151,11 +157,13 @@ public abstract class AbstractOutlineFont extends AFPFont {
      *
      * @return the widths of all characters
      */
+    @Override
     public int[] getWidths() {
         return getWidths(1000);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasChar(char c) {
         return charSet.hasChar(c);
     }
@@ -165,11 +173,13 @@ public abstract class AbstractOutlineFont extends AFPFont {
      * @param c character to map
      * @return the mapped character
      */
+    @Override
     public char mapChar(char c) {
         return charSet.mapChar(c);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getEncodingName() {
         return charSet.getEncoding();
     }

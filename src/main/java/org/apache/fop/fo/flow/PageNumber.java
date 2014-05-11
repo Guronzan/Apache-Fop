@@ -87,6 +87,7 @@ public class PageNumber extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -106,12 +107,14 @@ public class PageNumber extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startPageNumber(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         getFOEventHandler().endPageNumber(this);
     }
@@ -120,6 +123,7 @@ public class PageNumber extends FObj
      * {@inheritDoc}
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -128,6 +132,7 @@ public class PageNumber extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -183,11 +188,13 @@ public class PageNumber extends FObj
     }
 
     /** {@inheritDoc} */
+    @Override
     public StructureTreeElement getStructureTreeElement() {
         return structureTreeElement;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "page-number";
     }
@@ -196,6 +203,7 @@ public class PageNumber extends FObj
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_PAGE_NUMBER}
      */
+    @Override
     public int getNameId() {
         return FO_PAGE_NUMBER;
     }

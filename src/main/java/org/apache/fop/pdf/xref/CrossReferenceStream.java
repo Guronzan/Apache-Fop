@@ -65,6 +65,7 @@ public class CrossReferenceStream extends CrossReferenceObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void output(OutputStream stream) throws IOException {
         populateDictionary();
         PDFStream helperStream = new PDFStream(trailerDictionary.getDictionary(), false) {

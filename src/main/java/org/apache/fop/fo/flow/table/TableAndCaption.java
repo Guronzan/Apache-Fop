@@ -87,6 +87,7 @@ public class TableAndCaption extends FObj implements CommonAccessibilityHolder {
      * FOEventHandler that we are at the end of the flow.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!tableFound) {
             missingChildElementError("marker* table-caption? table");
@@ -97,6 +98,7 @@ public class TableAndCaption extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL Content Model: marker* table-caption? table
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
 
@@ -128,6 +130,7 @@ public class TableAndCaption extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-and-caption";
     }
@@ -136,11 +139,13 @@ public class TableAndCaption extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_AND_CAPTION}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_AND_CAPTION;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

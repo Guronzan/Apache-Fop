@@ -86,6 +86,7 @@ public abstract class PrintRenderer extends AbstractRenderer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setupFontInfo(FontInfo inFontInfo) throws FOPException {
         this.fontInfo = inFontInfo;
         FontManager fontManager = userAgent.getFactory().getFontManager();

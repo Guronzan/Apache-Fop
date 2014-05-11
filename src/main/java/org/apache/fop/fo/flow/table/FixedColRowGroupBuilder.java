@@ -72,6 +72,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void addTableCell(TableCell cell) {
         for (int i = rows.size(); i < currentRowIndex + cell.getNumberRowsSpanned(); ++i) {
             List effRow = new ArrayList(numberOfColumns);
@@ -112,11 +113,13 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void startTableRow(TableRow tableRow) {
         currentTableRow = tableRow;
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTableRow() {
         assert currentTableRow != null;
         if (currentRowIndex > 0 && currentTableRow.getBreakBefore() != Constants.EN_AUTO) {
@@ -143,6 +146,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endRow(TablePart part) {
         handleRowEnd(part);
     }
@@ -172,12 +176,14 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void startTablePart(TablePart part) {
         firstInPart = true;
         borderResolver.startPart(part);
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTablePart() throws ValidationException {
         if (rows.size() > 0) {
             throw new ValidationException(
@@ -188,6 +194,7 @@ class FixedColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTable() {
         borderResolver.endTable();
     }

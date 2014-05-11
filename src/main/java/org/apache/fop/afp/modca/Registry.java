@@ -281,6 +281,7 @@ public final class Registry {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             return this.getName();
         }

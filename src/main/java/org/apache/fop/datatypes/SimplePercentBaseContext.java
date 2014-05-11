@@ -48,6 +48,7 @@ public class SimplePercentBaseContext implements PercentBaseContext {
      * Returns the value for the given lengthBase.
      * {@inheritDoc}
      */
+    @Override
     public int getBaseLength(int lengthBase, FObj fobj) {
         // if its for us return our value otherwise delegate to parent context
         if (lengthBase == this.lengthBase) {

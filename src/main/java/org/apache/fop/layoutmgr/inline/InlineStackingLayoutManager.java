@@ -192,11 +192,13 @@ public abstract class InlineStackingLayoutManager extends AbstractLayoutManager 
     }
 
     /** {@inheritDoc} */
+    @Override
     public List addALetterSpaceTo(List oldList) {
         return addALetterSpaceTo(oldList, 0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List addALetterSpaceTo(List oldList, int thisDepth) {
         // old list contains only a box, or the sequence: box penalty glue box
 
@@ -236,12 +238,14 @@ public abstract class InlineStackingLayoutManager extends AbstractLayoutManager 
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getWordChars(Position pos) {
         Position newPos = pos.getPosition();
         return ((InlineLevelLayoutManager) newPos.getLM()).getWordChars(newPos);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void hyphenate(Position pos, HyphContext hc) {
         Position newPos = pos.getPosition();
         ((InlineLevelLayoutManager)
@@ -249,11 +253,13 @@ public abstract class InlineStackingLayoutManager extends AbstractLayoutManager 
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean applyChanges(List oldList) {
         return applyChanges(oldList, 0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean applyChanges(List oldList, int depth) {
         ListIterator oldListIterator = oldList.listIterator();
         KnuthElement oldElement;
@@ -317,11 +323,13 @@ public abstract class InlineStackingLayoutManager extends AbstractLayoutManager 
     /**
      * {@inheritDoc}
      */
+    @Override
     public List getChangedKnuthElements(List oldList, int alignment) {
         return getChangedKnuthElements(oldList, alignment, 0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public List getChangedKnuthElements(List oldList, int alignment, int depth) {
         // "unwrap" the Positions stored in the elements
         ListIterator oldListIterator = oldList.listIterator();
@@ -388,6 +396,7 @@ public abstract class InlineStackingLayoutManager extends AbstractLayoutManager 
         return returnList;
     }
 
+    @Override
     public int getBreakBefore() {
         return BreakOpportunityHelper.getBreakBefore(this);
     }

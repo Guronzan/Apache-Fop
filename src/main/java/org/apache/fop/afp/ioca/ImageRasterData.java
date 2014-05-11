@@ -60,6 +60,7 @@ public class ImageRasterData extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[9];
         copySF(data, Type.DATA, Category.IM_IMAGE);

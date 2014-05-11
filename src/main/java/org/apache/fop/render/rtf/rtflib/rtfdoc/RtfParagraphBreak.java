@@ -37,6 +37,7 @@ public class RtfParagraphBreak extends RtfElement {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }
@@ -45,6 +46,7 @@ public class RtfParagraphBreak extends RtfElement {
      * write RTF code of all our children
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         if (controlWord != null ) {
             writeControlWord(controlWord);

@@ -93,6 +93,7 @@ public class EventModel implements Serializable, XMLizable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         String elName = "event-model";

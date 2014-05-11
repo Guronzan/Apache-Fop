@@ -76,6 +76,7 @@ public abstract class LengthProperty extends Property
     }
 
     /** @return the numeric dimension. Length always a dimension of 1 */
+    @Override
     public int getDimension() {
         return 1;
     }

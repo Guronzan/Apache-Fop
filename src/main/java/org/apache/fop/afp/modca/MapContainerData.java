@@ -41,6 +41,7 @@ public class MapContainerData extends AbstractTripletStructuredObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[11];
         copySF(data, Type.MAP, Category.OBJECT_CONTAINER);

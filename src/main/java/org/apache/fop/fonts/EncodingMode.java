@@ -62,6 +62,7 @@ public enum EncodingMode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "EncodingMode: " + getName();
     }

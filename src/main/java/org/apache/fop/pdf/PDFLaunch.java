@@ -47,11 +47,13 @@ public class PDFLaunch extends PDFAction {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getAction() {
         return this.referencePDF();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toPDFString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("<<\n/S /Launch\n/F ");
@@ -62,6 +64,7 @@ public class PDFLaunch extends PDFAction {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

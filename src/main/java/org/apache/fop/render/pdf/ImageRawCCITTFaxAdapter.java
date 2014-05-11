@@ -57,6 +57,7 @@ public class ImageRawCCITTFaxAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void setup(PDFDocument doc) {
         pdfFilter = new CCFFilter();
         pdfFilter.setApplied(true);
@@ -82,26 +83,31 @@ public class ImageRawCCITTFaxAdapter extends AbstractImageAdapter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFDeviceColorSpace getColorSpace() {
         return toPDFColorSpace(ColorSpace.getInstance(ColorSpace.CS_GRAY));
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getBitsPerComponent() {
         return 1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public PDFFilter getPDFFilter() {
         return pdfFilter;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void outputContents(OutputStream out) throws IOException {
         getImage().writeTo(out);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getFilterHint() {
         return PDFFilterList.TIFF_FILTER;
     }

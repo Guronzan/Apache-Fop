@@ -84,6 +84,7 @@ public abstract class AFPExtensionAttachment
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }

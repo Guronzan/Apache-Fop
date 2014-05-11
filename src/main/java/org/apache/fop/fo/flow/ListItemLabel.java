@@ -38,18 +38,21 @@ public class ListItemLabel extends AbstractListItemPart {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startListLabel(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endListLabel(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-item-label";
     }
@@ -58,6 +61,7 @@ public class ListItemLabel extends AbstractListItemPart {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM_LABEL}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_ITEM_LABEL;
     }

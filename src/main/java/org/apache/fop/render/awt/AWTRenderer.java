@@ -105,6 +105,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
      * {@inheritDoc}
      * @throws FOPException thrown by java2DRenderer
      */
+    @Override
     public void renderPage(PageViewport pageViewport) throws IOException, FOPException {
 
         super.renderPage(pageViewport);
@@ -114,6 +115,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void stopRenderer() throws IOException {
         super.stopRenderer();
         if (statusListener != null) {
@@ -151,6 +153,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public PageFormat getPageFormat(int pageIndex)
             throws IndexOutOfBoundsException {
         try {
@@ -185,17 +188,20 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Printable getPrintable(int pageIndex)
             throws IndexOutOfBoundsException {
         return this;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsOutOfOrder() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return MIME_TYPE;
     }
@@ -213,6 +219,7 @@ public class AWTRenderer extends Java2DRenderer implements Pageable {
      * @param width the width of the area
      * @param height the height of the area
      */
+    @Override
     protected void drawBackAndBorders(Area area, float startx, float starty,
             float width, float height) {
 

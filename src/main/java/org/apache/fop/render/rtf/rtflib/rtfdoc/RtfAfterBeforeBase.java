@@ -51,18 +51,21 @@ implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContai
         attrib = attrs;
     }
 
+    @Override
     public RtfParagraph newParagraph() throws IOException {
         closeAll();
         para = new RtfParagraph(this, writer);
         return para;
     }
 
+    @Override
     public RtfParagraph newParagraph(RtfAttributes attrs) throws IOException {
         closeAll();
         para = new RtfParagraph(this, writer, attrs);
         return para;
     }
 
+    @Override
     public RtfExternalGraphic newImage() throws IOException {
         closeAll();
         externalGraphic = new RtfExternalGraphic(this, writer);
@@ -87,6 +90,7 @@ implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContai
         }
     }
 
+    @Override
     protected void writeRtfPrefix() throws IOException {
         writeGroupMark(true);
         writeMyAttributes();
@@ -95,6 +99,7 @@ implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContai
     /** must be implemented to write the header or footer attributes */
     protected abstract void writeMyAttributes() throws IOException;
 
+    @Override
     protected void writeRtfSuffix() throws IOException {
         writeGroupMark(false);
     }
@@ -113,6 +118,7 @@ implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContai
      * @param tc added by Boris Poudérous on july 2002 in order to process
      *  number-columns-spanned attribute
      */
+    @Override
     public RtfTable newTable(RtfAttributes attrs, ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, attrs, tc);
@@ -120,12 +126,14 @@ implements IRtfParagraphContainer, IRtfExternalGraphicContainer, IRtfTableContai
     }
 
     /** close current table if any and start a new one  */
+    @Override
     public RtfTable newTable(ITableColumnsInfo tc) throws IOException {
         closeAll();
         table = new RtfTable(this, writer, tc);
         return table;
     }
 
+    @Override
     public RtfTextrun getTextrun()
     throws IOException {
         return RtfTextrun.getTextrun(this, writer, null);

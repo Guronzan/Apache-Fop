@@ -32,6 +32,7 @@ public abstract class CharIterator implements Iterator, Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public abstract boolean hasNext();
 
     /**
@@ -44,6 +45,7 @@ public abstract class CharIterator implements Iterator, Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object next() throws NoSuchElementException {
         return new Character(nextChar());
     }
@@ -51,6 +53,7 @@ public abstract class CharIterator implements Iterator, Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
@@ -67,6 +70,7 @@ public abstract class CharIterator implements Iterator, Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object clone() {
         try {
             return super.clone();

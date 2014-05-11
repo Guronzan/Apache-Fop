@@ -44,11 +44,13 @@ public class OffDocumentExtensionAttachment implements OffDocumentItem {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getWhenToProcess() {
         return OffDocumentItem.IMMEDIATELY;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getName() {
         return attachment.getCategory();
     }

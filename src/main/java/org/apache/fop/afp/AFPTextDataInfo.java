@@ -217,6 +217,7 @@ public class AFPTextDataInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "TextDataInfo{fontReference=" + fontReference
         + ", x=" + x

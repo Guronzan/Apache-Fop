@@ -49,11 +49,13 @@ public class FootnoteBody extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonAccessibility = CommonAccessibility.getInstance(pList);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         getFOEventHandler().startFootnoteBody(this);
     }
@@ -64,6 +66,7 @@ public class FootnoteBody extends FObj implements CommonAccessibilityHolder {
      * end of the footnote-body.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         if (firstChild == null) {
             missingChildElementError("(%block;)+");
@@ -75,6 +78,7 @@ public class FootnoteBody extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL Content Model: (%block;)+
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -85,6 +89,7 @@ public class FootnoteBody extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "footnote-body";
     }
@@ -93,11 +98,13 @@ public class FootnoteBody extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_FOOTNOTE_BODY}
      */
+    @Override
     public int getNameId() {
         return FO_FOOTNOTE_BODY;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

@@ -222,6 +222,7 @@ public abstract class GlyphSubtable implements Comparable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         int hc = sequence;
         hc = ( hc * 3 ) + ( lookupId.hashCode() ^ hc );
@@ -233,6 +234,7 @@ public abstract class GlyphSubtable implements Comparable {
      * @return true if the lookup identifier and the sequence number of the specified subtable is the same
      * as the lookup identifier and sequence number of this subtable
      */
+    @Override
     public boolean equals ( Object o ) {
         if ( o instanceof GlyphSubtable ) {
             GlyphSubtable st = (GlyphSubtable) o;
@@ -247,6 +249,7 @@ public abstract class GlyphSubtable implements Comparable {
      * @return the result of comparing the lookup identifier and the sequence number of the specified subtable with
      * the lookup identifier and sequence number of this subtable
      */
+    @Override
     public int compareTo ( Object o ) {
         int d;
         if ( o instanceof GlyphSubtable ) {

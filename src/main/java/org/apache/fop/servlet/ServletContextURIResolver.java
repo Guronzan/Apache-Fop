@@ -49,6 +49,7 @@ public class ServletContextURIResolver implements URIResolver {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Source resolve(String href, String base) throws TransformerException {
         if (href.startsWith(SERVLET_CONTEXT_PROTOCOL)) {
             return resolveServletContextURI(href.substring(SERVLET_CONTEXT_PROTOCOL.length()));

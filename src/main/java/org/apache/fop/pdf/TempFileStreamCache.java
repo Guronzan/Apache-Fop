@@ -59,6 +59,7 @@ public class TempFileStreamCache implements StreamCache {
      * @throws IOException if there is an IO error
      * @return the output stream for this cache
      */
+    @Override
     public OutputStream getOutputStream() throws IOException {
         if (output == null) {
             output = new java.io.BufferedOutputStream(
@@ -70,6 +71,7 @@ public class TempFileStreamCache implements StreamCache {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void write(byte[] data) throws IOException {
         getOutputStream().write(data);
     }
@@ -81,6 +83,7 @@ public class TempFileStreamCache implements StreamCache {
      * @return the number of bytes written
      * @throws IOException if there is an IO error
      */
+    @Override
     public int outputContents(OutputStream out) throws IOException {
         if (output == null) {
             return 0;
@@ -104,6 +107,7 @@ public class TempFileStreamCache implements StreamCache {
      * @throws IOException if there is an IO error
      * @return the size of the cache
      */
+    @Override
     public int getSize() throws IOException {
         if (output != null) {
             output.flush();
@@ -116,6 +120,7 @@ public class TempFileStreamCache implements StreamCache {
      *
      * @throws IOException if there is an IO error
      */
+    @Override
     public void clear() throws IOException {
         if (output != null) {
             output.close();

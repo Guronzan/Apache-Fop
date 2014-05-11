@@ -72,6 +72,7 @@ public abstract class CIDFont extends CustomFont {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isMultiByte() {
         return true;
     }

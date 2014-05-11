@@ -155,11 +155,13 @@ public class PDFFormXObject extends PDFXObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void outputRawStreamData(OutputStream out) throws IOException {
         contents.outputRawStreamData(out);
     }
 
     /** {@inheritDoc} */
+    @Override
     public int output(OutputStream stream) throws IOException {
         final int len = super.output(stream);
 
@@ -169,6 +171,7 @@ public class PDFFormXObject extends PDFXObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void populateStreamDict(Object lengthEntry) {
         if (get("Matrix") == null) {
             put("Matrix", new PDFArray(this, new int[] {1, 0, 0, 1, 0, 0}));

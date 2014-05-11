@@ -280,6 +280,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * {@inheritDoc}
      * @throws SAXException
      */
+    @Override
     public void startElement(String uri, String local, String raw,
                              Attributes attrs) throws SAXException {
         if (local.equals("hyphen-char")) {
@@ -315,6 +316,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void endElement(String uri, String local, String raw) {
 
         if (token.length() > 0) {
@@ -357,6 +359,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void characters(char[] ch, int start, int length) {
         StringBuilder chars = new StringBuilder(length);
         chars.append(ch, start, length);
@@ -393,6 +396,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void warning(SAXParseException ex) {
         errMsg = "[Warning] " + getLocationString(ex) + ": "
                  + ex.getMessage();
@@ -401,6 +405,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void error(SAXParseException ex) {
         errMsg = "[Error] " + getLocationString(ex) + ": " + ex.getMessage();
     }
@@ -408,6 +413,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void fatalError(SAXParseException ex) throws SAXException {
         errMsg = "[Fatal Error] " + getLocationString(ex) + ": "
                  + ex.getMessage();
@@ -442,6 +448,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * For testing purposes only.
      * {@inheritDoc}
      */
+    @Override
     public void addClass(String c) {
         testOut.println("class: " + c);
     }
@@ -450,6 +457,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * For testing purposes only.
      * {@inheritDoc}
      */
+    @Override
     public void addException(String w, ArrayList e) {
         testOut.println("exception: " + w + " : " + e.toString());
     }
@@ -458,6 +466,7 @@ public class PatternParser extends DefaultHandler implements PatternConsumer {
      * For testing purposes only.
      * {@inheritDoc}
      */
+    @Override
     public void addPattern(String p, String v) {
         testOut.println("pattern: " + p + " : " + v);
     }

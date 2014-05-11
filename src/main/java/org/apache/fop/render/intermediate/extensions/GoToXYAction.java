@@ -114,11 +114,13 @@ public class GoToXYAction extends AbstractAction implements DocumentNavigationEx
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplete() {
         return this.isCompleteExceptTargetLocation() && (this.targetLocation != null);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isSame(AbstractAction other) {
         if (other == null) {
             throw new NullPointerException("other must not be null");
@@ -140,6 +142,7 @@ public class GoToXYAction extends AbstractAction implements DocumentNavigationEx
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (this.isCompleteExceptTargetLocation()) {
@@ -161,6 +164,7 @@ public class GoToXYAction extends AbstractAction implements DocumentNavigationEx
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GoToXY: ID=" + getID()
             + ", page=" + getPageIndex()

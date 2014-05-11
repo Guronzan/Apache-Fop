@@ -78,11 +78,13 @@ public class MappingOptionTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 3;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         data[2] = mapValue;

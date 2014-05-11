@@ -192,6 +192,7 @@ public class AFPLineDataInfo {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "AFPLineDataInfo{x1=" + x1
         + ", y1=" + y1

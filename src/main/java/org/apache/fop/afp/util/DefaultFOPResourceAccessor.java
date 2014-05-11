@@ -57,6 +57,7 @@ public class DefaultFOPResourceAccessor extends SimpleResourceAccessor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public InputStream createInputStream(URI uri) throws IOException {
         //Step 1: resolve against local base URI --> URI
         URI resolved = resolveAgainstBase(uri);

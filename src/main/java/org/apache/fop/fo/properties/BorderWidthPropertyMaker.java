@@ -54,6 +54,7 @@ public class BorderWidthPropertyMaker extends LengthProperty.Maker {
      * {@inheritDoc}
      */
 
+    @Override
     public Property get(int subpropId, PropertyList propertyList, boolean bTryInherit,
             boolean bTryDefault) throws PropertyException {
         Property p = super.get(subpropId, propertyList,

@@ -81,6 +81,7 @@ public class RtfBookmark extends RtfElement {
      *
      * @throws IOException On Error
      */
+    @Override
     public void writeRtfPrefix () throws IOException {
         startBookmark ();
     }
@@ -90,6 +91,7 @@ public class RtfBookmark extends RtfElement {
      *
      * @exception IOException On error
      */
+    @Override
     public void writeRtfContent () throws IOException {
 //        this.getRtfFile ().getLog ().logInfo ("Write bookmark '" + bookmark + "'.");
         // No content to write
@@ -100,6 +102,7 @@ public class RtfBookmark extends RtfElement {
      *
      * @throws IOException On Error
      */
+    @Override
     public void writeRtfSuffix () throws IOException {
         endBookmark ();
     }
@@ -156,6 +159,7 @@ public class RtfBookmark extends RtfElement {
         /**
          * @return true if this element would generate no "useful" RTF content
          */
+        @Override
         public boolean isEmpty() {
             return bookmark == null || bookmark.trim().length() == 0;
         }

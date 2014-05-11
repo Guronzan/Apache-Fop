@@ -42,6 +42,7 @@ public class PSCommentAfterElement extends AbstractPSCommentElement {
      * @return local name
      * @see org.apache.fop.fo.FONode#getLocalName()
      */
+    @Override
     public String getLocalName() {
         return PSCommentAfter.ELEMENT;
     }
@@ -51,6 +52,7 @@ public class PSCommentAfterElement extends AbstractPSCommentElement {
      * @see org.apache.fop.render.ps.extensions.AbstractPSExtensionElement
      * #instantiateExtensionAttachment()
      */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new PSCommentAfter();
     }

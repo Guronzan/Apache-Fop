@@ -36,6 +36,7 @@ public class ASCII85Filter extends PDFFilter {
      *
      * @return the name of the filter to be inserted into the PDF
      */
+    @Override
     public String getName() {
         return "/ASCII85Decode";
     }
@@ -43,6 +44,7 @@ public class ASCII85Filter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public boolean isASCIIFilter() {
         return true;
     }
@@ -52,6 +54,7 @@ public class ASCII85Filter extends PDFFilter {
      *
      * @return always null
      */
+    @Override
     public PDFObject getDecodeParms() {
         return null;
     }
@@ -59,6 +62,7 @@ public class ASCII85Filter extends PDFFilter {
     /**
      * {@inheritDoc}
      */
+    @Override
     public OutputStream applyFilter(OutputStream out) throws IOException {
         if (isApplied()) {
             return out;

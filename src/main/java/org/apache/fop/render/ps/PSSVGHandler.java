@@ -219,6 +219,7 @@ public class PSSVGHandler extends AbstractGenericSVGHandler
      * @param context the renderer context
      * @param doc the svg document
      */
+    @Override
     protected void renderSVGDocument(RendererContext context,
             Document doc) {
         PSInfo psInfo = getPSInfo(context);
@@ -333,6 +334,7 @@ public class PSSVGHandler extends AbstractGenericSVGHandler
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsRenderer(Renderer renderer) {
         return false;
     }

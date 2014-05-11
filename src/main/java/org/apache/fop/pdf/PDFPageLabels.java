@@ -36,6 +36,7 @@ public class PDFPageLabels extends PDFNumberTreeNode {
      * @return the Nums object (an empty PDFNumsArray for the "/Nums" entry is created
      *       if it doesn't exist)
      */
+    @Override
     public PDFNumsArray getNums() {
         PDFNumsArray nums = super.getNums();
         if (nums == null) {

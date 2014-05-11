@@ -189,6 +189,7 @@ final class IFStructureTreeBuilder implements StructureTreeEventHandler {
         pageSequenceEventRecorders.get(pageSequenceIndex).replay(handler);
     }
 
+    @Override
     public void startPageSequence(Locale locale, String role) {
         SAXEventRecorder eventRecorder = new SAXEventRecorder();
         pageSequenceEventRecorders.add(eventRecorder);
@@ -196,19 +197,23 @@ final class IFStructureTreeBuilder implements StructureTreeEventHandler {
         delegate.startPageSequence(locale, role);
     }
 
+    @Override
     public void endPageSequence() {
          delegate.endPageSequence();
     }
 
+    @Override
     public StructureTreeElement startNode(String name, Attributes attributes) {
         delegate.startNode(name, attributes);
         return new IFStructureTreeElement();
     }
 
+    @Override
     public void endNode(String name) {
         delegate.endNode(name);
     }
 
+    @Override
     public StructureTreeElement startImageNode(String name, Attributes attributes) {
         String id = getNextID();
         AttributesImpl atts = addIDAttribute(attributes, id);
@@ -216,6 +221,7 @@ final class IFStructureTreeBuilder implements StructureTreeEventHandler {
         return new IFStructureTreeElement(id);
     }
 
+    @Override
     public StructureTreeElement startReferencedNode(String name, Attributes attributes) {
         String id = getNextID();
         AttributesImpl atts = addIDAttribute(attributes, id);

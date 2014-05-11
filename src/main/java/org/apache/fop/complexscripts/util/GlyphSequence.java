@@ -362,6 +362,7 @@ public class GlyphSequence implements Cloneable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() {
         try {
             GlyphSequence gs = (GlyphSequence) super.clone();
@@ -375,6 +376,7 @@ public class GlyphSequence implements Cloneable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append ( '{' );
@@ -820,6 +822,7 @@ public class GlyphSequence implements Cloneable {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Object clone() {
             try {
                 CharAssociation ca = (CharAssociation) super.clone();

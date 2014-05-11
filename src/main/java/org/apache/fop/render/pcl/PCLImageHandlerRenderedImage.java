@@ -38,16 +38,19 @@ import org.apache.fop.render.RenderingContext;
 public class PCLImageHandlerRenderedImage implements ImageHandler {
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 300;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageRendered.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return new ImageFlavor[] {
             ImageFlavor.BUFFERED_IMAGE,
@@ -56,6 +59,7 @@ public class PCLImageHandlerRenderedImage implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
             throws IOException {
         PCLRenderingContext pclContext = (PCLRenderingContext)context;
@@ -70,6 +74,7 @@ public class PCLImageHandlerRenderedImage implements ImageHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         return (image == null || image instanceof ImageRendered)
                 && targetContext instanceof PCLRenderingContext;

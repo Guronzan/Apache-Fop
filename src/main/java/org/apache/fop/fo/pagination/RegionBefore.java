@@ -43,11 +43,13 @@ public class RegionBefore extends RegionBA {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultRegionName() {
         return "xsl-region-before";
     }
 
     /** {@inheritDoc} */
+    @Override
     public Rectangle getViewportRectangle (FODimension reldims) {
         /* Special rules apply to resolving extent as values are resolved relative
          * to the page size and reference orientation.
@@ -77,6 +79,7 @@ public class RegionBefore extends RegionBA {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "region-before";
     }
@@ -85,6 +88,7 @@ public class RegionBefore extends RegionBA {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_REGION_BEFORE}
      */
+    @Override
     public int getNameId() {
         return FO_REGION_BEFORE;
     }

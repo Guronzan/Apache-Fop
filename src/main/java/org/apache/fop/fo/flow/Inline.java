@@ -60,6 +60,7 @@ public class Inline extends InlineLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         alignmentAdjust = pList.get(PR_ALIGNMENT_ADJUST).getLength();
@@ -69,6 +70,7 @@ public class Inline extends InlineLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
        super.startOfNode();
 
@@ -94,6 +96,7 @@ public class Inline extends InlineLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endInline(this);
@@ -106,6 +109,7 @@ public class Inline extends InlineLevel {
      *  or fo:footnote may not have block-level children, unless it has a
      *  nearer ancestor that is an fo:inline-container." (paraphrased)</i>
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -146,6 +150,7 @@ public class Inline extends InlineLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "inline";
     }
@@ -154,6 +159,7 @@ public class Inline extends InlineLevel {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_INLINE}
      */
+    @Override
     public int getNameId() {
         return FO_INLINE;
     }

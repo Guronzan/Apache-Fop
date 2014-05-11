@@ -47,22 +47,26 @@ public class BlockKnuthSequence extends KnuthSequence {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isInlineSequence() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean canAppendSequence(KnuthSequence sequence) {
         return !sequence.isInlineSequence() && !isClosed;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean appendSequence(KnuthSequence sequence) {
         // log.debug("Cannot append a sequence without a BreakElement");
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean appendSequence(KnuthSequence sequence, boolean keepTogether,
                                   BreakElement breakElement) {
         if (!canAppendSequence(sequence)) {
@@ -80,6 +84,7 @@ public class BlockKnuthSequence extends KnuthSequence {
     }
 
     /** {@inheritDoc} */
+    @Override
     public KnuthSequence endSequence() {
         isClosed = true;
         return this;

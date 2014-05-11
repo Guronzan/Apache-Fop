@@ -46,6 +46,7 @@ public class Java2DRenderingContext extends AbstractRenderingContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getMimeType() {
         return null; //not applicable
     }

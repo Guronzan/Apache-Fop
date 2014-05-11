@@ -59,6 +59,7 @@ public class PDFFileSpec extends PDFDictionary {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

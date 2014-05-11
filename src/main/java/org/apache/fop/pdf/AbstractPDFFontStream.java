@@ -33,6 +33,7 @@ public abstract class AbstractPDFFontStream extends AbstractPDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected String getDefaultFilterName() {
         return PDFFilterList.FONT_FILTER;
     }

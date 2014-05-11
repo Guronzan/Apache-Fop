@@ -127,6 +127,7 @@ public class RtfListTable extends RtfContainer {
      * Write the content
      * @throws IOException for I/O problems
      */
+    @Override
     public void writeRtfContent() throws IOException {
         newLine();
         if (lists != null) {
@@ -173,6 +174,7 @@ public class RtfListTable extends RtfContainer {
      * the table
      * @return false (always)
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

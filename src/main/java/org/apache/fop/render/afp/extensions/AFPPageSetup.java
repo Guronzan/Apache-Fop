@@ -111,6 +111,7 @@ public class AFPPageSetup extends AFPExtensionAttachment {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void toSAX(ContentHandler handler) throws SAXException {
         AttributesImpl atts = new AttributesImpl();
         if (name != null && name.length() > 0) {

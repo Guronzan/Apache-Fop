@@ -206,6 +206,7 @@ public class RtfText extends RtfElement {
      * Write our text to the RTF stream
      * @throws IOException for I/O problems
      */
+    @Override
     public void writeRtfContent() throws IOException {
         writeChars: {
 
@@ -272,6 +273,7 @@ public class RtfText extends RtfElement {
      * @return true    If m_text is null\n
      *         false   m_text is set
      */
+    @Override
     public boolean isEmpty () {
         return text == null || text.trim().length() == 0;
     }

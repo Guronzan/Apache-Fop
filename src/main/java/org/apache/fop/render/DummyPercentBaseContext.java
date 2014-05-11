@@ -41,6 +41,7 @@ public final class DummyPercentBaseContext implements PercentBaseContext {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getBaseLength(int lengthBase, FObj fo) {
         return 0;
     }

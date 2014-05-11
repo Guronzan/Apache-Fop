@@ -48,12 +48,14 @@ public class ChoiceFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGenerated(Map params) {
         Object obj = params.get(fieldName);
         return obj != null;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(StringBuilder sb, Map params) {
         Object obj = params.get(fieldName);
         Number num = (Number)obj;
@@ -69,6 +71,7 @@ public class ChoiceFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "{" + this.fieldName + ",choice, ....}";
     }
@@ -77,11 +80,13 @@ public class ChoiceFieldPart implements Part {
     public static class Factory implements PartFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Part newPart(String fieldName, String values) {
             return new ChoiceFieldPart(fieldName, values);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getFormat() {
             return "choice";
         }

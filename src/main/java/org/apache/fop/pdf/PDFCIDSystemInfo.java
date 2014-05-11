@@ -51,6 +51,7 @@ public class PDFCIDSystemInfo extends PDFObject {
      *
      * @return the string for the CIDSystemInfo entry with the inline dictionary
      */
+    @Override
     public String toPDFString() {
         StringBuilder p = new StringBuilder(64);
         p.setLength(0);

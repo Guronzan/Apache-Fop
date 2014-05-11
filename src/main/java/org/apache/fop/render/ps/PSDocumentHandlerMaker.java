@@ -34,6 +34,7 @@ public class PSDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
                               {MimeConstants.MIME_POSTSCRIPT};
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         PSDocumentHandler handler = new PSDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -41,11 +42,13 @@ public class PSDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

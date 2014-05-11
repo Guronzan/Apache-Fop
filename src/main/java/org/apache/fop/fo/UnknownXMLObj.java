@@ -48,6 +48,7 @@ public class UnknownXMLObj extends XMLObj {
          * @param parent FONode that is the parent of the object
          * @return the created UnknownXMLObj
          */
+        @Override
         public FONode make(FONode parent) {
             return new UnknownXMLObj(parent, space);
         }
@@ -65,16 +66,19 @@ public class UnknownXMLObj extends XMLObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return this.namespace;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return null; //We don't know that in this case.
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) {
         if (doc == null) {
             createBasicDocument();
@@ -83,6 +87,7 @@ public class UnknownXMLObj extends XMLObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void characters(char[] data, int start, int length,
                                  PropertyList pList, Locator locator) throws FOPException {
         if (doc == null) {

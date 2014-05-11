@@ -36,6 +36,7 @@ public class ImageInputDescriptor extends AbstractAFPObject {
     private int resolution = 240;
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
 
         byte[] data = new byte[45];

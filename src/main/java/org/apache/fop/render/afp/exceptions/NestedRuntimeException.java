@@ -69,6 +69,7 @@ public abstract class NestedRuntimeException extends RuntimeException {
      * exception if there is one.
      * @return The detail message.
      */
+    @Override
     public String getMessage() {
 
         if (underlyingException == null) {
@@ -85,6 +86,7 @@ public abstract class NestedRuntimeException extends RuntimeException {
      * Print the composite message and the embedded stack trace to the specified stream.
      * @param ps the print stream
      */
+    @Override
     public void printStackTrace(PrintStream ps) {
         if (underlyingException == null) {
             super.printStackTrace(ps);
@@ -98,6 +100,7 @@ public abstract class NestedRuntimeException extends RuntimeException {
      * Print the composite message and the embedded stack trace to the specified writer.
      * @param pw the print writer
      */
+    @Override
     public void printStackTrace(PrintWriter pw) {
         if (underlyingException == null) {
             super.printStackTrace(pw);

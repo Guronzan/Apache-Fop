@@ -89,6 +89,7 @@ public class NativeTextHandler implements PSTextHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeSetup() throws IOException {
         if (fontInfo != null) {
             PSFontUtils.writeFontDict(getPSGenerator(), fontInfo);
@@ -96,6 +97,7 @@ public class NativeTextHandler implements PSTextHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writePageSetup() throws IOException {
         //nop
     }
@@ -105,6 +107,7 @@ public class NativeTextHandler implements PSTextHandler {
      * text operations.
      * {@inheritDoc}
      */
+    @Override
     public void drawString(Graphics2D g, String s, float x, float y) throws IOException {
         PSGraphics2D g2d = (PSGraphics2D)g;
         g2d.preparePainting();

@@ -48,6 +48,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      * @param transparency the alpha value of the image
      * @return the new buffered image
      */
+    @Override
     public BufferedImage createCompatibleImage(int width, int height,
             int transparency) {
         if (transparency == Transparency.OPAQUE) {
@@ -66,6 +67,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      * @param height the height of the image
      * @return the new buffered image
      */
+    @Override
     public BufferedImage createCompatibleImage(int width, int height) {
         return new BufferedImage(width, height,
                                  BufferedImage.TYPE_INT_ARGB);
@@ -79,6 +81,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      *
      * @return the bounds of the PDF document page
      */
+    @Override
     public Rectangle getBounds() {
         return null;
     }
@@ -87,6 +90,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      * Return a good default color model for this 'device'.
      * @return the colour model for the configuration
      */
+    @Override
     public ColorModel getColorModel() {
         return BI_WITH_ALPHA.getColorModel();
     }
@@ -97,6 +101,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      * @param transparency the alpha value for the colour model
      * @return the colour model for the configuration
      */
+    @Override
     public ColorModel getColorModel(int transparency) {
         if (transparency == Transparency.OPAQUE) {
             return BI_WITHOUT_ALPHA.getColorModel();
@@ -110,6 +115,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      *
      * @return the default transform for the configuration
      */
+    @Override
     public AffineTransform getDefaultTransform() {
         return new AffineTransform();
     }
@@ -121,6 +127,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      *
      * @return the normalizing transform for the configuration
      */
+    @Override
     public AffineTransform getNormalizingTransform() {
         return new AffineTransform(2, 0, 0, 2, 0, 0);
     }
@@ -130,6 +137,7 @@ class PDFGraphicsConfiguration extends GraphicsConfiguration {
      *
      * @return the PDF graphics device
      */
+    @Override
     public GraphicsDevice getDevice() {
         return new PDFGraphicsDevice(this);
     }

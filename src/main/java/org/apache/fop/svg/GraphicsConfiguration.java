@@ -38,6 +38,7 @@ public abstract class GraphicsConfiguration extends java.awt.GraphicsConfigurati
      * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int)
      * @since JDK 1.4
      */
+    @Override
     public VolatileImage createCompatibleVolatileImage(int width, int height) {
         return null;
     }
@@ -50,6 +51,7 @@ public abstract class GraphicsConfiguration extends java.awt.GraphicsConfigurati
      * @see java.awt.GraphicsConfiguration#createCompatibleVolatileImage(int, int, int)
      * @since JDK 1.5
      */
+    @Override
     public VolatileImage createCompatibleVolatileImage(int width, int height, int transparency) {
         return null;
     }

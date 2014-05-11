@@ -73,6 +73,7 @@ public class Hyphen implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         if (noBreak == null
                 && postBreak == null

@@ -38,6 +38,7 @@ public class PDFSeparationColorSpace extends PDFArray implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getName() {
         //return "CS" + this.getObjectNumber();
         return getColorName().toString();
@@ -61,26 +62,31 @@ public class PDFSeparationColorSpace extends PDFArray implements PDFColorSpace {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getNumComponents() {
         return 1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCMYKColorSpace() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isDeviceColorSpace() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGrayColorSpace() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isRGBColorSpace() {
         return false;
     }

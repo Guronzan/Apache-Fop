@@ -80,6 +80,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAbsolutePosition = pList.getAbsolutePositionProps();
@@ -103,6 +104,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBlockContainer(this);
@@ -117,6 +119,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * The latter refers to block-containers with absolute-position="absolute"
      * or absolute-position="fixed".
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -138,6 +141,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!blockItemFound) {
             missingChildElementError("marker* (%block;)+");
@@ -147,6 +151,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
     }
 
     /** @return <code>true</code> (BlockContainer can generate Reference Areas) */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }
@@ -179,11 +184,13 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
     }
 
     /** @return the "break-after" FO trait. */
+    @Override
     public int getBreakAfter() {
         return breakAfter;
     }
 
     /** @return the "break-before" FO trait. */
+    @Override
     public int getBreakBefore() {
         return breakBefore;
     }
@@ -236,6 +243,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain inline progression direction.
      * @return the inline progression direction
      */
+    @Override
     public Direction getInlineProgressionDirection() {
         return writingModeTraits.getInlineProgressionDirection();
     }
@@ -244,6 +252,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain block progression direction.
      * @return the block progression direction
      */
+    @Override
     public Direction getBlockProgressionDirection() {
         return writingModeTraits.getBlockProgressionDirection();
     }
@@ -252,6 +261,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain column progression direction.
      * @return the column progression direction
      */
+    @Override
     public Direction getColumnProgressionDirection() {
         return writingModeTraits.getColumnProgressionDirection();
     }
@@ -260,6 +270,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain row progression direction.
      * @return the row progression direction
      */
+    @Override
     public Direction getRowProgressionDirection() {
         return writingModeTraits.getRowProgressionDirection();
     }
@@ -268,6 +279,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain (baseline) shift direction.
      * @return the (baseline) shift direction
      */
+    @Override
     public Direction getShiftDirection() {
         return writingModeTraits.getShiftDirection();
     }
@@ -276,11 +288,13 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * Obtain writing mode.
      * @return the writing mode
      */
+    @Override
     public WritingMode getWritingMode() {
         return writingModeTraits.getWritingMode();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "block-container";
     }
@@ -289,6 +303,7 @@ public class BlockContainer extends FObj implements BreakPropertySet, WritingMod
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_BLOCK_CONTAINER}
      */
+    @Override
     public int getNameId() {
         return FO_BLOCK_CONTAINER;
     }

@@ -53,11 +53,13 @@ public class ImageLoaderSVG extends AbstractImageLoader {
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor getTargetFlavor() {
         return this.targetFlavor;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Image loadImage(ImageInfo info, Map hints, ImageSessionContext session)
                 throws ImageException, IOException {
         if (!MimeConstants.MIME_SVG.equals(info.getMimeType())) {

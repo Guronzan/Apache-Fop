@@ -145,6 +145,7 @@ public class BodyRegion extends RegionReference {
      * this body region area.
      * @param wmtg a WM traits getter
      */
+    @Override
     public void setWritingModeTraits(WritingModeTraitsGetter wmtg) {
         if ( getMainReference() != null ) {
             getMainReference().setWritingModeTraits ( wmtg );
@@ -152,6 +153,7 @@ public class BodyRegion extends RegionReference {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         BodyRegion br = (BodyRegion) super.clone();
         br.mainReference = new MainReference(br);

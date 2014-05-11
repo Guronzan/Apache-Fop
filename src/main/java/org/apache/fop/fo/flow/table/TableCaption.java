@@ -72,12 +72,14 @@ public class TableCaption extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (firstChild == null) {
             missingChildElementError("marker* (%block;)");
@@ -88,6 +90,7 @@ public class TableCaption extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (%block;)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
             throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -104,6 +107,7 @@ public class TableCaption extends FObj implements CommonAccessibilityHolder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-caption";
     }
@@ -112,11 +116,13 @@ public class TableCaption extends FObj implements CommonAccessibilityHolder {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_CAPTION}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_CAPTION;
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }

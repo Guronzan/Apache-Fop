@@ -61,6 +61,7 @@ public class ImageCellPosition extends AbstractAFPObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[21];
         copySF(data, Type.POSITION, Category.IM_IMAGE);

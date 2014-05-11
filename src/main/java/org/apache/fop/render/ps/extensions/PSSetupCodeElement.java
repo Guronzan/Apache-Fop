@@ -40,6 +40,7 @@ public class PSSetupCodeElement extends AbstractPSExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (parent.getNameId() != Constants.FO_DECLARATIONS) {
@@ -49,6 +50,7 @@ public class PSSetupCodeElement extends AbstractPSExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return ELEMENT;
     }

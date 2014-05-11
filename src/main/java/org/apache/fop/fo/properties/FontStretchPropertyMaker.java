@@ -46,6 +46,7 @@ public class FontStretchPropertyMaker
      * {@inheritDoc}
      * Implements the parts of 7.8.5 relevant to relative font stretches
      */
+    @Override
     public Property convertProperty(Property p,
                                     PropertyList propertyList,
                                     FObj fo) throws PropertyException {

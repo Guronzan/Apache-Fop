@@ -212,6 +212,7 @@ public class GlyphSubstitutionState extends GlyphProcessingState {
      * Apply default application semantices; namely, consume one input glyph,
      * writing that glyph (and its association) to the output glyphs (and associations).
      */
+    @Override
     public void applyDefault() {
         super.applyDefault();
         int gi = getGlyph();

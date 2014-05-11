@@ -56,6 +56,7 @@ public class FOPSAXSVGDocumentFactory extends SAXSVGDocumentFactory {
     /**
      * {@inheritDoc}
      */
+    @Override
     public InputSource resolveEntity(String publicId, String systemId)
                 throws SAXException {
         if (this.additionalResolver != null) {

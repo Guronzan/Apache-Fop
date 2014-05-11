@@ -29,11 +29,13 @@ import org.apache.fop.fo.properties.Property;
 public class MaxFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 2;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         Numeric n1 = args[0].getNumeric();
         Numeric n2 = args[1].getNumeric();

@@ -86,6 +86,7 @@ public class FopServlet extends HttpServlet {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void init() throws ServletException {
         this.uriResolver = new ServletContextURIResolver(getServletContext());
         this.transFactory = TransformerFactory.newInstance();
@@ -107,6 +108,7 @@ public class FopServlet extends HttpServlet {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response) throws ServletException {
         try {

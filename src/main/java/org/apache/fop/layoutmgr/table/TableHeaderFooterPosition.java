@@ -49,10 +49,12 @@ class TableHeaderFooterPosition extends Position {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesAreas() {
         return true;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Table");
         sb.append(header ? "Header" : "Footer");

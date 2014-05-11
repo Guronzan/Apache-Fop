@@ -205,6 +205,7 @@ public class EmbedFontInfo implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "metrics-url=" + metricsFile + ", embed-url=" + embedFile
             + ", kerning=" + kerning

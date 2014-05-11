@@ -173,6 +173,7 @@ public class PageObject extends AbstractResourceGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeStart(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.PAGE);
@@ -180,6 +181,7 @@ public class PageObject extends AbstractResourceGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeContent(OutputStream os) throws IOException {
         writeTriplets(os);
 
@@ -189,6 +191,7 @@ public class PageObject extends AbstractResourceGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeEnd(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.END, Category.PAGE);
@@ -200,17 +203,20 @@ public class PageObject extends AbstractResourceGroupContainer {
      *
      * @param obj an AFP object
      */
+    @Override
     public void addObject(Object obj) {
         endPresentationObject();
         super.addObject(obj);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return this.getName();
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean canWrite(AbstractAFPObject ao) {
         return true;
     }

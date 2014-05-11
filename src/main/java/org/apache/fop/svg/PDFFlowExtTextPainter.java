@@ -41,6 +41,7 @@ public class PDFFlowExtTextPainter extends PDFTextPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
         //Text runs are delegated to the normal FlowExtTextPainter, we just paint the text.
         FlowExtTextPainter delegate = (FlowExtTextPainter)FlowExtTextPainter.getInstance();

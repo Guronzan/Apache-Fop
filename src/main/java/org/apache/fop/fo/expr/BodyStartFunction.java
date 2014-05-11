@@ -32,11 +32,13 @@ import org.apache.fop.fo.properties.Property;
 public class BodyStartFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
         Numeric distance
             = pInfo.getPropertyList()

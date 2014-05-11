@@ -37,6 +37,7 @@ import org.apache.fop.render.pdf.PDFLogicalStructureHandler.MarkedContentInfo;
 abstract class AbstractPDFImageHandler implements ImageHandler {
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
             throws IOException {
         assert context instanceof PDFRenderingContext;

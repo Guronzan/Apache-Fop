@@ -221,6 +221,7 @@ public class SolidAndDoubleBorderElement extends AbstractBorderElement {
      * @param e instance of AbstractBorderElement
      * @return instance of AbstractBorderElement
      */
+    @Override
     public AbstractBorderElement merge(AbstractBorderElement e) {
         AbstractBorderElement abe = this;
         if (e instanceof SolidAndDoubleBorderElement) {
@@ -266,6 +267,7 @@ public class SolidAndDoubleBorderElement extends AbstractBorderElement {
     /**
      * {@inheritDoc}
      */
+    @Override
     public char convert2Char() {
         char ch = map2Char();
         if (ch == UNDEFINED) {

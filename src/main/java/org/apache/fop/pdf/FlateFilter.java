@@ -85,6 +85,7 @@ public class FlateFilter extends PDFFilter {
      *
      * @return the pdf name of the flate decode filter
      */
+    @Override
     public String getName() {
         return "/FlateDecode";
     }
@@ -94,6 +95,7 @@ public class FlateFilter extends PDFFilter {
      *
      * @return a string containing the decode params for this filter
      */
+    @Override
     public PDFObject getDecodeParms() {
         if (predictor > PREDICTION_NONE) {
             PDFDictionary dict = new PDFDictionary();
@@ -209,6 +211,7 @@ public class FlateFilter extends PDFFilter {
 
 
     /** {@inheritDoc} */
+    @Override
     public OutputStream applyFilter(OutputStream out) throws IOException {
         if (isApplied()) {
             return out;

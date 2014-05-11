@@ -48,6 +48,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
          * Create a new empty instance of LengthPairProperty.
          * @return the new instance.
          */
+        @Override
         public Property makeNewProperty() {
             return new LengthPairProperty();
         }
@@ -55,6 +56,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
         /**
          * {@inheritDoc}
          */
+        @Override
         public Property convertProperty(Property p, PropertyList propertyList, FObj fo)
             throws PropertyException {
             if (p instanceof LengthPairProperty) {
@@ -94,6 +96,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void setComponent(int cmpId, Property cmpnValue,
                              boolean bIsDefault) {
         if (cmpId == CP_BLOCK_PROGRESSION_DIRECTION) {
@@ -106,6 +109,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property getComponent(int cmpId) {
         if (cmpId == CP_BLOCK_PROGRESSION_DIRECTION) {
             return getBPD();
@@ -131,6 +135,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "LengthPair["
             + "ipd:" + getIPD().getObject()
@@ -140,6 +145,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     /**
      * @return this.lengthPair
      */
+    @Override
     public LengthPairProperty getLengthPair() {
         return this;
     }
@@ -147,6 +153,7 @@ public class LengthPairProperty extends Property implements CompoundDatatype {
     /**
      * @return this.lengthPair cast as an Object
      */
+    @Override
     public Object getObject() {
         return this;
     }

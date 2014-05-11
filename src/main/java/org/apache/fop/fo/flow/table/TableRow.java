@@ -63,6 +63,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         blockProgressionDimension
             = pList.get(PR_BLOCK_PROGRESSION_DIMENSION).getLengthRange();
@@ -77,6 +78,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
             Attributes attlist, PropertyList pList) throws FOPException {
         super.processNode(elementName, locator, attlist, pList);
@@ -88,6 +90,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) throws FOPException {
         if (!inMarker()) {
             TableCell cell = (TableCell) child;
@@ -98,18 +101,21 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startRow(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endRow(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public void finalizeNode() throws FOPException {
         if (firstChild == null) {
             missingChildElementError("(table-cell+)");
@@ -124,6 +130,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
      * {@inheritDoc} String, String)
      * <br>XSL Content Model: (table-cell+)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI,
                                      String localName)
                 throws ValidationException {
@@ -140,6 +147,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** {@inheritDoc} */
+    @Override
     TablePart getTablePart() {
         return (TablePart) parent;
     }
@@ -149,11 +157,13 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     }
 
     /** @return the "break-after" property. */
+    @Override
     public int getBreakAfter() {
         return breakAfter;
     }
 
     /** @return the "break-before" property. */
+    @Override
     public int getBreakBefore() {
         return breakBefore;
     }
@@ -220,11 +230,13 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
     /**
      * @return the Common Border, Padding, and Background Properties.
      */
+    @Override
     public CommonBorderPaddingBackground getCommonBorderPaddingBackground() {
         return commonBorderPaddingBackground;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "table-row";
     }
@@ -233,6 +245,7 @@ public class TableRow extends TableCellContainer implements BreakPropertySet {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TABLE_ROW}
      */
+    @Override
     public int getNameId() {
         return FO_TABLE_ROW;
     }

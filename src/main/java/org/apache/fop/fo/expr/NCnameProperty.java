@@ -48,6 +48,7 @@ public class NCnameProperty extends Property {
      *     Reference to FOP user agent - keeps track of cached ColorMaps for ICC colors
      * @return Color object corresponding to the NCName
      */
+    @Override
     public Color getColor(FOUserAgent foUserAgent)  {
         try {
             return ColorUtil.parseColorString(foUserAgent, ncName);
@@ -62,6 +63,7 @@ public class NCnameProperty extends Property {
     /**
      * @return the name as a String (should be specified with quotes!)
      */
+    @Override
     public String getString() {
         return this.ncName;
     }
@@ -69,6 +71,7 @@ public class NCnameProperty extends Property {
     /**
      * @return the name as an Object.
      */
+    @Override
     public Object getObject() {
         return this.ncName;
     }
@@ -76,6 +79,7 @@ public class NCnameProperty extends Property {
     /**
      * @return ncName for this
      */
+    @Override
     public String getNCname() {
         return this.ncName;
     }

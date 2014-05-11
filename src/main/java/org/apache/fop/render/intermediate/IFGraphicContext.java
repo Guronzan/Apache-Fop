@@ -56,6 +56,7 @@ public class IFGraphicContext extends GraphicContext {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Object clone() {
         return new IFGraphicContext ( this );
     }
@@ -133,6 +134,7 @@ public class IFGraphicContext extends GraphicContext {
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("group: ");
             IFUtil.toString(getTransforms(), sb);
@@ -180,16 +182,19 @@ public class IFGraphicContext extends GraphicContext {
         }
 
         /** {@inheritDoc} */
+        @Override
         public void start(IFPainter painter) throws IFException {
             painter.startViewport(getTransforms(), size, clipRect);
         }
 
         /** {@inheritDoc} */
+        @Override
         public void end(IFPainter painter) throws IFException {
             painter.endViewport();
         }
 
         /** {@inheritDoc} */
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder("viewport: ");
             IFUtil.toString(getTransforms(), sb);

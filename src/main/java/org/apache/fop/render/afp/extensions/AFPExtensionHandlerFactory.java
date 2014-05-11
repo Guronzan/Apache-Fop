@@ -31,11 +31,13 @@ public class AFPExtensionHandlerFactory implements ContentHandlerFactory {
     private static final String[] NAMESPACES = new String[] {AFPPageSetup.CATEGORY};
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedNamespaces() {
         return NAMESPACES;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ContentHandler createContentHandler() {
         return new AFPExtensionHandler();
     }

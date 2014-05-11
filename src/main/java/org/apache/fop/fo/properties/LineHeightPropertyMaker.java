@@ -48,6 +48,7 @@ public class LineHeightPropertyMaker extends SpaceProperty.Maker {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property make(PropertyList propertyList, String value, FObj fo)
             throws PropertyException {
         /* if value was specified as a number/length/percentage then
@@ -66,6 +67,7 @@ public class LineHeightPropertyMaker extends SpaceProperty.Maker {
      * value.
      * {@inheritDoc}
      */
+    @Override
     protected Property compute(PropertyList propertyList) throws PropertyException {
         // recalculate based on last specified value
         // Climb up propertylist and find last spec'd value
@@ -83,6 +85,7 @@ public class LineHeightPropertyMaker extends SpaceProperty.Maker {
     /**
      * {@inheritDoc}
      */
+    @Override
     public Property convertProperty(Property p,
             PropertyList propertyList,
             FObj fo) throws PropertyException {

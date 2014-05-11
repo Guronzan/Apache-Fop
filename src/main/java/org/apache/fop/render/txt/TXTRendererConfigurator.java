@@ -44,6 +44,7 @@ public class TXTRendererConfigurator extends PrintRendererConfigurator {
      * @param renderer TXT renderer
      * @throws FOPException fop exception
      */
+    @Override
     public void configure(Renderer renderer) throws FOPException {
         Configuration cfg = super.getRendererConfig(renderer);
         if (cfg != null) {

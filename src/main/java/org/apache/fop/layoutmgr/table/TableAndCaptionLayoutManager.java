@@ -137,6 +137,7 @@ public class TableAndCaptionLayoutManager extends BlockStackingLayoutManager {
      * @param parentIter the position iterator
      * @param layoutContext the layout context for adding areas
      */
+    @Override
     public void addAreas(PositionIterator parentIter,
                          LayoutContext layoutContext) {
         getParentArea(null);
@@ -176,6 +177,7 @@ public class TableAndCaptionLayoutManager extends BlockStackingLayoutManager {
      * @param childArea the child area to locate the parent
      * @return the area for this table and caption
      */
+    @Override
     public Area getParentArea(Area childArea) {
         if (curBlockArea == null) {
             curBlockArea = new Block();
@@ -195,6 +197,7 @@ public class TableAndCaptionLayoutManager extends BlockStackingLayoutManager {
      *
      * @param childArea the area to add
      */
+    @Override
     public void addChildArea(Area childArea) {
         if (curBlockArea != null) {
             curBlockArea.addBlock((Block) childArea);
@@ -202,6 +205,7 @@ public class TableAndCaptionLayoutManager extends BlockStackingLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithNext() {
         return Keep.KEEP_AUTO;
         /* TODO Complete me!
@@ -211,6 +215,7 @@ public class TableAndCaptionLayoutManager extends BlockStackingLayoutManager {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Keep getKeepWithPrevious() {
         return Keep.KEEP_AUTO;
         /* TODO Complete me!

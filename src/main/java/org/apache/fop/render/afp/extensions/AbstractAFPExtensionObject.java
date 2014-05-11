@@ -55,6 +55,7 @@ public abstract class AbstractAFPExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -63,16 +64,19 @@ public abstract class AbstractAFPExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespaceURI() {
         return AFPElementMapping.NAMESPACE;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNormalNamespacePrefix() {
         return AFPElementMapping.NAMESPACE_PREFIX;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -86,6 +90,7 @@ public abstract class AbstractAFPExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
     }
@@ -97,6 +102,7 @@ public abstract class AbstractAFPExtensionObject extends FONode {
     protected abstract ExtensionAttachment instantiateExtensionAttachment();
 
     /** {@inheritDoc} */
+    @Override
     public ExtensionAttachment getExtensionAttachment() {
         if (extensionAttachment == null) {
             this.extensionAttachment = (AFPExtensionAttachment)instantiateExtensionAttachment();
@@ -105,6 +111,7 @@ public abstract class AbstractAFPExtensionObject extends FONode {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return name;
     }

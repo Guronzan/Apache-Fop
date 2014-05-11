@@ -59,6 +59,7 @@ public class PDFCharProcs extends PDFObject {
      * not done yet
      * @return the pdf byte array
      */
+    @Override
     public byte[] toPDF() {
         // TODO: implement this org.apache.fop.pdf.PDFObject abstract method
         return new byte[0];

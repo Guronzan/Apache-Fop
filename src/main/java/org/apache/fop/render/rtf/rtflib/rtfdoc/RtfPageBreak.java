@@ -45,6 +45,7 @@ public class RtfPageBreak extends RtfElement {
      * Overridden to write our attributes before our content
      * @throws IOException for I/O problems
      */
+    @Override
     protected void writeRtfContent() throws IOException {
         writeControlWord("page");
     }
@@ -52,6 +53,7 @@ public class RtfPageBreak extends RtfElement {
     /**
      * @return true if this element would generate no "useful" RTF content
      */
+    @Override
     public boolean isEmpty() {
         return false;
     }

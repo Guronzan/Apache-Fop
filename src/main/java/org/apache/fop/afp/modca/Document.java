@@ -70,11 +70,13 @@ public final class Document extends AbstractResourceEnvironmentGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isComplete() {
         return complete;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeStart(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.BEGIN, Category.DOCUMENT);
@@ -82,6 +84,7 @@ public final class Document extends AbstractResourceEnvironmentGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void writeEnd(OutputStream os) throws IOException {
         byte[] data = new byte[17];
         copySF(data, Type.END, Category.DOCUMENT);
@@ -89,6 +92,7 @@ public final class Document extends AbstractResourceEnvironmentGroupContainer {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return this.name;
     }

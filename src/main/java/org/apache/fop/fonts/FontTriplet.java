@@ -99,16 +99,19 @@ public class FontTriplet implements Comparable<FontTriplet>, Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int compareTo(FontTriplet o) {
         return getKey().compareTo(o.getKey());
     }
 
     /** {@inheritDoc} */
+    @Override
     public int hashCode() {
         return toString().hashCode();
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean equals(Object obj) {
         if (obj == null) {
             return false;
@@ -126,6 +129,7 @@ public class FontTriplet implements Comparable<FontTriplet>, Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getKey();
     }

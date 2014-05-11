@@ -71,6 +71,7 @@ public class InstreamForeignObject extends AbstractGraphics {
      * the end of the instream-foreign-object.
      * {@inheritDoc}
      */
+    @Override
     protected void endOfNode() throws FOPException {
         if (firstChild == null) {
             missingChildElementError("one (1) non-XSL namespace child");
@@ -82,6 +83,7 @@ public class InstreamForeignObject extends AbstractGraphics {
      * {@inheritDoc}
      * <br>XSL Content Model: one (1) non-XSL namespace child
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -92,6 +94,7 @@ public class InstreamForeignObject extends AbstractGraphics {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "instream-foreign-object";
     }
@@ -100,6 +103,7 @@ public class InstreamForeignObject extends AbstractGraphics {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_INSTREAM_FOREIGN_OBJECT}
      */
+    @Override
     public int getNameId() {
         return FO_INSTREAM_FOREIGN_OBJECT;
     }
@@ -121,6 +125,7 @@ public class InstreamForeignObject extends AbstractGraphics {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getIntrinsicWidth() {
         prepareIntrinsicSize();
         if (intrinsicDimensions != null) {
@@ -131,6 +136,7 @@ public class InstreamForeignObject extends AbstractGraphics {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getIntrinsicHeight() {
         prepareIntrinsicSize();
         if (intrinsicDimensions != null) {
@@ -141,12 +147,14 @@ public class InstreamForeignObject extends AbstractGraphics {
     }
 
     /** {@inheritDoc} */
+    @Override
     public  Length getIntrinsicAlignmentAdjust() {
         prepareIntrinsicSize();
         return intrinsicAlignmentAdjust;
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void addChildNode(FONode child) throws FOPException {
         super.addChildNode(child);
     }

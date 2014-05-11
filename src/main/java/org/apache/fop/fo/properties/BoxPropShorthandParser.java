@@ -41,6 +41,7 @@ public class BoxPropShorthandParser extends GenericShorthandParser {
      * {@inheritDoc}
      * int, Property, PropertyMaker, PropertyList)
      */
+    @Override
     protected Property convertValueForProperty(int propId,
                                                Property property,
                                                PropertyMaker maker,

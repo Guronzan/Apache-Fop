@@ -83,6 +83,7 @@ final class TransparentDataControlSequence implements Iterable<TransparentData> 
     /**
      * The {@link Iterator} for retrieving the series of TRN control sequences.
      */
+    @Override
     public Iterator<TransparentData> iterator() {
         return trns.iterator();
     }

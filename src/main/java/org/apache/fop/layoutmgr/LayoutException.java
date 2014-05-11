@@ -65,6 +65,7 @@ public class LayoutException extends RuntimeException {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalizedMessage() {
         if (this.localizedMessage != null) {
             return this.localizedMessage;
@@ -85,6 +86,7 @@ public class LayoutException extends RuntimeException {
     public static class LayoutExceptionFactory implements ExceptionFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Throwable createException(Event event) {
             Object source = event.getSource();
             LayoutManager lm = (source instanceof LayoutManager) ? (LayoutManager)source : null;
@@ -97,6 +99,7 @@ public class LayoutException extends RuntimeException {
         }
 
         /** {@inheritDoc} */
+        @Override
         public Class<LayoutException> getExceptionClass() {
             return LayoutException.class;
         }

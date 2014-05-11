@@ -104,6 +104,7 @@ public class Block extends FObjMixed implements BreakPropertySet,
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -140,18 +141,21 @@ public class Block extends FObjMixed implements BreakPropertySet,
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startBlock(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         super.endOfNode();
         getFOEventHandler().endBlock(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -178,11 +182,13 @@ public class Block extends FObjMixed implements BreakPropertySet,
     }
 
     /** @return the "break-after" trait. */
+    @Override
     public int getBreakAfter() {
         return breakAfter;
     }
 
     /** @return the "break-before" trait. */
+    @Override
     public int getBreakBefore() {
         return breakBefore;
     }
@@ -270,6 +276,7 @@ public class Block extends FObjMixed implements BreakPropertySet,
      *  children, unless it has a nearer ancestor that is an
      *  fo:inline-container."</i>
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
             throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -341,11 +348,13 @@ public class Block extends FObjMixed implements BreakPropertySet,
 
 
     /** {@inheritDoc} */
+    @Override
     public CharIterator charIterator() {
         return NullCharIterator.getInstance();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "block";
     }
@@ -354,6 +363,7 @@ public class Block extends FObjMixed implements BreakPropertySet,
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_BLOCK}
      */
+    @Override
     public int getNameId() {
         return FO_BLOCK;
     }

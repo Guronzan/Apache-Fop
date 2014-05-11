@@ -55,8 +55,10 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     private List events = new LinkedList();
 
     /** {@inheritDoc} */
+    @Override
     void addTableCell(final TableCell cell) {
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.addTableCell(cell);
             }
@@ -64,8 +66,10 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void startTableRow(final TableRow tableRow) {
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.startTableRow(tableRow);
             }
@@ -73,8 +77,10 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTableRow() {
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.endTableRow();
             }
@@ -82,8 +88,10 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endRow(final TablePart part) {
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.endRow(part);
             }
@@ -91,8 +99,10 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void startTablePart(final TablePart part) {
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) {
                 rowGroupBuilder.startTablePart(part);
             }
@@ -100,9 +110,11 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTablePart() throws ValidationException {
         // TODO catch the ValidationException sooner?
         events.add(new Event() {
+            @Override
             public void play(RowGroupBuilder rowGroupBuilder) throws ValidationException {
                 rowGroupBuilder.endTablePart();
             }
@@ -110,6 +122,7 @@ class VariableColRowGroupBuilder extends RowGroupBuilder {
     }
 
     /** {@inheritDoc} */
+    @Override
     void endTable() throws ValidationException {
         RowGroupBuilder delegate = new FixedColRowGroupBuilder(table);
         for (Iterator eventIter = events.iterator(); eventIter.hasNext();) {

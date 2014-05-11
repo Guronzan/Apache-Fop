@@ -54,6 +54,7 @@ public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (parent.getNameId() != Constants.FO_DECLARATIONS) {
@@ -63,6 +64,7 @@ public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -82,6 +84,7 @@ public class AFPIncludeFormMapElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPIncludeFormMap();
     }

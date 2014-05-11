@@ -46,11 +46,13 @@ public class KnuthBox extends KnuthElement {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isBox() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder(64);
         if (isAuxiliary()) {

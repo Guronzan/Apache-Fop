@@ -70,6 +70,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         super.bind(pList);
         commonAccessibility = CommonAccessibility.getInstance(pList);
@@ -83,12 +84,14 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         getFOEventHandler().startListItem(this);
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (label == null || body == null) {
             missingChildElementError("marker* (list-item-label,list-item-body)");
@@ -100,6 +103,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
      * {@inheritDoc}
      * <br>XSL Content Model: marker* (list-item-label,list-item-body)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -128,6 +132,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
      * TODO see if can/should rely on base class for this
      *    (i.e., add to childNodes instead)
      */
+    @Override
     public void addChildNode(FONode child) {
         int nameId = child.getNameId();
 
@@ -141,6 +146,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
     }
 
     /** {@inheritDoc} */
+    @Override
     public CommonAccessibility getCommonAccessibility() {
         return commonAccessibility;
     }
@@ -156,11 +162,13 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
     }
 
     /** @return the "break-after" property */
+    @Override
     public int getBreakAfter() {
         return breakAfter;
     }
 
     /** @return the "break-before" property */
+    @Override
     public int getBreakBefore() {
         return breakBefore;
     }
@@ -193,6 +201,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "list-item";
     }
@@ -201,6 +210,7 @@ public class ListItem extends FObj implements BreakPropertySet, CommonAccessibil
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_LIST_ITEM}
      */
+    @Override
     public int getNameId() {
         return FO_LIST_ITEM;
     }

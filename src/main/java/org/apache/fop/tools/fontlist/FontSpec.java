@@ -96,6 +96,7 @@ public class FontSpec implements Comparable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int compareTo(Object o) {
         FontSpec other = (FontSpec)o;
         return metrics.getFullName().compareTo(other.metrics.getFullName());

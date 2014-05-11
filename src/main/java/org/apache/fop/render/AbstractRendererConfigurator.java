@@ -60,6 +60,7 @@ public abstract class AbstractRendererConfigurator extends AbstractConfigurator 
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getType() {
         return TYPE;
     }

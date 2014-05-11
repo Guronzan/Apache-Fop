@@ -73,6 +73,7 @@ public class TrailerDictionary {
                 fileID = id;
             }
 
+            @Override
             public void outputInline(OutputStream out, StringBuilder textBuffer)
                     throws IOException {
                 PDFDocument.flushTextBuffer(textBuffer, out);

@@ -42,6 +42,7 @@ public abstract class PDFExtensionAttachment implements ExtensionAttachment, XML
      * @return the category URI
      * @see org.apache.fop.fo.extensions.ExtensionAttachment#getCategory()
      */
+    @Override
     public String getCategory() {
         return CATEGORY;
     }
@@ -56,6 +57,7 @@ public abstract class PDFExtensionAttachment implements ExtensionAttachment, XML
      * @return a string representation of this object
      * @see java.lang.Object#toString()
      */
+    @Override
     public String toString() {
         return getType();
     }

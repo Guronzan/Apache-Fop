@@ -33,21 +33,25 @@ public class TIFFRendererMaker extends AbstractRendererMaker {
     private static final String[] MIMES = new String[] {MimeConstants.MIME_TIFF};
 
     /** {@inheritDoc} */
+    @Override
     public Renderer makeRenderer(FOUserAgent userAgent) {
         return new TIFFRenderer(userAgent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public RendererConfigurator getConfigurator(FOUserAgent userAgent) {
         return new TIFFRendererConfigurator(userAgent);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

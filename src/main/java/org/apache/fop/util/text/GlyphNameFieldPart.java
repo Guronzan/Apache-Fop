@@ -42,6 +42,7 @@ public class GlyphNameFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isGenerated(Map params) {
         Object obj = params.get(fieldName);
         return obj != null && getGlyphName(obj).length() > 0;
@@ -58,6 +59,7 @@ public class GlyphNameFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void write(StringBuilder sb, Map params) {
         if (!params.containsKey(fieldName)) {
             throw new IllegalArgumentException(
@@ -68,6 +70,7 @@ public class GlyphNameFieldPart implements Part {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "{" + this.fieldName + ",glyph-name}";
     }
@@ -76,11 +79,13 @@ public class GlyphNameFieldPart implements Part {
     public static class Factory implements PartFactory {
 
         /** {@inheritDoc} */
+        @Override
         public Part newPart(String fieldName, String values) {
             return new GlyphNameFieldPart(fieldName);
         }
 
         /** {@inheritDoc} */
+        @Override
         public String getFormat() {
             return "glyph-name";
         }

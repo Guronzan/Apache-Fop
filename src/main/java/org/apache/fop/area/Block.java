@@ -71,6 +71,7 @@ public class Block extends BlockParent {
      *
      * @param block the block area to add
      */
+    @Override
     public void addBlock(Block block) {
         addBlock(block, true);
     }

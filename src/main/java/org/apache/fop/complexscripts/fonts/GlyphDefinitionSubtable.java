@@ -43,21 +43,25 @@ public abstract class GlyphDefinitionSubtable extends GlyphSubtable implements G
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getTableType() {
         return GlyphTable.GLYPH_TABLE_TYPE_DEFINITION;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getTypeName() {
         return GlyphDefinitionTable.getLookupTypeName ( getType() );
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean usesReverseScan() {
         return false;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasDefinition ( int gi ) {
         GlyphCoverageMapping cvm;
         if ( ( cvm = getCoverage() ) != null ) {

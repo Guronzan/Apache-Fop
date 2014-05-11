@@ -46,6 +46,7 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D {
     };
 
     /** {@inheritDoc} */
+    @Override
     public void handleImage(RenderingContext context, Image image, Rectangle pos)
                 throws IOException {
         PDFRenderingContext pdfContext = (PDFRenderingContext)context;
@@ -108,21 +109,25 @@ public class PDFImageHandlerGraphics2D extends AbstractImageHandlerGraphics2D {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getPriority() {
         return 200;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Class getSupportedImageClass() {
         return ImageGraphics2D.class;
     }
 
     /** {@inheritDoc} */
+    @Override
     public ImageFlavor[] getSupportedImageFlavors() {
         return FLAVORS;
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean isCompatible(RenderingContext targetContext, Image image) {
         boolean supported = (image == null || image instanceof ImageGraphics2D)
                 && targetContext instanceof PDFRenderingContext;

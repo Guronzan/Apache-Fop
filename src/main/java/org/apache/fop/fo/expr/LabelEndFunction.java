@@ -35,11 +35,13 @@ import org.apache.fop.fo.properties.Property;
 public class LabelEndFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 0;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo pInfo) throws PropertyException {
 
         Length distance = pInfo.getPropertyList().get(

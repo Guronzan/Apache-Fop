@@ -43,6 +43,7 @@ public class PDFBatikFlowTextElementBridge extends BatikFlowTextElementBridge {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected GraphicsNode instantiateGraphicsNode() {
         GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {

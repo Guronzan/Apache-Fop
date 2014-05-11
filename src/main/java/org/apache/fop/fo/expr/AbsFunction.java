@@ -28,11 +28,13 @@ import org.apache.fop.fo.properties.Property;
 public class AbsFunction extends FunctionBase {
 
     /** {@inheritDoc} */
+    @Override
     public int getRequiredArgsCount() {
         return 1;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Property eval(Property[] args, PropertyInfo propInfo) throws PropertyException {
         Numeric num = args[0].getNumeric();
         if (num == null) {

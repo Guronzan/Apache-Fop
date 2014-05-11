@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import lombok.extern.slf4j.Slf4j;
-
 import org.apache.fop.ResourceEventProducer;
 import org.apache.fop.apps.FOPException;
 import org.apache.fop.apps.FOUserAgent;
@@ -75,7 +73,6 @@ import org.w3c.dom.Document;
  * level processing of the area tree and adds some abstract methods to handle
  * viewports. This keeps track of the current block and inline position.
  */
-@Slf4j
 public abstract class AbstractRenderer implements Renderer, Constants {
 
     /**
@@ -224,17 +221,6 @@ public abstract class AbstractRenderer implements Renderer, Constants {
             }
         }
         return sb.toString();
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @deprecated
-     */
-    @Deprecated
-    @Override
-    public void startPageSequence(final LineArea seqTitle) {
-        // do nothing
     }
 
     /** {@inheritDoc} */

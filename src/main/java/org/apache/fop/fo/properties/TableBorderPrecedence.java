@@ -50,6 +50,7 @@ public class TableBorderPrecedence extends NumberProperty.Maker {
      *
      * {@inheritDoc}
      */
+    @Override
     public Property make(PropertyList propertyList) throws PropertyException {
         FObj fo = propertyList.getFObj();
         switch (fo.getNameId()) {

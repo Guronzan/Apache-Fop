@@ -47,6 +47,7 @@ public class PSBatikFlowTextElementBridge extends BatikFlowTextElementBridge {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected GraphicsNode instantiateGraphicsNode() {
         GraphicsNode node = super.instantiateGraphicsNode();
         if (node != null) {
@@ -75,6 +76,7 @@ public class PSBatikFlowTextElementBridge extends BatikFlowTextElementBridge {
         }
 
         /** {@inheritDoc} */
+        @Override
         public List getTextRuns(TextNode node, AttributedCharacterIterator aci) {
             //Text runs are delegated to the normal FlowExtTextPainter, we just paint the text.
             FlowExtTextPainter delegate = (FlowExtTextPainter)FlowExtTextPainter.getInstance();

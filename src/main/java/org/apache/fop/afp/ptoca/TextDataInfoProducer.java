@@ -40,6 +40,7 @@ public class TextDataInfoProducer implements PtocaProducer, PtocaConstants {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void produce(PtocaBuilder builder) throws IOException {
         builder.setTextOrientation(textDataInfo.getRotation());
         builder.absoluteMoveBaseline(textDataInfo.getY());

@@ -43,6 +43,7 @@ public class AttributeValueTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = super.getData();
         data[2] = 0x00; // Reserved
@@ -61,11 +62,13 @@ public class AttributeValueTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 4 + attVal.length();
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return attVal;
     }

@@ -43,16 +43,19 @@ public class LMiter implements ListIterator<LayoutManager> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasNext() {
         return (curPos < listLMs.size()) || lp.createNextChildLMs(curPos);
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasPrevious() {
         return (curPos > 0);
     }
 
     /** {@inheritDoc} */
+    @Override
     public LayoutManager previous() throws NoSuchElementException {
         if (curPos > 0) {
             return listLMs.get(--curPos);
@@ -62,6 +65,7 @@ public class LMiter implements ListIterator<LayoutManager> {
     }
 
     /** {@inheritDoc} */
+    @Override
     public LayoutManager next() throws NoSuchElementException {
         if (curPos < listLMs.size()) {
             return listLMs.get(curPos++);
@@ -71,7 +75,8 @@ public class LMiter implements ListIterator<LayoutManager> {
     }
 
     /** {@inheritDoc} */
-     public void remove() throws NoSuchElementException {
+     @Override
+    public void remove() throws NoSuchElementException {
         if (curPos > 0) {
             listLMs.remove(--curPos);
             // Note: doesn't actually remove it from the base!
@@ -82,21 +87,25 @@ public class LMiter implements ListIterator<LayoutManager> {
 
 
     /** {@inheritDoc} */
-   public void add(LayoutManager lm) throws UnsupportedOperationException {
+   @Override
+public void add(LayoutManager lm) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support add");
     }
 
     /** {@inheritDoc} */
+    @Override
     public void set(LayoutManager lm) throws UnsupportedOperationException {
         throw new UnsupportedOperationException("LMiter doesn't support set");
     }
 
     /** {@inheritDoc} */
+    @Override
     public int nextIndex() {
         return curPos;
     }
 
     /** {@inheritDoc} */
+    @Override
     public int previousIndex() {
         return curPos - 1;
     }

@@ -35,6 +35,7 @@ public class XMLXMLHandler implements XMLHandler {
     public static final String HANDLER = "handler";
 
     /** {@inheritDoc} */
+    @Override
     public void handleXML(RendererContext context,
                 org.w3c.dom.Document doc, String ns) throws Exception {
         ContentHandler handler = (ContentHandler) context.getProperty(HANDLER);
@@ -43,11 +44,13 @@ public class XMLXMLHandler implements XMLHandler {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean supportsRenderer(Renderer renderer) {
         return (renderer instanceof XMLRenderer);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getNamespace() {
         return null; //Handle all XML content
     }

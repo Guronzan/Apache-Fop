@@ -57,6 +57,7 @@ public class AFPPageOverlayElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void startOfNode() throws FOPException {
         super.startOfNode();
         if (AFPElementMapping.INCLUDE_PAGE_OVERLAY.equals(getLocalName())) {
@@ -75,6 +76,7 @@ public class AFPPageOverlayElement extends AbstractAFPExtensionObject {
 
 
     /** {@inheritDoc} */
+    @Override
     public void processNode(String elementName, Locator locator,
                             Attributes attlist, PropertyList propertyList)
                                 throws FOPException {
@@ -92,6 +94,7 @@ public class AFPPageOverlayElement extends AbstractAFPExtensionObject {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected ExtensionAttachment instantiateExtensionAttachment() {
         return new AFPPageOverlay();
     }

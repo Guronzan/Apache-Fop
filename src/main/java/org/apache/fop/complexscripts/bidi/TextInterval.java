@@ -95,6 +95,7 @@ class TextInterval {
             ( (Leader) fn ) .setBidiLevel ( level );
         }
     }
+    @Override
     public boolean equals ( Object o ) {
         if ( o instanceof TextInterval ) {
             TextInterval ti = (TextInterval) o;
@@ -111,12 +112,14 @@ class TextInterval {
             return false;
         }
     }
+    @Override
     public int hashCode() {
         int l = ( fn != null ) ? fn.hashCode() : 0;
         l = ( l ^ start ) + ( l << 19 );
         l = ( l ^ end )   + ( l << 11 );
         return l;
     }
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         char c;

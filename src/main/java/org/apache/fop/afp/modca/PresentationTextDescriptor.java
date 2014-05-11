@@ -63,6 +63,7 @@ public class PresentationTextDescriptor extends AbstractDescriptor {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = new byte[23];
 

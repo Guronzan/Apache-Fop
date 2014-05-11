@@ -49,6 +49,7 @@ public class PDFEmbeddedFile extends PDFStream {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void populateStreamDict(Object lengthEntry) {
         super.populateStreamDict(lengthEntry);
         try {

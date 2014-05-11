@@ -60,6 +60,7 @@ public class ExtendedResourceLocalIdentifierTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
         data[2] = type;
@@ -69,6 +70,7 @@ public class ExtendedResourceLocalIdentifierTriplet extends AbstractTriplet {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 7;
     }

@@ -40,6 +40,7 @@ public class PDFUri extends PDFAction {
      *
      * @return the action to place next to /A within a Link
      */
+    @Override
     public String getAction() {
         if (hasObjectNumber()) {
             return referencePDF();
@@ -53,6 +54,7 @@ public class PDFUri extends PDFAction {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toPDFString() {
         //TODO Convert this class into a dictionary
         return getDictString();

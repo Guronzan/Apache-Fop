@@ -79,11 +79,13 @@ public class RegionViewport extends Area implements Viewport {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean hasClip() {
         return this.clip;
     }
 
     /** {@inheritDoc} */
+    @Override
     public Rectangle getClipRectangle() {
         if (clip) {
             return new Rectangle(getIPD(), getBPD());
@@ -122,6 +124,7 @@ public class RegionViewport extends Area implements Viewport {
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         RegionViewport rv = (RegionViewport) super.clone();
         rv.regionReference = (RegionReference) regionReference.clone();
@@ -134,6 +137,7 @@ public class RegionViewport extends Area implements Viewport {
      * this region viewport
      * @param wmtg a WM traits getter
      */
+    @Override
     public void setWritingModeTraits(WritingModeTraitsGetter wmtg) {
         if (regionReference != null) {
             regionReference.setWritingModeTraits(wmtg);

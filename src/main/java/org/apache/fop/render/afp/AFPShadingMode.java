@@ -67,6 +67,7 @@ public final class AFPShadingMode implements Serializable {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getClass().getName() + ":" + name;
     }

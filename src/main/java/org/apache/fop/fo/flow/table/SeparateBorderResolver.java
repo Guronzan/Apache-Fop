@@ -27,18 +27,22 @@ import java.util.List;
 class SeparateBorderResolver implements BorderResolver {
 
     /** {@inheritDoc} */
+    @Override
     public void endRow(List row, TableCellContainer container) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void startPart(TablePart part) {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endPart() {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void endTable() {
     }
 }

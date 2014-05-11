@@ -50,16 +50,19 @@ public class GraphicsFullArc extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public int getDataLength() {
         return 8;
     }
 
     /** {@inheritDoc} */
+    @Override
     byte getOrderCode() {
         return (byte)0xC7;
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeToStream(OutputStream os) throws IOException {
         byte[] data = getData();
 
@@ -73,6 +76,7 @@ public class GraphicsFullArc extends AbstractGraphicsCoord {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "GraphicsFullArc{"
              + ", centerx=" + coords[0]

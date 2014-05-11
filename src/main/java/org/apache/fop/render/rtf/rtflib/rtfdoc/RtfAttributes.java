@@ -104,11 +104,13 @@ public class RtfAttributes implements Cloneable {
      * debugging log
      * @return String representation of object
      */
+    @Override
     public String toString() {
         return values.toString() + "(" + super.toString() + ")";
     }
 
     /** {@inheritDoc} */
+    @Override
     public Object clone() throws CloneNotSupportedException {
         RtfAttributes result = (RtfAttributes) super.clone();
         result.values = (HashMap)values.clone();

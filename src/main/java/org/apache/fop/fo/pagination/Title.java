@@ -46,6 +46,7 @@ public class Title extends InlineLevel {
      * {@inheritDoc} String, String)
      * <br>XSL/FOP: (#PCDATA|%inline;)*
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -56,6 +57,7 @@ public class Title extends InlineLevel {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "title";
     }
@@ -64,6 +66,7 @@ public class Title extends InlineLevel {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_TITLE}
      */
+    @Override
     public int getNameId() {
         return FO_TITLE;
     }

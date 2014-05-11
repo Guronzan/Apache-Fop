@@ -44,6 +44,7 @@ public class AFPTextPainter extends AbstractFOPTextPainter {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected boolean isSupportedGraphics2D(Graphics2D g2d) {
         return g2d instanceof AFPGraphics2D;
     }

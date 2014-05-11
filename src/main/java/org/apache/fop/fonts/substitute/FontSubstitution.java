@@ -55,6 +55,7 @@ public class FontSubstitution {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toString() {
         return "from=" + fromQualifier + ", to=" + toQualifier;
     }

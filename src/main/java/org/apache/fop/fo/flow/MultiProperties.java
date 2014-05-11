@@ -59,6 +59,7 @@ public class MultiProperties extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     protected void endOfNode() throws FOPException {
         if (!hasMultiPropertySet || !hasWrapper) {
             missingChildElementError("(multi-property-set+, wrapper)");
@@ -69,6 +70,7 @@ public class MultiProperties extends FObj {
      * {@inheritDoc}
      * <br>XSL Content Model: (multi-property-set+, wrapper)
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
         throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -91,6 +93,7 @@ public class MultiProperties extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getLocalName() {
         return "multi-properties";
     }
@@ -99,6 +102,7 @@ public class MultiProperties extends FObj {
      * {@inheritDoc}
      * @return {@link org.apache.fop.fo.Constants#FO_MULTI_PROPERTIES}
      */
+    @Override
     public int getNameId() {
         return FO_MULTI_PROPERTIES;
     }

@@ -42,6 +42,7 @@ public class PageNumberCitationLayoutManager extends AbstractPageNumberCitationL
     }
 
     /** {@inheritDoc} */
+    @Override
     public InlineArea get(LayoutContext context) {
         curArea = getPageNumberCitationInlineArea();
         return curArea;

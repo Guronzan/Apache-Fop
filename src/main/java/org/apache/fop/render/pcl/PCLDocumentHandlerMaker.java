@@ -36,6 +36,7 @@ public class PCLDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     };
 
     /** {@inheritDoc} */
+    @Override
     public IFDocumentHandler makeIFDocumentHandler(FOUserAgent ua) {
         PCLDocumentHandler handler = new PCLDocumentHandler();
         handler.setContext(new IFContext(ua));
@@ -43,11 +44,13 @@ public class PCLDocumentHandlerMaker extends AbstractIFDocumentHandlerMaker {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean needsOutputStream() {
         return true;
     }
 
     /** {@inheritDoc} */
+    @Override
     public String[] getSupportedMimeTypes() {
         return MIMES;
     }

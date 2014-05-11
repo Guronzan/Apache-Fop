@@ -62,6 +62,7 @@ public abstract class Region extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void bind(PropertyList pList) throws FOPException {
         commonBorderPaddingBackground = pList.getBorderPaddingBackgroundProps();
         // clip = pList.get(PR_CLIP);
@@ -95,6 +96,7 @@ public abstract class Region extends FObj {
      * {@inheritDoc} String, String)
      * <br>XSL Content Model: empty
      */
+    @Override
     protected void validateChildNode(Locator loc, String nsURI, String localName)
                 throws ValidationException {
         if (FO_URI.equals(nsURI)) {
@@ -149,6 +151,7 @@ public abstract class Region extends FObj {
     }
 
     /** {@inheritDoc} */
+    @Override
     public boolean generatesReferenceAreas() {
         return true;
     }

@@ -159,6 +159,7 @@ public final class WritingMode extends TraitEnum {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return getName();
     }

@@ -82,6 +82,7 @@ public class PDFLink extends PDFObject {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String toPDFString() {
         getDocumentSafely().getProfile().verifyAnnotAllowed();
         String fFlag = "";
@@ -119,6 +120,7 @@ public class PDFLink extends PDFObject {
      */
 
     /** {@inheritDoc} */
+    @Override
     protected boolean contentEquals(PDFObject obj) {
         if (this == obj) {
             return true;

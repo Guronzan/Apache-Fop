@@ -40,11 +40,13 @@ public class ImageEncoderJPEG implements ImageEncoder {
     }
 
     /** {@inheritDoc} */
+    @Override
     public void writeTo(OutputStream out) throws IOException {
         jpeg.writeTo(out);
     }
 
     /** {@inheritDoc} */
+    @Override
     public String getImplicitFilter() {
         return "<< >> /DCTDecode";
     }

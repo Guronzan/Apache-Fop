@@ -99,6 +99,7 @@ public final class BorderStyle extends TraitEnum {
     }
 
     /** {@inheritDoc} */
+    @Override
     public String toString() {
         return "BorderStyle:" + getName();
     }
